@@ -1,0 +1,1570 @@
+<div class="header-content-margin">
+
+  <div class="row mx-0 my-3 mt-5">
+    <div class="d-flex col-12" style="padding-left: 0 !important;">
+      <div class="btn-group margins-auto">
+        <div class="dropdown">
+          <button class="btn btn-secondary grey-filters-dropdown more-filters-btn" style="text-align: left;width: unset;" type="button"> <span (click)="goToAllCourses()">{{'text_available_courses' | translate }}</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--OTHER FILTERS-->
+  <ng-container >
+    <div class="row mx-0 my-3 mt-2">
+
+      <div class="col-12 ps-0 d-flex flex-small-column">
+
+        <div class="col-xl-8 col-lg-7 col-md-12">
+
+          <div class="row mx-0 my-3">
+            <div class="col-12 ps-0">
+              <h1 class="fw-semibold text-white fs-32 mb-0 mobile-section-title">{{'text_available_courses' | translate }}</h1>
+            </div>
+          </div>
+
+          <div class="col-12 mt-1" style="padding-left: 0 !important;">
+          <span class="text-white montserrat">
+            <span class="fw-semibold">{{'text_filters_a' | translate }}</span> {{'text_filters_b' | translate }}
+          </span>
+          </div>
+
+          <div class="p-2 d-flex col-12 filters-container-mobile" style="padding-left: 0 !important;justify-content:space-between;align-items:end;">
+
+            <div class="col-12">
+              <p class="mt-1 mb-0 fs-16 text-uppercase">{{'text_typeofevent' | translate }}</p>
+              <div class="filter-flex">
+                <div class="checkbox-custom warning montserrat mt-1">
+                  <input type="radio" id="radio-1" name="courseType" [value]="1"
+                         [(ngModel)]="selectedCourseType" (change)="changeSelectedCourseType(selectedCourseType)">
+                  <label for="radio-1" class="collective">{{'text_collectivescourses' | translate }}</label>
+                </div>
+                <div class="checkbox-custom success montserrat mt-1">
+                  <input type="radio" id="radio-2" name="courseType" [value]="2"
+                         [(ngModel)]="selectedCourseType" (change)="changeSelectedCourseType(selectedCourseType)">
+                  <label for="radio-2" class="private">{{'text_privatecourses' | translate }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mt-1">
+              <p class="mt-1 mb-0 fs-16 text-uppercase">SPORT</p>
+              <div class="filter-flex">
+                <div class="checkbox-custom montserrat mt-1" *ngFor="let sport of sportsList; let i = index">
+                  <input type="radio" [id]="'radio-sport-' + i" name="sportType" [value]="sport.id"
+                         [(ngModel)]="selectedSport" (change)="changeSelectedSport(selectedSport)">
+                  <label [for]="'radio-sport-' + i">{{ sport.name }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true" class="btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+              ><span>{{'text_more_filters' | translate }}</span></button>
+            </div>
+
+            <ng-container *ngIf="showMoreFilters">
+              <div class="col-12 mt-1">
+                <p class="mt-1 mb-0 fs-16 text-uppercase">{{'text_age' | translate }}</p>
+                <div class="filter-flex">
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-all-ages" name="ageType" [value]="1"
+                           [(ngModel)]="selectedAge" (change)="changeSelectedAge(selectedAge)">
+                    <label for="radio-all-ages">{{'text_all_ages' | translate }}</label>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-ages2" name="ageType" [value]="2"
+                           [(ngModel)]="selectedAge" (change)="changeSelectedAge(selectedAge)">
+                    <label for="radio-ages2">{{'text_ages2' | translate }}</label>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-ages3" name="ageType" [value]="3"
+                           [(ngModel)]="selectedAge" (change)="changeSelectedAge(selectedAge)">
+                    <label for="radio-ages3">{{'text_ages3' | translate }}</label>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-ages4" name="ageType" [value]="4"
+                           [(ngModel)]="selectedAge" (change)="changeSelectedAge(selectedAge)">
+                    <label for="radio-ages4">{{'text_ages4' | translate }}</label>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-adults" name="ageType" [value]="5"
+                           [(ngModel)]="selectedAge" (change)="changeSelectedAge(selectedAge)">
+                    <label for="radio-adults">{{'text_adults' | translate }}</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 mt-1">
+                <p class="mt-1 mb-0 fs-16 text-uppercase">{{'text_level' | translate }}</p>
+                <div class="filter-flex">
+                  <div class="checkbox-custom montserrat mt-1">
+                    <input type="radio" id="radio-level-0" name="degreeType" [value]="degreeValues.doesntMatter"
+                           [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degreeValues.doesntMatter)">
+                    <label for="radio-level-0">{{'text_doesnt_matter' | translate }}</label>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1 tooltip-wrapper" (mouseenter)="showTooltipFilter(0)" (mouseleave)="hideTooltipFilter(0)">
+                    <input type="radio" id="radio-level-1" name="degreeType" [value]="degreeValues.novice"
+                           [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degreeValues.novice)">
+                    <label for="radio-level-1">{{'text_novice' | translate }}</label>
+
+                    <div class="tooltip-container" *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+                      <div *ngFor="let goal of getFilteredGoals(1)">
+                        {{ goal.name }} <br>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1 tooltip-wrapper" (mouseenter)="showTooltipFilter(1)" (mouseleave)="hideTooltipFilter(1)">
+                    <input type="radio" id="radio-level-2" name="degreeType" [value]="degreeValues.intermediate"
+                           [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degreeValues.intermediate)">
+                    <label for="radio-level-2">{{'text_intermediate' | translate }}</label>
+
+                    <div class="tooltip-container" *ngIf="tooltipsFilter[1]" [@fadeInOut]>
+                      <div *ngFor="let goal of getFilteredGoals(4)">
+                        {{ goal.name }} <br>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1 tooltip-wrapper" (mouseenter)="showTooltipFilter(2)" (mouseleave)="hideTooltipFilter(2)">
+                    <input type="radio" id="radio-level-3" name="degreeType" [value]="degreeValues.advanced"
+                           [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degreeValues.advanced)">
+                    <label for="radio-level-3">{{'text_advanced' | translate }}</label>
+
+                    <div class="tooltip-container" *ngIf="tooltipsFilter[2]" [@fadeInOut]>
+                      <div *ngFor="let goal of getFilteredGoals(7)">
+                        {{ goal.name }} <br>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="checkbox-custom montserrat mt-1 tooltip-wrapper" (mouseenter)="showTooltipFilter(3)" (mouseleave)="hideTooltipFilter(3)">
+                    <input type="radio" id="radio-level-4" name="degreeType" [value]="degreeValues.expert"
+                           [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degreeValues.expert)">
+                    <label for="radio-level-4">{{'text_expert' | translate }}</label>
+
+                    <div class="tooltip-container" *ngIf="tooltipsFilter[3]" [@fadeInOut]>
+                      <div *ngFor="let goal of getFilteredGoals(10)">
+                        {{ goal.name }} <br>
+                      </div>
+                    </div>
+                  </div>
+                  <!--
+                  <div class="checkbox-custom montserrat mt-1" *ngFor="let degree of degreesList; let i = index;">
+                      <input type="radio" id="radio-degree-{{i}}" name="degreeType" [value]="degree.id"
+                      [(ngModel)]="selectedDegree" (change)="changeSelectedDegree(degree.id)">
+                      <label for="radio-degree-{{i}}">{{degree.league}} {{degree.name}}</label>
+                  </div>
+                  -->
+                </div>
+              </div>
+
+              <div class="col-12">
+                <button *ngIf="showMoreFilters" (click)="showMoreFilters=false" class="btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+                ><span>{{'text_close_more_filters' | translate }}</span></button>
+              </div>
+            </ng-container>
+
+
+          </div>
+        </div>
+
+
+        <div class="col-xl-4 col-lg-5 col-md-12">
+          <!--
+          <div class="col-12">
+            <div class="text-white mt-3 mb-4 fs-16 fw-semibold text-center">
+              Selecciona el rango de fechas para buscar cursos
+            </div>
+          </div>
+          -->
+          <div style="display:flex;justify-content:center;align-items:start;gap:30px;">
+
+            <div class="col-12 calendar-max-width">
+              <div class="d-flex align-items-center width-100">
+                <div class="d-flex justify-content-between w-100">
+                  <div class="row mx-0 w-100">
+                    <div class="col-12 ps-0 d-flex align-item-center" style="align-items: center;justify-content: space-between;width: 400px;margin: 0 auto;">
+                      <div class="form-group normal">
+                        <button style="height: 100%;font-size:2rem;" (click)="previousMonth()" type="button"
+                                class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                          <</button>
+                      </div>
+
+                      <h2 class="text-white fs-4 fw-medium mb-0">{{selectedDateMesString}}</h2>
+
+                      <div class="form-group normal">
+                        <button style="height: 100%;font-size:2rem;" (click)="nextMonth()" type="button"
+                                class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                          ></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mx-0 pb-3 width-100" id="info_calendar">
+
+                <hr class="separator my-3">
+
+                <!-- ROWS CALENDAR -->
+                <div class="rows-calendar">
+
+                  <!-- ROW 1 -->
+                  <div class="row row-calendar mx-0" *ngIf="days_info">
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_monday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_tuesday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_wednesday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_thursday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_friday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_saturday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_sunday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                         *ngFor="let e of [].constructor(days_info.firstday_of_month-1); let i = index;">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat"></span>
+                      </div>
+                    </div>
+
+                    <!--
+                        <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                          *ngFor="let day of days_info.month; let i = index" id="dm{{day}}">
+                          <div class="d-flex flex-column justify-content-center w-100" style="height:100px;align-items: center;">
+                            <span class="mb-0 text-white text-center montserrat cursor-pointer"
+                              (click)="!isBeforeToday(i+1) && onDayClick(i+1)" [class.active-date-month]="isActiveDate(i+1)"
+                              [class.active-range-date-month]="isInRange(i+1)" [class.light-opacity]="isBeforeToday(i+1)">{{i+1}}</span>
+
+                          </div>
+                        </div>
+                      -->
+
+
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                         *ngFor="let day of days_info.month; let i = index" id="dm{{day}}">
+                      <div class="d-flex flex-column justify-content-center w-100" style="height:100px;align-items: center;">
+                            <span class="mb-0 text-white text-center montserrat"
+                                  (click)="!isBeforeToday(i+1) && onDayClick(i+1)"
+                                  [ngClass]="{
+                                'green-shade': selectedCourseType==2 && isDateInDispoLibre(i+1, selectedCourse >= 0 ? courses[selectedCourse].id : null),
+                                'brown-shade': selectedCourseType==1 && isDateInDispoDefinido(i+1, selectedCourse >= 0 ? courses[selectedCourse].group_id : null),
+                                'bright-green-shade': selectedCourseType==2 && isHighlighted(i+1),
+                                'bright-brown-shade': selectedCourseType==1 && isHighlighted(i+1)
+                              }"
+                                  [class.light-opacity]="isBeforeToday(i+1)">{{i+1}}</span>
+                      </div>
+                    </div>
+
+                    <button *ngIf="selectedCourse>=0 || newSelectedDate" (click)="seeDispoCours(-1)" class="btn btn-light-gray-transparent-custom-bs rounded-2 py-1 mt-1" style="padding: 0 2rem;" >{{'text_all_availability' | translate }}</button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!--
+          <div class="col-12">
+            <button class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto ml-1 header-login-btn-mobile mx-auto d-block" type="button"
+                        (click)="prepareLoadCourses()">Buscar</button>
+          </div>
+          -->
+
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+  <!--OTHER FILTERS-->
+
+  <hr class="separator my-3" id="dates-selected">
+
+  <!-- CALENDAR -->
+
+  <ng-container *ngIf="!showRangeCalendar && !showCourseDetail && selectedStartDate && selectedEndDate">
+    <div class="mt-3 text-center">
+        <span *ngIf="selectedStartDate != selectedEndDate" class="text-white fs-16 fw-semibold text-decoration-underline">
+          <img src="/assets/icons/icons-outline-calendar-1.svg" class="me-2" />
+          {{transformDateEur(selectedStartDate)}} - {{transformDateEur(selectedEndDate)}}
+        </span>
+      <span *ngIf="selectedStartDate == selectedEndDate" class="text-white fs-16 fw-semibold text-decoration-underline">
+          <img src="/assets/icons/icons-outline-calendar-1.svg" class="me-2" />
+        {{transformDateEur(selectedStartDate)}}
+        </span>
+    </div>
+  </ng-container>
+
+
+  <!--COURSES LIST-->
+  <ng-container *ngIf="courses && courses.length && !showRangeCalendar && !showCourseDetail && selectedStartDate && selectedEndDate && selectedDegree.length && selectedSport>=0 && selectedAge>=0 && selectedCourseType">
+    <div class="row mx-0 my-3 mt-5">
+      <div class="courses-container">
+        <ng-container *ngFor="let course of courses; let i = index;">
+          <div class="d-flex flex-column bg-gray-transparent rounded-8 cursor-pointer"
+               [class.bg-light-gray-transparent]="i==selectedCourse"
+               [class.selected_element]="i==selectedCourse" (click)="seeDispoCours(i)">
+            <div class="d-flex justify-content-between mobile-column">
+              <div class="d-flex course-info1-mobile">
+                <div>
+                  <img src="{{course.icon}}" width="64px" class="course-image">
+                  <div class="image-wrapper" style="width:74px !important;">
+                    <img [src]="course.image || '/assets/images/prueba.jpg'" class="course-image-rev image-cover-wrapper" />
+                  </div>
+                </div>
+                <div class="d-flex flex-column justify-content-start text-left ml-1">
+                  <ng-container *ngIf="course.libre==1">
+                    <span class="text-white mb-1">{{course.name}}</span>
+                  </ng-container>
+                  <ng-container *ngIf="course.definido==1">
+                    <ng-container *ngIf="!course.group_id">
+                      <span class="text-white mb-1">{{course.name}}</span>
+                    </ng-container>
+                    <ng-container *ngIf="course.group_id">
+                      <span class="text-white mb-1">{{course.global_course.name_global}}</span>
+                    </ng-container>
+                  </ng-container>
+                  <div class="d-flex align-items-center subtitle-course-icon" style="gap:6px;">
+                    <img src="{{course.icon}}" width="32px" class="course-image-rev">
+                    <span class="text-white montserrat">{{course.subtitle}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex course-info2-mobile">
+
+                <div class="d-flex flex-column justify-content-start text-right" style="gap: 0.5rem;">
+                  <div class="d-flex rounded-2 cursor-pointer" style="flex-direction:column;text-align:center;">
+                    <ng-container *ngIf="course.libre==1">
+                      <span *ngIf="course.duration_flexible==0" class="text-white" style="padding: 6px 4px;">{{course.price}} CHF</span>
+                      <span *ngIf="course.duration_flexible==1" class="text-white" style="padding: 6px 4px;">{{'text_from_price' | translate }} {{course.price}} CHF</span>
+                    </ng-container>
+                    <ng-container *ngIf="course.definido==1">
+                      <ng-container *ngIf="!course.group_id">
+                        <span class="text-white" style="padding: 6px 4px;">{{course.price}} CHF</span>
+                      </ng-container>
+                      <ng-container *ngIf="course.group_id">
+                        <ng-container *ngIf="course.global_course.is_definitive">
+                          <span class="text-white" style="padding: 6px 4px;">{{course.price}} CHF</span>
+                        </ng-container>
+                        <ng-container *ngIf="!course.global_course.is_definitive">
+                          <span class="text-white" style="padding: 6px 4px;">{{course.price}} CHF {{'text_for_date' | translate }}</span>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <button (click)="selectCours(i)" class="btn btn-primary-bs rounded-2 py-1" style="padding: 0 1rem;">{{'text_see_coourse' | translate }}</button>
+                  </div>
+                  <div class="d-flex" style="flex-direction:column;">
+                    <button (click)="seeDispoCours(i)" class="btn btn-light-gray-transparent-custom-bs rounded-2 py-1" style="padding: 0 1rem;" >{{'text_availability' | translate }}</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-12 mt-3 d-flex align-item-start gap-4">
+              <div class="col-6 course-image">
+                <div class="image-wrapper">
+                  <img [src]="course.image || '/assets/images/prueba.jpg'" class="image-cover-wrapper" />
+                </div>
+              </div>
+
+              <div class="course-info-mobile">
+
+                <ng-container *ngIf="course.libre==1">
+                  <p class="montserrat fw-semibold mb-1"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_when_course' | translate }}</p>
+                  <div class="text-light-gray-bs montserrat p-0 m-0 ">
+                    <div class="mb-0 fs-13 ps-4">{{course.date_start_format}} - {{course.date_end_format}}</div>
+                    <div class="fs-13 ps-4" *ngIf="course.duration_flexible==1">{{ ('text_' + course.day_start_res) | translate }} - {{ ('text_' + course.day_end_res) | translate }}</div>
+                  </div>
+                  <p class="montserrat fw-semibold mb-1 mt-1"><img src="/assets/icons/icons-outline-clock.svg" width="20px" style="margin-bottom: 3px;"> {{'text_course_duration' | translate }}</p>
+                  <div class="text-light-gray-bs montserrat p-0 m-0 ">
+                    <div class="mb-0 fs-13 ps-4">
+                      <ng-container *ngIf="course.duration_flexible==1">{{'text_from_price' | translate }} </ng-container>
+                      <ng-container *ngIf="course.duration_hours!=''">{{course.duration_hours}}h</ng-container>
+                      <ng-container *ngIf="course.duration_minutes!=''">{{course.duration_minutes}}m</ng-container>
+                    </div>
+                    <div class="fs-13 ps-4" *ngIf="course.duration_flexible==1">{{course.hour_min}}h - {{course.hour_max}}h</div>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="course.definido==1">
+                  <!--<ul *ngFor="let date of course.dates">
+                    <li class="text-light-gray-bs">{{date.date_format}} {{date.hour}} - {{date.hour_end}}</li>
+                  </ul>-->
+                  <ng-container *ngIf="course.group_id">
+                    <ng-container *ngIf="!course.global_course.is_definitive">
+                      <p class="montserrat fw-semibold"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_dates_separated' | translate }}</p>
+                      <div *ngFor="let dateCourse of course.global_course.dates_global; let i=index" class="text-light-gray-bs montserrat p-0 m-0 ">
+                        <div class="mb-1 fs-13 ps-4">· {{transformDateEur(dateCourse.date)}} {{dateCourse.hour}} - {{getEndTime(dateCourse.hour, dateCourse.duration)}}</div>
+                      </div>
+                      <!--
+                      <div *ngFor="let separableCourse of course.courses; let i=index" class="checkbox-circle montserrat p-0 m-0 ">
+                        <input class="form-check-input me-1" id="checkbox-course-{{ separableCourse.id }}" type="checkbox"
+                              [(ngModel)]="separableCourse.checked">
+                        <label class="mb-3" for="checkbox-course-{{ separableCourse.id }}">{{transformDateEur(separableCourse.dates[0].date)}} {{separableCourse.dates[0].hour}} - {{separableCourse.dates[0].hour_end}}</label>
+                      </div>
+                      -->
+                    </ng-container>
+                    <ng-container *ngIf="course.global_course.is_definitive">
+                      <p class="montserrat fw-semibold"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_dates_fixed' | translate }}</p>
+                      <div *ngFor="let dateCourse of course.global_course.dates_global; let i=index" class="text-light-gray-bs montserrat p-0 m-0 ">
+                        <div class="mb-1 fs-13 ps-4">· {{transformDateEur(dateCourse.date)}} {{dateCourse.hour}} - {{getEndTime(dateCourse.hour, dateCourse.duration)}}</div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </div>
+
+            </div>
+
+            <div class="col-12 mt-2">
+              <p class="montserrat" [innerHTML]="course.short_description"></p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+  <!--COURSES LIST-->
+
+  <!--NO COURSES FOUND-->
+  <ng-container *ngIf="courses && !courses.length && !showCourseDetail && selectedStartDate && selectedEndDate && selectedDegree.length && selectedSport>=0 && selectedAge>=0 && selectedCourseType">
+    <div class="row mx-0">
+      <div class="row mx-0 my-3">
+        <p class="mb-0 mb-2 text-white fs-16 fw-semibold mt-5 text-center">{{'text_no_courses_found' | translate }}</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- INFO COURSE SELECTED -->
+  <ng-container *ngIf="showCourseDetail">
+
+    <div class="row mx-0 my-3 course-detail-container-mobile">
+
+      <!--COURSE INFO-->
+      <div class="col-12 col-lg-7 col-xl-8 ps-0 d-flex flex-column">
+        <div class="d-flex mt-1" style="align-items:start;gap:10px;">
+          <div class="col-sm-2 col-4">
+            <div class="image-wrapper">
+              <img [src]="courseDetail.image || '/assets/images/prueba.jpg'" class="image-cover-wrapper" />
+            </div>
+          </div>
+          <div class="col-sm-10 col-8 d-flex">
+            <div class="d-flex flex-column text-left ml-1">
+                <span class="text-white mb-1 font-title-course fw-semibold">
+                  <ng-container *ngIf="courseDetail.libre==1">
+                    {{courseDetail.name}}
+                  </ng-container>
+                  <ng-container *ngIf="courseDetail.definido==1">
+                    <ng-container *ngIf="!courseDetail.group_id">
+                      {{courseDetail.name}}
+                    </ng-container>
+                    <ng-container *ngIf="courseDetail.group_id">
+                      {{courseDetail.global_course.name_global}}
+                    </ng-container>
+                  </ng-container>
+                </span>
+              <div class="d-flex align-items-center" style="gap:8px;">
+                <div>
+                  <img src="{{courseDetail.icon}}" width="34px">
+                </div>
+                <span class="text-white montserrat font-subtitle-course">{{courseDetail.subtitle}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="courseDetail.libre==1">
+          <div class="d-flex align-items-start gap-5 mt-5 full-width-mobile">
+
+            <div>
+              <div class="montserrat fw-semibold mb-1 text-white font-subtitle-course"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_when_course' | translate }}</div>
+              <div class="text-light-gray-bs montserrat p-0 m-0 ">
+                <div class="mb-0 ps-4">{{courseDetail.date_start_format}} - {{courseDetail.date_end_format}}</div>
+                <div class="ps-4" *ngIf="courseDetail.duration_flexible==1">{{ ('text_' + courseDetail.day_start_res) | translate }} - {{ ('text_' + courseDetail.day_end_res) | translate }}</div>
+              </div>
+            </div>
+            <div>
+              <div class="montserrat fw-semibold mb-1 text-white font-subtitle-course"><img src="/assets/icons/icons-outline-clock.svg" width="20px" style="margin-bottom: 3px;"> {{'text_course_duration' | translate }}</div>
+              <div class="text-light-gray-bs montserrat p-0 m-0 ">
+                <div class="mb-0 ps-4">
+                  <ng-container *ngIf="courseDetail.duration_flexible==1">{{'text_from_price' | translate }} </ng-container>
+                  <ng-container *ngIf="courseDetail.duration_hours!=''">{{courseDetail.duration_hours}}h</ng-container>
+                  <ng-container *ngIf="courseDetail.duration_minutes!=''">{{courseDetail.duration_minutes}}m</ng-container>
+                </div>
+                <div class="ps-4" *ngIf="courseDetail.duration_flexible==1">{{courseDetail.hour_min}}h - {{courseDetail.hour_max}}h</div>
+              </div>
+            </div>
+
+          </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="courseDetail.definido==1">
+          <ng-container *ngIf="!courseDetail.group_id">
+            <div class="d-flex justify-content-between collective-width-var mt-5 full-width-mobile">
+              <div>
+                  <span class="text-light-gray-bs text-uppercase"><img src="/assets/icons/icons-outline-calendar-1.svg"
+                                                                       width="15px"> {{'text_date' | translate }}</span>
+                <br>
+                <span class="text-light-gray-bs">{{courseDetail.date_start_format}} - {{courseDetail.date_end_format}}</span>
+                <br>
+                <ul class="mt-1">
+                  <li *ngFor="let date of courseDetail.dates" class="text-light-gray-bs">{{date.date_format}} {{date.hour}} -
+                    {{date.hour_end}}</li>
+                </ul>
+              </div>
+              <div class="text-right">
+                <span class="text-light-gray-bs text-uppercase">{{'text_duration' | translate }}</span>
+                <br>
+                <span class="text-light-gray-bs">
+                    <ng-container *ngIf="courseDetail.duration_flexible==1">{{'text_from' | translate }} </ng-container><ng-container *ngIf="courseDetail.duration_hours!='' && courseDetail.duration_hours!=0">{{courseDetail.duration_hours}}h</ng-container> <ng-container *ngIf="courseDetail.duration_minutes!=''">{{courseDetail.duration_minutes}}m</ng-container>
+                  </span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="courseDetail.group_id">
+            <div class="d-flex justify-content-between collective-width-var mt-5 full-width-mobile">
+              <div>
+                <ng-container *ngIf="courseDetail.global_course.is_definitive == 1">
+                  <div class="montserrat fw-semibold mb-2 text-white font-subtitle-course"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_dates_fixed' | translate }}</div>
+                  <div *ngFor="let separableCourse of courseDetail.courses; let i=index" class="text-light-gray-bs montserrat p-0 m-0 ">
+                    <div class="mb-1 ps-4">· {{transformDateEur(separableCourse.dates[0].date)}} {{separableCourse.dates[0].hour}} - {{separableCourse.dates[0].hour_end}}</div>
+                  </div>
+                </ng-container>
+
+                <ng-container *ngIf="courseDetail.global_course.is_definitive == 0">
+                  <div class="montserrat fw-semibold mb-2 text-white font-subtitle-course"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{'text_choose_dates' | translate }}</div>
+                  <div *ngFor="let separableCourse of courseDetail.courses; let i=index" class="checkbox-circle montserrat m-0 ps-4 ">
+                    <input class="form-check-input me-1" id="checkbox-course-{{ separableCourse.id }}" type="checkbox"
+                           [(ngModel)]="separableCourse.checked" (ngModelChange)="updatePriceSeparableCourse()">
+                    <label class="mb-1 me-2" for="checkbox-course-{{ separableCourse.id }}">{{transformDateEur(separableCourse.dates[0].date)}} {{separableCourse.dates[0].hour}} - {{separableCourse.dates[0].hour_end}}</label>
+                  </div>
+                </ng-container>
+
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <!--
+          <div class="d-flex mt-3">
+            <div>
+              <span class="text-light-gray-bs text-uppercase">{{'text_short_description' | translate }}</span>
+              <br>
+              <span class="text-light-gray-bs" [innerHTML]="courseDetail.short_description"></span>
+            </div>
+          </div>
+        -->
+
+        <button *ngIf="!showMoreCourse" (click)="showMoreCourse=true" class="show-course-text-rev btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+                style="width: fit-content;"><span>{{'text_more' | translate }}</span></button>
+
+        <div class="d-flex mt-2 show-course-text">
+          <div class="text-light-gray-bs" [innerHTML]="courseDetail.global_course ? courseDetail.global_course.description_global : courseDetail.description"></div>
+        </div>
+
+        <div class="d-flex mt-2 show-course-text-rev" *ngIf="showMoreCourse">
+          <div class="text-light-gray-bs" [innerHTML]="courseDetail.global_course ? courseDetail.global_course.description_global : courseDetail.description"></div>
+        </div>
+
+        <button *ngIf="showMoreCourse" (click)="showMoreCourse=false" class="show-course-text-rev btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+                style="width: fit-content;"><span>{{'text_less' | translate }}</span></button>
+      </div>
+      <!--COURSE INFO-->
+
+      <!--COURSE BOOKING-->
+      <div class="col-12 col-lg-5 col-xl-4 bg-gray-transparent rounded-8 d-flex course-detail2-mobile" style="padding: 2rem 1.2rem;">
+        <div class="w-100 d-flex flex-column mt-1" *ngIf="userLogged==false">
+          <span class="text-white mb-1 fs-16 fw-semibold">{{'text_booking' | translate }}</span>
+          <br>
+          <span class="text-white montserrat">{{'text_booking1' | translate }} !</span>
+          <br>
+          <div class="d-flex justify-content-between">
+            <span class="text-white text-uppercase">{{'text_price' | translate }} </span>
+            <div class="d-flex">
+
+              <span class="text-white mb-1 fs-16 fw-semibold"><ng-container *ngIf="courseDetail.duration_flexible==1">{{'text_from' | translate }} </ng-container>{{courseDetail.price}}</span><span
+                    class="text-white mb-1 fs-16 ml-1">CHF</span>
+            </div>
+          </div>
+          <br>
+          <div class="d-flex flex-column justify-content-center">
+            <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" type="button" data-bs-toggle="modal"
+                    data-bs-target="#login">{{'text_already_client' | translate }}</button>
+            <button class="btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 mt-2" type="button"
+                    data-bs-toggle="modal" data-bs-target="#register"><span>{{'text_new_client' | translate }}</span></button>
+          </div>
+          <div class="mt-2">
+              <span (click)="goToAllCourses()" class="pointer ml-1"><img src="/assets/icons/icons-outline-arrow-left.svg"
+                                                                         width="24px"> {{'text_return_courses' | translate }}</span>
+          </div>
+        </div>
+        <div class="w-100 d-flex flex-column mt-1" *ngIf="userLogged==true">
+          <span class="text-white mb-1 fs-16 fw-semibold">{{'text_new_booking' | translate }}</span>
+
+          <br>
+
+          <ng-container *ngIf="courseDetail.libre==1">
+
+            <div class="row mx-0" *ngIf="allSelectedDates && allSelectedDates.length">
+              <span class="text-white montserrat" id="div_add_dates">{{'text_add_dates' | translate }}</span>
+              <ng-container *ngIf="courseDetail.duration_flexible">
+                <div class="col-12 mt-1 text-white" *ngFor="let date of allSelectedDates; let i = index;" style="border: 1px solid #ff3085;border-radius: 8px;padding: 12px;">
+                  <div style="display:flex;justify-content:space-between;width:100%;">
+                    <div class="montserrat fw-semibold mb-1"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{transformDateEur(date.date)}} - {{date.hour}}</div>
+                    <!--<div class="montserrat fw-semibold mb-1 cursor-pointer" (click)="deleteSelectedDate(i,date.price)"><img src="/assets/icons/icons-outline-trash.svg" width="20px" style="margin-bottom: 3px;"></div>-->
+                  </div>
+                  <div class="montserrat mb-1"> {{'text_duration' | translate }}: {{convertToHourMinuteFormat(date.duration)}}</div>
+                  <div class="montserrat mb-1"> {{'text_people' | translate }}: {{date.people}}</div>
+                  <div class="montserrat mb-1"> {{'text_price' | translate }}: {{date.price}} CHF</div>
+                  <div class="montserrat mb-1"> {{'text_user' | translate }}: {{date.user.first_name}} {{date.user.last_name}}</div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!courseDetail.duration_flexible">
+                <div class="col-12 mt-1 text-white" *ngFor="let date of allSelectedDates; let i = index;" style="border: 1px solid #ff3085;border-radius: 8px;padding: 12px;">
+                  <div style="display:flex;justify-content:space-between;width:100%;">
+                    <div class="montserrat fw-semibold mb-1"><img src="/assets/icons/icons-outline-calendar-1.svg" width="20px" style="margin-bottom: 3px;"> {{transformDateEur(date.date)}} - {{date.hour}}</div>
+                    <!--<div class="montserrat fw-semibold mb-1 cursor-pointer" (click)="deleteSelectedDate(i,courseDetail.price)"><img src="/assets/icons/icons-outline-trash.svg" width="20px" style="margin-bottom: 3px;"></div>-->
+                  </div>
+                  <div class="montserrat mb-1"> {{'text_duration' | translate }}: <ng-container *ngIf="courseDetail.duration_hours!=''">{{courseDetail.duration_hours}}h</ng-container>
+                    <ng-container *ngIf="courseDetail.duration_minutes!=''">{{courseDetail.duration_minutes}}m</ng-container></div>
+                  <div class="montserrat mb-1"> {{'text_price' | translate }}: {{courseDetail.price}} CHF</div>
+                  <div class="montserrat mb-1"> {{'text_user' | translate }}: {{date.user.first_name}} {{date.user.last_name}}</div>
+                </div>
+              </ng-container>
+            </div>
+
+            <!--<button *ngIf="!allSelectedDates || !allSelectedDates.length" (click)="showAddDatePrivate=true" class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+            ><img src="/assets/icons/icons-outline-add.svg" width="20px" style="margin-bottom: 3px;"> {{'text_add_date' | translate }}</button>-->
+            <button *ngIf="allSelectedDates && allSelectedDates.length" (click)="selectedClient=null;bookingUser=null;showAddDatePrivate=true" class="btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 margins-auto mt-2"
+            ><img src="/assets/icons/icons-outline-add.svg" width="20px" style="margin-bottom: 3px;"> {{'text_add_another_date' | translate }}</button>
+            <button *ngIf="allSelectedDates && allSelectedDates.length" (click)="goToAllCourses()" class="btn btn-secondary-special rounded-2 pt-2 pb-2 margins-auto mt-1 mb-4"
+            ><img src="/assets/icons/icons-outline-add.svg" width="20px" style="margin-bottom: 3px;"> {{'text_add_another_type' | translate }}</button>
+
+
+            <!--NO MODAL-->
+
+            <div *ngIf="showAddDatePrivate" class="col-12 pb-2">
+              <ng-container *ngIf="courseDetail">
+                <div class="col-12 ps-0">
+                  <span class="text-white montserrat">{{'text_select_user_date' | translate }}</span>
+
+                  <!-- Users -->
+                  <div class="col-12 ps-0">
+                    <div class="d-flex flex-wrap align-items-start mt-2 mb-4" style="gap:20px;width:fit-content;">
+
+                      <ng-container *ngFor="let user of usersList">
+                        <div class="card-person text-center rounded-8"
+                             [ngClass]="{'full-opacity': selectedClient==user.id}" (click)="changeSelectedClient(user.id)">
+                          <div class="degree-image-container big">
+                            <img *ngIf="user.degree_sport_default" src="/assets/images/level_{{user.degree_sport_default}}.png" class="aureola rounded-img">
+                            <img [src]="getUserImage(user)" class="user-avatar-aureola rounded-img">
+                          </div>
+                          <p class="montserrat mb-2 mt-1 fs-14" style="line-height:1.2;">
+                            <img *ngIf="user.is_group_boss" src="/assets/images/gold-crown.png"
+                                 style="width: 16px;height: 16px;margin: 0;border-radius: 0;position:relative;top:-2px;">
+                            {{user.first_name}} {{user.last_name}}</p>
+                          <div *ngIf="selectedClient==user.id" class="circle circle-selected"></div>
+                        </div>
+                      </ng-container>
+
+                      <div class="card-person text-center rounded-8 full-opacity" type="button" data-bs-toggle="modal"
+                           data-bs-target="#add_to_group">
+                        <div class="add-wrapper">
+                          <img src="/assets/icons/icons-outline-add.svg" class="rounded-img">
+                        </div>
+                        <p class="montserrat mb-0 mt-1 fs-14" style="line-height:1.2;">{{'text_add' | translate }} {{'text_user' | translate }}</p>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <!--Calendar add date-->
+                  <div *ngIf="selectedClient" class="col-12 calendar-max-width" style="margin: 0 auto;">
+
+
+                    <ng-container *ngIf="isDispoEmptyPrivate(courseDetail.id)">
+                      <div class="col-12 mt-1 text-white text-center fs-16">{{'text_no_dates_month' | translate }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="!isDispoEmptyPrivate(courseDetail.id)">
+                      <div class="col-12 mt-1 text-white text-center fs-16">{{'text_select_date_disponibility' | translate }}</div>
+                    </ng-container>
+
+                    <div class="d-flex align-items-center width-100">
+                      <div class="d-flex justify-content-between w-100">
+                        <div class="row mx-0 my-3 w-100">
+                          <div class="col-12 ps-0 d-flex align-item-center" style="align-items: center;justify-content: space-between;width: 400px;margin: 0 auto;">
+                            <div class="form-group normal">
+                              <button style="height: 100%;font-size:2rem;" (click)="previousMonthPrivate()" type="button"
+                                      class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                                <</button>
+                            </div>
+
+                            <h2 class="text-white fs-4 fw-medium mb-0">{{selectedDateMesStringPrivate}}</h2>
+
+                            <div class="form-group normal">
+                              <button style="height: 100%;font-size:2rem;" (click)="nextMonthPrivate()" type="button"
+                                      class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                                ></button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mx-0 pb-3 width-100" id="info_calendar_private">
+
+                      <hr class="separator my-3">
+
+                      <div class="rows-calendar">
+
+                        <div class="row row-calendar mx-0" *ngIf="days_info_private">
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_monday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_tuesday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_wednesday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_thursday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_friday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_saturday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat">{{'text_sunday_short' | translate }}</span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                               *ngFor="let e of [].constructor(days_info_private.firstday_of_month-1); let i = index;">
+                            <div class="d-flex flex-column justify-content-center w-100">
+                              <span class="mb-0 text-white text-center montserrat"></span>
+                            </div>
+                          </div>
+                          <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                               *ngFor="let day of days_info_private.month; let i = index" id="dm{{day}}">
+                            <div class="d-flex flex-column justify-content-center w-100" style="height:100px;align-items: center;">
+                              <span class="mb-0 text-white text-center montserrat"
+                                    (click)="isDateInDispoLibrePrivate(i+1, courseDetail.id) && onDayClickPrivate(i+1)" [class.light-opacity]="isBeforeTodayPrivate(i+1)"
+                                    [ngClass]="{
+                                  'green-shade': isDateInDispoLibrePrivate(i+1, courseDetail.id),
+                                  'bright-green-shade': isHighlightedPrivate(i+1)
+                                }">{{i+1}}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div class="col-12" *ngIf="newSelectedDatePrivate">
+                    <div class="mt-1 text-center">
+                      <span class="text-white fs-16">
+                        <img src="/assets/icons/icons-outline-calendar-1.svg" />
+                        {{transformDateEur(newSelectedDatePrivate)}}
+                      </span>
+                    </div>
+
+
+                    <div class="mt-2 text-center">
+                      <span class="text-white">
+                        {{'text_select_hour_date' | translate }}
+                      </span>
+                    </div>
+
+
+                    <ng-container *ngIf="!courseDetail.duration_flexible">
+                      <div class="col-8 p-0 mt-1" style="margin:auto;">
+                        <div class="form-group normal text-center">
+                          <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                          <select [(ngModel)]="selectedHourPrivate" class="form-control">
+                            <ng-container *ngFor="let hour of hoursTable">
+                              <option *ngIf="!isGrey(hour)"  value="{{hour}}">{{hour}}</option>
+                            </ng-container>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="text-center my-3">
+                        <span class="text-white text-uppercase fs-16 fw-semibold">{{'text_price' | translate }} {{courseDetail.price}} CHF</span>
+                      </div>
+
+                      <div class="col-12 mt-2">
+                        <button class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto ml-1 header-login-btn-mobile mx-auto d-block" (click)="addDateToPrivate()"><img src="/assets/icons/cart.svg"
+                                                                                                                                                                           width="24px"> {{'text_add_to_cart' | translate }}</button>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="courseDetail.duration_flexible">
+                      <div class="col-8 p-0 mt-1" style="margin:auto;">
+                        <div class="form-group normal text-center">
+                          <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                          <select [(ngModel)]="selectedHourPrivate" class="form-control" (ngModelChange)="updateDurationsBasedOnDayTime()">
+                            <ng-container *ngFor="let hour of hoursTableFlexible">
+                              <option *ngIf="!isGrey(hour)"  value="{{hour}}">{{hour}}</option>
+                            </ng-container>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-8 p-0 mt-1" style="margin:auto;">
+                        <div class="form-group normal text-center">
+                          <label class="mb-1 gray-label">{{'text_people' | translate }}</label>
+                          <select [(ngModel)]="selectedPeoplePrivate" class="form-control" (ngModelChange)="updateSortedDurationsFlexible();updatePriceFlexible()">
+                            <option *ngFor="let num of getMaxPeopleArray()" [value]="num">{{ num }}</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-8 p-0 mt-1" style="margin:auto;">
+                        <div class="form-group normal text-center">
+                          <label class="mb-1 gray-label">{{'text_duration' | translate }}</label>
+                          <select [(ngModel)]="selectedDurationPrivate" class="form-control" (ngModelChange)="updatePriceFlexible()">
+                            <option *ngFor="let item of sortedDurationsFlexible" [value]="item.duration">{{ item.duration }}</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="text-center my-3">
+                        <span class="text-white text-uppercase fs-16 fw-semibold">{{'text_price' | translate }} {{selectedVariablePrice}} CHF</span>
+                      </div>
+
+                      <div class="col-12 mt-2 mb-4">
+                        <button class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto ml-1 header-login-btn-mobile mx-auto d-block" (click)="addDateToPrivate()"><img src="/assets/icons/cart.svg"
+                                                                                                                                                                           width="24px"> {{'text_add_to_cart' | translate }}</button>
+                      </div>
+                    </ng-container>
+                  </div>
+
+                  <button *ngIf="allSelectedDates && allSelectedDates.length" class="btn btn-light-gray-transparent-custom-bs rounded-2 pt-2 pb-2 d-block mt-1" style="margin:0 auto;" (click)="closeDateToPrivate()">
+                    {{'text_close' | translate }}</button>
+
+
+                </div>
+              </ng-container>
+            </div>
+
+          </ng-container>
+
+
+          <!--
+          <div class="row mx-0 my-3" *ngIf="courseDetail.libre==1">
+
+            <ng-container *ngIf="courseDetail.duration_flexible==0">
+              <div class="col-12 p-0 mt-1">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_date' | translate }}</label>
+                  <input type="date" class="form-control" [(ngModel)]="bookingDate">
+                </div>
+              </div>
+
+              <div class="col-12 p-0 mt-1">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                  <select [(ngModel)]="bookingHour" class="form-control">
+                    <option *ngFor="let dayTime of dayTimes" value="{{dayTime}}">{{dayTime}}</option>
+                  </select>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="courseDetail.duration_flexible==1">
+              <div class="col-12 p-0 mt-1">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_date' | translate }}</label>
+                  <input type="date" class="form-control" [(ngModel)]="bookingDate">
+                </div>
+              </div>
+
+              <div class="col-12 p-0 mt-1">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                  <select [(ngModel)]="bookingHour" class="form-control" (ngModelChange)="updateDurationsBasedOnDayTime()">
+                    <option *ngFor="let dayTime of dayTimesFlexible" value="{{dayTime}}">{{dayTime}}</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <div class="col-6 pe-0">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_duration' | translate }}</label>
+                  <select class="form-control border-0" [(ngModel)]="bookingDuration" (ngModelChange)="updatePriceFlexible()">
+                    <option *ngFor="let item of sortedDurationsFlexible" [value]="item.duration">{{ item.duration }}</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <div class="col-6 pe-0">
+                <div class="form-group normal">
+                  <label class="mb-1 gray-label">{{'text_people' | translate }}</label>
+                  <select class="form-control border-0" [(ngModel)]="selectedPeople" (ngModelChange)="updateSortedDurationsFlexible();updatePriceFlexible();updateDayTimes()">
+                    <option *ngFor="let num of getMaxPeopleArray()" [value]="num">{{ num }}</option>
+                  </select>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+        -->
+
+          <ng-container *ngIf="courseDetail.definido==1">
+            <span *ngIf="courseDetail.definido==1" class="text-white montserrat">{{'text_select_user' | translate }}</span>
+
+            <!-- Users -->
+            <div class="col-12 ps-0">
+              <div class="d-flex flex-wrap align-items-start mt-2 mb-4" style="gap:20px;width:fit-content;">
+
+                <ng-container *ngFor="let user of usersList">
+                  <div class="card-person text-center rounded-8"
+                       [ngClass]="{'full-opacity': selectedClient==user.id}" (click)="changeSelectedClient(user.id)">
+                    <div class="degree-image-container big">
+                      <img *ngIf="user.degree_sport_default" src="/assets/images/level_{{user.degree_sport_default}}.png" class="aureola rounded-img">
+                      <img [src]="getUserImage(user)" class="user-avatar-aureola rounded-img">
+                    </div>
+                    <p class="montserrat mb-2 mt-1 fs-14" style="line-height:1.2;">
+                      <img *ngIf="user.is_group_boss" src="/assets/images/gold-crown.png"
+                           style="width: 16px;height: 16px;margin: 0;border-radius: 0;position:relative;top:-2px;">
+                      {{user.first_name}} {{user.last_name}}</p>
+                    <div *ngIf="selectedClient==user.id" class="circle circle-selected"></div>
+                  </div>
+                </ng-container>
+
+                <div class="card-person text-center rounded-8 full-opacity" type="button" data-bs-toggle="modal"
+                     data-bs-target="#add_to_group">
+                  <div class="add-wrapper">
+                    <img src="/assets/icons/icons-outline-add.svg" class="rounded-img">
+                  </div>
+                  <p class="montserrat mb-0 mt-1 fs-14" style="line-height:1.2;">{{'text_add' | translate }} {{'text_user' | translate }}</p>
+                </div>
+
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="selectedClient">
+            <span *ngIf="courseDetail.definido==1" class="text-white montserrat">{{'text_select_level' | translate }}</span>
+
+            <div class="row mx-0 my-3" *ngIf="courseDetail.definido==1">
+              <div class="col-12 p-0 mt-1 groups-container" *ngIf="selectedGroup">
+                <div class="position-relative pointer tooltip-wrapper" (mouseenter)="showTooltipLevel(selectedGroup.degree_id)" (mouseleave)="hideTooltipLevel(selectedGroup.degree_id)">
+                  <span [style.color]="selectedGroup.color">{{selectedGroup.league}}</span>
+                  <span class="text-white mt-1">{{selectedGroup.level}} {{selectedClient.age}}</span>
+                  <span class="position-absolute" style="right:20px;top:5px;">
+                    <span class="notification montserrat">
+                      <img src="/assets/icons/check.png" alt="Search" width="8px" class="">
+                    </span>
+                  </span>
+
+                  <div class="tooltip-container" *ngIf="tooltipsLevel[selectedGroup.degree_id]" [@fadeInOut]>
+                    <div *ngFor="let goal of getFilteredGoals(selectedGroup.degree_id)">
+                      {{ goal.name }} <br>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 p-0 mt-1" *ngIf="!selectedGroup">
+                <span class="text-white fw-semibold">{{ 'text_no_level' | translate }}</span>
+              </div>
+
+              <div class="montserrat text-white mt-1 mb-3 cursor-pointer" (click)="showEditGroup=!showEditGroup"><img src="/assets/icons/icons-outline-edit-white.svg" width="20px" style="margin-bottom: 3px;"> {{'text_change_level' | translate }}</div>
+
+              <div *ngIf="showEditGroup" class="col-12 p-0 groups-container">
+                <span *ngFor="let group of courseDetail.groups">
+                  <div>
+                  <div class="position-relative pointer tooltip-wrapper"
+                       *ngIf="group.recommended_age === 1 || transformAge(this.userSelected.birth_date) == group.recommended_age"
+                       (click)="updateBookingGroup(group);"
+                       (mouseenter)="showTooltipLevel(group.degree_id)"
+                       (mouseleave)="hideTooltipLevel(group.degree_id)">
+                    <span [style.color]="group.color">{{group.league}}</span>
+                    <span class="text-white mt-1">{{group.level}}</span>
+                    <span class="position-absolute" style="right:20px;top:5px;" *ngIf="bookingGroup==group.id">
+                      <span class="notification montserrat">
+                        <img src="/assets/icons/check.png" alt="Search" width="8px" class="">
+                      </span>
+                    </span>
+
+                    <div class="tooltip-container" *ngIf="tooltipsLevel[group.degree_id]" [@fadeInOut]>
+                      <div *ngFor="let goal of getFilteredGoals(group.degree_id)">
+                        {{ goal.name }} <br>
+                      </div>
+                    </div>
+                  </div>
+                    </div>
+                </span>
+
+
+              </div>
+
+            </div>
+          </ng-container>
+
+          <!-- OLD USER
+          <div class="row mx-0 my-3">
+            <div class="col-12 p-0 mt-1">
+              <div class="form-group normal">
+                <label class="mb-1 gray-label">{{'text_user' | translate }}</label>
+                <select class="form-control border-0" [(ngModel)]="bookingUser">
+                  <option *ngFor="let user of usersList" value="{{user.id}}">{{user.first_name}} {{user.last_name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12 p-0 mt-1">
+              <button class="btn ps-2 pe-3 d-flex align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#add_to_group">
+                <div class="text-start">
+                  <a class="d-inline-block w-100 rounded-1">
+                    <span class="link-name"><img src="/assets/icons/add_user_landing.svg" width="24px"> {{'text_user' | translate }}</span>
+                  </a>
+                </div>
+              </button>
+            </div>
+          </div>
+          -->
+
+          <ng-container *ngIf="courseDetail.libre==1">
+            <div class="d-flex justify-content-between my-3" *ngIf="totalPrivatePrices && !showAddDatePrivate">
+              <span class="text-white text-uppercase">{{'text_price' | translate }}</span>
+              <div class="d-flex">
+                  <span class="text-white mb-1 fs-16 fw-semibold">
+                    {{totalPrivatePrices}}
+                  </span>
+
+                <span class="text-white mb-1 fs-16 ml-1">CHF</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="courseDetail.definido==1">
+            <div class="d-flex justify-content-between my-3">
+              <span class="text-white text-uppercase">{{'text_price' | translate }}</span>
+              <div class="d-flex">
+                  <span class="text-white mb-1 fs-16 fw-semibold">
+                    {{courseDetail.price}}
+                  </span>
+
+                <span class="text-white mb-1 fs-16 ml-1">CHF</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="d-flex flex-column justify-content-center my-3">
+            <!--private-->
+            <ng-container *ngIf="courseDetail.libre==1">
+              <!--
+              <ng-container *ngIf="(!this.allSelectedDates || !this.allSelectedDates.length)">
+                <button *ngIf="!showAddDatePrivate" class="btn btn-primary-bs rounded-2 pt-2 pb-2" style="opacity:0.5;" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                  width="24px"> {{'text_add_to_cart' | translate }}</button>
+              </ng-container>
+              -->
+              <ng-container *ngIf="(this.allSelectedDates && this.allSelectedDates.length)">
+                <button *ngIf="!showAddDatePrivate" class="btn btn-primary-bs rounded-2 pt-2 pb-2" (click)="goToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                                             width="24px"> {{'text_go_to_cart' | translate }}</button>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="courseDetail.definido==1">
+              <!--colectiv no group_id-->
+              <ng-container *ngIf="!courseDetail.group_id">
+                <ng-container *ngIf="(this.bookingGroup==null || !this.bookingGroup) || (this.bookingUser==null || !this.bookingUser)">
+                  <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" style="opacity:0.5;" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                                         width="24px"> {{'text_add_to_cart' | translate }}</button>
+                </ng-container>
+                <ng-container *ngIf="bookingGroup && bookingUser">
+                  <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                    width="24px"> {{'text_add_to_cart' | translate }}</button>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="courseDetail.group_id">
+                <!--colectiv group_id definitive-->
+                <ng-container *ngIf="courseDetail.global_course.is_definitive == 1">
+                  <ng-container *ngIf="(this.bookingGroup==null || !this.bookingGroup) || (this.bookingUser==null || !this.bookingUser)">
+                    <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" style="opacity:0.5;" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                                           width="24px"> {{'text_add_to_cart' | translate }}</button>
+                  </ng-container>
+                  <ng-container *ngIf="bookingGroup && bookingUser">
+                    <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                      width="24px"> {{'text_add_to_cart' | translate }}</button>
+                  </ng-container>
+                </ng-container>
+                <!--colectiv group_id no definitive-->
+                <ng-container *ngIf="courseDetail.global_course.is_definitive == 0">
+                  <ng-container *ngIf="(this.bookingGroup==null || !this.bookingGroup || !areDatesSelected()) || (this.bookingUser==null || !this.bookingUser)">
+                    <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" style="opacity:0.5;" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                                           width="24px"> {{'text_add_to_cart' | translate }}</button>
+                  </ng-container>
+                  <ng-container *ngIf="bookingGroup && bookingUser && areDatesSelected()">
+                    <button class="btn btn-primary-bs rounded-2 pt-2 pb-2" (click)="addToCart()"><img src="/assets/icons/cart.svg"
+                                                                                                      width="24px"> {{'text_add_to_cart' | translate }}</button>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+            </ng-container>
+          </div>
+          <div class="mt-2">
+              <span (click)="goToAllCourses()" class="pointer ml-1"><img src="/assets/icons/icons-outline-arrow-left.svg"
+                                                                         width="24px"> {{'text_delete_return_courses' | translate }}</span>
+          </div>
+        </div>
+      </div>
+      <!--COURSE BOOKING-->
+
+    </div>
+
+  </ng-container>
+
+</div>
+
+
+
+<div #closeAddToGroup class="modal fade modal-bs" id="add_to_group" tabindex="-1" aria-labelledby="tacheLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 800px;">
+    <div class="modal-content">
+      <div class="modal-header bg-gray p-4 pb-2">
+        <div>
+          <h5 class="modal-title text-white fw-medium" id="tacheLabel">{{'text_add_user' | translate }}</h5>
+        </div>
+
+        <button id="close_modal_addtogroup_btn" type="button" class="py-0 px-1 btn btn-light-gray-transparent-custom-bs"
+                data-bs-dismiss="modal" aria-label="Close">
+          <img src="/assets/icons/icons-outline-close.svg" alt="x" width="24px">
+        </button>
+      </div>
+      <div class="modal-body bg-gray p-4 pb-2">
+
+        <form [formGroup]="userAddToGroupForm">
+
+          <div class="row mx-0 my-3">
+            <div class="col-6 ps-0">
+              <div class="form-group normal">
+                <label class="mb-1 gray-label text-uppercase">{{'text_first_name' | translate }}</label>
+                <input type="text" class="form-control" formControlName="first_name">
+              </div>
+            </div>
+            <div class="col-6 ps-0">
+              <div class="form-group normal">
+                <label class="mb-1 gray-label text-uppercase">{{'text_last_name' | translate }}</label>
+                <input type="text" class="form-control" formControlName="last_name">
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row mx-0 my-3">
+
+            <div class="col-6 ps-0">
+              <div class="form-group normal">
+                <label class="mb-1 gray-label text-uppercase">{{'text_birth_date' | translate }} *</label>
+                <input type="date" class="form-control" formControlName="birth_date">
+              </div>
+            </div>
+
+            <div class="col-6 ps-0">
+              <div class="form-group normal">
+                <label class="mb-1 gray-label text-uppercase">{{'text_language' | translate }} *</label>
+                <select class="form-control" formControlName="language1_id">
+                  <option *ngFor="let language of languageList" value="{{language.id}}">{{language.name}}</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-gray p-4 d-flex justify-content-center align-items-center">
+        <button type="button" (click)="addToGroup()" class="btn btn-primary-bs px-4 rounded-16 w-100">{{'text_confirm' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div #addDatePrivate class="modal fade modal-bs" id="add_date_private" tabindex="-1" aria-labelledby="tacheLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 800px;">
+    <div class="modal-content">
+      <div class="modal-header bg-gray p-4 pb-2">
+        <div>
+          <h5 class="modal-title text-white fw-medium" id="tacheLabel">{{'text_add_a_date' | translate }}</h5>
+        </div>
+
+        <button id="close_modal_adddateprivate_btn" type="button" class="py-0 px-1 btn btn-light-gray-transparent-custom-bs"
+                data-bs-dismiss="modal" aria-label="Close">
+          <img src="/assets/icons/icons-outline-close.svg" alt="x" width="24px">
+        </button>
+      </div>
+      <div class="modal-body bg-gray p-4 pb-2">
+        <ng-container *ngIf="courseDetail">
+          <div class="col-12 ps-0">
+            <span class="text-white montserrat">{{'text_select_user_date' | translate }}</span>
+
+            <!-- Users -->
+            <div class="col-12 ps-0">
+              <div class="d-flex flex-wrap align-items-start mt-2 mb-4" style="gap:20px;width:fit-content;">
+
+                <ng-container *ngFor="let user of usersList">
+                  <div class="card-person text-center rounded-8"
+                       [ngClass]="{'full-opacity': selectedClient==user.id}" (click)="changeSelectedClient(user.id)">
+                    <div class="degree-image-container big">
+                      <img *ngIf="user.degree_sport_default" src="/assets/images/level_{{user.degree_sport_default}}.png" class="aureola rounded-img">
+                      <img [src]="getUserImage(user)" class="user-avatar-aureola rounded-img">
+                    </div>
+                    <p class="montserrat mb-2 mt-1 fs-14" style="line-height:1.2;">
+                      <img *ngIf="user.is_group_boss" src="/assets/images/gold-crown.png"
+                           style="width: 16px;height: 16px;margin: 0;border-radius: 0;position:relative;top:-2px;">
+                      {{user.first_name}} {{user.last_name}}</p>
+                    <div *ngIf="selectedClient==user.id" class="circle circle-selected"></div>
+                  </div>
+                </ng-container>
+
+                <div class="card-person text-center rounded-8 full-opacity" type="button" data-bs-toggle="modal"
+                     data-bs-target="#add_to_group">
+                  <div class="add-wrapper">
+                    <img src="/assets/icons/icons-outline-add.svg" class="rounded-img">
+                  </div>
+                  <p class="montserrat mb-0 mt-1 fs-14" style="line-height:1.2;">{{'text_add' | translate }} {{'text_user' | translate }}</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 d-flex gap-4">
+            <!--Calendar add date-->
+            <div class="col-7">
+
+
+              <ng-container *ngIf="isDispoEmptyPrivate(courseDetail.id)">
+                <div class="col-12 mt-1 text-white text-center fs-16">{{'text_no_dates_month' | translate }}</div>
+              </ng-container>
+              <ng-container *ngIf="!isDispoEmptyPrivate(courseDetail.id)">
+                <div class="col-12 mt-1 text-white text-center fs-16">{{'text_select_date_disponibility' | translate }}</div>
+              </ng-container>
+
+              <div class="d-flex align-items-center px-3 width-100">
+                <div class="d-flex justify-content-between w-100">
+                  <div class="row mx-0 my-3 w-100">
+                    <div class="col-12 ps-0 d-flex align-item-center" style="align-items: center;justify-content: space-between;width: 400px;margin: 0 auto;">
+                      <div class="form-group normal">
+                        <button style="height: 100%;font-size:2rem;" (click)="previousMonthPrivate()" type="button"
+                                class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                          <</button>
+                      </div>
+
+                      <h2 class="text-white fs-4 fw-medium mb-0">{{selectedDateMesStringPrivate}}</h2>
+
+                      <div class="form-group normal">
+                        <button style="height: 100%;font-size:2rem;" (click)="nextMonthPrivate()" type="button"
+                                class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                          ></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mx-0 p-4 width-100" id="info_calendar_private">
+
+                <hr class="separator my-3">
+
+                <div class="rows-calendar">
+
+                  <div class="row row-calendar mx-0" *ngIf="days_info_private">
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_monday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_tuesday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_wednesday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_thursday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_friday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_saturday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat">{{'text_sunday_short' | translate }}</span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                         *ngFor="let e of [].constructor(days_info_private.firstday_of_month-1); let i = index;">
+                      <div class="d-flex flex-column justify-content-center w-100">
+                        <span class="mb-0 text-white text-center montserrat"></span>
+                      </div>
+                    </div>
+                    <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                         *ngFor="let day of days_info_private.month; let i = index" id="dm{{day}}">
+                      <div class="d-flex flex-column justify-content-center w-100" style="height:100px;align-items: center;">
+                    <span class="mb-0 text-white text-center montserrat"
+                          (click)="isDateInDispoLibrePrivate(i+1, courseDetail.id) && onDayClickPrivate(i+1)" [class.light-opacity]="isBeforeTodayPrivate(i+1)"
+                          [ngClass]="{
+                        'green-shade': isDateInDispoLibrePrivate(i+1, courseDetail.id),
+                        'bright-green-shade': isHighlightedPrivate(i+1)
+                      }">{{i+1}}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-5" *ngIf="newSelectedDatePrivate">
+              <div class="mt-1 text-center">
+            <span class="text-white fs-16">
+              <img src="/assets/icons/icons-outline-calendar-1.svg" />
+              {{transformDateEur(newSelectedDatePrivate)}}
+            </span>
+              </div>
+
+
+              <div class="mt-2 text-center">
+            <span class="text-white">
+              {{'text_select_hour_date' | translate }}
+            </span>
+              </div>
+
+
+              <ng-container *ngIf="!courseDetail.duration_flexible">
+                <div class="col-8 p-0 mt-1" style="margin:auto;">
+                  <div class="form-group normal text-center">
+                    <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                    <select [(ngModel)]="selectedHourPrivate" class="form-control">
+                      <ng-container *ngFor="let hour of hoursTable">
+                        <option *ngIf="!isGrey(hour)"  value="{{hour}}">{{hour}}</option>
+                      </ng-container>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="text-center my-3">
+                  <span class="text-white text-uppercase fs-16 fw-semibold">{{'text_price' | translate }} {{courseDetail.price}} CHF</span>
+                </div>
+
+                <div class="col-12 mt-2">
+                  <button class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto ml-1 header-login-btn-mobile mx-auto d-block" type="button"
+                          (click)="addDateToPrivate()">{{'text_add' | translate }}</button>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="courseDetail.duration_flexible">
+                <div class="col-8 p-0 mt-1" style="margin:auto;">
+                  <div class="form-group normal text-center">
+                    <label class="mb-1 gray-label">{{'text_hour' | translate }}</label>
+                    <select [(ngModel)]="selectedHourPrivate" class="form-control" (ngModelChange)="updateDurationsBasedOnDayTime()">
+                      <ng-container *ngFor="let hour of hoursTableFlexible">
+                        <option *ngIf="!isGrey(hour)"  value="{{hour}}">{{hour}}</option>
+                      </ng-container>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-8 p-0 mt-1" style="margin:auto;">
+                  <div class="form-group normal text-center">
+                    <label class="mb-1 gray-label">{{'text_people' | translate }}</label>
+                    <select [(ngModel)]="selectedPeoplePrivate" class="form-control" (ngModelChange)="updateSortedDurationsFlexible();updatePriceFlexible()">
+                      <option *ngFor="let num of getMaxPeopleArray()" [value]="num">{{ num }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-8 p-0 mt-1" style="margin:auto;">
+                  <div class="form-group normal text-center">
+                    <label class="mb-1 gray-label">{{'text_duration' | translate }}</label>
+                    <select [(ngModel)]="selectedDurationPrivate" class="form-control" (ngModelChange)="updatePriceFlexible()">
+                      <option *ngFor="let item of sortedDurationsFlexible" [value]="item.duration">{{ item.duration }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="text-center my-3">
+                  <span class="text-white text-uppercase fs-16 fw-semibold">{{'text_price' | translate }} {{selectedVariablePrice}} CHF</span>
+                </div>
+
+                <div class="col-12 mt-2">
+                  <button class="btn btn-primary-bs rounded-2 pt-2 pb-2 margins-auto ml-1 header-login-btn-mobile mx-auto d-block" type="button"
+                          (click)="addDateToPrivate()">{{'text_add' | translate }}</button>
+                </div>
+              </ng-container>
+            </div>
+
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- OLD CALENDAR
+
+
+  <div class="col-5">
+        <div class="d-flex align-items-center px-3 width-100">
+          <div class="d-flex justify-content-between w-100">
+            <div class="row mx-0 my-3 w-100">
+              <div class="col-12 ps-0 d-flex align-item-center" style="align-items: center;justify-content: space-between;width: 400px;margin: 0 auto;">
+                <div class="form-group normal">
+                  <button style="height: 100%;font-size:2rem;" (click)="previousMonth()" type="button"
+                  class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                  <</button>
+                </div>
+
+                <h2 class="text-white fs-4 fw-medium mb-0">{{selectedDateMesString}}</h2>
+
+                <div class="form-group normal">
+                  <button style="height: 100%;font-size:2rem;" (click)="nextMonth()" type="button"
+                  class="btn bg-transparent border-0 text-light-gray-bs montserrat">
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mx-0 p-4 width-100" id="info_calendar">
+
+          <hr class="separator my-3">
+
+          <div class="rows-calendar">
+
+            <div class="row row-calendar mx-0" *ngIf="days_info">
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">L</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">M</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">X</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">J</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">V</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">S</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat">D</span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                *ngFor="let e of [].constructor(days_info.firstday_of_month-1); let i = index;">
+                <div class="d-flex flex-column justify-content-center w-100">
+                  <span class="mb-0 text-white text-center montserrat"></span>
+                </div>
+              </div>
+              <div class="col calendar-month-cell text-center text-light-gray-bs p-0"
+                *ngFor="let day of days_info.month; let i = index" id="dm{{day}}">
+                <div class="d-flex flex-column justify-content-center w-100" style="height:100px;align-items: center;">
+                  <span class="mb-0 text-white text-center montserrat"
+                    (click)="onDayClick(i+1)"
+                    [ngClass]="{
+                      'green-shade': selectedCourseType==2 && isDateInDispoLibre(i+1, selectedCourse >= 0 ? courses[selectedCourse].id : null),
+                      'brown-shade': selectedCourseType==1 && isDateInDispoDefinido(i+1, selectedCourse >= 0 ? courses[selectedCourse].id : null),
+                      'bright-green-shade': selectedCourseType==2 && isHighlighted(i+1)
+                    }">{{i+1}}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+-->
