@@ -1,0 +1,24 @@
+.modal {
+    width:100%;min-height:100vh;min-height:100vh;max-height:100vh;z-index:999;background:rgba(0,0,0,0.7);position:fixed;top:0;left:0;display: flex; /* Enables flexbox */align-items: center;justify-content: center;overflow-y: auto;
+}
+.modal-content {
+    max-width: 800px;width: 90%;position: relative;z-index: 1000;margin: auto;padding: 16px 20px;box-sizing: border-box;
+}
+.modal-flex-title {
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.modal-flex-title img {
+    width:28px;
+}
+.modal-form {
+    display:flex;width:100%;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.modal-form-block-full {
+    width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+}
+.modal-form-block-half {
+    width:calc(50% - 8px);display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+}
+.modal-form-block-third {
+    width:calc(33.33% - 11px);display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+}

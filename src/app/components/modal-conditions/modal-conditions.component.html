@@ -1,0 +1,12 @@
+<div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
+    <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+        <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+            {{'text_cart2' | translate }}
+            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+        </div>
+
+        <div class="text-color montserrat mb-24" [innerHTML]="data"></div>
+
+    </div>
+  </div>
+  

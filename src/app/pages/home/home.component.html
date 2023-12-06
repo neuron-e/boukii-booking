@@ -1,0 +1,359 @@
+<app-header></app-header>
+
+<div class="text-color-light mb-24 montserrat">
+    {{'text_available_courses' | translate }}
+</div>
+
+<div class="filter-calendar-section">
+    <div class="filter-section">
+        <div class="text-vbig fw-semibold text-color">
+            Trouvez votre cours idéal
+        </div>
+        <div class="text-color-light montserrat">
+            <span class="text-color montserrat">{{'text_filters_a' | translate }}</span> {{'text_filters_b' | translate }}
+        </div>
+
+        <div>
+            <div class="text-color uppercase mb-12">
+                {{'text_typeofevent' | translate }}
+            </div>
+            <div class="filter-flex-check">
+                <div class="checkbox-custom">
+                    <input type="radio" id="radio-1" name="courseType" [value]="1" >
+                    <label for="radio-1" class="checkbox-custom-label-collective text-color-light montserrat">{{'text_collectivescourses' | translate }}</label>
+                </div>
+                <div class="checkbox-custom">
+                    <input type="radio" id="radio-2" name="courseType" [value]="2" >
+                    <label for="radio-2" class="checkbox-custom-label-private text-color-light montserrat">{{'text_privatecourses' | translate }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="text-color uppercase mb-12">
+                {{'text_sport' | translate }}
+            </div>
+            <div class="filter-flex-check">
+                <div class="checkbox-custom">
+                    <input type="radio" id="radio-sport-1" name="sportType" [value]="1" >
+                    <label for="radio-sport-1" class="checkbox-custom-label-normal text-color-light montserrat">Ski</label>
+                </div>
+                <div class="checkbox-custom">
+                    <input type="radio" id="radio-sport-2" name="sportType" [value]="2" >
+                    <label for="radio-sport-2" class="checkbox-custom-label-normal text-color-light montserrat">Snowboard</label>
+                </div>
+                <div class="checkbox-custom">
+                    <input type="radio" id="radio-sport-3" name="sportType" [value]="3" >
+                    <label for="radio-sport-3" class="checkbox-custom-label-normal text-color-light montserrat">S.Rando</label>
+                </div>
+            </div>
+        </div>
+
+        <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true" class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
+            {{'text_more_filters' | translate }}
+        </button>
+
+        <ng-container *ngIf="showMoreFilters">
+            <div>
+                <div class="text-color uppercase mb-12">
+                    {{'text_age' | translate }}
+                </div>
+                <div class="filter-flex-check">
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-ages-1" name="ageType" [value]="1" >
+                        <label for="radio-ages-1" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_all_ages' | translate }}</label>
+                    </div>
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-ages-2" name="ageType" [value]="2" >
+                        <label for="radio-ages-2" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_ages2' | translate }}</label>
+                    </div>
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-ages-3" name="ageType" [value]="3" >
+                        <label for="radio-ages-3" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_ages3' | translate }}</label>
+                    </div>
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-ages-4" name="ageType" [value]="4" >
+                        <label for="radio-ages-4" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_ages4' | translate }}</label>
+                    </div>
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-ages-5" name="ageType" [value]="5" >
+                        <label for="radio-ages-5" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_adults' | translate }}</label>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="text-color uppercase mb-12">
+                    {{'text_level' | translate }}
+                </div>
+                <div class="filter-flex-check">
+                    <div class="checkbox-custom">
+                        <input type="radio" id="radio-level-1" name="degreeType" [value]="1" >
+                        <label for="radio-level-1" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_doesnt_matter' | translate }}</label>
+                    </div>
+                    <div class="checkbox-custom position-relative" (mouseenter)="showTooltipFilter(0)" (mouseleave)="hideTooltipFilter(0)">
+                        <input type="radio" id="radio-level-2" name="degreeType" [value]="2" >
+                        <label for="radio-level-2" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_novice' | translate }}</label>
+
+                        <div class="tooltip-container background-color-trans" *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+                            <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkbox-custom position-relative" (mouseenter)="showTooltipFilter(1)" (mouseleave)="hideTooltipFilter(1)">
+                        <input type="radio" id="radio-level-3" name="degreeType" [value]="3" >
+                        <label for="radio-level-3" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_intermediate' | translate }}</label>
+
+                        <div class="tooltip-container background-color-trans" *ngIf="tooltipsFilter[1]" [@fadeInOut]>
+                            <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkbox-custom position-relative" (mouseenter)="showTooltipFilter(2)" (mouseleave)="hideTooltipFilter(2)">
+                        <input type="radio" id="radio-level-4" name="degreeType" [value]="4" >
+                        <label for="radio-level-4" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_advanced' | translate }}</label>
+
+                        <div class="tooltip-container background-color-trans" *ngIf="tooltipsFilter[2]" [@fadeInOut]>
+                            <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkbox-custom position-relative" (mouseenter)="showTooltipFilter(3)" (mouseleave)="hideTooltipFilter(3)">
+                        <input type="radio" id="radio-level-5" name="degreeType" [value]="5" >
+                        <label for="radio-level-5" class="checkbox-custom-label-normal text-color-light montserrat">{{'text_expert' | translate }}</label>
+
+                        <div class="tooltip-container background-color-trans" *ngIf="tooltipsFilter[3]" [@fadeInOut]>
+                            <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                            <div class="text-small montserrat text-color-light">
+                                Ejemplo de objectivo a mostrar
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button (click)="showMoreFilters=false" class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
+                {{'text_close_more_filters' | translate }}
+            </button>
+        </ng-container>
+
+    </div>
+    <!--Calendar-->
+    <div class="calendar-section">
+        <div class="calendar background-color-trans rounded-8">
+            <div class="header-calendar">
+                <div class="header-calendar-arrows">
+                  <img [src]="themeService.arrowLeft" (click)="prevMonth()" />
+                  <img [src]="themeService.arrowRight" (click)="nextMonth()" />
+                </div>
+                <div class="text-color text-semibig fw-medium">{{ monthNames[currentMonth] }}</div>
+                <div class="text-color text-semibig fw-medium">{{ currentYear }}</div>
+            </div>
+            <div class="weekdays">
+                <span *ngFor="let day of weekdays" class="montserrat text-small text-color-light">{{ day }}</span>
+            </div>
+            <div class="days">
+                <ng-container *ngFor="let day of days">
+                    <span [ngClass]="{'very-light-opacity': day.past}" 
+                          class="montserrat day-span-a"
+                          (click)="selectDay(day)">
+                          <span [ngClass]="{
+                            'active-collective': day.active && isCollective,
+                            'active-collective-selected': day.selected && isCollective,
+                            'active-private': day.active && isPrivate,
+                            'active-private-selected': day.selected && isPrivate
+                            }"  class="day-span-b text-color">
+                            {{ day.number }}
+                          </span>
+                      </span>
+                </ng-container>
+            </div>
+        </div>  
+        <button class="btn-back-grey rounded-8 button-style cursor-pointer width-100" type="button">
+            {{'text_all_availability' | translate }}
+        </button>
+    </div>
+</div>
+
+<div class="separator-line mb-32 mt-32"></div>
+
+<div class="course-section-title mb-32">
+    <div class="text-vbig fw-semibold text-color">
+        {{'text_available_courses' | translate }}
+    </div>
+    <div class="text-normal fw-medium text-color-light">
+        01/12/2023 - 31/12/2023
+    </div>
+</div>
+
+<div class="course-boxes-wrapper">
+    <!--DESKTOP-->
+    <div class="show-desktop background-color-trans rounded-8 padding-box course-box"><!--border-primary-->
+
+            <div class="course-box-header">
+                <div class="course-box-icon">
+                    <img src="assets/icons/prive_ski2x.png" />
+                    <div class="course-box-title">
+                        <div class="text-color text-medium fw-medium">Flexidates Adultes</div>
+                        <span class="text-color-light text-small">Collectif Ski</span>
+                    </div>
+                </div>
+                <div class="text-color fw-medium pb-8 text-align-right min-width-price">42 CHF /date</div>
+            </div>
+    
+            <div class="mt-8 mb-24 course-box-buttons">
+                <button class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
+                    {{'text_availability' | translate }}
+                </button>
+                <button (click)="goTo('course','1')" class="btn-back-primary rounded-8 button-style cursor-pointer" type="button">
+                    {{'text_see_coourse' | translate }}
+                </button>
+            </div>
+    
+            <div class="course-box-content">
+                <div class="rounded-8 course-box-content-img">
+                    <img src="assets/images/prueba.jpg" class="rounded-8">
+                </div>
+                <div>
+                    <!-- COLLECTIVE-->
+                    <!--
+                    <div class="text-color montserrat course-box-content-text">
+                        <img [src]="themeService.calendar">
+                        {{'text_dates_separated' | translate }}
+                    </div>
+                    <div class="mt-12 course-box-content-list">
+                        <div class="text-small text-color-light pl-24 montserrat">07/01/2024 09:00 - 11:00</div>
+                        <div class="text-small text-color-light pl-24 montserrat">07/01/2024 09:00 - 11:00</div>
+                        <div class="text-small text-color-light pl-24 montserrat">07/01/2024 09:00 - 11:00</div>
+                    </div>
+                    -->
+                    <!--PRIVATE-->
+                    <div class="text-color montserrat course-box-content-text">
+                        <img [src]="themeService.calendar">
+                        {{'text_when_course' | translate }}
+                    </div>
+                    <div class="mt-8 course-box-content-list">
+                        <div class="text-small text-color-light pl-24 montserrat">07/01/2024 - 12/01/2024</div>
+                        <div class="text-small text-color-light pl-24 montserrat">Lundi - Dimanche</div>
+                    </div>
+                    <div class="text-color montserrat course-box-content-text mt-12">
+                        <img [src]="themeService.clock">
+                        {{'text_course_duration' | translate }}
+                    </div>
+                    <div class="mt-8 course-box-content-list">
+                        <div class="text-small text-color-light pl-24 montserrat">{{'text_from_price' | translate }} 1h</div>
+                        <div class="text-small text-color-light pl-24 montserrat">10h - 16h</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-small text-color-light mt-24 montserrat" [innerHTML]="displayedText"></div>
+            <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer" (click)="showFullText()">{{'text_more' | translate }}</div>
+            <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer" (click)="showLessText()">{{'text_less' | translate }}</div>
+
+    </div>
+    <!--/DESKTOP-->
+
+    <!--MOBILE-->
+    <div class="show-mobile background-color-trans rounded-8 border-primary">
+        <div class="course-wrapper">
+            <div class="course-wrapper-left">
+                <div class="course-box-header">
+                    <div class="course-box-icon">
+                        <img src="assets/icons/prive_ski2x.png" />
+                        <div class="course-box-title">
+                            <div class="text-color text-medium fw-medium">Flexidates Adultes</div>
+                            <span class="text-color-light text-small">Collectif Ski</span>
+                        </div>
+                    </div>
+                </div>
+            <div class="course-box-content">
+                <!-- COLLECTIVE-->
+                <!--
+                <div class="text-color montserrat course-box-content-text">
+                    <img src="assets/icons/icons-outline-calendar-1.svg">
+                    {{'text_dates_separated' | translate }}
+                </div>
+                <div class="mt-12 course-box-content-list">
+                    <div class="text-small text-color-light montserrat">07/01/2024 09:00 - 11:00</div>
+                    <div class="text-small text-color-light montserrat">07/01/2024 09:00 - 11:00</div>
+                    <div class="text-small text-color-light montserrat">07/01/2024 09:00 - 11:00</div>
+                </div>
+                -->
+                <!--PRIVATE-->
+                <div class="text-color montserrat course-box-content-text">
+                    <img [src]="themeService.calendar">
+                    {{'text_when_course' | translate }}
+                </div>
+                <div class="mt-8 course-box-content-list">
+                    <div class="text-small text-color-light montserrat">07/01/2024 - 12/01/2024</div>
+                    <div class="text-small text-color-light montserrat">Lundi - Dimanche</div>
+                </div>
+                <div class="text-color montserrat course-box-content-text mt-12">
+                    <img [src]="themeService.clock">
+                    {{'text_course_duration' | translate }}
+                </div>
+                <div class="mt-8 course-box-content-list">
+                    <div class="text-small text-color-light montserrat">{{'text_from_price' | translate }} 1h</div>
+                    <div class="text-small text-color-light montserrat">10h - 16h</div>
+                </div>
+            </div>
+            </div>
+            <div class="course-wrapper-right">
+            <div class="text-color fw-medium">
+                48 CHF /date
+            </div>
+            <div class="course-wrapper-image">
+                <img src="assets/images/prueba.jpg" />
+            </div>
+            <div class="course-box-buttons">
+                <div class="btn-back-grey rounded-8 button-style cursor-pointer width-100">
+                {{'text_availability' | translate }}
+                </div>
+                <div (click)="goTo('course','1')" class="btn-back-primary rounded-8 button-style cursor-pointer width-100">
+                    {{'text_see_coourse' | translate }}
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="course-text-padding">
+            <div class="text-small text-color-light montserrat" [innerHTML]="displayedText"></div>
+            <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer" (click)="showFullText()">{{'text_more' | translate }}</div>
+            <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer" (click)="showLessText()">{{'text_less' | translate }}</div>
+        </div>
+
+    </div>
+    <!--/MOBILE-->
+
+    
+</div>
