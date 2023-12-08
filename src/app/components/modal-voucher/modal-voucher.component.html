@@ -1,0 +1,24 @@
+<div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
+    <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+        <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+            {{'text_use_voucher' | translate }}
+            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+        </div>
+
+        <div class="modal-form">
+
+            <div class="modal-form-block-full">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_code' | translate }}
+                </div>
+                <input type="text" class="form-control width-100" />
+            </div>
+        </div>
+      
+        <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+            {{'text_confirm' | translate }}
+        </button>
+
+    </div>
+  </div>
+  

@@ -1,0 +1,110 @@
+<div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
+    <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+        <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+            {{'text_new_client' | translate }}
+            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+        </div>
+
+        <div class="text-color montserrat mb-32">
+            {{'text_register_modal1' | translate }}.
+        </div>
+
+        <div class="modal-form">
+
+            <div class="modal-form-block-full">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_email' | translate }}
+                </div>
+                <input type="email" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_password' | translate }}
+                </div>
+                <input type="password" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_repeat_password' | translate }}
+                </div>
+                <input type="password" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_first_name' | translate }}
+                </div>
+                <input type="text" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_last_name' | translate }}
+                </div>
+                <input type="text" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_birth_date' | translate }}
+                </div>
+                <input type="date" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_phone' | translate }}
+                </div>
+                <input type="text" class="form-control width-100" />
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_country' | translate }}
+                </div>
+                <select class="form-control width-100">
+                    <option value="su">Suisse</option>
+                </select>
+            </div>
+            <div class="modal-form-block-half">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_province' | translate }}
+                </div>
+                <select class="form-control width-100">
+                    <option value="fr">Aargau</option>
+                </select>
+            </div>
+            <div class="modal-form-block-third">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_language' | translate }} 1
+                </div>
+                <select class="form-control width-100">
+                    <option value="fr">French</option>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                </select>
+            </div>
+            <div class="modal-form-block-third">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_language' | translate }} 2
+                </div>
+                <select class="form-control width-100">
+                    <option value="fr">French</option>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                </select>
+            </div>
+            <div class="modal-form-block-third">
+                <div class="text-color-light text-small uppercase">
+                    {{'text_language' | translate }} 3
+                </div>
+                <select class="form-control width-100">
+                    <option value="fr">French</option>
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                </select>
+            </div>
+        </div>
+      
+        <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+            {{'text_confirm' | translate }}
+        </button>
+
+    </div>
+  </div>
+  

@@ -1,0 +1,90 @@
+.reservation-return {
+    display:flex;align-items:center;gap:4px;
+}
+.reservation-return img {
+    width:20px;
+}
+.cart-payment-section {
+    display:flex;align-items:flex-start;justify-content:space-between;gap:32px;
+}
+.course-box {
+    display:flex;width:100%;flex-direction:column;align-items:flex-start;gap:24px;
+}
+.course-box-header {
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.course-box-icon {
+    display:flex;gap:8px;align-items:center;
+}
+.course-box-icon img {
+    width:44px;
+}
+.course-box-title {
+    display:flex;flex-direction:column;gap:2px;
+}
+.course-box-icons {
+    display:flex;align-items:center;gap:12px;min-width:74px;
+}
+.course-box-add {
+    width:36px;
+}
+.course-box-delete {
+    width:24px;
+}
+.course-box-dates {
+    width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.course-content-list {
+    display:flex;align-items:flex-start;gap:7px;flex-direction:column;
+}
+.list-flex {
+    display:flex;align-items:center;gap:4px;
+}
+.list-flex img {
+    width:14px;
+}
+
+.payment-section {
+    width:40%;min-width:40%;max-width:450px;
+}
+.payment-refund-check {
+    display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;
+}
+.payment-conditions {
+    display:flex;align-items:center;gap:6px;
+}
+.button-center {
+    display:block;margin:0 auto;
+}
+.button-right {
+    float:right;
+}
+.payment-price-flex {
+    display:flex;width:100%;align-items:center;justify-content:space-between;gap:6px;
+}
+.min-width-price {
+    width:92px;text-align:right;
+}
+.payment-title-icon {
+    display:flex;align-items:center;gap:10px;
+}
+.payment-title-icon img {
+    width:22px;
+}
+.payment-logo-pay {
+    width:140px;display:block;margin:0 auto;
+}
+
+@media (max-width:850px) {
+    .cart-payment-section {
+        display:flex;align-items:flex-start;justify-content:center;gap:48px;flex-wrap:wrap;
+    }
+    .payment-section {
+        width:100%;max-width:none;
+    }
+}
+@media (max-width:500px) {
+    .cart-payment-section {
+        gap:34px;
+    }
+}
