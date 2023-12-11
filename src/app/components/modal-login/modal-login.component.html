@@ -1,57 +1,55 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-    <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
-        <ng-container *ngIf="!isForgotPass">
-            <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
-                {{'text_login' | translate }}
-                <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
-            </div>
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <ng-container *ngIf="!isForgotPass">
+      <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+        {{'text_login' | translate }}
+        <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="modal-form">
+        <div class="modal-form-block-full">
+          <div class="text-color-light text-small uppercase">
+            {{'text_email' | translate }}
+          </div>
+          <input type="email" formControlName="email" class="form-control width-100" />
+        </div>
 
-            <div class="modal-form">
+        <div class="modal-form-block-full" *ngIf="!isForgotPass">
+          <div class="text-color-light text-small uppercase">
+            {{'text_password' | translate }}
+          </div>
+          <input type="password" formControlName="password" class="form-control width-100" />
+        </div>
+      </div>
 
-                <div class="modal-form-block-full">
-                    <div class="text-color-light text-small uppercase">
-                        {{'text_email' | translate }}
-                    </div>
-                    <input type="email" class="form-control width-100" />
-                </div>
+      <button (click)="onSubmit()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+        {{'text_login' | translate }}
+      </button>
+      </form>
+      <div (click)="isForgotPass=true" class="text-color-light text-align-center mt-32 cursor-pointer">
+        {{'text_forgot_password' | translate }}
+      </div>
+    </ng-container>
 
-                <div class="modal-form-block-full">
-                    <div class="text-color-light text-small uppercase">
-                        {{'text_password' | translate }}
-                    </div>
-                    <input type="password" class="form-control width-100" />
-                </div>
-            </div>
-        
-            <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
-                {{'text_login' | translate }}
-            </button>
+    <ng-container *ngIf="isForgotPass">
+      <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+        {{'text_reset_password' | translate }}
+        <img src="assets/icons/icons-outline-close.svg" class="cursor-pointer" (click)="closeModal()" />
+      </div>
 
-            <div (click)="isForgotPass=true" class="text-color-light text-align-center mt-32 cursor-pointer">
-                {{'text_forgot_password' | translate }}
-            </div>
-        </ng-container>
+      <div class="modal-form">
 
-        <ng-container *ngIf="isForgotPass">
-            <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
-                {{'text_reset_password' | translate }}
-                <img src="assets/icons/icons-outline-close.svg" class="cursor-pointer" (click)="closeModal()" />
-            </div>
+        <div class="modal-form-block-full">
+          <div class="text-color-light text-small uppercase">
+            {{'text_email' | translate }}
+          </div>
+          <input type="email" class="form-control width-100" />
+        </div>
+      </div>
 
-            <div class="modal-form">
-
-                <div class="modal-form-block-full">
-                    <div class="text-color-light text-small uppercase">
-                        {{'text_email' | translate }}
-                    </div>
-                    <input type="email" class="form-control width-100" />
-                </div>
-            </div>
-        
-            <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
-                {{'text_reset_password' | translate }}
-            </button>
-        </ng-container>
-    </div>
+      <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+        {{'text_reset_password' | translate }}
+      </button>
+    </ng-container>
   </div>
-  
+</div>

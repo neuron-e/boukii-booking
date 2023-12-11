@@ -10,14 +10,15 @@ import { ModalVoucherComponent } from './modal-voucher/modal-voucher.component';
 import { ModalNewUserComponent } from './modal-new-user/modal-new-user.component';
 import { ModalLoginComponent } from './modal-login/modal-login.component';
 import { ModalConditionsComponent } from './modal-conditions/modal-conditions.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 
 
 @NgModule({
   declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent],
-  imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule
-  ],
+    imports: [
+        CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule
+    ],
   exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent]
 })
 export class ComponentsModule { }

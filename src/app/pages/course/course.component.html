@@ -1,359 +1,347 @@
-<app-header></app-header>
+<app-header [isModalLogin]="isModalLogin" [isModalNewUser]="isModalNewUser"></app-header>
 
 <div class="text-color mb-24 montserrat">
-    <span class="text-color-light underline cursor-pointer montserrat" (click)="goTo('home')">{{'text_available_courses' | translate }}</span>
-    / Nombre del curso elegido
+  <span class="text-color-light underline cursor-pointer montserrat" (click)="goTo(schoolData.slug)">{{'text_available_courses' | translate }}</span>
+  / {{course?.name}}
 </div>
 
 <div class="separator-line mb-32 mt-32"></div>
 
 <div class="course-reservation-section">
-    <!--Course-->
-    <div class="course-section">
-        <div class="rounded-8 course-image-wrapper">
-            <div class="wrapper-back rounded-8"></div>
-            <img src="assets/images/prueba.jpg" class="rounded-8 course-image-img" />
-            <div class="padding-box course-image-text">
-                <div class="text-light-gray-bs fw-semibold course-image-icon montserrat">
-                    <img src="assets/icons/prive_ski2x.png" />
-                    Collectif Ski
-                </div>
-                <div class="text-white fw-semibold text-semibig">
-                    Flexidates Advanced
-                </div>
-            </div>
+  <!--Course-->
+  <div class="course-section">
+    <div class="rounded-8 course-image-wrapper">
+      <div class="wrapper-back rounded-8"></div>
+      <img src="{{course?.image}}" class="rounded-8 course-image-img" />
+      <div class="padding-box course-image-text">
+        <div class="text-light-gray-bs fw-semibold course-image-icon montserrat">
+          <img src="assets/icons/prive_ski2x.png" *ngIf="course?.course_type==2"/>
+          <img src="assets/icons/collectif_ski2x.png" *ngIf="course?.course_type==1"/>
+          Collectif Ski
         </div>
-
-        <div class="course-content">
-            <ng-container *ngIf="courseType==1">
-                <div class="text-color text-medium montserrat course-content-title">
-                    <img [src]="themeService.calendar">
-                    {{'text_choose_dates' | translate }}
-                </div>
-                <div class="mt-12 course-content-list">
-                    <!--
-                    <div class="text-color-light pl-32 montserrat">· 07/01/2024 09:00 - 11:00</div>
-                    <div class="text-color-light pl-32 montserrat">· 07/01/2024 09:00 - 11:00</div>
-                    <div class="text-color-light pl-32 montserrat">· 07/01/2024 09:00 - 11:00</div>
-                    -->
-                    <div class="checkbox-circle pl-32">
-                        <input id="checkbox-course-1" type="checkbox" />
-                        <label class="text-color-light montserrat" for="checkbox-course-1">07/01/2024 09:00 - 11:00</label>
-                    </div>
-                    <div class="checkbox-circle pl-32">
-                        <input id="checkbox-course-2" type="checkbox" />
-                        <label class="text-color-light montserrat" for="checkbox-course-2">07/01/2024 09:00 - 11:00</label>
-                    </div>
-                    <div class="checkbox-circle pl-32">
-                        <input id="checkbox-course-3" type="checkbox" />
-                        <label class="text-color-light montserrat" for="checkbox-course-3">07/01/2024 09:00 - 11:00</label>
-                    </div>
-                </div>
-            </ng-container>
-            <ng-container *ngIf="courseType==2">
-                <div class="course-content-flex">
-                    <div>
-                        <div class="text-color text-medium montserrat course-content-title">
-                            <img [src]="themeService.calendar">
-                            {{'text_when_course' | translate }}
-                        </div>
-                        <div class="mt-8 course-content-list">
-                            <div class="text-color-light pl-32 montserrat">07/01/2024 - 09/01/2024</div>
-                            <div class="text-color-light pl-32 montserrat">Lundi - Dimanche</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-color text-medium montserrat course-content-title">
-                            <img [src]="themeService.clock">
-                            {{'text_course_duration' | translate }}
-                        </div>
-                        <div class="mt-8 course-content-list">
-                            <div class="text-color-light pl-32 montserrat">{{'text_from_price' | translate }} 1h</div>
-                            <div class="text-color-light pl-32 montserrat">10h - 16h</div>
-                        </div>
-                    </div>
-                </div>
-            </ng-container>
-
-            <div class="show-desktop text-color-light mt-24 montserrat" 
-                    [innerHTML]="'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros tempor, sollicitudin sem sit amet, ornare augue. Cras eget neque fermentum, rutrum dolor at, vulputate odio. Duis nec pulvinar eros. Ut et interdum ante. Nulla id quam lectus. In efficitur congue nisi, vel dapibus felis egestas sed.'">
-            </div>
-
-            <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true" class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-24" type="button">
-                {{'text_more' | translate }}
-            </button>
-    
-            <ng-container *ngIf="showMoreFilters">
-                <div class="show-mobile text-color-light mt-24 montserrat" 
-                    [innerHTML]="'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros tempor, sollicitudin sem sit amet, ornare augue. Cras eget neque fermentum, rutrum dolor at, vulputate odio. Duis nec pulvinar eros. Ut et interdum ante. Nulla id quam lectus. In efficitur congue nisi, vel dapibus felis egestas sed.'">
-                </div>
-
-                <button (click)="showMoreFilters=false" class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-12" type="button">
-                    {{'text_less' | translate }}
-                </button>
-            </ng-container>
+        <div class="text-white fw-semibold text-semibig">
+          {{course?.name}}
         </div>
+      </div>
     </div>
 
-    <!--Reservation-->
-    <div class="reservation-section">
-        <div class="background-color-trans rounded-8 padding-box reservation-box">
+    <div class="course-content">
+      <ng-container *ngIf="course?.course_type==1">
+        <div class="text-color text-medium montserrat course-content-title">
+          <img [src]="themeService.calendar">
+          {{'text_choose_dates' | translate }}
+        </div>
+        <div class="mt-12 course-content-list">
+          <div *ngIf="!course.is_flexible">
+            <div class="text-color-light pl-32 montserrat"
+                 *ngFor="let date of course?.course_dates">·
+              {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
+          </div>
+          <div *ngIf="course.is_flexible">
+            <div class="checkbox-circle pl-32" *ngFor="let date of course?.course_dates">
+              <input id="checkbox-course-{{date.id}}" type="checkbox" *ngIf="course?.is_fleixble"/>
+              <label class="text-color-light montserrat" for="checkbox-course-{{date.id}}">
+                {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5)}} - {{date.hour_end.substring(0,5)}}</label>
+            </div>
+          </div>
 
-            <!-- NOT LOGGED-->
-            <ng-container *ngIf="!userLogged">
-                <div class="text-color text-medium fw-semibold">
-                    {{'text_booking' | translate }}
+        </div>
+      </ng-container>
+      <ng-container *ngIf="course?.course_type==2">
+        <div class="course-content-flex">
+          <div>
+            <div class="text-color text-medium montserrat course-content-title">
+              <img [src]="themeService.calendar">
+              {{'text_when_course' | translate }}
+            </div>
+            <div class="mt-8 course-content-list">
+              <div class="text-color-light pl-32 montserrat">07/01/2024 - 09/01/2024</div>
+              <div class="text-color-light pl-32 montserrat">Lundi - Dimanche</div>
+            </div>
+          </div>
+          <div>
+            <div class="text-color text-medium montserrat course-content-title">
+              <img [src]="themeService.clock">
+              {{'text_course_duration' | translate }}
+            </div>
+            <div class="mt-8 course-content-list">
+              <div class="text-color-light pl-32 montserrat">{{'text_from_price' | translate }} {{course?.duration}}h</div>
+              <div class="text-color-light pl-32 montserrat">{{course?.hour_min}}h - {{course?.hour_max}}h</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="show-desktop text-color-light mt-24 montserrat"
+           [innerHTML]="course?.description">
+      </div>
+
+      <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true" class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-24" type="button">
+        {{'text_more' | translate }}
+      </button>
+
+      <ng-container *ngIf="showMoreFilters">
+        <div class="show-mobile text-color-light mt-24 montserrat"
+             [innerHTML]="'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros tempor, sollicitudin sem sit amet, ornare augue. Cras eget neque fermentum, rutrum dolor at, vulputate odio. Duis nec pulvinar eros. Ut et interdum ante. Nulla id quam lectus. In efficitur congue nisi, vel dapibus felis egestas sed.'">
+        </div>
+
+        <button (click)="showMoreFilters=false" class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-12" type="button">
+          {{'text_less' | translate }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!--Reservation-->
+  <div class="reservation-section">
+    <div class="background-color-trans rounded-8 padding-box reservation-box">
+
+      <!-- NOT LOGGED-->
+      <ng-container *ngIf="!userLogged">
+        <div class="text-color text-medium fw-semibold">
+          {{'text_booking' | translate }}
+        </div>
+        <div class="text-color montserrat">
+          {{'text_booking1' | translate }}
+        </div>
+        <div class="reservation-price-flex">
+          <div class="text-medium text-color uppercase">
+            {{'text_price' | translate }}
+          </div>
+          <div class="text-medium text-color">
+            <span class="text-medium fw-bold">200</span> CHF /date
+          </div>
+        </div>
+        <div>
+          <button class="btn-back-primary rounded-8 button-style cursor-pointer width-100 mb-12" type="button"
+                  (click)="isModalLogin = !isModalLogin">
+            {{'text_already_client' | translate }}
+          </button>
+          <button class="btn-back-grey rounded-8 button-style cursor-pointer width-100" type="button"
+                  (click)="isModalNewUser = !isModalNewUser">
+            {{'text_new_client' | translate }}
+          </button>
+        </div>
+        <div (click)="goTo('home')" class="text-color-light montserrat cursor-pointer reservation-return">
+          <img [src]="themeService.arrowReturn">
+          {{'text_return_courses' | translate }}
+        </div>
+      </ng-container>
+      <!--/NOT LOGGED-->
+
+      <!-- USER LOGGED-->
+      <ng-container *ngIf="userLogged">
+        <div class="text-color text-medium fw-semibold">
+          {{'text_new_booking' | translate }}
+        </div>
+
+        <div class="text-color montserrat">
+          {{'text_select_user' | translate }}
+        </div>
+
+        <div class="reservation-users">
+          <div class="reservation-user-box cursor-pointer" (click)="selectUser(userLogged.clients[0])" [ngClass]="{'opacity-full': selectedUser==userLogged.clients[0]}">
+            <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="185" [size]="70" [userImage]="userLogged?.clients[0].image"></app-level-user>
+            <div class="text-color text-small montserrat reservation-user-title">
+              <img src="assets/images/gold-crown.png">
+              {{userLogged?.clients[0].last_name}}
+            </div>
+            <div *ngIf="selectedUser==userLogged?.clients[0]" class="reservation-user-bullet"></div>
+          </div>
+          <div class="reservation-user-box cursor-pointer" *ngFor="let utilizer of userLogged?.clients[0].utilizers" (click)="selectUser(utilizer)" [ngClass]="{'opacity-full': selectedUser==utilizer}">
+            <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="182" [size]="70" [userImage]="themeService.avatarEmpty"></app-level-user>
+            <div class="text-color text-small montserrat reservation-user-title">
+              {{utilizer.last_name}}
+            </div>
+            <div *ngIf="selectedUser==utilizer" class="reservation-user-bullet"></div>
+          </div>
+          <div class="reservation-user-box cursor-pointer opacity-full" (click)="openModalAddUser()">
+            <div class="reservation-user-add">
+              <img src="/assets/icons/icons-outline-add.svg">
+            </div>
+            <div class="text-color text-small montserrat reservation-user-title">
+              {{'text_add' | translate }} {{'text_user' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <!--COLLECTIVE-->
+        <ng-container *ngIf="course?.course_type==1">
+
+          <ng-container *ngIf="selectedUser">
+            <div class="text-color montserrat mt-12">
+              {{'text_select_level' | translate }}
+            </div>
+
+            <div>
+              <div *ngIf="!selectedLevel" class="text-color fw-semibold montserrat mt-12">
+                {{ 'text_no_level' | translate }}
+              </div>
+
+              <div *ngIf="selectedLevel" class="rounded-8 level-wrapper" (mouseenter)="showTooltipFilter(0)" (mouseleave)="hideTooltipFilter(0)">
+                <div [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.league}}</div>
+                <div class="text-color">{{selectedLevel.name}}</div>
+                <div class="level-check">
+                  <img src="assets/icons/check.png" />
                 </div>
-                <div class="text-color montserrat">
-                    {{'text_booking1' | translate }}
+
+                <div class="tooltip-container-level background-color-trans" *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+                  <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
+                  <div class="text-small montserrat text-color-light" *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
+                    {{goal.name}}
+                  </div>
                 </div>
-                <div class="reservation-price-flex">
-                    <div class="text-medium text-color uppercase">
-                        {{'text_price' | translate }}
+              </div>
+
+              <div class="text-color montserrat cursor-pointer reservation-return mt-24 mb-24" (click)="showLevels=!showLevels">
+                <img [src]="themeService.edit">
+                {{'text_change_level' | translate }}
+              </div>
+
+              <div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length" class="levels-section">
+                <ng-container *ngFor="let level of course?.availableDegrees;let i = index" >
+                  <div (click)="selectLevel(level)" class="rounded-8 level-wrapper cursor-pointer"
+                       *ngIf="level.recommended_age === 1 || isAgeAppropriate(transformAge(selectedUser.birth_date), level.recommended_age)">
+                    <div [ngStyle]="{'color': level.color}">{{level.league}}</div>
+                    <div class="text-color">{{level.name}}</div>
+                    <div *ngIf="level == selectedLevel" class="level-check">
+                      <img src="assets/icons/check.png" />
                     </div>
-                    <div class="text-medium text-color">
-                        <span class="text-medium fw-bold">200</span> CHF /date
-                    </div>
-                </div>
-                <div>
-                    <button class="btn-back-primary rounded-8 button-style cursor-pointer width-100 mb-12" type="button">
-                        {{'text_already_client' | translate }}
-                    </button>
-                    <button class="btn-back-grey rounded-8 button-style cursor-pointer width-100" type="button">
-                        {{'text_new_client' | translate }}
-                    </button>
-                </div>
-                <div (click)="goTo('home')" class="text-color-light montserrat cursor-pointer reservation-return">
-                    <img [src]="themeService.arrowReturn">
-                    {{'text_return_courses' | translate }}
-                </div>
-            </ng-container>
-            <!--/NOT LOGGED-->
-
-            <!-- USER LOGGED-->
-            <ng-container *ngIf="userLogged">
-                <div class="text-color text-medium fw-semibold">
-                    {{'text_new_booking' | translate }}
-                </div>
-
-                <div class="text-color montserrat">
-                    {{'text_select_user' | translate }}
-                </div>
-
-                <div class="reservation-users">
-                    <div class="reservation-user-box cursor-pointer" (click)="selectUser(1)" [ngClass]="{'opacity-full': selectedUser==1}">
-                        <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="185" [size]="70" [userImage]="themeService.avatarEmpty"></app-level-user>
-                        <div class="text-color text-small montserrat reservation-user-title">
-                            <img src="assets/images/gold-crown.png">
-                            Nombre Usuario
-                        </div>
-                        <div *ngIf="selectedUser==1" class="reservation-user-bullet"></div>
-                    </div>
-                    <div class="reservation-user-box cursor-pointer" (click)="selectUser(2)" [ngClass]="{'opacity-full': selectedUser==2}">
-                        <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="182" [size]="70" [userImage]="themeService.avatarEmpty"></app-level-user>
-                        <div class="text-color text-small montserrat reservation-user-title">
-                            Nombre Usuario
-                        </div>
-                        <div *ngIf="selectedUser==2" class="reservation-user-bullet"></div>
-                    </div>
-                    <div class="reservation-user-box cursor-pointer" (click)="selectUser(3)" [ngClass]="{'opacity-full': selectedUser==3}">
-                        <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="189" [size]="70" [userImage]="themeService.avatarEmpty"></app-level-user>
-                        <div class="text-color text-small montserrat reservation-user-title">
-                            Nombre Usuario
-                        </div>
-                        <div *ngIf="selectedUser==3" class="reservation-user-bullet"></div>
-                    </div>
-
-
-                    <div class="reservation-user-box cursor-pointer opacity-full" (click)="openModalAddUser()">
-                        <div class="reservation-user-add">
-                            <img src="/assets/icons/icons-outline-add.svg">
-                        </div>
-                        <div class="text-color text-small montserrat reservation-user-title">
-                            {{'text_add' | translate }} {{'text_user' | translate }}
-                        </div>
-                    </div>
-                </div>
-
-                <!--COLLECTIVE-->
-                <ng-container *ngIf="courseType==1">
-
-                    <ng-container *ngIf="selectedUser">
-                        <div class="text-color montserrat mt-12">
-                            {{'text_select_level' | translate }}
-                        </div>
-
-                        <div>
-                            <div *ngIf="!selectedLevel" class="text-color fw-semibold montserrat mt-12">
-                                {{ 'text_no_level' | translate }}
-                            </div>
-
-                            <div *ngIf="selectedLevel" class="rounded-8 level-wrapper" (mouseenter)="showTooltipFilter(0)" (mouseleave)="hideTooltipFilter(0)">
-                                <div [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.league}}</div>
-                                <div class="text-color">{{selectedLevel.name}}</div>
-                                <div class="level-check">
-                                    <img src="assets/icons/check.png" />
-                                </div>
-
-                                <div class="tooltip-container-level background-color-trans" *ngIf="tooltipsFilter[0]" [@fadeInOut]>
-                                    <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
-                                    <div class="text-small montserrat text-color-light">
-                                        Ejemplo de objectivo a mostrar
-                                    </div>
-                                    <div class="text-small montserrat text-color-light">
-                                        Ejemplo de objectivo a mostrar
-                                    </div>
-                                    <div class="text-small montserrat text-color-light">
-                                        Ejemplo de objectivo a mostrar
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="text-color montserrat cursor-pointer reservation-return mt-24 mb-24" (click)="showLevels=!showLevels">
-                                <img [src]="themeService.edit">
-                                {{'text_change_level' | translate }}
-                            </div>
-
-                            <div *ngIf="showLevels && dataLevels && dataLevels.length" class="levels-section">
-                                <div *ngFor="let level of dataLevels;let i = index" (click)="selectLevel(level)" class="rounded-8 level-wrapper cursor-pointer">
-                                    <div [ngStyle]="{'color': level.color}">{{level.league}}</div>
-                                    <div class="text-color">{{level.name}}</div>
-                                    <div *ngIf="level == selectedLevel" class="level-check">
-                                        <img src="assets/icons/check.png" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-
+                  </div>
                 </ng-container>
+              </div>
+            </div>
+          </ng-container>
 
-                <!--PRIVATE-->
-                <ng-container *ngIf="courseType==2">
+        </ng-container>
 
-                    <ng-container *ngIf="selectedUser">
-                        <div class="text-color montserrat mt-12 margin-auto">
-                            {{'text_select_date_disponibility' | translate }}
-                        </div>
+        <!--PRIVATE-->
+        <ng-container *ngIf="course?.course_type==2">
 
-                        <!--Calendar Private-->
-                        <div class="calendar-reservation-section margin-auto">
-                            <div class="calendar background-color-trans rounded-8">
-                                <div class="header-calendar">
-                                    <div class="header-calendar-arrows">
-                                      <img [src]="themeService.arrowLeft" (click)="prevMonth()" />
-                                      <img [src]="themeService.arrowRight" (click)="nextMonth()" />
-                                    </div>
-                                    <div class="text-color text-semibig fw-medium">{{ monthNames[currentMonth] }}</div>
-                                    <div class="text-color text-semibig fw-medium">{{ currentYear }}</div>
-                                </div>
-                                <div class="weekdays">
-                                    <span *ngFor="let day of weekdays" class="montserrat text-small text-color-light">{{ day }}</span>
-                                </div>
-                                <div class="days">
-                                    <ng-container *ngFor="let day of days">
-                                        <span [ngClass]="{'very-light-opacity': day.past}" 
+          <ng-container *ngIf="selectedUser">
+            <div class="text-color montserrat mt-12 margin-auto">
+              {{'text_select_date_disponibility' | translate }}
+            </div>
+
+            <!--Calendar Private-->
+            <div class="calendar-reservation-section margin-auto">
+              <div class="calendar background-color-trans rounded-8">
+                <div class="header-calendar">
+                  <div class="header-calendar-arrows">
+                    <img [src]="themeService.arrowLeft" (click)="prevMonth()" />
+                    <img [src]="themeService.arrowRight" (click)="nextMonth()" />
+                  </div>
+                  <div class="text-color text-semibig fw-medium">{{ monthNames[currentMonth] }}</div>
+                  <div class="text-color text-semibig fw-medium">{{ currentYear }}</div>
+                </div>
+                <div class="weekdays">
+                  <span *ngFor="let day of weekdays" class="montserrat text-small text-color-light">{{ day }}</span>
+                </div>
+                <div class="days">
+                  <ng-container *ngFor="let day of days">
+                                        <span [ngClass]="{'very-light-opacity': day.past}"
                                               class="montserrat day-span-a"
                                               (click)="selectDay(day)">
                                               <span [ngClass]="{
-                                                'active-collective': day.active && isCollective,
-                                                'active-collective-selected': day.selected && isCollective,
-                                                'active-private': day.active && isPrivate,
-                                                'active-private-selected': day.selected && isPrivate
+                                                'active-collective': day.active && course.course_type == 1,
+                                                'active-collective-selected': day.selected && course.course_type == 1,
+                                                'active-private': day.active  && course.course_type == 2,
+                                                'active-private-selected': day.selected  && course.course_type == 2
                                                 }"  class="day-span-b text-color">
                                                 {{ day.number }}
                                               </span>
                                           </span>
-                                    </ng-container>
-                                </div>
-                            </div>  
-                        </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
 
-                        <ng-container *ngIf="selectedDateReservation">
-                            <div class="calendar-reservation-form">
-                                <div class="text-color text-medium montserrat cursor-pointer reservation-return mt-12 mb-24 margin-auto">
-                                    <img [src]="themeService.calendar">
-                                    {{selectedDateReservation}}
-                                </div>
-
-                                <div class="text-color montserrat margin-auto">
-                                    {{'text_select_hour_date' | translate }}
-                                </div>
-
-                                <div class="text-color-light montserrat mt-12 margin-auto">
-                                    {{'text_hour' | translate }}
-                                </div>
-                                <select class="form-control margin-auto calendar-reservation-form-input">
-                                    <option value="09:00">09:00</option>
-                                    <option value="10:00">10:00</option>
-                                    <option value="11:00">11:00</option>
-                                </select>
-
-                                <div class="text-color-light montserrat mt-12 margin-auto">
-                                    {{'text_people' | translate }}
-                                </div>
-                                <select class="form-control margin-auto calendar-reservation-form-input">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                </select>
-
-                                <div class="text-color-light montserrat mt-12 margin-auto">
-                                    {{'text_duration' | translate }}
-                                </div>
-                                <select class="form-control margin-auto calendar-reservation-form-input">
-                                    <option value="01:00">01:00</option>
-                                    <option value="02:00">02:00</option>
-                                    <option value="03:00">03:00</option>
-                                </select>
-                            </div>
-
-                            <div class="reservation-price-flex mt-12">
-                                <div class="text-medium text-color uppercase">
-                                    {{'text_price' | translate }}
-                                </div>
-                                <div class="text-medium text-color">
-                                    <span class="text-color text-medium fw-bold">200</span> CHF
-                                </div>
-                            </div>
-                            <div>
-                                <button (click)="goTo('cart')" class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12" type="button">
-                                    <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' | translate }}
-                                </button>
-                            </div>
-
-                        </ng-container>
-
-
-                    </ng-container>
-
-                </ng-container>
-
-                <ng-container *ngIf="courseType==1">
-                    <div class="reservation-price-flex mt-12">
-                        <div class="text-medium text-color uppercase">
-                            {{'text_price' | translate }}
-                        </div>
-                        <div class="text-medium text-color">
-                            <span class="text-color text-medium fw-bold">200</span> CHF
-                        </div>
-                    </div>
-                    <div>
-                        <button (click)="goTo('cart')" [disabled]="!selectedUser || !selectedLevel" class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12" type="button">
-                            <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' | translate }}
-                        </button>
-                    </div>
-                </ng-container>
-                <div (click)="goTo('home')" class="text-color-light montserrat cursor-pointer reservation-return mt-12">
-                    <img [src]="themeService.arrowReturn">
-                    {{'text_delete_return_courses' | translate }}
+            <ng-container *ngIf="selectedDateReservation">
+              <div class="calendar-reservation-form">
+                <div class="text-color text-medium montserrat cursor-pointer reservation-return mt-12 mb-24 margin-auto">
+                  <img [src]="themeService.calendar">
+                  {{selectedDateReservation}}
                 </div>
 
-            </ng-container>
-            <!--/USER LOGGED-->
+                <div class="text-color montserrat margin-auto">
+                  {{'text_select_hour_date' | translate }}
+                </div>
 
+                <div class="text-color-light montserrat mt-12 margin-auto">
+                  {{'text_hour' | translate }}
+                </div>
+                <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedHour"
+                        (change)="updateAvailableDurations(selectedHour)">
+                  <option *ngFor="let hour of availableHours" [value]="hour">{{ hour }}</option>
+                </select>
+
+                <div class="text-color-light montserrat mt-12 margin-auto">
+                  {{'text_people' | translate }}
+                </div>
+                <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedPaxes"
+                        (change)="updatePrice()">
+                  <option *ngFor="let number of generateNumberArray(course.max_participants)" [value]="number">{{ number }}</option>
+                </select>
+
+                <div class="text-color-light montserrat mt-12 margin-auto">
+                  {{'text_duration' | translate }}
+                </div>
+                <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedDuration"
+                        (change)="updatePrice()">
+                  <option *ngFor="let range of availableDurations"
+                          [value]="convertToHoursAndMinutes(range.time_interval)">{{convertToHoursAndMinutes(range.time_interval)}}</option>
+                </select>
+              </div>
+
+              <div class="reservation-price-flex mt-12">
+                <div class="text-medium text-color uppercase">
+                  {{'text_price' | translate }}
+                </div>
+                <div class="text-medium text-color">
+                  <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF
+                </div>
+              </div>
+              <div>
+                <button (click)="addBookingToCart()" class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12" type="button">
+                  <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' | translate }}
+                </button>
+              </div>
+
+            </ng-container>
+
+
+          </ng-container>
+
+        </ng-container>
+
+        <ng-container *ngIf="course?.course_type ==1">
+          <div class="reservation-price-flex mt-12">
+            <div class="text-medium text-color uppercase">
+              {{'text_price' | translate }}
+            </div>
+            <div class="text-medium text-color" *ngIf="!course.is_flexible">
+              <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF
+            </div>
+            <div class="text-medium text-color" *ngIf="course.is_flexible">
+              <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF /date
+            </div>
+          </div>
+          <div>
+            <button (click)="addBookingToCart()" [disabled]="!selectedUser || !selectedLevel" class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12" type="button">
+              <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' | translate }}
+            </button>
+          </div>
+        </ng-container>
+        <div (click)="goTo(schoolData.slug )" class="text-color-light montserrat cursor-pointer reservation-return mt-12">
+          <img [src]="themeService.arrowReturn">
+          {{'text_delete_return_courses' | translate }}
         </div>
+
+      </ng-container>
+      <!--/USER LOGGED-->
+
     </div>
+  </div>
 </div>
 
 <app-modal-add-user [isOpen]="isModalAddUser" (onClose)="closeModalAddUser()"></app-modal-add-user>

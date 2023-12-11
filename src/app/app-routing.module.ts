@@ -6,10 +6,10 @@ import { CartComponent } from './pages/cart/cart.component';
 import { UserComponent } from './pages/user/user.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'course/:id', component: CourseComponent },
-  { path: 'cart', component: CartComponent },
-  { path: 'user', component: UserComponent },
+  { path: ':slug', component: HomeComponent },
+  { path: ':slug/course/:id', component: CourseComponent },
+  { path: ':slug/cart', component: CartComponent },
+  { path: ':slug/user', component: UserComponent },
   { path: '**', redirectTo: '' },
 ];
 

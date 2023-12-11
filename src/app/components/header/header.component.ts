@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
+import {SchoolService} from '../../services/school.service';
+import {AuthService} from '../../services/auth.service';
+import {CartService} from '../../services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -9,18 +12,67 @@ import { ThemeService } from '../../services/theme.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  userLogged:boolean=true;
-
+  userLogged: any;
+  cart: any;
+  schoolData: any = null;
   isOpenDropdownLang = false;
   isOpenDropdownUser = false;
   selectedLang = 'fr';
 
-  isModalLogin:boolean=false;
-  isModalNewUser:boolean=false;
+  @Input() isModalLogin:boolean=false;
+  @Input() isModalNewUser:boolean=false;
 
-  constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService) { }
+  constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService,
+              private schoolService: SchoolService, private authService: AuthService, private cartService: CartService) { }
 
   ngOnInit(): void {
+    this.schoolService.fetchSchoolData();
+    this.schoolService.getSchoolData().subscribe(
+      data => {
+        if (data) {
+          this.schoolData = data;
+          let storageSlug = localStorage.getItem(this.schoolData.data.slug+ '-boukiiUser');
+          if(storageSlug) {
+            this.userLogged = JSON.parse(storageSlug);
+            this.cart = JSON.parse(localStorage.getItem(this.schoolData.data.slug+'-cart') ?? '');
+          } else {
+            localStorage.clear();
+          }
+          this.authService.user.next(this.userLogged);
+        }
+      }
+    );
+    this.authService.getUserData().subscribe(
+      data => {
+        if (data) {
+          this.userLogged = data;
+        }
+      }
+    );
+
+    this.cartService.getCartData().subscribe(
+      data => {
+        if (data) {
+          this.cart = data;
+        }
+      }
+    );
+  }
+
+  calculateCartLength() {
+    let uniqueCourses = new Set();
+
+    for (let userId in this.cart) {
+      if (this.cart.hasOwnProperty(userId)) {
+        let userCart = this.cart[userId];
+        for (let courseId in userCart) {
+          if (userCart.hasOwnProperty(courseId)) {
+            uniqueCourses.add(courseId);
+          }
+        }
+      }
+    }
+    return uniqueCourses.size;
   }
 
   toggleDropdownLang() {
@@ -29,6 +81,12 @@ export class HeaderComponent implements OnInit {
 
   toggleDropdownUser() {
     this.isOpenDropdownUser = !this.isOpenDropdownUser;
+  }
+
+  logOut() {
+    this.authService.user.next(null);
+    this.userLogged = null;
+    localStorage.clear();
   }
 
   selectLanguage(lang: string) {

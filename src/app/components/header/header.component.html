@@ -2,8 +2,8 @@
     <div class="header-left">
         <img src="assets/images/school-logo.png" class="header-left-img" />
         <div class="header-left-text">
-            <div class="text-color fw-medium">ESS Les Paccots</div>
-            <span class="text-color-light text-small">Les Paccots</span>
+            <div class="text-color fw-medium">{{schoolData?.data?.name}}</div>
+            <span class="text-color-light text-small">{{schoolData?.data?.description}}</span>
         </div>
     </div>
     <div class="header-right">
@@ -11,7 +11,7 @@
         <div class="header-dropdown">
             <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownLang()">
                 {{'text_language' | translate }}
-                <img [src]="themeService.arrowUp" 
+                <img [src]="themeService.arrowUp"
                     [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
             </div>
             <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownLang">
@@ -50,7 +50,7 @@
         <ng-container *ngIf="userLogged">
             <div class="header-dropdown">
                 <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownUser()">
-                    User Test
+                  {{userLogged.clients[0].last_name}}
                     <img [src]="themeService.arrowUp"
                         [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
                 </div>
@@ -58,15 +58,15 @@
                     <div (click)="goTo('user')" class="text-color-light cursor-pointer">
                         Profil
                     </div>
-                    <div class="text-color-light cursor-pointer">
+                    <div class="text-color-light cursor-pointer" (click)="logOut()">
                         Déconnexion
                     </div>
                 </div>
             </div>
 
-            <div (click)="goTo('cart')" class="header-cart cursor-pointer">
+            <div (click)="goTo(schoolData?.data?.slug + '/cart')" class="header-cart cursor-pointer">
                 <img [src]="themeService.cart" class="header-cart-img">
-                <div class="header-cart-number">2</div>
+                <div class="header-cart-number" *ngIf="cart">{{calculateCartLength()}}</div>
             </div>
         </ng-container>
     </div>
