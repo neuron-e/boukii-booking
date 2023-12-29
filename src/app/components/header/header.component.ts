@@ -33,8 +33,12 @@ export class HeaderComponent implements OnInit {
           this.schoolData = data;
           let storageSlug = localStorage.getItem(this.schoolData.data.slug+ '-boukiiUser');
           if(storageSlug) {
+            const slug = localStorage.getItem(this.schoolData.data.slug+'-cart');
             this.userLogged = JSON.parse(storageSlug);
-            this.cart = JSON.parse(localStorage.getItem(this.schoolData.data.slug+'-cart') ?? '');
+            if (slug!==null) {
+
+              this.cart = JSON.parse(slug !== null ? slug : '');
+            }
           } else {
             localStorage.clear();
           }

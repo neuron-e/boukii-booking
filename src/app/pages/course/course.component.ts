@@ -7,7 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {CartService} from '../../services/cart.service';
-
+import * as moment from 'moment';
 @Component({
   selector: 'app-course',
   templateUrl: './course.component.html',
@@ -211,8 +211,8 @@ export class CourseComponent implements OnInit {
   availableDurations: any[] = [];
   availableHours : any[] = [];
 
-
   schoolData: any;
+  selectedDates: any = [];
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
@@ -336,7 +336,29 @@ export class CourseComponent implements OnInit {
       }
     } else {
       if(this.course.is_flexible) {
-
+        this.course.course_dates.forEach((date: any) => {
+          if (this.selectedDates.find((d:any) => moment(d).format('YYYY-MM-DD') == moment(date.date).format('YYYY-MM-DD'))) {
+            let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
+            let courseSubgroup = courseGroup.course_subgroups[0]
+            bookingUsers.push({
+              'school_id': this.schoolData.id,
+              'client_id': this.selectedUser.id,
+              'price': this.course.price,
+              'currency': 'CHF',
+              'course_id': this.course.id,
+              'course_date_id': date.id,
+              'course_group_id': courseGroup.id,
+              'course_subgroup_id': courseSubgroup.id,
+              'date': date.date,
+              'hour_start': date.hour_start,
+              'hour_end': date.hour_end,
+              'name': this.course.name,
+              'sport_id': this.course.sport_id,
+              'course_type': 1,
+              'degree': this.course.availableDegrees.find((l: any) => l.id === this.selectedLevel.id)
+            })
+          }
+        })
       } else {
         this.course.course_dates.forEach((date: any) => {
           let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
@@ -352,7 +374,11 @@ export class CourseComponent implements OnInit {
             'course_subgroup_id': courseSubgroup.id,
             'date': date.date,
             'hour_start': date.hour_start,
-            'hour_end': date.hour_end
+            'hour_end': date.hour_end,
+            'name': this.course.name,
+            'sport_id': this.course.sport_id,
+            'course_type': 1,
+            'degree': this.course.availableDegrees.find((l: any) => l.id === this.selectedLevel.id)
           })
         })
       }
@@ -491,21 +517,8 @@ export class CourseComponent implements OnInit {
     return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 365.25));
   }
 
-  isAgeAppropriate(userAge: number, recommendedAge: number): boolean {
-    switch (recommendedAge) {
-      case 1: // Todas las edades
-        return true;
-      case 2: // 2 a 3
-        return userAge >= 2 && userAge <= 3;
-      case 3: // 3 a 5
-        return userAge >= 3 && userAge <= 5;
-      case 4: // Más de 5
-        return userAge > 5 && userAge < 18;
-      case 5: // Solo adultos +18
-        return userAge >= 18;
-      default:
-        return false;
-    }
+  isAgeAppropriate(userAge: number, minAge: number, maxAge: number): boolean {
+    return userAge >= minAge && userAge <= maxAge;
   }
 
   generateNumberArray(max: number): number[] {
@@ -612,4 +625,13 @@ export class CourseComponent implements OnInit {
     return hours * 60 + minutes;
   }
 
+  selectDate(date: any) {
+    const index = this.selectedDates.findIndex((d: any) => d === date);
+
+    if (index === -1) {
+      this.selectedDates.push(date);
+    } else {
+      this.selectedDates.splice(1, index);
+    }
+  }
 }
