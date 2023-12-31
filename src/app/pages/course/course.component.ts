@@ -213,8 +213,8 @@ export class CourseComponent implements OnInit {
   availableDurations: any[] = [];
   availableHours : any[] = [];
 
-
   schoolData: any;
+  selectedDates: any = [];
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
@@ -507,20 +507,16 @@ export class CourseComponent implements OnInit {
     return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 365.25));
   }
 
-  isAgeAppropriate(userAge: number, recommendedAge: number): boolean {
-    switch (recommendedAge) {
-      case 1: // Todas las edades
-        return true;
-      case 2: // 2 a 3
-        return userAge >= 2 && userAge <= 3;
-      case 3: // 3 a 5
-        return userAge >= 3 && userAge <= 5;
-      case 4: // Más de 5
-        return userAge > 5 && userAge < 18;
-      case 5: // Solo adultos +18
-        return userAge >= 18;
-      default:
-        return false;
+  isAgeAppropriate(userAge: number, minAge: number, maxAge: number): boolean {
+    return userAge >= minAge && userAge <= maxAge;
+  }
+
+  selectDate(date: any) {
+    const index = this.selectedDates.findIndex((d: any) => d === date);
+    if (index === -1) {
+      this.selectedDates.push(date);
+    } else {
+      this.selectedDates.splice(1, index);
     }
   }
 
@@ -639,7 +635,7 @@ export class CourseComponent implements OnInit {
 
     // Calcula si hay niveles disponibles
     this.hasLevelsAvailable = availableDegreesArray.some((level:any) =>
-      level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.recommended_age)
+      level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.min_age, level.max_age)
     );
 
     // Si no hay niveles disponibles, muestra un mensaje
