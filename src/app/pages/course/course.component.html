@@ -33,16 +33,21 @@
         </div>
         <div class="mt-12 course-content-list">
           <div *ngIf="!course.is_flexible">
+            <ng-container *ngFor="let date of course?.course_dates">
             <div class="text-color-light pl-32 montserrat"
-                 *ngFor="let date of course?.course_dates">·
+                 *ngIf="date.active || date.active === 1">·
               {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
+            </ng-container>
           </div>
           <div *ngIf="course.is_flexible">
-            <div class="checkbox-circle pl-32" *ngFor="let date of course?.course_dates">
-              <input id="checkbox-course-{{date.id}}" type="checkbox" *ngIf="course?.is_fleixble"/>
-              <label class="text-color-light montserrat" for="checkbox-course-{{date.id}}">
-                {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5)}} - {{date.hour_end.substring(0,5)}}</label>
-            </div>
+            <ng-container *ngFor="let date of course?.course_dates">
+
+              <div class="checkbox-circle pl-32" *ngIf="date.active || date.active === 1">
+                <input id="checkbox-course-{{date.id}}" type="checkbox" *ngIf="course?.is_flexible" (change)="selectDate(date.date)"/>
+                <label class="text-color-light montserrat" for="checkbox-course-{{date.id}}">
+                  {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5)}} - {{date.hour_end.substring(0,5)}}</label>
+              </div>
+            </ng-container>
           </div>
 
         </div>
@@ -198,10 +203,10 @@
                 {{'text_change_level' | translate }}
               </div>
 
-              <div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length" class="levels-section">
+              <div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length > 0" class="levels-section">
                 <ng-container *ngFor="let level of course?.availableDegrees;let i = index" >
                   <div (click)="selectLevel(level)" class="rounded-8 level-wrapper cursor-pointer"
-                       *ngIf="level.recommended_age === 1 || isAgeAppropriate(transformAge(selectedUser.birth_date), level.recommended_age)">
+                       *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max)">
                     <div [ngStyle]="{'color': level.color}">{{level.league}}</div>
                     <div class="text-color">{{level.name}}</div>
                     <div *ngIf="level == selectedLevel" class="level-check">
