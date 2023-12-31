@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
           let storageSlug = localStorage.getItem(this.schoolData.data.slug+ '-boukiiUser');
           if(storageSlug) {
             this.userLogged = JSON.parse(storageSlug);
-            this.cart = JSON.parse(localStorage.getItem(this.schoolData.data.slug+'-cart') ?? '');
+            this.cart = JSON.parse(localStorage.getItem(this.schoolData.data.slug+'-cart') ?? '{}');
           } else {
             localStorage.clear();
           }
@@ -62,14 +62,9 @@ export class HeaderComponent implements OnInit {
   calculateCartLength() {
     let uniqueCourses = new Set();
 
-    for (let userId in this.cart) {
-      if (this.cart.hasOwnProperty(userId)) {
-        let userCart = this.cart[userId];
-        for (let courseId in userCart) {
-          if (userCart.hasOwnProperty(courseId)) {
-            uniqueCourses.add(courseId);
-          }
-        }
+    for (let courseId in this.cart) {
+      if (this.cart.hasOwnProperty(courseId)) {
+        uniqueCourses.add(courseId);
       }
     }
     return uniqueCourses.size;

@@ -7,6 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {CartService} from '../../services/cart.service';
+import {BookingService} from '../../services/booking.service';
 
 @Component({
   selector: 'app-course',
@@ -192,6 +193,7 @@ export class CourseComponent implements OnInit {
   tooltipsLevel: boolean[] = [];
   showMoreFilters: boolean = false;
   showLevels: boolean = false;
+  hasLevelsAvailable: boolean = true;
 
   monthNames: string[] = [];
   weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -216,7 +218,7 @@ export class CourseComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-              private datePipe: DatePipe,  private cartService: CartService) {
+              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService) {
 
   }
 
@@ -316,11 +318,13 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    let bookingUsers = [];
+    let bookingUsers:any = [];
     if(this.course.course_type == 2) {
       if(this.course.is_flexible) {
         let course_date = this.findMatchingCourseDate();
         bookingUsers.push({
+          'course': this.course,
+          'client': this.selectedUser,
           'school_id': this.schoolData.id,
           'client_id': this.selectedUser.id,
           'price': this.course.price,
@@ -342,6 +346,11 @@ export class CourseComponent implements OnInit {
           let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
           let courseSubgroup = courseGroup.course_subgroups[0]
           bookingUsers.push({
+            'course': this.course,
+            'client': this.selectedUser,
+            'course_date': date,
+            'group': courseGroup,
+            'subGroup': courseSubgroup,
             'school_id': this.schoolData.id,
             'client_id': this.selectedUser.id,
             'price': this.course.price,
@@ -358,29 +367,35 @@ export class CourseComponent implements OnInit {
       }
     }
 
-    let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-    let cart: any = {};
+    this.bookingService.checkOverlap(bookingUsers).subscribe( res=> {
+      let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+      let cart: any = {};
 
-    if (cartStorage) {
-      cart = JSON.parse(cartStorage);
-    }
+      if (cartStorage) {
+        cart = JSON.parse(cartStorage);
+      }
 
-    if (!cart[this.selectedUser.id]) {
-      cart[this.selectedUser.id] = {};
-    }
+      if (!cart[this.course.id]) {
+        cart[this.course.id] = {};
+      }
 
-    if (!cart[this.selectedUser.id][this.course.id]) {
-      cart[this.selectedUser.id][this.course.id] = [];
-    }
+      if (!cart[this.course.id][this.selectedUser.id]) {
+        cart[this.course.id][this.selectedUser.id] = [];
+      }
 
-    cart[this.selectedUser.id][this.course.id].push(...bookingUsers);
+      cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
 
-    localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+      localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
 
-    this.cartService.carData.next(cart);
-    //TODO: mostrar mensaje de curso guardado correctamente.
+      this.cartService.carData.next(cart);
+      //TODO: mostrar mensaje de curso guardado correctamente.
 
-    this.goTo(this.schoolData.slug);
+      this.goTo(this.schoolData.slug);
+    }, error => {
+      alert('El cliente tiene una reserva que hace overlap con este curso');
+    })
+
+
 
   }
 
@@ -447,6 +462,7 @@ export class CourseComponent implements OnInit {
     this.selectedUser = user;
     this.selectedLevel = null;
     this.showLevels = false;
+    this.calculateAvailableLevels(user);
   }
 
   selectLevel(level: any) {
@@ -610,6 +626,27 @@ export class CourseComponent implements OnInit {
   convertHourToMinutes(hourString: string): number {
     const [hours, minutes] = hourString.split(':').map(Number);
     return hours * 60 + minutes;
+  }
+
+  calculateAvailableLevels(user: any) {
+    // Suponiendo que tienes una función para transformar la fecha de nacimiento en edad
+    const userAge = this.transformAge(user.birth_date);
+
+    // Convertir availableDegrees en un arreglo si es necesario
+    const availableDegreesArray = Array.isArray(this.course?.availableDegrees)
+      ? this.course?.availableDegrees
+      : Object.values(this.course?.availableDegrees || {});
+
+    // Calcula si hay niveles disponibles
+    this.hasLevelsAvailable = availableDegreesArray.some((level:any) =>
+      level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.recommended_age)
+    );
+
+    // Si no hay niveles disponibles, muestra un mensaje
+    if (!this.hasLevelsAvailable) {
+      // Puedes establecer un mensaje o manejarlo como prefieras
+      console.log("No hay niveles disponibles para este usuario.");
+    }
   }
 
 }

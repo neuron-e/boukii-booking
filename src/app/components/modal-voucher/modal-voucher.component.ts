@@ -1,6 +1,7 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
+import {ClientService} from '../../services/client.service';
 
 @Component({
   selector: 'app-modal-voucher',
@@ -21,11 +22,28 @@ import { ThemeService } from '../../services/theme.service';
 export class ModalVoucherComponent implements OnInit {
 
   @Input() isOpen: boolean = false;
-  @Output() onClose = new EventEmitter<void>();
+  @Input() slug: string;
+  @Output() onClose = new EventEmitter<any>();
 
-  constructor(public themeService: ThemeService) { }
+  code:string;
+
+  constructor(public themeService: ThemeService, private clientService: ClientService) { }
 
   ngOnInit(): void {
+
+  }
+
+  searchVoucher() {
+    let storageSlug = localStorage.getItem(this.slug+ '-boukiiUser');
+    if(storageSlug) {
+      let userLogged = JSON.parse(storageSlug);
+      this.clientService.getClientVoucher(this.code, userLogged.clients[0].id).subscribe(res => {
+        this.onClose.emit(res);
+      }, error => {
+        console.log(error);
+      })
+    }
+
   }
 
   closeModal() {

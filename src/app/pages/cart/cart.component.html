@@ -1,190 +1,183 @@
 <app-header></app-header>
 
 <div (click)="goTo('home')" class="text-color-light montserrat cursor-pointer reservation-return">
-    <img [src]="themeService.arrowReturn">
-    {{'text_continue' | translate }}
+  <img [src]="themeService.arrowReturn">
+  {{'text_continue' | translate }}
 </div>
 
 <div class="text-color fw-semibold text-medium mt-24 mb-32">
-    {{'text_your_cart' | translate }} (4 {{'text_courses' | translate }})
+  {{'text_your_cart' | translate }} ({{cart?.length}} {{'text_courses' | translate }})
 </div>
 
 <div class="cart-payment-section">
-    <!--Cart-->
-    <div class="background-color-trans rounded-8 padding-box width-100">
-
-        <div class="course-box">
-            <div class="course-box-header">
-                <div class="course-box-icon">
-                    <img src="assets/icons/collectif_ski2x.png" />
-                    <div class="course-box-title">
-                        <div class="text-color text-medium fw-medium">Flexidates Adultes</div>
-                        <span class="text-color-light text-small">Collectif Ski</span>
-                    </div>
-                </div>
-                <div class="course-box-icons">
-                    <img [src]="themeService.add" (click)="goTo('course','1')" class="course-box-add cursor-pointer">
-                    <img [src]="themeService.trash" class="course-box-delete cursor-pointer">
-                </div>
+  <!--Cart-->
+  <div class="background-color-trans rounded-8 padding-box width-100">
+    <ng-container *ngFor="let cartItem of cart">
+      <div class="course-box" >
+        <div class="course-box-header">
+          <div class="course-box-icon">
+            <img src="assets/icons/collectif_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 1"/>
+            <img src="assets/icons/prive_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 2"/>
+            <div class="course-box-title">
+              <div class="text-color text-medium fw-medium">{{cartItem.details[0].course.name}}</div>
+              <span class="text-color-light text-small">Collectif Ski</span>
             </div>
-            <div class="course-box-dates">
-                <div class="course-content-list">
-                    <div class="text-color-light montserrat">· 07/01/2024 09:00 - 11:00</div>
-                    <div class="text-color-light montserrat">· 07/01/2024 09:00 - 11:00</div>
-                    <div class="text-color-light montserrat">· 07/01/2024 09:00 - 11:00</div>
-
-                    <div class="text-color-light montserrat mt-12">SKV Ptit Loup</div>
-                    <div class="text-color-light montserrat list-flex">
-                        <img [src]="themeService.user" />
-                        User Test
-                    </div>
-                </div>
-                <div class="text-color">
-                    <span class="text-color fw-semibold text-medium">180</span> CHF
-                </div>
-            </div>
-            <div class="width-100">
-                <div class="text-color mb-8">
-                    {{'text_notes' | translate }}
-                </div>
-                <textarea rows="2" class="form-control width-100"></textarea>
-            </div>
+          </div>
+          <div class="course-box-icons">
+            <img [src]="themeService.add" (click)="goTo(schoolData.slug + '/course',cartItem.courseId)" class="course-box-add cursor-pointer">
+            <img [src]="themeService.trash" class="course-box-delete cursor-pointer">
+          </div>
         </div>
+        <div class="course-box-dates">
+          <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 1">
+            <div class="text-color-light montserrat" *ngFor="let date of cartItem.details[0].course.course_dates">
+              · {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
 
-        <div class="separator-line mb-32 mt-32"></div>
-
-        <div class="course-box">
-            <div class="course-box-header">
-                <div class="course-box-icon">
-                    <img src="assets/icons/prive_ski2x.png" />
-                    <div class="course-box-title">
-                        <div class="text-color text-medium fw-medium">Cours Privé</div>
-                        <span class="text-color-light text-small">Privé Ski</span>
-                    </div>
-                </div>
-                <div class="course-box-icons">
-                    <img [src]="themeService.add" (click)="goTo('course','1')" class="course-box-add cursor-pointer">
-                    <img [src]="themeService.trash" class="course-box-delete cursor-pointer">
-                </div>
+            <div class="text-color-light montserrat mt-12" >{{cartItem.details[0].subGroup.degree.name}}</div>
+            <div class="text-color-light montserrat list-flex">
+              <img [src]="themeService.user" />
+              {{cartItem.details[0].client.first_name + ' ' + cartItem.details[0].client.last_name}}
             </div>
-            <div class="course-box-dates">
-                <div class="course-content-list">
-                    <div class="text-color-light montserrat list-flex">
-                        <img [src]="themeService.calendar" />
-                        07/01/2024
-                    </div>
-                    <div class="text-color-light montserrat list-flex">
-                        <img [src]="themeService.clock" />
-                        10:30 - 12:30
-                    </div>
-                    <div class="text-color-light montserrat pl-18">
-                        2 {{'text_people_under' | translate}}
-                    </div>
-                    <div class="text-color-light montserrat list-flex mt-12">
-                        <img [src]="themeService.user" />
-                        User Test
-                    </div>
-                </div>
-                <div class="text-color">
-                    <span class="text-color fw-semibold text-medium">180</span> CHF
-                </div>
+          </div>
+          <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 2">
+            <!-- Iterar sobre fechas únicas -->
+            <div class="text-color-light montserrat list-flex" *ngFor="let detail of getUniqueDates(cartItem.details)">
+              <img [src]="themeService.calendar" />
+              {{ detail.date | date: 'dd-MM-yyyy' }}
+              <img [src]="themeService.clock" />
+              <span>{{ detail.hour_start }} - {{ detail.hour_end }}</span>
             </div>
-            <div class="width-100">
-                <div class="text-color mb-8">
-                    {{'text_notes' | translate }}
-                </div>
-                <textarea rows="2" class="form-control width-100"></textarea>
+
+            <!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
+        <!--    <div class="text-color-light montserrat list-flex">
+              <img [src]="themeService.clock" />
+              {{ cartItem.details[0].hour_start }} - {{ cartItem.details[0].hour_end }}
+            </div>-->
+
+            <div class="text-color-light montserrat pl-18">
+              {{ getUniqueClients(cartItem.details).length }} {{ 'text_people_under' | translate }}
             </div>
-        </div>
 
-        <div class="separator-line mb-32 mt-32"></div>
+            <!-- Iterar sobre clientes únicos -->
 
-        <button (click)="goTo('home')" class="btn-back-grey rounded-8 button-style-icon cursor-pointer button-right" type="button">
-            <img src="/assets/icons/icons-outline-add.png">
-            {{'text_add_other_booking' | translate }}
-        </button>
+              <div class="text-color-light montserrat list-flex mt-12" *ngFor="let client of getUniqueClients(cartItem.details)">
+                <img [src]="themeService.user" />
+                {{ client.first_name + ' ' + client.last_name }}
+              </div>
 
-    </div>
-
-    <!--Payment-->
-    <div class="background-color-trans rounded-8 padding-box payment-section">
-        <div class="payment-refund-check">
+          </div>
+          <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
             <div class="text-color">
-                {{'text_refund_option' | translate }} (10%)
+              <span class="text-color fw-semibold text-medium">{{ getTotalItemPrice(cartItem.details) }}</span> CHF
             </div>
-            <div class="selected-custom">
-                <input type="checkbox" id="insurance">
-                <label for="insurance"></label>
+          </ng-container>
+          <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
+            <div class="text-color">
+              <span class="text-color fw-semibold text-medium">{{cartItem.details[0].course.price }}</span> CHF
             </div>
+          </ng-container>
         </div>
-        <button (click)="openModalVoucher()" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
-            {{'text_use_voucher' | translate }}
-        </button>
-        <div class="text-color fw-semibold mt-32">
-            {{'text_you_will_pay' | translate }}
+        <div class="width-100">
+          <div class="text-color mb-8">
+            {{'text_notes' | translate }}
+          </div>
+          <textarea rows="2" class="form-control width-100"></textarea>
         </div>
-        <div class="payment-price-flex mt-24">
-            <div class="text-color uppercase">
-                {{'text_subtotal' | translate }}
-            </div>
-            <div class="text-color min-width-price">
-                <span class="text-color fw-bold">200</span> CHF
-            </div>
-        </div>
-        <div class="payment-price-flex mt-8">
-            <div class="text-color uppercase">
-                {{'text_voucher' | translate }}
-            </div>
-            <div class="text-color min-width-price">
-                <span class="text-color fw-bold">-200</span> CHF
-            </div>
-        </div>
-        <div class="payment-price-flex mt-8">
-            <div class="text-color uppercase">
-                {{'text_refund_option' | translate }}
-            </div>
-            <div class="text-color min-width-price">
-                <span class="text-color fw-bold">200</span> CHF
-            </div>
-        </div>
-        <div class="payment-price-flex mt-8">
-            <div class="text-color uppercase">
-                {{'text_total' | translate }}
-            </div>
-            <div class="text-color min-width-price">
-                <span class="text-color fw-bold">200</span> CHF
-            </div>
-        </div>
+      </div>
+      <div class="separator-line mb-32 mt-32"></div>
+    </ng-container>
 
-        <div>
-            <div class="payment-conditions mt-32">
-                <div class="checkbox-custom">
-                    <input type="checkbox" id="conditions">
-                    <label for="conditions" class="checkbox-custom-label-normal text-color-light montserrat"></label>
-                </div>
-                <div for="conditions" class="checkbox-custom-label-normal text-color-light montserrat">
-                    {{'text_i_accept_terms' | translate }}
-                    <span (click)="openModalConditions()" class="text-color-light underline cursor-pointer">{{'text_booking_conditions' | translate }}</span>
-                </div>
-            </div>
-            <button class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100" type="button">
-                {{'text_end_and_pay' | translate }}
-            </button>
-            <div class="text-color-light montserrat mt-12">
-                {{'text_payment2' | translate }}
-            </div>
+    <div class="separator-line mb-32 mt-32"></div>
 
-            <div class="payment-title-icon mt-32 pt-12 text-color fw-semibold text-medium">
-                <img src="/assets/icons/payment_landing_pink.svg">
-                {{'text_payment1' | translate }}
-            </div>
-            <div class="text-color mt-24 montserrat text-align-center">
-                {{'text_cart1' | translate }}
-            </div>
-            <img [src]="themeService.logoPay" class="payment-logo-pay mt-12 mb-12" />
-        </div>
+    <button (click)="goTo('home')" class="btn-back-grey rounded-8 button-style-icon cursor-pointer button-right" type="button">
+      <img src="/assets/icons/icons-outline-add.png">
+      {{'text_add_other_booking' | translate }}
+    </button>
+
+  </div>
+
+  <!--Payment-->
+  <div class="background-color-trans rounded-8 padding-box payment-section">
+    <div class="payment-refund-check">
+      <div class="text-color">
+        {{'text_refund_option' | translate }} (10%)
+      </div>
+      <div class="selected-custom">
+        <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance"  (change)="updateTotal()">
+        <label for="insurance"></label>
+      </div>
     </div>
+    <button (click)="openModalVoucher()"  *ngIf="!voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+      {{'text_use_voucher' | translate }}
+    </button>
+    <button (click)="voucher = null"  *ngIf="voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+      {{'text_use_voucher_remove' | translate }}
+    </button>
+    <div class="text-color fw-semibold mt-32">
+      {{'text_you_will_pay' | translate }}
+    </div>
+    <div class="payment-price-flex mt-24">
+      <div class="text-color uppercase">
+        {{'text_subtotal' | translate }}
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">{{getTotalCoursesPrice()}}</span> CHF
+      </div>
+    </div>
+    <div class="payment-price-flex mt-8" *ngIf="voucher">
+      <div class="text-color uppercase">
+        {{'text_voucher' | translate }}
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">-{{usedVoucherAmount}}</span> CHF
+      </div>
+    </div>
+    <div class="payment-price-flex mt-8" *ngIf="hasInsurance">
+      <div class="text-color uppercase">
+        {{'text_refund_option' | translate }}
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">+{{getInsurancePrice()}}</span> CHF
+      </div>
+    </div>
+    <div class="payment-price-flex mt-8">
+      <div class="text-color uppercase">
+        {{'text_total' | translate }}
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">{{totalPrice}}</span> CHF
+      </div>
+    </div>
+
+    <div>
+      <div class="payment-conditions mt-32">
+        <div class="checkbox-custom">
+          <input type="checkbox" id="conditions">
+          <label for="conditions" class="checkbox-custom-label-normal text-color-light montserrat"></label>
+        </div>
+        <div for="conditions" class="checkbox-custom-label-normal text-color-light montserrat">
+          {{'text_i_accept_terms' | translate }}
+          <span (click)="openModalConditions()" class="text-color-light underline cursor-pointer">{{'text_booking_conditions' | translate }}</span>
+        </div>
+      </div>
+      <button (click)="sendBooking()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100" type="button">
+        {{'text_end_and_pay' | translate }}
+      </button>
+      <div class="text-color-light montserrat mt-12">
+        {{'text_payment2' | translate }}
+      </div>
+
+      <div class="payment-title-icon mt-32 pt-12 text-color fw-semibold text-medium">
+        <img src="/assets/icons/payment_landing_pink.svg">
+        {{'text_payment1' | translate }}
+      </div>
+      <div class="text-color mt-24 montserrat text-align-center">
+        {{'text_cart1' | translate }}
+      </div>
+      <img [src]="themeService.logoPay" class="payment-logo-pay mt-12 mb-12" />
+    </div>
+  </div>
 </div>
 
-<app-modal-voucher [isOpen]="isModalVoucher" (onClose)="closeModalVoucher()"></app-modal-voucher>
+<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
 <app-modal-conditions [isOpen]="isModalConditions" [data]="conditionsHTML" (onClose)="closeModalConditions()"></app-modal-conditions>

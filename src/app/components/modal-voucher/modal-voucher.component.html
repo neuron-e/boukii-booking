@@ -11,14 +11,13 @@
                 <div class="text-color-light text-small uppercase">
                     {{'text_code' | translate }}
                 </div>
-                <input type="text" class="form-control width-100" />
+                <input type="text" class="form-control width-100" [(ngModel)]="code"/>
             </div>
         </div>
-      
-        <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+
+        <button (click)="searchVoucher()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
             {{'text_confirm' | translate }}
         </button>
 
     </div>
   </div>
-  

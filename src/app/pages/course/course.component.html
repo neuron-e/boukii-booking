@@ -210,6 +210,9 @@
                   </div>
                 </ng-container>
               </div>
+              <div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
+                <p>No hay niveles disponibles para este usuario.</p>
+              </div>
             </div>
           </ng-container>
 
