@@ -13,8 +13,9 @@ import { ComponentsModule } from './components/components.module';
 
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {SlugInterceptor} from './slug-interceptor';
+import {MatIconModule} from '@angular/material/icon';
 import {FormsModule} from '@angular/forms';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,8 @@ import {FormsModule} from '@angular/forms';
     ComponentsModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    MatIconModule,
+    MatProgressBarModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

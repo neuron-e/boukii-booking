@@ -4,3 +4,89 @@
     <img [src]="themeService.arrowReturn">
     {{'text_continue' | translate }}
 </div>
+
+<div class="card" style="margin: 3% 0 0 0;">
+  <div class="px-6 py-4 border-b">
+    <h2 class="title m-0">{{'sport_evolution' | translate }}
+    </h2>
+  </div>
+
+  <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
+    <div class="py-3 flex items-center">
+      <div style="float: left; width:100%;">
+        <div style="float: left; width:25%;" *ngFor="let item of clientSport" (click)="selectSportEvo(item)">
+          <img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected" style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;"
+          [ngStyle]="{
+            'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
+            'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
+          }">
+          <p style="width: 50%;float: left;text-align: center;text-wrap: nowrap;"> {{item.name}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
+    <div class="py-3 flex items-center">
+      <div style="float: left; width:100%;">
+        <div style="float: left; width:100%;">
+          <div style="float: left; width:20%;">
+            <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
+          </div>
+          <div style="float: left; width:80%;">
+            <p style="float: left; width:100%;font-size: 12px;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
+            <h1 style="float: left; width:100%;font-size: 20px;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
+          </div>
+
+          <div style="float: left; width:100%;margin: 2% 0 0 0;">
+            <mat-progress-bar mode="determinate" [value]="calculateGoalsScore()" [color]="selectedSport?.level?.color"></mat-progress-bar>
+
+          </div>
+
+          <div style="float: left; width:100%;margin: 4% 0 0 0;" *ngFor="let goal of selectedGoal">
+
+            <div style="float: left; width:3%;margin-right: 15px;">
+              <mat-icon svgIcon="mat:donut_large"></mat-icon>
+            </div>
+
+            <div style="float: left; width:70%;">
+              <p>{{goal.name}} </p>
+            </div>
+
+            <div style="float: left; width:5%;margin-right: 15px;">
+              <mat-icon svgIcon="mat:donut_large"></mat-icon>
+
+            </div>
+
+            <div style="float: left; width:5%;margin-right: 15px;">
+              <mat-icon svgIcon="mat:star_half" style="color: yellow"></mat-icon>
+
+            </div>
+
+            <div style="float: left; width:5%;">
+              <mat-icon svgIcon="mat:check" style="color: green"></mat-icon>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+        <div style="float: left; width:100%;margin-top: 5%" *ngIf="false">
+          <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
+
+        </div>
+
+      </div>
+
+    </div>
+    <div class="py-3 flex items-center">
+
+      <div style="float: left; width:100%;">
+        <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="200" [userImage]="userLogged.clients[0].image"></app-level-user>
+
+      </div>
+    </div>
+  </div>
+</div>

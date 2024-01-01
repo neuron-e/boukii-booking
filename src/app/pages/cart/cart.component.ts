@@ -47,7 +47,7 @@ export class CartComponent implements OnInit {
             this.user = JSON.parse(storageSlug);
             this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug+'-cart') ?? '{}'));
           }
-          this.totalPrice = this.getTotalCoursesPrice() + (this.hasInsurance ? this.getInsurancePrice() : 0);
+          this.totalPrice = this.getTotalCoursesPrice() + (this.tva && !isNaN(this.tva) ? this.getTotalCoursesPrice() * this.tva : 0);
         }
       }
     );
@@ -234,7 +234,12 @@ export class CartComponent implements OnInit {
       this.usedVoucherAmount = 0;
     }
 
-    totalPrice = totalPrice + insurancePrice + boukiiCarePrice;
+    if (this.tva && !isNaN(this.tva)) {
+
+      totalPrice = (totalPrice + insurancePrice + boukiiCarePrice) + (totalPrice + insurancePrice + boukiiCarePrice) * this.tva;
+    } else {
+      totalPrice = totalPrice + insurancePrice + boukiiCarePrice;
+    }
     this.totalPrice = totalPrice;
   }
 
