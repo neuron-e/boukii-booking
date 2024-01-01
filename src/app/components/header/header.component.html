@@ -55,7 +55,7 @@
                         [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
                 </div>
                 <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownUser">
-                    <div (click)="goTo('user')" class="text-color-light cursor-pointer">
+                    <div (click)="goBack('/user')" class="text-color-light cursor-pointer">
                         Profil
                     </div>
                     <div class="text-color-light cursor-pointer" (click)="logOut()">

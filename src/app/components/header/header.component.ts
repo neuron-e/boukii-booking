@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
 import {SchoolService} from '../../services/school.service';
@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
   @Input() isModalLogin:boolean=false;
   @Input() isModalNewUser:boolean=false;
 
-  constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService,
+  constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService, private activatedRoute: ActivatedRoute,
               private schoolService: SchoolService, private authService: AuthService, private cartService: CartService) { }
 
   ngOnInit(): void {
@@ -120,6 +120,10 @@ export class HeaderComponent implements OnInit {
 
   goTo(...urls: string[]) {
     this.router.navigate(urls);
+  }
+
+  goBack(url: string) {
+    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']+ url]);
   }
 
 }

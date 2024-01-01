@@ -110,7 +110,7 @@ export class CartComponent implements OnInit {
 
 
   goTo(...urls: string[]) {
-    this.router.navigate(urls);
+    this.router.navigate(this.activatedRoute.snapshot.params['slug']+urls);
   }
 
   openModalVoucher() {

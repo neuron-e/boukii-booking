@@ -1,11 +1,11 @@
 <app-header></app-header>
 
-<div (click)="goTo('home')" class="text-color-light montserrat cursor-pointer reservation-return">
+<div (click)="goBack('home')" class="text-color-light montserrat cursor-pointer reservation-return">
     <img [src]="themeService.arrowReturn">
     {{'text_continue' | translate }}
 </div>
 
-<mat-tab-group>
+<mat-tab-group *ngIf="!loading">
   <mat-tab label="Datos">
 
     <div class="container py-6" *ngIf="!loading">

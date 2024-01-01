@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ApiCrudService } from 'src/app/services/crud.service';
@@ -51,7 +51,7 @@ export class UserComponent implements OnInit {
   displayedColumns: string[] = ['id'];
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService) { }
+    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -78,7 +78,11 @@ export class UserComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    this.router.navigate(urls);
+    this.router.navigate(this.activatedRoute.snapshot.params['slug'] + urls);
+  }
+
+  goBack(url: string) {
+    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
   }
 
   selectBooking(id: number) {

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ThemeService} from '../../services/theme.service';
 import {CoursesService} from '../../services/courses.service';
@@ -84,7 +84,7 @@ export class HomeComponent implements OnInit {
   daySelected: any;
   userLogged: any;
 
-  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
+  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, private activatedRoute: ActivatedRoute,
               private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService) {
   }
 
@@ -268,7 +268,7 @@ export class HomeComponent implements OnInit {
   */
 
   goTo(...urls: string[]) {
-    this.router.navigate(urls);
+    this.router.navigate(this.activatedRoute.snapshot.params['slug'] + urls);
   }
 
   setAgeRange(): void {

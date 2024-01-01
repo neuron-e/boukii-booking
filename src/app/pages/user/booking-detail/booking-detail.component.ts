@@ -707,7 +707,6 @@ export class BookingDetailComponent implements OnInit {
             })
         } else {
           this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
-          this.goTo('/bookings');
         }
       }, 1000);
 
@@ -1273,10 +1272,6 @@ export class BookingDetailComponent implements OnInit {
     } else {
       return this.bonus.bonus.remaining_balance;
     }
-  }
-
-  goTo(route: string) {
-    this.router.navigate([route]);
   }
 
   calculateRem(event: any) {

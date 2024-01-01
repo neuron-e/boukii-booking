@@ -519,7 +519,7 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    this.router.navigate(urls);
+    this.router.navigate(this.route.snapshot.params['slug']+urls);
   }
 
   transformAge(birthDate:string) {
