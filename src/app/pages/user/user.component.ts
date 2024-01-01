@@ -7,6 +7,13 @@ import { SchoolService } from 'src/app/services/school.service';
 import { _MatTableDataSource } from '@angular/material/table';
 import { Observable, map, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
+import * as moment from 'moment';
+import { PasswordService } from 'src/app/services/password.service';
+import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { AddClientUserModalComponent } from './add-client-user/add-client-user.component';
 
 @Component({
   selector: 'app-user',
@@ -23,14 +30,28 @@ export class UserComponent implements OnInit {
   selectedGoal: any = [];
   schoolSports: any = [];
   goals: any = [];
+  countries = MOCK_COUNTRIES;
+  languages: any = [];
+  selectedLanguages:any = [];
+
   userLogged: any;
   schoolData: any;
   sportsCurrentData = new _MatTableDataSource([]);
   filteredSports: Observable<any[]>;
   sportsControl = new FormControl();
   loading = true;
+  id: any;
+  bookingId: any = null;
+  selectedBooking: boolean = false;
 
-  constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private schoolService: SchoolService) { }
+  panelOpenState = false;
+  bookings: any = [];
+  dataSource: any = [];
+
+  displayedColumns: string[] = ['id'];
+
+  constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
+    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
@@ -38,19 +59,86 @@ export class UserComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.authService.getUserData().subscribe(data => {
-            if (data !== null) {
-              this.userLogged = data;
-              this.getClientSport();
-            }
-          });
+          this.getData();
         }
       }
     );
   }
 
+  getData() {
+    this.getSchoolSportDegrees();
+    this.authService.getUserData().subscribe(data => {
+      if (data !== null) {
+        this.userLogged = data;
+        this.getLanguages(data.clients[0]);
+        this.getClientSport();
+        this.getBookings();
+      }
+    });
+  }
+
   goTo(...urls: string[]) {
     this.router.navigate(urls);
+  }
+
+  selectBooking(id: number) {
+    this.selectedBooking = false;
+    this.bookingId = id;
+    this.selectedBooking = true;
+  }
+
+  getBookings() {
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.userLogged.clients[0].id)
+      .subscribe((bookings) => {
+        this.bookings = bookings.data;
+        this.dataSource = bookings.data;
+      })
+  }
+
+  setInitLanguages(user: any) {
+
+    this.languages.forEach((element: any) => {
+      if(element.id === user.language1_id || element.id === user.language2_id || element.id === user.language3_id
+        || element.id === user.language4_id || element.id === user.language5_id || element.id === user.language6_id) {
+          this.selectedLanguages.push(element);
+        }
+    });
+  }
+
+  calculateAge(birthDateString: string) {
+    if(birthDateString && birthDateString !== null) {
+      const today = new Date();
+      const birthDate = new Date(birthDateString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+
+      return age;
+    } else {
+      return 0;
+    }
+
+  }
+
+  getLanguage(id: any) {
+    const lang = this.languages.find((c: any) => c.id == +id);
+    return lang ? lang.code.toUpperCase() : 'NDF';
+  }
+
+  getCountry(id: any) {
+    const country = this.countries.find((c) => c.id == +id);
+    return country ? country.name : 'NDF';
+  }
+
+  getLanguages(user: any) {
+    this.crudService.list('/languages', 1, 1000)
+      .subscribe((data) => {
+        this.languages = data.data.reverse();
+        this.setInitLanguages(user);
+      })
   }
 
   selectSportEvo(sport: any) {
@@ -116,9 +204,14 @@ export class UserComponent implements OnInit {
     this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.userLogged.clients[0].id)
       .subscribe((data) => {
         this.clientSport = data.data;
-        this.selectedSport = this.clientSport[0];
         this.getSports();
         this.getDegrees();
+        setTimeout(() => {
+          this.selectedSport = this.clientSport[0];
+          this.selectSportEvo(this.selectedSport);
+          this.loading = false;
+
+        }, 500);
       })
   }
 
@@ -149,6 +242,19 @@ export class UserComponent implements OnInit {
           });
         })
     });
+  }
+
+  getSchoolSportDegrees() {
+    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .subscribe((sport) => {
+        this.schoolSports = sport.data;
+        sport.data.forEach((element:any, idx: number) => {
+          this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id)
+          .subscribe((data) => {
+            this.schoolSports[idx].degrees = data.data;
+          });
+        });
+      })
   }
 
   getSports() {
@@ -191,12 +297,126 @@ export class UserComponent implements OnInit {
           map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
         );
 
-        this.loading = false;
       })
   }
 
   private _filterSports(value: any): any[] {
     const filterValue = typeof value === 'string' ? value.toLowerCase() : value?.name?.toLowerCase();
     return this.schoolSports.filter((sport: any) => sport?.name.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  changeClientData(id: any) {
+    this.loading = true;
+    this.id = id;
+  }
+
+  canAddUtilisateur(date: string): boolean {
+    const dateBirth = moment(date);
+    const today = moment();
+    const diff = today.diff(dateBirth, 'years');
+
+    return diff >= 18;
+  }
+
+  addUtilisateur() {
+
+    if (this.canAddUtilisateur(this.userLogged.clients[0].birth_date)) {
+      const dialogRef = this.dialog.open(AddClientUserModalComponent, {
+        width: '600px',  // Asegurarse de que no haya un ancho máximo
+        panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
+        data: {id: this.schoolData.id}
+      });
+
+      dialogRef.afterClosed().subscribe((data: any) => {
+        if (data) {
+
+          if(data.action === 'add') {
+            this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
+            .subscribe((res) => {
+              //this.getClientUtilisateurs(); --> Deberia añadirse al objeto del usuario
+            })
+          } else {
+            const user = {
+              username: data.data.name,
+              email: this.userLogged.clients[0].email,
+              password: this.passwordGen.generateRandomPassword(12),
+              image: null,
+              type: 'client',
+              active: true,
+            }
+
+            const client = {
+              email: this.userLogged.clients[0].email,
+              first_name: data.data.name,
+              last_name: data.data.surname,
+              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
+              phone: this.userLogged.clients[0].phone,
+              telephone: this.userLogged.clients[0].telephone,
+              address: this.userLogged.clients[0].address,
+              cp: this.userLogged.clients[0].cp,
+              city: this.userLogged.clients[0].city,
+              province: this.userLogged.clients[0].province,
+              country: this.userLogged.clients[0].country,
+              image: null,
+              language1_id:null,
+              language2_id:null,
+              language3_id:null,
+              language4_id:null,
+              language5_id:null,
+              language6_id:null,
+              user_id: null,
+              station_id: this.userLogged.clients[0].station_id
+            }
+
+            this.setLanguagesUtilizateur(data.data.languages, client);
+
+            this.crudService.create('/users', user)
+            .subscribe((user) => {
+              client.user_id = user.data.id;
+
+              this.crudService.create('/clients', client)
+                .subscribe((clientCreated) => {
+                  this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+
+                  this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                    .subscribe((clientSchool) => {
+
+                      setTimeout(() => {
+                        this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                        .subscribe((res) => {
+                          //this.getClientUtilisateurs(); --> añadir al usuario
+                        })}, 1000);
+                    });
+                })
+            })
+          }
+        }
+      });
+    } else {
+      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', {duration: 3000});
+    }
+
+  }
+
+  setLanguagesUtilizateur(langs: any, dataToModify: any) {
+    if (langs.length >= 1) {
+
+      dataToModify.language1_id = langs[0].id;
+    } if (langs.length >= 2) {
+
+      dataToModify.language2_id = langs[1].id;
+    } if (langs.length >= 3) {
+
+      dataToModify.language3_id = langs[2].id;
+    } if (langs.length >= 4) {
+
+      dataToModify.language4_id = langs[3].id;
+    } if (langs.length >= 5) {
+
+      dataToModify.language5_id = langs[4].id;
+    } if (langs.length === 6) {
+
+      dataToModify.language6_id = langs[5].id;
+    }
   }
 }
