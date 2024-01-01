@@ -14,12 +14,17 @@ export class CartComponent implements OnInit {
   isModalVoucher:boolean=false;
   isModalConditions:boolean=false;
   voucher: any;
-  hasInsurance: false;
+  hasInsurance = false;
+  hasBoukiiCare = false;
   totalPrice: number = 0;
   usedVoucherAmount: number = 0;
   user: any;
   cart: any[];
   schoolData: any;
+  settings: any;
+  cancellationInsurance: any;
+  boukiiCarePrice: any;
+  tva: any;
 
   conditionsHTML:string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
 
@@ -31,6 +36,12 @@ export class CartComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
+          this.settings = JSON.parse(data.data.settings);
+
+          this.cancellationInsurance =  parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
+          this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
+          this.tva = parseFloat(this.settings?.taxes?.tva);
+
           let storageSlug = localStorage.getItem(this.schoolData.slug+ '-boukiiUser');
           if(storageSlug) {
             this.user = JSON.parse(storageSlug);
@@ -40,6 +51,10 @@ export class CartComponent implements OnInit {
         }
       }
     );
+  }
+
+  isNanValue(value: any) {
+    return isNaN(value);
   }
 
   sendBooking() {
@@ -158,16 +173,27 @@ export class CartComponent implements OnInit {
   }
 
   getInsurancePrice() {
-    return this.getTotalCoursesPrice() * 0.1;
+    return this.getTotalCoursesPrice() * this.cancellationInsurance;
   }
 
   getTotalItemPrice(details: any[]): number {
     return details.reduce((total, detail) => total + parseFloat(detail.price), 0);
   }
 
+  getBasePrice() {
+    let ret = 0;
+
+    this.cart.forEach(element => {
+      ret = ret + ((!element.courseDates[0].course.is_flexible && element.courseDates[0].course.course_type === 2)
+      ? element.price_total * element.courseDates.length : element.price_total);
+    });
+
+    return ret;
+  }
+
   getTotalCoursesPrice() {
     let total = 0;
-    this.cart.forEach(cartItem => {
+    this.cart?.forEach(cartItem => {
 
       if(cartItem.details[0].course.course_type ==1) {
         if(!cartItem.details[0].course.is_flexible) {
@@ -190,7 +216,8 @@ export class CartComponent implements OnInit {
   updateTotal() {
     let basePrice = this.getTotalCoursesPrice();
     let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
-    let totalPrice = basePrice + insurancePrice;
+    let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    let totalPrice = basePrice;
 
     if (this.voucher) {
       let voucherAmount = parseFloat(this.voucher.remaining_balance);
@@ -207,7 +234,17 @@ export class CartComponent implements OnInit {
       this.usedVoucherAmount = 0;
     }
 
+    totalPrice = totalPrice + insurancePrice + boukiiCarePrice;
     this.totalPrice = totalPrice;
+  }
+
+  getBoukiiCarePrice() {
+    let ret = 0;
+    this.cart.forEach(element => {
+      ret = ret + (this.boukiiCarePrice * element.details.length);
+    });
+
+    return ret;
   }
 
   goBack(url: string) {

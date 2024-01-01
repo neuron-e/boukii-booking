@@ -8,6 +8,7 @@ import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {CartService} from '../../services/cart.service';
 import {BookingService} from '../../services/booking.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-course',
@@ -340,11 +341,36 @@ export class CourseComponent implements OnInit {
       }
     } else {
       if(this.course.is_flexible) {
+        this.course.course_dates.forEach((date: any) => {
 
+          if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
+            let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
+            let courseSubgroup = courseGroup.course_subgroups[0];
+            bookingUsers.push({
+              'course': this.course,
+              'client': this.selectedUser,
+              'course_date': date,
+              'group': courseGroup,
+              'subGroup': courseSubgroup,
+              'school_id': this.schoolData.id,
+              'client_id': this.selectedUser.id,
+              'price': this.course.price,
+              'currency': 'CHF',
+              'course_id': this.course.id,
+              'course_date_id': date.id,
+              'course_group_id': courseGroup.id,
+              'course_subgroup_id': courseSubgroup.id,
+              'date': date.date,
+              'hour_start': date.hour_start,
+              'hour_end': date.hour_end
+            })
+          }
+
+        })
       } else {
         this.course.course_dates.forEach((date: any) => {
           let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
-          let courseSubgroup = courseGroup.course_subgroups[0]
+          let courseSubgroup = courseGroup.course_subgroups[0];
           bookingUsers.push({
             'course': this.course,
             'client': this.selectedUser,

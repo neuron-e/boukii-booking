@@ -30,7 +30,7 @@
         </div>
         <div class="course-box-dates">
           <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 1">
-            <div class="text-color-light montserrat" *ngFor="let date of cartItem.details[0].course.course_dates">
+            <div class="text-color-light montserrat" *ngFor="let date of cartItem.details">
               · {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
 
             <div class="text-color-light montserrat mt-12" >{{cartItem.details[0].subGroup.degree.name}}</div>
@@ -73,7 +73,7 @@
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
             <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{cartItem.details[0].course.price }}</span> CHF
+              <span class="text-color fw-semibold text-medium">{{cartItem.details[0].course.is_flexible ? (cartItem.details.length * cartItem.details[0].course.price) : cartItem.details[0].course.price }}</span> CHF
             </div>
           </ng-container>
         </div>
@@ -98,21 +98,30 @@
 
   <!--Payment-->
   <div class="background-color-trans rounded-8 padding-box payment-section">
-    <div class="payment-refund-check">
+    <div class="payment-refund-check" *ngIf="!isNanValue(this.cancellationInsurance)">
       <div class="text-color">
-        {{'text_refund_option' | translate }} (10%)
+        {{'text_refund_option' | translate }}
       </div>
       <div class="selected-custom">
         <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance"  (change)="updateTotal()">
         <label for="insurance"></label>
       </div>
     </div>
-    <button (click)="openModalVoucher()"  *ngIf="!voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+    <div class="payment-refund-check" style="margin: 10px 0 0 0" *ngIf="!isNanValue(this.boukiiCarePrice)">
+      <div class="text-color">
+        Boukii Care
+      </div>
+      <div class="selected-custom">
+        <input type="checkbox" id="boukiiCare" [(ngModel)]="hasBoukiiCare"  (change)="updateTotal()">
+        <label for="boukiiCare"></label>
+      </div>
+    </div>
+    <button (click)="openModalVoucher()" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
       {{'text_use_voucher' | translate }}
     </button>
-    <button (click)="voucher = null"  *ngIf="voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+   <!--<button (click)="voucher = null"  *ngIf="voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
       {{'text_use_voucher_remove' | translate }}
-    </button>
+    </button>-->
     <div class="text-color fw-semibold mt-32">
       {{'text_you_will_pay' | translate }}
     </div>
@@ -126,7 +135,7 @@
     </div>
     <div class="payment-price-flex mt-8" *ngIf="voucher">
       <div class="text-color uppercase">
-        {{'text_voucher' | translate }}
+        <img [src]="themeService.trash" class="course-box-delete cursor-pointer" (click)="voucher = null"> {{'text_voucher' | translate }}
       </div>
       <div class="text-color min-width-price">
         <span class="text-color fw-bold">-{{usedVoucherAmount}}</span> CHF
@@ -138,6 +147,14 @@
       </div>
       <div class="text-color min-width-price">
         <span class="text-color fw-bold">+{{getInsurancePrice()}}</span> CHF
+      </div>
+    </div>
+    <div class="payment-price-flex mt-8" *ngIf="hasBoukiiCare">
+      <div class="text-color uppercase">
+        Boukii Care
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">+{{getBoukiiCarePrice()}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8">
@@ -179,5 +196,5 @@
   </div>
 </div>
 
-<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
+<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
 <app-modal-conditions [isOpen]="isModalConditions" [data]="conditionsHTML" (onClose)="closeModalConditions()"></app-modal-conditions>
