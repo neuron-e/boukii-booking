@@ -16,168 +16,160 @@
             src="../../../../assets/images/8.png" />
           <div
             class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
-
-          <img
-            class="avatar h-24 w-24 absolute top-6 ltr:left-4 rtl:right-4 sm:hidden"
-            [src]="userLogged.clients[0].image" />
         </div>
 
-        <div class="z-10 relative -mt-16 px-6 flex items-center" style="margin-top: -6rem !important;position: relative;bottom: 80px;" >
+        <div class="z-10 relative -mt-16 px-6 flex items-center" style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;" >
           <img
-            class="avatar h-24 w-24 flex-none align-start hidden sm:block border-2 border-white"
-            [src]="userLogged.clients[0].image" />
+            class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
+            [src]="userLogged.clients[0].image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
+            <div class="h-16 items-end" style="display: flex;flex-direction: column;gap: 12px;">
+              <div class="headline text-white montserrat" style="font-size: 12px;">{{getLanguage(userLogged.clients[0].language1_id)}} · {{getCountry(userLogged.clients[0].country)}} · {{calculateAge(userLogged.clients[0].birth_date)}}  &ensp;{{'years' | translate }}</div>
 
-          <div class="max-w-full flex-auto sm:ltr:ml-6 sm:rtl:mr-6">
-            <div class="h-16 items-end">
-              <p class="headline text-white" style="font-size: 12px;">{{getLanguage(userLogged.clients[0].language1_id)}} · {{getCountry(userLogged.clients[0].country)}} · {{calculateAge(userLogged.clients[0].birth_date)}}  &ensp;{{'years' | translate }}</p>
-
-              <h1 class="headline text-white">{{userLogged.clients[0].first_name}} {{userLogged.clients[0].last_name}}</h1>
+              <div class="headline text-white" style="font-size: 18px;">{{userLogged.clients[0].first_name}} {{userLogged.clients[0].last_name}}</div>
 
               <!-- añadir icono aqui-->
               <!-- añadir icono aqui-->
               <!-- añadir icono aqui-->
             </div>
-
-          </div>
         </div>
       </div>
 
-      <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;">
 
-        <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'users' | translate }}</h2>
-          </div>
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:30%;">
 
-          <div class="px-6 py-4 flex flex-col gap-4" style="cursor:pointer;">
-            <div
-              class="flex items-center" (click)="changeClientData(userLogged.clients[0].id)">
-              <img
-                [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
-                [ngStyle]="{
-                  'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
-                }"
-                alt="Profile Picture"
-                class="avatar ltr:mr-3 rtl:ml-3 flex-none" />
-
-              <div class="flex-auto">
-                <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left">{{ userLogged.clients[0]?.first_name }} {{ userLogged.clients[0]?.last_name }}</h4>
-              </div>
-            </div>
-            <div
-              *ngFor="let user of userLogged.clients[0].utilizers;"
-              class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)">
-              <img
-                [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
-                alt="Profile Picture"
-                class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-                [ngStyle]="{
-                  'border': +id === id && this.id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
-                }"
-                />
-              <div @fadeInRight class="flex-auto">
-                <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left">{{ user?.first_name }} {{ user?.last_name }}</h4>
-                <!--<span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><mat-icon svgIcon="mat:delete"></mat-icon></span>-->
-              </div>
+          <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
+            <div class="px-6 py-4 border-b">
+              <h2 class="title m-0">{{'users' | translate }}</h2>
             </div>
 
-            <div style="cursor:pointer"
-              class="flex items-center">
-              <!--<mat-icon svgIcon="mat:add"></mat-icon>
-              <div @fadeInRight class="flex-auto" (click)="addUtilisateur()">
-                <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
-              </div>-->
-            </div>
-
-
-          </div>
-        </div>
-
-      </div>
-      <div class="mt-6 flex flex-col md:flex-row md:items-start"*ngIf="!loading">
-        <div class="card" style="margin: 3% 0 0 0;">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'sport_evolution' | translate }}
-            </h2>
-          </div>
-
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
-            <div class="py-3 flex items-center">
-              <div style="float: left; width:100%;">
-                <div style="float: left; width:25%;" *ngFor="let item of clientSport" (click)="selectSportEvo(item)">
-                  <img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected" style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;"
+            <div class="px-6 py-4 flex flex-col gap-4" style="cursor:pointer;">
+              <div
+                class="flex items-center" (click)="changeClientData(userLogged.clients[0].id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
+                <img
+                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
                   [ngStyle]="{
-                    'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
-                    'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
-                  }">
-                  <p style="width: 50%;float: left;text-align: center;text-wrap: nowrap;"> {{item.name}}</p>
-                </div>
+                    'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
+                  }"
+                  alt="Profile Picture"
+                  class="avatar ltr:mr-3 rtl:ml-3 flex-none" style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+
+                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;">{{ userLogged.clients[0]?.first_name }} {{ userLogged.clients[0]?.last_name }}</div>
               </div>
+              <div
+                *ngFor="let user of userLogged.clients[0].utilizers;"
+                class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
+                <img
+                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+                  alt="Profile Picture"
+                  class="avatar ltr:mr-3 rtl:ml-3 flex-none"
+                  [ngStyle]="{
+                    'border': +id === id && this.id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
+                  }"
+                  style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;">{{ user?.first_name }} {{ user?.last_name }}</div>
+              </div>
+
+              <div style="cursor:pointer"
+                class="flex items-center">
+                <!--<mat-icon svgIcon="mat:add"></mat-icon>
+                <div @fadeInRight class="flex-auto" (click)="addUtilisateur()">
+                  <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
+                </div>-->
+              </div>
+
+
             </div>
           </div>
 
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
-            <div class="py-3 flex items-center">
-              <div style="float: left; width:100%;">
-                <div style="float: left; width:100%;">
-                  <div style="float: left; width:20%;">
-                    <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
-                  </div>
-                  <div style="float: left; width:80%;">
-                    <p style="float: left; width:100%;font-size: 12px;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
-                    <h1 style="float: left; width:100%;font-size: 20px;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
-                  </div>
+        </div>
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;">
+          <div class="card">
+            <div class="px-6 py-4 border-b">
+              <h2 class="title m-0">{{'sport_evolution' | translate }}
+              </h2>
+            </div>
 
-                  <div style="float: left; width:100%;margin: 2% 0 0 0;">
-                    <mat-progress-bar mode="determinate" [value]="calculateGoalsScore()" [color]="selectedSport?.level?.color"></mat-progress-bar>
-
-                  </div>
-
-                  <div style="float: left; width:100%;margin: 4% 0 0 0;" *ngFor="let goal of selectedGoal">
-
-                    <div style="float: left; width:3%;margin-right: 15px;">
-                      <!-- añadir icono aqui-->
-                    </div>
-
-                    <div style="float: left; width:70%;">
-                      <p>{{goal.name}} </p>
-                    </div>
-
-                    <div style="float: left; width:5%;margin-right: 15px;">
-    <!-- añadir icono aqui-->
-                    </div>
-
-                    <div style="float: left; width:5%;margin-right: 15px;">
-    <!-- añadir icono aqui-->
-                    </div>
-
-                    <div style="float: left; width:5%;">
-    <!-- añadir icono aqui-->
-                    </div>
-
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
+              <div class="py-3 flex items-center">
+                <div style="width:100%;display:flex;gap:12px;align-items:flex-start;">
+                  <div style="display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:center;" *ngFor="let item of clientSport" (click)="selectSportEvo(item)">
+                    <img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected" style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;"
+                    [ngStyle]="{
+                      'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
+                      'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
+                    }">
+                    <p style="text-align: center;font-size:14px;text-wrap: nowrap;" class="montserrat"> {{item.name}}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%;display: flex;align-items: center;justify-content: space-between;gap: 24px;">
+              <div class="py-3 flex items-center">
+                <div style="float: left; width:100%;">
+                  <div style="float: left; width:100%;">
+                    <div style="float: left; width:20%;">
+                      <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
+                    </div>
+                    <div style="float: left; width:80%;">
+                      <p style="float: left; width:100%;font-size: 12px;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
+                      <h1 style="float: left; width:100%;font-size: 20px;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
+                    </div>
+
+                    <div style="float: left; width:100%;margin: 2% 0 0 0;">
+                      <mat-progress-bar mode="determinate" [value]="calculateGoalsScore()" [color]="selectedSport?.level?.color"></mat-progress-bar>
+
+                    </div>
+
+                    <div style="float: left; width:100%;margin: 4% 0 0 0;" *ngFor="let goal of selectedGoal">
+
+                      <div style="float: left; width:3%;margin-right: 15px;">
+                        <!-- añadir icono aqui-->
+                      </div>
+
+                      <div style="float: left; width:80%;">
+                        <div class="montserrat">{{goal.name}} </div>
+                      </div>
+
+                      <div style="float: left; width:5%;margin-right: 15px;">
+      <!-- añadir icono aqui-->
+                      </div>
+
+                      <div style="float: left; width:5%;margin-right: 15px;">
+      <!-- añadir icono aqui-->
+                      </div>
+
+                      <div style="float: left; width:5%;">
+      <!-- añadir icono aqui-->
+                      </div>
+
+                    </div>
+                  </div>
 
 
 
-                <div style="float: left; width:100%;margin-top: 5%" *ngIf="false">
-                  <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
+                  <div style="float: left; width:100%;margin-top: 5%" *ngIf="false">
+                    <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
+
+                  </div>
 
                 </div>
 
               </div>
+              <div class="py-3 flex items-center">
 
-            </div>
-            <div class="py-3 flex items-center">
+                <div style="float: left; width:100%;">
+                  <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="150" [userImage]="userLogged.clients[0].image"></app-level-user>
 
-              <div style="float: left; width:100%;">
-                <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="200" [userImage]="userLogged.clients[0].image"></app-level-user>
-
+                </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
+
     </div>
   </mat-tab>
   <mat-tab label="Reservas">
