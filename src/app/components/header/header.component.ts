@@ -35,7 +35,8 @@ export class HeaderComponent implements OnInit {
           if(storageSlug) {
             const slug = localStorage.getItem(this.schoolData.data.slug+'-cart');
             this.userLogged = JSON.parse(storageSlug);
-            this.cart = JSON.parse(localStorage.getItem(this.schoolData.data.slug+'-cart') ?? '');
+            const cart = localStorage.getItem(this.schoolData.data.slug+'-cart');
+            this.cart = cart || '';
             if (slug!==null) {
               this.cart = JSON.parse(slug !== null ? slug : '');
             }

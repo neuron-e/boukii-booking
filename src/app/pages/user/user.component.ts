@@ -49,6 +49,13 @@ export class UserComponent implements OnInit {
   dataSource: any = [];
 
   displayedColumns: string[] = ['id'];
+  mainId: any;
+
+  defaults: any;
+  defaultsUser: any;
+  defaultsObservations: any;
+  clientSchool = [];
+  clientUsers = [];
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
     private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
@@ -59,22 +66,89 @@ export class UserComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
+
           this.getData();
         }
       }
     );
   }
 
-  getData() {
-    this.getSchoolSportDegrees();
+  getData(id = null, onChangeUser = false) {
+
     this.authService.getUserData().subscribe(data => {
       if (data !== null) {
+        this.mainId = data.clients[0].id;
         this.userLogged = data;
-        this.getLanguages(data.clients[0]);
-        this.getClientSport();
-        this.getBookings();
+        const getId = id === null ? this.mainId : id;
+        this.id = getId;
+        this.crudService.get('/clients/'+ getId)
+          .subscribe((client) => {
+            this.defaults = client.data;
+
+            this.crudService.get('/users/'+client.data.user_id)
+              .subscribe((user)=> {
+
+
+                this.getSchoolSportDegrees();
+                this.getLanguages(data.clients[0]);
+                this.getClientSchool();
+                this.getClientSport();
+                this.getClientObservations();
+
+                if (!onChangeUser) {
+                  this.getClientUtilisateurs();
+                }
+                this.defaultsUser = user.data;
+
+              })
+        })
       }
     });
+  }
+
+  getClientSchool() {
+    this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    .subscribe((data) => {
+      this.clientSchool = data.data;
+
+    })
+  }
+
+  getClientObservations() {
+    this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+      .subscribe((data) => {
+        if(data.data.length > 0) {
+
+          this.defaultsObservations = data.data[0];
+        } else {
+          this.defaultsObservations = {
+            id: null,
+            general: '',
+            notes: '',
+            historical: '',
+            client_id: null,
+            school_id: null
+          }
+        }
+      })
+  }
+
+  getClientUtilisateurs() {
+    this.crudService.list('/admin/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+      .subscribe((data) => {
+        this.clientUsers = data.data;
+        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
+        .subscribe((data) => {
+          data.data.forEach((element: any) => {
+            this.clientUsers.forEach((cl: any) => {
+              if (element.client_id === cl.id) {
+                cl.utilizer_id = element.id;
+              }
+            });
+          });
+        })
+
+      })
   }
 
   goTo(...urls: string[]) {
@@ -151,20 +225,20 @@ export class UserComponent implements OnInit {
     this.selectedGoal = [];
     this.selectedSport = sport;
 
-    this.schoolSports.forEach((element: any) => {
+    this.schoolSports?.forEach((element: any) => {
       if (this.selectedSport.sport_id === element.sport_id) {
         this.selectedSport.degrees = element.degrees;
       }
     });
 
-    this.selectedSport.degrees.forEach((element: any) => {
+    this.selectedSport?.degrees.forEach((element: any) => {
       element.inactive_color = this.lightenColor(element.color, 30);
       this.allLevels.push(element);
     });
 
-    this.allLevels.sort((a:any, b:any) => a.degree_order - b.degree_order);
+    this.allLevels?.sort((a:any, b:any) => a.degree_order - b.degree_order);
 
-    this.goals.forEach((element:any) => {
+    this.goals?.forEach((element:any) => {
       if (element.degree_id === sport.level.id) {
 
         this.selectedGoal.push(element);
@@ -205,7 +279,7 @@ export class UserComponent implements OnInit {
   }
 
   getClientSport() {
-    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.userLogged.clients[0].id)
+    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id)
       .subscribe((data) => {
         this.clientSport = data.data;
         this.getSports();
@@ -312,6 +386,7 @@ export class UserComponent implements OnInit {
   changeClientData(id: any) {
     this.loading = true;
     this.id = id;
+    this.getData(id, true);
   }
 
   canAddUtilisateur(date: string): boolean {
