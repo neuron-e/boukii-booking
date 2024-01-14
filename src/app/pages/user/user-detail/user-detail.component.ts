@@ -527,7 +527,7 @@ export class UserDetailComponent {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/teach/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+    this.crudService.list('/slug/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
       .subscribe((data) => {
         this.clientUsers = data.data;
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
@@ -908,7 +908,7 @@ export class UserDetailComponent {
     if (event.showDetail || (!event.showDetail && this.detailData !== null && this.detailData.id !== event.item.id)) {
       this.detailData = event.item;
 
-      this.crudService.get('/teach/courses/'+this.detailData.course_id)
+      this.crudService.get('/slug/courses/'+this.detailData.course_id)
         .subscribe((course) => {
           this.detailData.course = course.data;
           this.crudService.get('/sports/'+this.detailData.course.sport_id)
@@ -986,7 +986,7 @@ export class UserDetailComponent {
   }
 
   getClients() {
-    this.crudService.list('/teach/clients/mains', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+    this.crudService.list('/slug/clients/mains', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
       .subscribe((client) => {
         this.clients = client.data;
       })
