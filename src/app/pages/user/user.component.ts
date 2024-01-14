@@ -94,6 +94,7 @@ export class UserComponent implements OnInit {
                 this.getClientSchool();
                 this.getClientSport();
                 this.getClientObservations();
+                this.getBookings();
 
                 if (!onChangeUser) {
                   this.getClientUtilisateurs();
