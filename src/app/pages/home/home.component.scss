@@ -28,10 +28,10 @@
 }
 .header-calendar-arrows img {
     cursor:pointer;width:26px;
-}  
+}
 .weekdays, .days {
     display: flex;flex-wrap: wrap;justify-content: space-between;
-} 
+}
 .weekdays span {
     flex: 1 0 calc(14.28% - 6px);height: 32px;line-height: 32px;text-align: center;margin: 3px;box-sizing: border-box;
 }
@@ -68,7 +68,7 @@
     display:flex;width:100%;justify-content:space-between;flex-wrap:wrap;
 }
 .course-box {
-    width:calc(50% - 16px);display:flex;justify-content:space-between;margin:8px;
+    width:calc(50% - 16px);display:flex;justify-content:space-between;margin:8px !important;
 }
 .course-box-header {
     width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;

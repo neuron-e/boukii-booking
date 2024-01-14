@@ -1,3 +1,5 @@
+@import "./styles/core";
+
 :root {
     --gray: #161c28;
     --gray-transparent-bs: rgba(22, 28, 40, 0.8);
@@ -90,19 +92,19 @@
   }
 
   .btn-back-primary {
-    background:var(--primary-bs);
-    color:var(--white);
+    background:var(--primary-bs) !important;
+    color:var(--white) !important;
   }
   .btn-back-grey {
-    background:var(--button-grey);
+    background:var(--button-grey) !important;
     color:var(--white);
   }
   .border-primary {
-    border:1px solid var(--primary-bs);
+    border:1px solid var(--primary-bs) !important;
   }
 
   .cursor-pointer {
-    cursor:pointer;
+    cursor:pointer !important;
   }
 
   .text-small {

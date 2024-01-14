@@ -28,6 +28,21 @@ import { BookingDetailComponent } from './pages/user/booking-detail/booking-deta
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
+import { UserDetailComponent } from './pages/user/user-detail/user-detail.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatListModule } from '@angular/material/list';
+import { NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+import { MatSortModule } from '@angular/material/sort';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -39,7 +54,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CourseComponent,
     CartComponent,
     UserComponent,
-    BookingDetailComponent
+    BookingDetailComponent,
+    UserDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -61,6 +77,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatExpansionModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatStepperModule,
+    MatAutocompleteModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -68,7 +86,21 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    FormsModule,
+    CommonModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatRadioModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatListModule,
+    NgxMatDatetimePickerModule,
+    NgxMatTimepickerModule,
+    MatSortModule
   ],
   providers: [
   ],

@@ -1,0 +1,48 @@
+.title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #333;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  margin: 0; /* elimina los márgenes por defecto de h2 */
+}
+
+  [type="file"] {
+    height: 0;
+    overflow: hidden;
+    width: 0;
+  }
+
+  [type="file"] + label {
+    background: #FF3085;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Rubik', sans-serif;
+    font-size: inherit;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    outline: none;
+    padding: 1rem 50px;
+    position: relative;
+    transition: all 0.3s;
+    vertical-align: middle;
+
+    &:hover {
+      background-color: darken(#FF3085, 10%);
+    }
+
+    &.btn-1 {
+      background-color: #FF3085;
+      box-shadow: 0 6px darken(#FF3085, 10%);
+      transition: none;
+
+      &:hover {
+        box-shadow: 0 4px darken(#FF3085, 10%);
+        top: 2px;
+      }
+    }
+
+  }

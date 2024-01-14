@@ -267,8 +267,8 @@ export class HomeComponent implements OnInit {
   }
   */
 
-  goTo(...urls: string[]) {
-    this.router.navigate(this.activatedRoute.snapshot.params['slug'] + urls);
+  goTo(url: string) {
+    this.router.navigate([url]);
   }
 
   setAgeRange(): void {

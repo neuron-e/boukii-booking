@@ -173,7 +173,7 @@
       <button class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
         {{'text_availability' | translate }}
       </button>
-      <button (click)="goTo(this.schoolData.slug + '/course',course.id)"
+      <button (click)="goTo(this.schoolData.slug + '/course/' +course.id)"
               class="btn-back-primary rounded-8 button-style cursor-pointer" type="button">
         {{'text_see_coourse' | translate }}
       </button>
@@ -295,7 +295,7 @@
           <div class="btn-back-grey rounded-8 button-style cursor-pointer width-100">
             {{'text_availability' | translate }}
           </div>
-          <div (click)="goTo(this.schoolData.slug + '/course',course.id)" class="btn-back-primary rounded-8 button-style cursor-pointer width-100">
+          <div (click)="goTo(this.schoolData.slug + '/course/' + course.id)" class="btn-back-primary rounded-8 button-style cursor-pointer width-100">
             {{'text_see_coourse' | translate }}
           </div>
         </div>

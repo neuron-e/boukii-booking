@@ -7,6 +7,9 @@
 
 <mat-tab-group *ngIf="!loading">
   <mat-tab label="Datos">
+    <app-user-detail></app-user-detail>
+  </mat-tab>
+  <mat-tab label="Deportes">
 
     <div class="container py-6" *ngIf="!loading">
       <div class="card overflow-hidden">
@@ -54,7 +57,7 @@
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none" style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
 
-                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;">{{ userLogged.clients[0]?.first_name }} {{ userLogged.clients[0]?.last_name }}</div>
+                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ userLogged.clients[0]?.first_name }} {{ userLogged.clients[0]?.last_name }}</div>
               </div>
               <div
                 *ngFor="let user of userLogged.clients[0].utilizers;"
@@ -67,7 +70,7 @@
                     'border': +id === id && this.id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
                   }"
                   style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
-                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;">{{ user?.first_name }} {{ user?.last_name }}</div>
+                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
               </div>
 
               <div style="cursor:pointer"
@@ -113,8 +116,8 @@
                       <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
                     </div>
                     <div style="float: left; width:80%;">
-                      <p style="float: left; width:100%;font-size: 12px;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
-                      <h1 style="float: left; width:100%;font-size: 20px;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
+                      <p style="float: left; width:100%;font-size: 12px;color:black;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
+                      <h1 style="float: left; width:100%;font-size: 20px;color:black;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
                     </div>
 
                     <div style="float: left; width:100%;margin: 2% 0 0 0;">
@@ -129,7 +132,7 @@
                       </div>
 
                       <div style="float: left; width:80%;">
-                        <div class="montserrat">{{goal.name}} </div>
+                        <div class="montserrat" style="color:black;">{{goal.name}} </div>
                       </div>
 
                       <div style="float: left; width:5%;margin-right: 15px;">
