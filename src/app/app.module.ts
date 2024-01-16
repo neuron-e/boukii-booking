@@ -43,6 +43,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatListModule } from '@angular/material/list';
 import { NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { MatSortModule } from '@angular/material/sort';
+import {SlugResolver} from './resolver/slug.resolver';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -102,8 +103,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgxMatTimepickerModule,
     MatSortModule
   ],
-  providers: [
-  ],
+  providers: [SlugResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule {

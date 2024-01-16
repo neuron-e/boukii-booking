@@ -4,12 +4,15 @@ import { HomeComponent } from './pages/home/home.component';
 import { CourseComponent } from './pages/course/course.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { UserComponent } from './pages/user/user.component';
+import { SlugResolver } from './resolver/slug.resolver';
 
 const routes: Routes = [
-  { path: ':slug', component: HomeComponent },
-  { path: ':slug/course/:id', component: CourseComponent },
-  { path: ':slug/cart', component: CartComponent },
-  { path: ':slug/user', component: UserComponent },
+  { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver },
+
+  },
+  { path: ':slug/course/:id', component: CourseComponent, resolve: { schoolData: SlugResolver } },
+  { path: ':slug/cart', component: CartComponent, resolve: { schoolData: SlugResolver } },
+  { path: ':slug/user', component: UserComponent, resolve: { schoolData: SlugResolver } },
   { path: '**', redirectTo: '' },
 ];
 
