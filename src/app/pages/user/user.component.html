@@ -7,7 +7,7 @@
 
 <mat-tab-group (selectedIndexChange)="onTabChange($event)">
   <mat-tab label="Datos">
-    <app-user-detail #userDetail ([defaults])="defaults" (idChange)="handleIdChange($event)" *ngIf="!loading"></app-user-detail>
+    <app-user-detail #userDetail (idChange)="handleIdChange($event)" *ngIf="!loading"></app-user-detail>
   </mat-tab>
   <mat-tab label="Deportes">
 

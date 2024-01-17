@@ -6,7 +6,8 @@ import { MatTable, _MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { Observable, map, startWith } from 'rxjs';
+import { Observable, map, startWith, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import { ApiCrudService } from 'src/app/services/crud.service';
@@ -23,6 +24,7 @@ import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm
 })
 export class UserDetailComponent {
 
+private destroy$: Subject<boolean> = new Subject<boolean>();
 
 @ViewChild('sportsCurrentTable') currentSportsTable: MatTable<any>;
 
@@ -84,7 +86,7 @@ export class UserDetailComponent {
 
   mainClient: any;
   currentImage: any;
-  @Input() defaults: any = {
+  defaults: any = {
     id: null,
     email: null,
     first_name: null,
@@ -108,7 +110,6 @@ export class UserDetailComponent {
     station_id: null,
     active_station: null
   }
-  @Output() defaultsChange = new EventEmitter<any>();
   @Output() idChange = new EventEmitter<any>();
 
   defaultsObservations = {
@@ -159,7 +160,7 @@ export class UserDetailComponent {
 
   ngOnInit(): void {
 
-    this.schoolService.getSchoolData().subscribe(
+    this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
@@ -177,9 +178,15 @@ export class UserDetailComponent {
     this.getData(id, true);
   }
 
+  changeClientDataB(id: any) {
+    this.loading = true;
+    this.id = id;
+    this.getData(id, true);
+  }
+
   getData(id = null, onChangeUser = false) {
 
-    this.authService.getUserData().subscribe(data => {
+    this.authService.getUserData().pipe(takeUntil(this.destroy$)).subscribe(data => {
 
     if (data !== null) {
         this.mainId = data.clients[0].id;
@@ -187,9 +194,9 @@ export class UserDetailComponent {
         this.id = getId;
 
       this.crudService.get('/clients/'+ getId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.defaults = data.data;
-        this.defaultsChange.emit(this.defaults);
 
         this.currentImage = data.data.image;
         if (!onChangeUser) {
@@ -197,6 +204,7 @@ export class UserDetailComponent {
         }
 
         this.crudService.get('/users/'+data.data.user_id)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((user)=> {
 
 
@@ -291,10 +299,12 @@ export class UserDetailComponent {
 
   getSchoolSportDegrees() {
     this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((sport) => {
         this.schoolSports = sport.data;
         sport.data.forEach((element: any, idx: any) => {
           this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
             this.schoolSports[idx].degrees = data.data;
           });
@@ -305,6 +315,7 @@ export class UserDetailComponent {
 
   getSports() {
     this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         data.data.forEach((element: any) => {
           this.schoolSports.forEach((sport: any) => {
@@ -347,6 +358,7 @@ export class UserDetailComponent {
   getDegrees() {
     this.clientSport.forEach((element: any) => {
       this.crudService.get('/degrees/'+element.degree_id)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((data) => {
           element.level = data.data;
         })
@@ -355,6 +367,7 @@ export class UserDetailComponent {
 
   getClientObservations() {
     this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         if(data.data.length > 0) {
 
@@ -374,6 +387,7 @@ export class UserDetailComponent {
 
   getClientSchool() {
     this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    .pipe(takeUntil(this.destroy$))
     .subscribe((data) => {
       this.clientSchool = data.data;
 
@@ -382,6 +396,7 @@ export class UserDetailComponent {
 
   getClientSport() {
     this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientSport = data.data;
         this.selectedSport = this.clientSport[0];
@@ -421,9 +436,11 @@ export class UserDetailComponent {
 
   getStations() {
     this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((station) => {
         station.data.forEach((element:any) => {
           this.crudService.get('/stations/'+element.station_id)
+            .pipe(takeUntil(this.destroy$))
             .subscribe((data) => {
               this.stations.push(data.data);
 
@@ -435,6 +452,7 @@ export class UserDetailComponent {
 
   getLanguages() {
     this.crudService.list('/languages', 1, 1000)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.languages = data.data.reverse();
         this.setInitLanguages();
@@ -533,9 +551,11 @@ export class UserDetailComponent {
 
   getClientUtilisateurs() {
     this.crudService.list('/slug/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientUsers = data.data;
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((data) => {
           data.data.forEach((element: any) => {
             this.clientUsers.forEach((cl: any) => {
@@ -609,6 +629,7 @@ export class UserDetailComponent {
 
   updateLevel(clientSport: any, level: any) {
     this.crudService.update('/client-sports', {client_id: clientSport.id, sport_id: clientSport.sport_id, degree_id: level.id, school_id: this.schoolData.id}, clientSport.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.snackbar.open(this.translateService.instant('snackbar.client.level_updated'), 'OK', {duration: 3000});
       })
@@ -627,10 +648,12 @@ export class UserDetailComponent {
     }
 
     this.crudService.update('/users', this.defaultsUser, this.defaultsUser.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
         this.defaults.user_id = user.data.id;
 
         this.crudService.update('/clients', this.defaults, this.id)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((client) => {
             this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', {duration: 3000});
 
@@ -638,6 +661,7 @@ export class UserDetailComponent {
             this.defaultsObservations.school_id = this.schoolData.id;
             if (this.defaultsObservations.id) {
               this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
+              .pipe(takeUntil(this.destroy$))
               .subscribe((obs) => {
                 console.log('client observation created');
               })
@@ -647,6 +671,7 @@ export class UserDetailComponent {
               this.sportsData.data.forEach((element: any) => {
 
                 this.crudService.create('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id})
+                  .pipe(takeUntil(this.destroy$))
                   .subscribe(() => {
                     console.log('client sport created');
                   })
@@ -655,6 +680,7 @@ export class UserDetailComponent {
               this.sportsCurrentData.data.forEach((element: any) => {
 
                 this.crudService.update('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id}, element.id)
+                  .pipe(takeUntil(this.destroy$))
                   .subscribe(() => {
                     console.log('client sport updated');
                   })
@@ -742,11 +768,12 @@ export class UserDetailComponent {
         data: {id: this.schoolData.id}
       });
 
-      dialogRef.afterClosed().subscribe((data: any) => {
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         if (data) {
 
           if(data.action === 'add') {
             this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
+            .pipe(takeUntil(this.destroy$))
             .subscribe((res) => {
               this.getClientUtilisateurs();
             })
@@ -786,18 +813,22 @@ export class UserDetailComponent {
             this.setLanguagesUtilizateur(data.data.languages, client);
 
             this.crudService.create('/users', user)
+            .pipe(takeUntil(this.destroy$))
             .subscribe((user) => {
               client.user_id = user.data.id;
 
               this.crudService.create('/clients', client)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe((clientCreated) => {
                   this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
 
                   this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                    .pipe(takeUntil(this.destroy$))
                     .subscribe((clientSchool) => {
 
                       setTimeout(() => {
                         this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                        .pipe(takeUntil(this.destroy$))
                         .subscribe((res) => {
                           this.getClientUtilisateurs();
                         })}, 1000);
@@ -914,15 +945,18 @@ export class UserDetailComponent {
       this.detailData = event.item;
 
       this.crudService.get('/slug/courses/'+this.detailData.course_id)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((course) => {
           this.detailData.course = course.data;
           this.crudService.get('/sports/'+this.detailData.course.sport_id)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((sport) => {
             this.detailData.sport = sport.data;
           });
 
           if (this.detailData.degree_id !== null) {
             this.crudService.get('/degrees/'+this.detailData.degree_id)
+            .pipe(takeUntil(this.destroy$))
             .subscribe((degree) => {
               this.detailData.degree = degree.data;
             })
@@ -931,6 +965,7 @@ export class UserDetailComponent {
       })
 
       this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id='+this.detailData.booking.id)
+        .pipe(takeUntil(this.destroy$))
         .subscribe((booking) => {
           this.detailData.users = [];
 
@@ -939,6 +974,7 @@ export class UserDetailComponent {
               this.detailData.users.push(element);
 
                 this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+element.client_id)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe((cd) => {
 
                   if (cd.data.length > 0) {
@@ -992,6 +1028,7 @@ export class UserDetailComponent {
 
   getClients() {
     this.crudService.list('/slug/clients/mains', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((client) => {
         this.clients = client.data;
       })
@@ -1127,16 +1164,22 @@ export class UserDetailComponent {
     });
 
 
-    dialogRef.afterClosed().subscribe((data: any) => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
       if (data) {
 
         this.crudService.delete('/clients-utilizers', id)
+          .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
             this.getClientUtilisateurs();
             this.snackbar.open(this.translateService.instant('snackbar.client.removed_user'), 'OK', {duration: 3000});
           })
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
 
