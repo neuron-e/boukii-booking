@@ -6,3 +6,13 @@
   background: #fff;
   margin: 0; /* elimina los márgenes por defecto de h2 */
   }
+
+  ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+    color: #999 !important;
+  }
+  ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: #fff !important;
+  }
+  ::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
+    border-bottom: 1px solid #fff !important;
+  }

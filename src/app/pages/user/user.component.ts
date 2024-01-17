@@ -55,7 +55,7 @@ export class UserComponent implements OnInit {
   defaultsUser: any;
   defaultsObservations: any;
   clientSchool = [];
-  clientUsers = [];
+  clientUsers:any[] = [];
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
     private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
@@ -79,11 +79,13 @@ export class UserComponent implements OnInit {
       if (data !== null) {
         this.mainId = data.clients[0].id;
         this.userLogged = data;
+        console.log(this.userLogged);
         const getId = id === null ? this.mainId : id;
         this.id = getId;
         this.crudService.get('/clients/'+ getId)
           .subscribe((client) => {
             this.defaults = client.data;
+            console.log(this.defaults);
 
             this.crudService.get('/users/'+client.data.user_id)
               .subscribe((user)=> {
@@ -135,9 +137,10 @@ export class UserComponent implements OnInit {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/admin/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+    this.crudService.list('/slug/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
       .subscribe((data) => {
         this.clientUsers = data.data;
+        console.log(this.clientUsers);
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
         .subscribe((data) => {
           data.data.forEach((element: any) => {
