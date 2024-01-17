@@ -5,9 +5,9 @@
     {{'text_continue' | translate }}
 </div>
 
-<mat-tab-group *ngIf="!loading">
+<mat-tab-group (selectedIndexChange)="onTabChange($event)">
   <mat-tab label="Datos">
-    <app-user-detail></app-user-detail>
+    <app-user-detail #userDetail ([defaults])="defaults" (idChange)="handleIdChange($event)" *ngIf="!loading"></app-user-detail>
   </mat-tab>
   <mat-tab label="Deportes">
 
@@ -24,11 +24,11 @@
         <div class="z-10 relative -mt-16 px-6 flex items-center" style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;" >
           <img
             class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
-            [src]="userLogged.clients[0].image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
+            [src]="defaults.image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
             <div class="h-16" style="display: flex;flex-direction: column;gap: 12px;">
-              <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;">{{getLanguage(userLogged.clients[0].language1_id)}} · {{getCountry(userLogged.clients[0].country)}} · {{calculateAge(userLogged.clients[0].birth_date)}}  &ensp;{{'years' | translate }}</div>
+              <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;">{{getLanguage(defaults.language1_id)}} · {{getCountry(defaults.country)}} · {{calculateAge(defaults.birth_date)}}  &ensp;{{'years' | translate }}</div>
 
-              <div class="headline text-white" style="font-size: 18px;color:#fff !important;">{{userLogged.clients[0].first_name}} {{userLogged.clients[0].last_name}}</div>
+              <div class="headline text-white" style="font-size: 18px;color:#fff !important;">{{defaults.first_name}} {{defaults.last_name}}</div>
 
               <!-- añadir icono aqui-->
               <!-- añadir icono aqui-->
@@ -61,13 +61,13 @@
               </div>
               <div
                 *ngFor="let user of clientUsers"
-                class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user[id])" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
+                class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
                 <img
                   [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none"
                   [ngStyle]="{
-                    'border': +id === id && this.id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
+                    'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
                   }"
                   style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
                   <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
@@ -179,49 +179,106 @@
   </mat-tab>
   <mat-tab label="Reservas">
 
-    <div class="card overflow-hidden">
-      <div class="h-64 relative overflow-hidden">
-        <img
-          class="w-full h-full object-cover"
-          src="../../../../assets/images/8.png" />
-        <div
-          class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
+    <div class="container py-6" *ngIf="!loading">
+      <div class="card overflow-hidden">
+        <div class="h-64 relative overflow-hidden">
+          <img
+            class="w-full h-full object-cover"
+            src="../../../../assets/images/8.png" />
+          <div
+            class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
+
+        </div>
+
+        <div class="z-10 relative -mt-16 px-6 flex items-center" style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;" >
+          <img
+            class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
+            [src]="defaults.image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
+            <div class="h-16" style="display: flex;flex-direction: column;gap: 12px;">
+              <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;">{{getLanguage(defaults.language1_id)}} · {{getCountry(defaults.country)}} · {{calculateAge(defaults.birth_date)}}  &ensp;{{'years' | translate }}</div>
+
+              <div class="headline text-white" style="font-size: 18px;color:#fff !important;">{{defaults.first_name}} {{defaults.last_name}}</div>
+
+              <!-- añadir icono aqui-->
+              <!-- añadir icono aqui-->
+              <!-- añadir icono aqui-->
+            </div>
+        </div>
 
       </div>
 
-      <div class="z-10 relative -mt-16 px-6 flex items-center" style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;" >
-        <img
-          class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
-          [src]="userLogged.clients[0].image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
-          <div class="h-16" style="display: flex;flex-direction: column;gap: 12px;">
-            <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;">{{getLanguage(userLogged.clients[0].language1_id)}} · {{getCountry(userLogged.clients[0].country)}} · {{calculateAge(userLogged.clients[0].birth_date)}}  &ensp;{{'years' | translate }}</div>
 
-            <div class="headline text-white" style="font-size: 18px;color:#fff !important;">{{userLogged.clients[0].first_name}} {{userLogged.clients[0].last_name}}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;">
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:30%;">
 
-            <!-- añadir icono aqui-->
-            <!-- añadir icono aqui-->
-            <!-- añadir icono aqui-->
+          <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
+            <div class="px-6 py-4 border-b">
+              <h2 class="title m-0">{{'users' | translate }}</h2>
+            </div>
+
+            <div class="px-6 py-4 flex flex-col gap-4" style="cursor:pointer;">
+              <div
+                class="flex items-center" (click)="changeClientData(userLogged.clients[0].id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
+                <img
+                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
+                  [ngStyle]="{
+                    'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
+                  }"
+                  alt="Profile Picture"
+                  class="avatar ltr:mr-3 rtl:ml-3 flex-none" style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+
+                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ userLogged.clients[0]?.first_name }} {{ userLogged.clients[0]?.last_name }}</div>
+              </div>
+              <div
+                *ngFor="let user of clientUsers"
+                class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
+                <img
+                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+                  alt="Profile Picture"
+                  class="avatar ltr:mr-3 rtl:ml-3 flex-none"
+                  [ngStyle]="{
+                    'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
+                  }"
+                  style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
+              </div>
+
+              <div style="cursor:pointer"
+                class="flex items-center">
+                <!--<mat-icon svgIcon="mat:add"></mat-icon>
+                <div @fadeInRight class="flex-auto" (click)="addUtilisateur()">
+                  <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
+                </div>-->
+              </div>
+
+
+            </div>
           </div>
+
+        </div>
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;">
+          <div class="flex-auto">
+            <table *ngIf="dataSource" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+              <!--- Note that these columns can be defined in any order.
+                    The actual rendered columns are set as a property on the row definition" -->
+
+              <!-- Position Column -->
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> Id. </th>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> #{{element.id}} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <vex-booking-detail *ngIf="selectedBooking" [id]="bookingId"></vex-booking-detail>
+          </div>
+        </div>
+
       </div>
-
     </div>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-      <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
-
-      <!-- Position Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> Id. </th>
-        <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> #{{element.id}} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <vex-booking-detail *ngIf="selectedBooking" [id]="bookingId"></vex-booking-detail>
-
   </mat-tab>
 </mat-tab-group>
 

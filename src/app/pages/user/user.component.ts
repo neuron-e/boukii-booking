@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -21,6 +21,8 @@ import { AddClientUserModalComponent } from './add-client-user/add-client-user.c
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
+
+  @ViewChild('userDetail') userDetailComponent:any;
 
   selectedSport: any;
   selectedSports: any[] = [];
@@ -73,19 +75,26 @@ export class UserComponent implements OnInit {
     );
   }
 
+  onTabChange(index: number) {
+    console.log(index);
+    if (index === 0) {
+      this.userDetailComponent.changeClientData(this.defaults.id);
+    }
+  }
+
   getData(id = null, onChangeUser = false) {
 
     this.authService.getUserData().subscribe(data => {
       if (data !== null) {
         this.mainId = data.clients[0].id;
         this.userLogged = data;
+
         console.log(this.userLogged);
         const getId = id === null ? this.mainId : id;
         this.id = getId;
         this.crudService.get('/clients/'+ getId)
           .subscribe((client) => {
             this.defaults = client.data;
-            console.log(this.defaults);
 
             this.crudService.get('/users/'+client.data.user_id)
               .subscribe((user)=> {
@@ -170,7 +179,7 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.userLogged.clients[0].id)
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id)
       .subscribe((bookings) => {
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
@@ -387,8 +396,12 @@ export class UserComponent implements OnInit {
     return this.schoolSports.filter((sport: any) => sport?.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
+  handleIdChange(newId: any) {
+    this.changeClientData(newId);
+  }
+
   changeClientData(id: any) {
-    this.loading = true;
+    //this.loading = true;
     this.id = id;
     this.getData(id, true);
   }

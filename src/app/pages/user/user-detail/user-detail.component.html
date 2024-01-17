@@ -58,7 +58,7 @@
               alt="Profile Picture"
               class="avatar ltr:mr-3 rtl:ml-3 flex-none"
               [ngStyle]="{
-                'border': +id === defaults.id && this.id !== mainId ? '#FF3085 1px solid' : 'none'
+                'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
               }"
               />
             <div class="flex-auto">

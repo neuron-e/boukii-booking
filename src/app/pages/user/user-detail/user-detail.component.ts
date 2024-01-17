@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -84,7 +84,7 @@ export class UserDetailComponent {
 
   mainClient: any;
   currentImage: any;
-  defaults: any = {
+  @Input() defaults: any = {
     id: null,
     email: null,
     first_name: null,
@@ -108,6 +108,8 @@ export class UserDetailComponent {
     station_id: null,
     active_station: null
   }
+  @Output() defaultsChange = new EventEmitter<any>();
+  @Output() idChange = new EventEmitter<any>();
 
   defaultsObservations = {
     id: null,
@@ -127,6 +129,7 @@ export class UserDetailComponent {
     type: 'client',
     active: false,
   }
+
 
   groupedByColor = {};
   colorKeys: string[] = []; // Aquí almacenaremos las claves de colores
@@ -170,6 +173,7 @@ export class UserDetailComponent {
   changeClientData(id: any) {
     this.loading = true;
     this.id = id;
+    this.idChange.emit(id);
     this.getData(id, true);
   }
 
@@ -185,6 +189,7 @@ export class UserDetailComponent {
       this.crudService.get('/clients/'+ getId)
       .subscribe((data) => {
         this.defaults = data.data;
+        this.defaultsChange.emit(this.defaults);
 
         this.currentImage = data.data.image;
         if (!onChangeUser) {
