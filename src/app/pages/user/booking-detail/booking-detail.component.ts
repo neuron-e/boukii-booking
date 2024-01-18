@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { FormControl, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Observable, Subscription, forkJoin, map, of, startWith } from 'rxjs';
+import { Observable, Subscription, forkJoin, map, of, startWith, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCalendarCellCssClasses, MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
@@ -18,6 +19,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./booking-detail.component.scss']
 })
 export class BookingDetailComponent implements OnInit {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   privateIcon = 'https://school.boukii.com/assets/icons/prive_ski2x.png';
   collectifIcon = 'https://school.boukii.com/assets/icons/collectif_ski2x.png';
@@ -27,8 +29,18 @@ export class BookingDetailComponent implements OnInit {
   @Input()
   id: any;
 
+  @Input() set bookingId(value: number) {
+    if (this.id !== value) {
+      this.id = value;
+      this.loadData();
+    }
+  }
+  @Input() bookingSelectionChanged: EventEmitter<number>;
+
   @Output()
   public monthAndYearChange = new EventEmitter<Date | null>();
+
+  @Output() closeDetailEvent = new EventEmitter<void>();
 
   borderActive: number = -1;
   showDetail: any = [];
@@ -190,10 +202,16 @@ export class BookingDetailComponent implements OnInit {
                 this.minDate = new Date(); // Establecer la fecha mínima como la fecha actual
               }
 
-  async ngOnInit() {
+              ngOnInit() {
+                this.bookingSelectionChanged.subscribe(() => {
+                  this.loading=true;
+                  this.loadData();
+                });
+              }
 
+  async loadData() {
 
-    this.schoolService.getSchoolData().subscribe(
+    this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(
       school => {
         if (school) {
           this.school = school.data;
@@ -204,7 +222,7 @@ export class BookingDetailComponent implements OnInit {
           this.getDegreesClient();
           this.getMonitors();
           this.getLanguages();
-          this.authService.getUserData().subscribe(user => {
+          this.authService.getUserData().pipe(takeUntil(this.destroy$)).subscribe(user => {
             if (user !== null) {
               this.user = user.clients[0];
               this.getData();
@@ -249,24 +267,29 @@ export class BookingDetailComponent implements OnInit {
   getData() {
 
     this.crudService.get('/schools/'+this.school.id)
+    .pipe(takeUntil(this.destroy$))
     .subscribe((school) => {
 
 
       forkJoin([this.getSportsType()])
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         this.sportTypeData = data[0].data.reverse();
         this.detailClient = this.user;
 
         this.crudService.get('/bookings/'+this.id)
+        .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.booking = data.data;
 
         this.crudService.list('/vouchers-logs', 1, 10000, 'asc', 'id', '&booking_id='+this.id)
+        .pipe(takeUntil(this.destroy$))
           .subscribe((vl) => {
             if(vl.data.length > 0) {
               this.bonusLog = vl.data;
               vl.data.forEach((voucherLog: any) => {
                 this.crudService.get('/vouchers/'+voucherLog.voucher_id)
+                .pipe(takeUntil(this.destroy$))
                   .subscribe((v) => {
                     v.data.currentPay = parseFloat(voucherLog.amount);
                     v.data.before = true;
@@ -287,6 +310,7 @@ export class BookingDetailComponent implements OnInit {
           })
 
         this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id='+this.id)
+        .pipe(takeUntil(this.destroy$))
           .subscribe((bookingUser) => {
             this.bookingUsers = bookingUser.data;
 
@@ -310,6 +334,7 @@ export class BookingDetailComponent implements OnInit {
 
 
                 this.crudService.get('/courses/' + courseId)
+                .pipe(takeUntil(this.destroy$))
                   .subscribe((course: any) => {
                     this.courses.push(course.data);
 
@@ -335,11 +360,13 @@ export class BookingDetailComponent implements OnInit {
 
             this.bookingUsers.forEach((bu: any ,idx: number) => {
               this.crudService.list('/booking-user-extras', 1, 10000, 'desc', 'id', '&booking_user_id='+bu.id)
+              .pipe(takeUntil(this.destroy$))
                 .subscribe((bue: any) =>{
                   if (bue.data.length > 0) {
                     this.bookingExtras.push(bue.data[0]);
                     bue.data.forEach((element: any) => {
                       this.crudService.get('/course-extras/'+element.course_extra_id)
+                      .pipe(takeUntil(this.destroy$))
                       .subscribe((ce) => {
                         if (ce.data) {
                           ce.data.course_date_id = bu.course_date_id;
@@ -373,6 +400,8 @@ export class BookingDetailComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   filterSportsByType() {
@@ -701,6 +730,7 @@ export class BookingDetailComponent implements OnInit {
         if (this.defaults.payment_method_id === 2 || this.defaults.payment_method_id === 3) {
           this.crudService.post('/admin/bookings/payments/' + this.id, {bookingCourses: this.bookingsToCreate, bonus: this.bonus.length > 0 ? this.bonus : null,
              reduction:this.reduction, boukiiCare: this.boukiiCare, cancellationInsurance: this.opRem})
+             .pipe(takeUntil(this.destroy$))
             .subscribe((result: any) => {
               console.log((result));
               window.open(result.payrexx_link, "_self");
@@ -711,6 +741,7 @@ export class BookingDetailComponent implements OnInit {
       }, 1000);
 
       this.crudService.update('/bookings', {paid: this.defaults.paid, payment_method_id: this.defaults.payment_method_id}, this.id)
+      .pipe(takeUntil(this.destroy$))
         .subscribe((res) => {
           this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 3000});
           this.getData();
@@ -808,10 +839,12 @@ export class BookingDetailComponent implements OnInit {
 
   getSports() {
     this.crudService.list('/school-sports', 1, 10000, 'asc', 'sport_id', '&school_id='+this.school.id)
+    .pipe(takeUntil(this.destroy$))
       .subscribe((sport:any) => {
         this.sportData = sport.data.reverse();
         this.sportData.forEach((element:any) => {
           this.crudService.get('/sports/'+element.sport_id)
+          .pipe(takeUntil(this.destroy$))
             .subscribe((data) => {
               element.name = data.data.name;
               element.icon_selected = data.data.icon_selected;
@@ -832,6 +865,7 @@ export class BookingDetailComponent implements OnInit {
 
   getDegrees(sportId: number, onLoad:boolean = false) {
    this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id='+this.school.id + '&sport_id='+sportId + '&active=1')
+   .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.levels = data.data.sort((a:any, b:any) => a.degree_order - b.degree_order);
 
@@ -861,6 +895,7 @@ export class BookingDetailComponent implements OnInit {
   getUtilzers(client: any, onLoad = false) {
     this.defaultsBookingUser.client_id = client.id;
     this.crudService.get('/admin/clients/' + client.id +'/utilizers')
+    .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         this.utilizers = data.data;
       });
@@ -913,6 +948,7 @@ export class BookingDetailComponent implements OnInit {
     };
 
     this.crudService.post('/availability', rq)
+    .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         console.log(data);
 
@@ -951,6 +987,7 @@ export class BookingDetailComponent implements OnInit {
 
   getMonitors() {
     this.crudService.list('/monitors', 1, 10000, 'asc', 'first_name', '&school_id='+this.school.id)
+    .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.monitors = data.data;
       })
@@ -975,6 +1012,7 @@ export class BookingDetailComponent implements OnInit {
 
   getSeason() {
     this.crudService.list('/seasons', 1, 10000, 'asc', 'id', '&school_id='+this.school.id+'&is_active=1')
+    .pipe(takeUntil(this.destroy$))
       .subscribe((season) => {
         this.season = season.data[0];
       })
@@ -982,6 +1020,7 @@ export class BookingDetailComponent implements OnInit {
 
   getSchool() {
     this.crudService.get('/schools/'+this.school.id)
+    .pipe(takeUntil(this.destroy$))
       .subscribe((school) => {
         this.school = school.data;
         this.settings = JSON.parse(school.data.settings);
@@ -1121,6 +1160,7 @@ export class BookingDetailComponent implements OnInit {
 
     bookingUsers.forEach((element:any) => {
       this.crudService.update('/booking-users', {notes: event.target.value}, element.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
 
       })
@@ -1132,6 +1172,7 @@ export class BookingDetailComponent implements OnInit {
   setSchoolNotes(event: any, bookingUsers: any) {
     bookingUsers.forEach((element:any) => {
       this.crudService.update('/booking-users', {notes_school: event.target.value}, element.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
 
       })
@@ -1313,6 +1354,7 @@ export class BookingDetailComponent implements OnInit {
 
   getLanguages() {
     this.crudService.list('/languages', 1, 1000)
+    .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.languages = data.data.reverse();
 
@@ -1463,5 +1505,9 @@ export class BookingDetailComponent implements OnInit {
 
   parseFloatValue(value:any) {
     return parseFloat(value);
+  }
+
+  closeDetail() {
+    this.closeDetailEvent.emit();
   }
 }

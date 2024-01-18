@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -46,13 +46,14 @@ export class UserComponent implements OnInit {
   loading = true;
   id: any;
   bookingId: any = null;
+  bookingSelectionChanged = new EventEmitter<number>();
   selectedBooking: boolean = false;
 
   panelOpenState = false;
   bookings: any = [];
   dataSource: any = [];
 
-  displayedColumns: string[] = ['id'];
+  displayedColumns: string[] = ['bookingusers[0].course.name', 'price_total'];
   mainId: any;
 
   defaults: any;
@@ -81,7 +82,6 @@ export class UserComponent implements OnInit {
   }
 
   onTabChange(index: number) {
-    console.log(index);
     if (index === 0) {
       this.userDetailComponent.changeClientDataB(this.defaults.id);
     }
@@ -104,14 +104,14 @@ export class UserComponent implements OnInit {
 
             this.crudService.get('/users/'+client.data.user_id)
               .pipe(takeUntil(this.destroy$))
-              .subscribe((user)=> {
+              .subscribe(async (user)=> {
 
 
-                this.getSchoolSportDegrees();
-                this.getLanguages(data.clients[0]);
-                this.getClientSchool();
-                this.getClientSport();
-                this.getClientObservations();
+                await this.getSchoolSportDegrees();
+                await this.getLanguages(data.clients[0]);
+                await this.getClientSchool();
+                await this.getClientSport();
+                await this.getClientObservations();
                 this.getBookings();
 
                 if (!onChangeUser) {
@@ -125,33 +125,29 @@ export class UserComponent implements OnInit {
     });
   }
 
-  getClientSchool() {
-    this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data) => {
+  async getClientSchool() {
+    try {
+      const data:any = await this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
       this.clientSchool = data.data;
-
-    })
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  getClientObservations() {
-    this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        if(data.data.length > 0) {
-
-          this.defaultsObservations = data.data[0];
-        } else {
-          this.defaultsObservations = {
-            id: null,
-            general: '',
-            notes: '',
-            historical: '',
-            client_id: null,
-            school_id: null
-          }
-        }
-      })
+  async getClientObservations() {
+    try {
+      const data:any = await this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+      this.defaultsObservations = data.data.length > 0 ? data.data[0] : {
+        id: null,
+        general: '',
+        notes: '',
+        historical: '',
+        client_id: null,
+        school_id: null
+      };
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   getClientUtilisateurs() {
@@ -184,15 +180,21 @@ export class UserComponent implements OnInit {
   }
 
   selectBooking(id: number) {
+    console.log(id);
     this.selectedBooking = false;
-    this.bookingId = id;
-    this.selectedBooking = true;
+
+    setTimeout(() => {
+      this.selectedBooking = true;
+      this.bookingId = id;
+      this.bookingSelectionChanged.emit(this.bookingId);
+    }, 0);
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id)
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id, '&with[]=bookingusers.course')
       .pipe(takeUntil(this.destroy$))
       .subscribe((bookings) => {
+        console.log(bookings.data);
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
       })
@@ -236,13 +238,14 @@ export class UserComponent implements OnInit {
     return country ? country.name : 'NDF';
   }
 
-  getLanguages(user: any) {
-    this.crudService.list('/languages', 1, 1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.languages = data.data.reverse();
-        this.setInitLanguages(user);
-      })
+  async getLanguages(user: any) {
+    try {
+      const data:any = await this.crudService.list('/languages', 1, 1000).toPromise();
+      this.languages = data.data.reverse();
+      this.setInitLanguages(user);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   selectSportEvo(sport: any) {
@@ -304,21 +307,19 @@ export class UserComponent implements OnInit {
     return ret;
   }
 
-  getClientSport() {
-    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.clientSport = data.data;
-        this.getSports();
-        this.getDegrees();
-        setTimeout(() => {
-          this.selectedSport = this.clientSport[0];
-          this.selectSportEvo(this.selectedSport);
-          this.loading = false;
-
-        }, 500);
-      })
+  async getClientSport() {
+  try {
+    const data:any = await this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+    this.clientSport = data.data;
+    await this.getSports();
+    await this.getDegrees();
+    this.selectedSport = this.clientSport[0];
+    this.selectSportEvo(this.selectedSport);
+    this.loading = false;
+  } catch (error) {
+    console.error(error);
   }
+}
 
   getDegrees() {
     this.clientSport.forEach((element: any) => {
@@ -352,19 +353,18 @@ export class UserComponent implements OnInit {
     });
   }
 
-  getSchoolSportDegrees() {
-    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((sport) => {
-        this.schoolSports = sport.data;
-        sport.data.forEach((element:any, idx: number) => {
-          this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((data) => {
-            this.schoolSports[idx].degrees = data.data;
-          });
-        });
-      })
+  async getSchoolSportDegrees() {
+    try {
+      const sport:any = await this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id).toPromise();
+      this.schoolSports = sport.data;
+      
+      for (let [idx, element] of sport.data.entries()) {
+        const data:any = await this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id).toPromise();
+        this.schoolSports[idx].degrees = data.data;
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   getSports() {
@@ -539,6 +539,11 @@ export class UserComponent implements OnInit {
 
       dataToModify.language6_id = langs[5].id;
     }
+  }
+
+  onCloseDetail() {
+    this.selectedBooking = false;
+    this.getData(this.id,true);
   }
 
   ngOnDestroy(): void {

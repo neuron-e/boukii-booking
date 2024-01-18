@@ -39,7 +39,7 @@
 
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;">
 
-        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:30%;">
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:30%;min-width:30%;">
 
           <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
             <div class="px-6 py-4 border-b">
@@ -86,7 +86,7 @@
           </div>
 
         </div>
-        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;">
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;min-width:70%;">
           <div class="flex-auto">
           <div class="card">
             <div class="px-6 py-4 border-b">
@@ -209,7 +209,8 @@
 
 
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;">
-        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:30%;">
+
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading && !selectedBooking" style="width:30%;min-width:30%;">
 
           <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
             <div class="px-6 py-4 border-b">
@@ -256,25 +257,28 @@
           </div>
 
         </div>
-        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;">
+        <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading && !selectedBooking" style="width:70%;min-width:70%;">
           <div class="flex-auto">
             <table *ngIf="dataSource" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-              <!--- Note that these columns can be defined in any order.
-                    The actual rendered columns are set as a property on the row definition" -->
-
-              <!-- Position Column -->
-              <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef> Id. </th>
-                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> #{{element.id}} </td>
+              <ng-container matColumnDef="bookingusers[0].course.name">
+                <th mat-header-cell *matHeaderCellDef> Course Name </th>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.bookingusers[0]?.course?.name || 'N/A'}} </td>
+              </ng-container>
+              
+              <ng-container matColumnDef="price_total">
+                <th mat-header-cell *matHeaderCellDef> Price </th>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.price_total}} CHF</td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-
-            <vex-booking-detail *ngIf="selectedBooking" [id]="bookingId"></vex-booking-detail>
           </div>
+        </div>
+
+        <div style="width:100%;">
+          <vex-booking-detail [hidden]="!selectedBooking" (closeDetailEvent)="onCloseDetail()" [bookingId]="bookingId" [bookingSelectionChanged]="bookingSelectionChanged"></vex-booking-detail>
         </div>
 
       </div>
