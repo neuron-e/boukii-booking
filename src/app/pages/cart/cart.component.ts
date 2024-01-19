@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import {SchoolService} from '../../services/school.service';
 import {BookingService} from '../../services/booking.service';
+import {CartService} from '../../services/cart.service';
 
 @Component({
   selector: 'app-cart',
@@ -29,7 +30,8 @@ export class CartComponent implements OnInit {
   conditionsHTML:string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
-              private bookingService: BookingService, private activatedRoute: ActivatedRoute) { }
+              private bookingService: BookingService, private activatedRoute: ActivatedRoute,
+              private cartService: CartService) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -67,7 +69,8 @@ export class CartComponent implements OnInit {
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
       cart: this.getCleanedCartDetails(),
       voucher: this.voucher,
-      voucherAmount: this.usedVoucherAmount
+      voucherAmount: this.usedVoucherAmount,
+
       // ... otros campos requeridos
     };
 
@@ -110,7 +113,7 @@ export class CartComponent implements OnInit {
 
 
   goTo(...urls: string[]) {
-    this.router.navigate(this.activatedRoute.snapshot.params['slug']+urls);
+    this.router.navigate(urls);
   }
 
   openModalVoucher() {
@@ -118,7 +121,9 @@ export class CartComponent implements OnInit {
   }
 
   closeModalVoucher(voucher: any) {
-    this.voucher = voucher.data;
+    if(voucher) {
+      this.voucher = voucher.data;
+    }
     this.isModalVoucher = false;
     this.updateTotal(); // Actualiza el total cuando se cierra el modal del cupón
   }
@@ -149,6 +154,22 @@ export class CartComponent implements OnInit {
     return cartArray;
   }
 
+  transformArrayToCart(cartArray: any[]): any {
+    const cartObject: any = {};
+
+    for (const cartItem of cartArray) {
+      const { userId, courseId, details } = cartItem;
+
+      if (!cartObject[courseId]) {
+        cartObject[courseId] = {};
+      }
+
+      cartObject[courseId][userId] = details;
+    }
+
+    return cartObject;
+  }
+
   getUniqueDates(details: any[]): any[] {
     const uniqueDatesMap = new Map();
 
@@ -177,7 +198,11 @@ export class CartComponent implements OnInit {
   }
 
   getTotalItemPrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail.extra.price), 0);
+  }
+
+  getTotalItemExtraPrice(details: any[]): number {
+    return details.reduce((total, detail) => total + (parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))), 0);
   }
 
   getBasePrice() {
@@ -197,7 +222,7 @@ export class CartComponent implements OnInit {
 
       if(cartItem.details[0].course.course_type ==1) {
         if(!cartItem.details[0].course.is_flexible) {
-          total += parseFloat(cartItem.details[0].course.price);
+          total += parseFloat(cartItem.details[0].course.price) + this.getTotalItemExtraPrice(cartItem.details);
         } else {
           //TODO: Revisar con flexible
           total += this.getTotalItemPrice(cartItem.details);
@@ -256,4 +281,21 @@ export class CartComponent implements OnInit {
     this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
   }
 
+  deleteCartItem(cartItem: any) {
+    console.log(cartItem);
+    console.log(this.cart);
+
+    const indexToRemove = this.cart.findIndex(item =>
+      item.courseId === cartItem.courseId && item.userId === cartItem.userId
+    );
+
+    if (indexToRemove !== -1) {
+      this.cart.splice(indexToRemove, 1);
+      let cartArray = this.transformArrayToCart(this.cart);
+      console.log(cartArray);
+      localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
+
+      this.cartService.carData.next(cartArray);
+    }
+  }
 }

@@ -18,4 +18,14 @@ export class ClientService extends ApiService {
     return this.http.get<ApiResponse>(url, { headers: this.getHeaders() });
   }
 
+  createUtilizer(utilizer:any, clientId:number) {
+    const url = this.baseUrl + '/slug/client/'+clientId+'/utilizers';
+    return this.http.post<ApiResponse>(url,utilizer, { headers: this.getHeaders() });
+  }
+
+  createClient(client:any) {
+    const url = this.baseUrl + '/slug/clients';
+    return this.http.post<ApiResponse>(url, client, { headers: this.getHeaders() });
+  }
+
 }

@@ -25,19 +25,25 @@
           </div>
           <div class="course-box-icons">
             <img [src]="themeService.add" (click)="goTo(schoolData.slug + '/course',cartItem.courseId)" class="course-box-add cursor-pointer">
-            <img [src]="themeService.trash" class="course-box-delete cursor-pointer">
+            <img [src]="themeService.trash" class="course-box-delete cursor-pointer" (click)="deleteCartItem(cartItem)">
           </div>
         </div>
         <div class="course-box-dates">
           <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 1">
             <div class="text-color-light montserrat" *ngFor="let date of cartItem.details">
               · {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
-
+            <ng-container *ngIf="cartItem.details[0].extra">
+              Forfait
+              <div class="text-color">
+                {{cartItem.details[0].extra.name}}
+              </div>
+            </ng-container>
             <div class="text-color-light montserrat mt-12" >{{cartItem.details[0].subGroup.degree.name}}</div>
             <div class="text-color-light montserrat list-flex">
               <img [src]="themeService.user" />
               {{cartItem.details[0].client.first_name + ' ' + cartItem.details[0].client.last_name}}
             </div>
+
           </div>
           <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 2">
             <!-- Iterar sobre fechas únicas -->
@@ -59,7 +65,12 @@
             </div>
 
             <!-- Iterar sobre clientes únicos -->
-
+            <ng-container *ngIf="cartItem.details[0].extra">
+              Forfait
+              <div class="text-color">
+                {{cartItem.details[0].extra.name}}
+              </div>
+            </ng-container>
               <div class="text-color-light montserrat list-flex mt-12" *ngFor="let client of getUniqueClients(cartItem.details)">
                 <img [src]="themeService.user" />
                 {{ client.first_name + ' ' + client.last_name }}
@@ -73,9 +84,13 @@
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
             <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{cartItem.details[0].course.is_flexible ? (cartItem.details.length * cartItem.details[0].course.price) : cartItem.details[0].course.price }}</span> CHF
+              <span class="text-color fw-semibold text-medium">
+                {{cartItem.details[0].course.is_flexible ?
+                (cartItem.details.length * cartItem.details[0].course.price) + getTotalItemExtraPrice(cartItem.details) :
+                cartItem.details[0].course.price * 1 + getTotalItemExtraPrice(cartItem.details)  }}</span> CHF
             </div>
           </ng-container>
+
         </div>
         <div class="width-100">
           <div class="text-color mb-8">

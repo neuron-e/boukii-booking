@@ -25,6 +25,7 @@ import * as moment from 'moment';
   ]
 })
 export class CourseComponent implements OnInit {
+  today: Date = new Date();
   userLogged: any;
   course: any;
   courseType: number = 2;
@@ -189,6 +190,8 @@ export class CourseComponent implements OnInit {
   selectedLevel: any;
   selectedUser: any;
   selectedDateReservation: any;
+  selectedForfait: any
+
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -215,6 +218,7 @@ export class CourseComponent implements OnInit {
   availableHours : any[] = [];
 
   schoolData: any;
+  settings: any;
   selectedDates: any = [];
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
@@ -231,6 +235,8 @@ export class CourseComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
+          this.settings = JSON.parse(data.data.settings);
+          console.log(this.settings);
         }
       }
     );
@@ -243,6 +249,7 @@ export class CourseComponent implements OnInit {
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
+      this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
         this.availableDurations = this.getAvailableDurations(this.selectedHour);
@@ -336,7 +343,8 @@ export class CourseComponent implements OnInit {
           'course_subgroup_id': null,
           'date': course_date.date,
           'hour_start': this.selectedHour,
-          'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration)
+          'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+          'extra': this.selectedForfait
         })
       }
     } else {
@@ -362,7 +370,8 @@ export class CourseComponent implements OnInit {
               'course_subgroup_id': courseSubgroup.id,
               'date': date.date,
               'hour_start': date.hour_start,
-              'hour_end': date.hour_end
+              'hour_end': date.hour_end,
+              'extra': this.selectedForfait
             })
           }
 
@@ -387,7 +396,8 @@ export class CourseComponent implements OnInit {
             'course_subgroup_id': courseSubgroup.id,
             'date': date.date,
             'hour_start': date.hour_start,
-            'hour_end': date.hour_end
+            'hour_end': date.hour_end,
+            'extra': this.selectedForfait
           })
         })
       }
@@ -407,22 +417,22 @@ export class CourseComponent implements OnInit {
 
       if (!cart[this.course.id][this.selectedUser.id]) {
         cart[this.course.id][this.selectedUser.id] = [];
+        cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+
+        localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+
+        this.cartService.carData.next(cart);
+        //TODO: mostrar mensaje de curso guardado correctamente.
+
+        this.goTo(this.schoolData.slug);
+      } else {
+        alert('El cliente tiene una reserva para este curso');
       }
 
-      cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
 
-      localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-
-      this.cartService.carData.next(cart);
-      //TODO: mostrar mensaje de curso guardado correctamente.
-
-      this.goTo(this.schoolData.slug);
     }, error => {
       alert('El cliente tiene una reserva que hace overlap con este curso');
     })
-
-
-
   }
 
   calculateEndTime(startTime: string, duration: string): string {
@@ -519,11 +529,31 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    this.router.navigate(this.route.snapshot.params['slug']+urls);
+    debugger;
+    this.router.navigate(urls);
   }
 
-  transformAge(birthDate:string) {
-    const fechaNacimientoDate = new Date(birthDate);
+  transformAge(birthDate: string) {
+    let fechaNacimientoDate: Date;
+
+    // Verificar el formato de la fecha y ajustar en consecuencia
+    if (/\d{4}-\d{2}-\d{2}/.test(birthDate)) {
+      // Si el formato es "2022-01-18"
+      fechaNacimientoDate = new Date(birthDate);
+    } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z/.test(birthDate)) {
+      // Si el formato es "2024-01-17T00:00:00.000000Z"
+      const parts = birthDate.split('T')[0].split('-');
+      fechaNacimientoDate = new Date(
+        parseInt(parts[0], 10),
+        parseInt(parts[1], 10) - 1,
+        parseInt(parts[2], 10)
+      );
+    } else {
+      // Formato no reconocido, manejarlo según tus requisitos
+      console.error('Formato de fecha de nacimiento no válido');
+      return 0; // Retorna 0 en caso de un formato no válido
+    }
+
     const fechaActual = new Date();
 
     // Calcula la diferencia en milisegundos entre las dos fechas
@@ -661,7 +691,7 @@ export class CourseComponent implements OnInit {
 
     // Calcula si hay niveles disponibles
     this.hasLevelsAvailable = availableDegreesArray.some((level:any) =>
-      level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.min_age, level.max_age)
+      level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.age_min, level.age_max)
     );
 
     // Si no hay niveles disponibles, muestra un mensaje
@@ -669,6 +699,48 @@ export class CourseComponent implements OnInit {
       // Puedes establecer un mensaje o manejarlo como prefieras
       console.log("No hay niveles disponibles para este usuario.");
     }
+    this.showLevels = true;
+  }
+
+
+  hasMatchingSportLevel(level:any): boolean {
+    // Obtén el deporte seleccionado por el usuario
+    const selectedSport = this.selectedUser?.sports?.find((sport:any) => sport.id === level.sport_id);
+
+    if(!selectedSport) {
+      return true;
+    }
+
+    // Verifica si el deporte tiene un grado (degree) que coincide con el nivel actual
+    return selectedSport && selectedSport.pivot.degree_id >= level.id;
+  }
+
+  isDateValid(dateToCheck: string, hourStart: string, hourEnd: string): boolean {
+    const currentDate = new Date();
+    const date = new Date(dateToCheck);
+
+    // Compara la fecha completa incluyendo hora, minutos y segundos
+    if (date < currentDate) {
+      return false;
+    }
+
+    // Extrae la hora y los minutos de dateToCheck
+    const checkHour = parseInt(dateToCheck.substring(11, 13));
+    const checkMinutes = parseInt(dateToCheck.substring(14, 16));
+
+    // Extrae la hora de hourStart y hourEnd
+    const startHour = parseInt(hourStart.substring(0, 2));
+    const endHour = parseInt(hourEnd.substring(0, 2));
+
+    // Compara la hora y los minutos con hourStart y hourEnd
+    const isStartTimeValid = checkHour < startHour ||
+      (checkHour === startHour && checkMinutes < parseInt(hourStart.substring(3, 5)));
+
+    const isEndTimeValid = checkHour < endHour ||
+      (checkHour === endHour && checkMinutes < parseInt(hourEnd.substring(3, 5)));
+
+    // Si la fecha es igual o posterior y la hora está dentro del rango, devuelve true
+    return isStartTimeValid && isEndTimeValid;
   }
 
 }

@@ -7,9 +7,7 @@ import { UserComponent } from './pages/user/user.component';
 import { SlugResolver } from './resolver/slug.resolver';
 
 const routes: Routes = [
-  { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver },
-
-  },
+  { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver }},
   { path: ':slug/course/:id', component: CourseComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/cart', component: CartComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/user', component: UserComponent, resolve: { schoolData: SlugResolver } },
