@@ -3,6 +3,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ClientService} from '../../services/client.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-modal-new-user',
@@ -27,7 +29,8 @@ export class ModalNewUserComponent implements OnInit {
 
   loginForm: FormGroup;
 
-  constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService) {
+  constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService,
+              private snackbar: MatSnackBar, private translateService: TranslateService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -36,11 +39,9 @@ export class ModalNewUserComponent implements OnInit {
       last_name: ['', Validators.required],
       birth_date: ['', Validators.required],
       phone: ['', Validators.required],
-      country: ['', Validators.required],
-      province: ['', Validators.required],
-      language1: ['', Validators.required],
-      language2: ['', Validators.required],
-      language3: ['', Validators.required],
+      language1_id: ['', Validators.required],
+      language2_id: [''],
+      language3_id: [''],
     }, {
       validators: this.passwordMatchValidator // Validador personalizado para comprobar la coincidencia de contraseñas
     });
@@ -58,10 +59,13 @@ export class ModalNewUserComponent implements OnInit {
     this.clientService.createClient(formData).subscribe(
       (res) => {
         console.log('Cliente creado exitosamente:', res);
+        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+
         this.onClose.emit();
       },
       (error) => {
-        console.error('Error al crear el cliente:', error);
+        //TODO: Gestionar error de api o error del que el cliente ya existe
+        this.snackbar.open(this.translateService.instant('error'), 'OK', {duration: 3000});
       }
     );
   }

@@ -103,6 +103,9 @@
             },
             "development": {
               "browserTarget": "boukii-booking:build:development"
+            },
+            "local": {
+              "browserTarget": "boukii-booking:build:local"
             }
           },
           "defaultConfiguration": "development"
