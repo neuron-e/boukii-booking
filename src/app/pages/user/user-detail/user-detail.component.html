@@ -14,9 +14,9 @@
         class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
         [src]="defaults.image" style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
         <div class="h-16" style="display: flex;flex-direction: column;gap: 12px;">
-          <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;">{{getLanguage(defaults.language1_id)}} · {{getCountry(defaults.country)}} · {{calculateAge(defaults.birth_date)}}  &ensp;{{'years' | translate }}</div>
+          <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;line-height: 1.2;">{{getLanguage(defaults.language1_id)}} · {{getCountry(defaults.country)}} · {{calculateAge(defaults.birth_date)}}  &ensp;{{'years' | translate }}</div>
 
-          <div class="headline text-white" style="font-size: 18px;color:#fff !important;">{{defaults.first_name}} {{defaults.last_name}}</div>
+          <div class="headline text-white" style="font-size: 18px;color:#fff !important;line-height: 1.2;">{{defaults.first_name}} {{defaults.last_name}}</div>
 
           <!-- añadir icono aqui-->
           <!-- añadir icono aqui-->
@@ -25,8 +25,8 @@
     </div>
   </div>
 
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;" *ngIf="!loading && !editing">
-    <div class="mt-6 flex flex-col md:flex-row md:items-start" style="width:30%;" [formGroup]="formInfoAccount">
+  <div class="flex-sections-user" *ngIf="!loading && !editing">
+    <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left" [formGroup]="formInfoAccount">
 
       <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
         <div class="px-6 py-4 border-b">
@@ -81,7 +81,7 @@
 
     </div>
 
-    <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading" style="width:70%;">
+    <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right" *ngIf="!loading">
       <div class="flex-auto">
         <div class="card">
           <div class="px-6 py-4 border-b">
