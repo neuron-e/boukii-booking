@@ -654,5 +654,8 @@
   "all_mails": "Alle E-Mails",
   "mailbox": "Briefkasten",
   "compose": "Komponieren",
-  "mails.empty": "Wählen Sie eine E-Mail zur Visualisierung aus"
-  }
+  "mails.empty": "Wählen Sie eine E-Mail zur Visualisierung aus",
+  "User cannot be created without a password": "Benutzer kann ohne Passwort nicht erstellt werden",
+  "Client already exists": "Kunde existiert bereits",
+  "error.client.register": "Bei der Erstellung des Kunden ist ein unbekannter Fehler aufgetreten. Versuchen Sie es später erneut."
+}

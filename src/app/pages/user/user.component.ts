@@ -172,7 +172,7 @@ export class UserComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    this.router.navigate(this.activatedRoute.snapshot.params['slug'] + urls);
+    this.router.navigate(urls);
   }
 
   goBack(url: string) {
@@ -255,7 +255,7 @@ export class UserComponent implements OnInit {
     this.selectedSport = sport;
 
     this.schoolSports?.forEach((element: any) => {
-      if (this.selectedSport.sport_id === element.sport_id) {
+      if (this.selectedSport && this.selectedSport.sport_id === element.sport_id) {
         this.selectedSport.degrees = element.degrees;
       }
     });
@@ -357,7 +357,7 @@ export class UserComponent implements OnInit {
     try {
       const sport:any = await this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id).toPromise();
       this.schoolSports = sport.data;
-      
+
       for (let [idx, element] of sport.data.entries()) {
         const data:any = await this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id).toPromise();
         this.schoolSports[idx].degrees = data.data;

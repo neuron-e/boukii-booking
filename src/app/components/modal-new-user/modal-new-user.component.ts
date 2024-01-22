@@ -64,8 +64,13 @@ export class ModalNewUserComponent implements OnInit {
         this.onClose.emit();
       },
       (error) => {
-        //TODO: Gestionar error de api o error del que el cliente ya existe
-        this.snackbar.open(this.translateService.instant('error'), 'OK', {duration: 3000});
+        let errorMessage = this.translateService.instant(error.error.message);
+
+        if(!errorMessage) {
+          errorMessage = 'error.client.register'
+        }
+
+        this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
       }
     );
   }

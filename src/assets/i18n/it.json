@@ -653,5 +653,8 @@
   "all_mails": "Tutte le e-mail",
   "mailbox": "cassetta postale",
   "compose": "Comporre",
-  "mails.empty": "Seleziona un'e-mail da visualizzare"
-  }
+  "mails.empty": "Seleziona un'e-mail da visualizzare",
+  "User cannot be created without a password": "Impossibile creare un utente senza password",
+  "Client already exists": "Il cliente esiste già",
+  "error.client.register": "Si è verificato un errore sconosciuto durante la creazione del cliente, riprova più tardi."
+}

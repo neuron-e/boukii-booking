@@ -654,5 +654,8 @@
   "all_mails": "All emails",
   "mailbox": "mailbox",
   "compose": "Compose",
-  "mails.empty": "Select a mail to visualize"
-  }
+  "mails.empty": "Select a mail to visualize",
+  "User cannot be created without a password": "User cannot be created without a password",
+  "Client already exists": "Client already exists",
+  "error.client.register": "An unknown error has ocurred creating the client, try again late"
+}

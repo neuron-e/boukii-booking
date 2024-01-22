@@ -651,6 +651,9 @@
   "all_mails": "Tous les e-mails",
   "mailbox": "boites aux lettres",
   "compose": "Composer",
-  "mails.empty": "Sélectionnez un mail à visualiser"
+  "mails.empty": "Sélectionnez un mail à visualiser",
+  "User cannot be created without a password": "L'utilisateur ne peut pas être créé sans mot de passe",
+  "Client already exists": "Le client existe déjà",
+  "error.client.register": "Une erreur inconnue s'est produite lors de la création du client, veuillez réessayer plus tard"
 
 }
