@@ -659,5 +659,7 @@
   "all_mails": "Todos los mails",
   "mailbox": "Buzón",
   "compose": "Componer",
-  "mails.empty": "Seleccione un correo para visualizar"
-  }
+  "mails.empty": "Seleccione un correo para visualizar",
+  "title_not_found": "404 Página No Encontrada",
+  "text_not_found": "La página que buscas no existe o ha sido trasladada."
+}

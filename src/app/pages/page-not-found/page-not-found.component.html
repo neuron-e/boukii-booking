@@ -1,0 +1,45 @@
+<div class="header-section mb-24">
+    <div class="header-left">
+    </div>
+    <div class="header-right">
+        <img [src]="themeService.modeIcon" (click)="toggleTheme()" class="icon-mode cursor-pointer" />
+        <div class="header-dropdown">
+            <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownLang()">
+                {{'text_language' | translate }}
+                <img [src]="themeService.arrowUp"
+                    [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
+            </div>
+            <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownLang">
+                <div (click)="switchLang('fr')">
+                    <img src="/assets/images/fr.png">
+                    <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='fr'}">FR</span>
+                </div>
+                <div (click)="switchLang('en')">
+                    <img src="/assets/images/en.png">
+                    <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='en'}">EN</span>
+                </div>
+                <div (click)="switchLang('de')">
+                    <img src="/assets/images/de.png">
+                    <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='de'}">DE</span>
+                </div>
+                <div (click)="switchLang('es')">
+                    <img src="/assets/images/es.png">
+                    <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='es'}">ES</span>
+                </div>
+                <div (click)="switchLang('it')">
+                    <img src="/assets/images/it.png">
+                    <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='it'}">IT</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="text-vbig fw-semibold text-color">
+        {{'title_not_found' | translate }}
+    </div>
+    <div class="text-color-light montserrat mt-24">
+        <span class="text-color text-medium montserrat">{{'text_not_found' | translate }}</span>
+    </div>
+</div>

@@ -654,5 +654,7 @@
   "all_mails": "All emails",
   "mailbox": "mailbox",
   "compose": "Compose",
-  "mails.empty": "Select a mail to visualize"
+  "mails.empty": "Select a mail to visualize",
+  "title_not_found": "404 Page Not Found",
+  "text_not_found": "The page you are looking for doesn't exist or has been moved."
   }

@@ -651,6 +651,7 @@
   "all_mails": "Tous les e-mails",
   "mailbox": "boites aux lettres",
   "compose": "Composer",
-  "mails.empty": "Sélectionnez un mail à visualiser"
-
+  "mails.empty": "Sélectionnez un mail à visualiser",
+  "title_not_found": "404 Page Non Trouvée",
+  "text_not_found": "La page que vous recherchez n'existe pas ou a été déplacée."
 }

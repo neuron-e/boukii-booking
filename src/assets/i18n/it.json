@@ -653,5 +653,7 @@
   "all_mails": "Tutte le e-mail",
   "mailbox": "cassetta postale",
   "compose": "Comporre",
-  "mails.empty": "Seleziona un'e-mail da visualizzare"
-  }
+  "mails.empty": "Seleziona un'e-mail da visualizzare",
+  "title_not_found": "404 Pagina Non Trovata",
+  "text_not_found": "La pagina che stai cercando non esiste o è stata spostata."
+}
