@@ -654,6 +654,7 @@
   "mails.empty": "Sélectionnez un mail à visualiser",
   "User cannot be created without a password": "L'utilisateur ne peut pas être créé sans mot de passe",
   "Client already exists": "Le client existe déjà",
-  "error.client.register": "Une erreur inconnue s'est produite lors de la création du client, veuillez réessayer plus tard"
-
+  "error.client.register": "Une erreur inconnue s'est produite lors de la création du client, veuillez réessayer plus tard",
+  "title_not_found": "404 Page Non Trouvée",
+  "text_not_found": "La page que vous recherchez n'existe pas ou a été déplacée."
 }

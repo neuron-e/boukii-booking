@@ -654,6 +654,8 @@
   "all_mails": "Alle E-Mails",
   "mailbox": "Briefkasten",
   "compose": "Komponieren",
+  "title_not_found": "404 Seite Nicht Gefunden",
+  "text_not_found": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
   "mails.empty": "Wählen Sie eine E-Mail zur Visualisierung aus",
   "User cannot be created without a password": "Benutzer kann ohne Passwort nicht erstellt werden",
   "Client already exists": "Kunde existiert bereits",

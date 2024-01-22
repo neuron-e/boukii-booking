@@ -11,8 +11,34 @@
     color: #999 !important;
   }
   ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-    color: #fff !important;
+    color: var(--text-color) !important;
   }
   ::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
-    border-bottom: 1px solid #fff !important;
+    border-bottom: 1px solid var(--text-color) !important;
   }
+
+  ::ng-deep .mat-mdc-tab-labels {
+    flex-wrap:wrap;
+  }
+
+.flex-sections-user {
+  display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;flex-direction:row;
+}
+.flex-sections-user-left {
+  width:30%;min-width:30%;
+}
+.flex-sections-user-right {
+  width:70%;min-width:70%;
+}
+
+@media (max-width:1000px) {
+  .flex-sections-user {
+    display:flex;justify-content:center;align-items:center;margin-top:24px;flex-direction:column;
+  }
+  .flex-sections-user-left {
+    width:100%;margin-bottom:20px;
+  }
+  .flex-sections-user-right {
+    width:100%;
+  }
+}

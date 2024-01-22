@@ -662,5 +662,7 @@
   "mails.empty": "Seleccione un correo para visualizar",
   "User cannot be created without a password": "No se puede crear un usuario sin contraseña",
   "Client already exists": "El cliente ya existe",
-  "error.client.register": "Ha ocurrido un error desconocido al crear el cliente, inténtelo de nuevo más tarde."
+  "error.client.register": "Ha ocurrido un error desconocido al crear el cliente, inténtelo de nuevo más tarde.",
+  "title_not_found": "404 Página No Encontrada",
+  "text_not_found": "La página que buscas no existe o ha sido trasladada."
 }

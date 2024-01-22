@@ -44,6 +44,7 @@ import { MatListModule } from '@angular/material/list';
 import { NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { MatSortModule } from '@angular/material/sort';
 import {SlugResolver} from './resolver/slug.resolver';
+import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -56,7 +57,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CartComponent,
     UserComponent,
     BookingDetailComponent,
-    UserDetailComponent
+    UserDetailComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
