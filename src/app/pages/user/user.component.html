@@ -11,7 +11,7 @@
   </mat-tab>
   <mat-tab label="Deportes">
 
-    <div class="container py-6" *ngIf="!loading">
+    <div class="container py-6" style="max-width: none" *ngIf="!loading">
       <div class="card overflow-hidden">
         <div class="h-64 relative overflow-hidden">
           <img
@@ -70,13 +70,13 @@
                     'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
                   }"
                   style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
-                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
+                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
               </div>
 
               <div style="cursor:pointer"
                 class="flex items-center">
                 <!--<mat-icon svgIcon="mat:add"></mat-icon>
-                <div @fadeInRight class="flex-auto" (click)="addUtilisateur()">
+                <div class="flex-auto" (click)="addUtilisateur()">
                   <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
                 </div>-->
               </div>
@@ -179,7 +179,7 @@
   </mat-tab>
   <mat-tab label="Reservas">
 
-    <div class="container py-6" *ngIf="!loading">
+    <div class="container py-6" style="max-width: none" *ngIf="!loading">
       <div class="card overflow-hidden">
         <div class="h-64 relative overflow-hidden">
           <img
@@ -241,13 +241,13 @@
                     'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
                   }"
                   style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
-                  <div @fadeInRight class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
+                  <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
               </div>
 
               <div style="cursor:pointer"
                 class="flex items-center">
                 <!--<mat-icon svgIcon="mat:add"></mat-icon>
-                <div @fadeInRight class="flex-auto" (click)="addUtilisateur()">
+                <div class="flex-auto" (click)="addUtilisateur()">
                   <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
                 </div>-->
               </div>
@@ -265,7 +265,7 @@
                 <th mat-header-cell *matHeaderCellDef> Course Name </th>
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.bookingusers[0]?.course?.name || 'N/A'}} </td>
               </ng-container>
-              
+
               <ng-container matColumnDef="price_total">
                 <th mat-header-cell *matHeaderCellDef> Price </th>
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.price_total}} CHF</td>

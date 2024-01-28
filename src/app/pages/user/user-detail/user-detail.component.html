@@ -1,4 +1,4 @@
-<div class="container py-6" *ngIf="!loading">
+<div class="container py-6" style="max-width: none" *ngIf="!loading">
   <div class="card overflow-hidden">
     <div class="h-64 relative overflow-hidden">
       <img
@@ -63,7 +63,7 @@
               />
             <div class="flex-auto">
               <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ user?.first_name }} {{ user?.last_name }}</h4>
-              <span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><mat-icon svgIcon="mat:delete"></mat-icon></span>
+              <span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trash"></i></span>
             </div>
           </div>
 
@@ -406,7 +406,7 @@
             />
           <div class="flex-auto">
             <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ user?.first_name }} {{ user?.last_name }}</h4>
-            <span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><mat-icon svgIcon="mat:delete"></mat-icon></span>
+            <span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trasg"></i></span>
           </div>
         </div>
 
