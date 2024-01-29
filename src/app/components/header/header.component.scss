@@ -26,7 +26,7 @@
     transition: all ease 300ms;transform: rotate(180deg);
 }  
 .header-dropdown-content {
-    display: block;position: absolute;min-width: 160px;z-index: 1;
+    display: block;position: absolute;min-width: 160px;z-index: 10;
 }  
 .header-dropdown-content div {
     padding: 12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;
