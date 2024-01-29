@@ -690,6 +690,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
                 //this.router.navigate(['/clients']);
                 this.editing = false;
                 this.editSportInfo = false;
+                this.sportsData.data = [];
                 this.getData(this.id);
 
               }, 2000);

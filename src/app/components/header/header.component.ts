@@ -87,6 +87,7 @@ export class HeaderComponent implements OnInit {
     this.authService.user.next(null);
     this.userLogged = null;
     localStorage.clear();
+    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
   }
 
   selectLanguage(lang: string) {
