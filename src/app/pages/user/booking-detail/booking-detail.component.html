@@ -1,7 +1,7 @@
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
 <div class="p-gutter container" style="max-width: none;padding: 0.5%;" *ngIf="!loading">
-  <div class="flex flex-col sm:flex-row gap-4">
-    <div class="column-container">
+  <div class="flex flex-col sm:flex-row gap-4 flex-sections-bookings">
+    <div class="column-container flex-sections-bookings-left">
       <!-- Aquí añade tu otro contenedor o lo que necesites -->
       <div class="card-container">
         <!-- Nuevo contenedor para las cards -->
@@ -9,17 +9,16 @@
           <div class="px-6 py-4 border-b flex items-center">
             <h2 class="title m-0" style="width: 80%;">{{'booking_info' | translate}}</h2>
             <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="goTo('/bookings')">
-              <span style="color:white">{{'back' | translate }}</span>
+              {{'back' | translate }}
             </button>
             <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;"  (click)="deleteBooking()">
-              <span style="color:white">{{'bookings_page.detail.full_cancel' | translate}}</span>
-
+              {{'bookings_page.detail.full_cancel' | translate}}
             </button>
 
           </div>
           <mat-card class="reservation-detail-card" *ngFor="let item of bookingsToCreate; let bI = index">
             <div>
-              <p style="padding: 5%;width: 40%;float: left;font-size: 13px;">{{'participant' | translate}} | </p>
+              <p style="padding: 5%;width: 40%;float: left;font-size: 13px;" class="color-dark-always">{{'participant' | translate}} | </p>
 
               <p style="padding: 5% 5% 0 0;width: 60%;float: left;font-size: 13px;text-align: right;font-weight: 500;color:#fac710" *ngIf="!booking.paid && item.courseDates[0].status === 1">
                 {{'no_paid' | translate | uppercase }}
@@ -39,8 +38,8 @@
                 <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
                 [selectLevel]="getClientDegree(bu?.client_id, item.sport_id)" [size]="40" [userImage]="getClientAvatar(bu?.client_id)"></app-level-user>
                 <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
-                <mat-card-subtitle>{{getClientName(bu?.client_id)}}</mat-card-subtitle>
-                <mat-card-subtitle>{{ getLanguage(getClient(bu?.client_id)?.language1_id) }} · {{ getCountry(getClient(bu?.client_id)?.country) }} · {{calculateAge(getClient(bu?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
+                <mat-card-subtitle class="color-dark-always">{{getClientName(bu?.client_id)}}</mat-card-subtitle>
+                <mat-card-subtitle class="color-dark-always">{{ getLanguage(getClient(bu?.client_id)?.language1_id) }} · {{ getCountry(getClient(bu?.client_id)?.country) }} · {{calculateAge(getClient(bu?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
               </mat-card-header>
             </ng-container>
 
@@ -48,14 +47,14 @@
               <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
               [selectLevel]="getClientDegree(item?.courseDates[0]?.client_id,item.sport_id)" [size]="40" [userImage]="getClientAvatar(item?.courseDates[0]?.client_id)"></app-level-user>
               <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
-              <mat-card-subtitle>{{getClientName(item?.courseDates[0]?.client_id)}}</mat-card-subtitle>
-              <mat-card-subtitle>{{ getLanguage(getClient(item?.courseDates[0]?.client_id)?.language1_id) }} · {{ getCountry(getClient(item?.courseDates[0]?.client_id)?.country) }} · {{calculateAge(getClient(item?.courseDates[0]?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
+              <mat-card-subtitle class="color-dark-always">{{getClientName(item?.courseDates[0]?.client_id)}}</mat-card-subtitle>
+              <mat-card-subtitle class="color-dark-always">{{ getLanguage(getClient(item?.courseDates[0]?.client_id)?.language1_id) }} · {{ getCountry(getClient(item?.courseDates[0]?.client_id)?.country) }} · {{calculateAge(getClient(item?.courseDates[0]?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
             </mat-card-header>
 
             <mat-divider class="text-border"></mat-divider>
             <div style="float:left; width: 100%">
 
-              <p style="padding: 3%;width: 40%;float: left;font-size: 13px; font-weight: bold;">{{'activity' | translate}}</p>
+              <p style="padding: 3%;width: 40%;float: left;font-size: 13px; font-weight: bold;" class="color-dark-always">{{'activity' | translate}}</p>
               <button mat-icon-button color="accent" class="delete-icon" (click)="deletePartialBooking(bI, item)" style="float: right;" *ngIf="bookingsToCreate.length > 1 && item.courseDates[0].status === 1">
                 <i class="fa fa-trash"></i>
               </button>
@@ -64,10 +63,10 @@
             <mat-card-header>
               <div mat-card-avatar [style.background-image]="'url(' + (getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? collectifIcon : privateIcon) + ')'" style="border-radius: 5px"></div>
               <mat-card-title class="mat-mdc-card-title">
-                <div style="float: left;width: 70%;font-size: 14px;"> {{getCourse(item?.courseDates[0]?.course_id)?.name}} </div>
+                <div style="float: left;width: 70%;font-size: 14px;" class="color-dark-always montserrat"> {{getCourse(item?.courseDates[0]?.course_id)?.name}} </div>
                 <div class="ng-tns-c545279033-6" style="float: left;font-size: 14px;width: 30%;text-align: right;color: #EA0C60;"> {{item?.courseDates[0]?.course_id?.price}} {{item?.courseDates[0]?.course_id?.currency}} </div>
             </mat-card-title>
-              <mat-card-subtitle style="margin: 0;float: left;width: 100%;">
+              <mat-card-subtitle style="margin: 0;float: left;width: 100%;" class="color-dark-always montserrat">
                 {{getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? 'colective' : 'private' | translate}}
                 {{getCourse(item?.courseDates[0]?.course_id)?.sport?.name}}
               </mat-card-subtitle>
@@ -75,7 +74,7 @@
             </mat-card-header>
             <mat-card-content>
               <ul style="font-size: 12px;padding: 0 0 0 18%;">
-                <li *ngFor="let date of item?.courseDates">
+                <li *ngFor="let date of item?.courseDates" class="color-dark-always montserrat">
                   <mat-icon style="height: 15px;width: 20px;" svgIcon="mat:calendar_today"></mat-icon>{{ date.date | date:'fullDate' }}
                 </li>
               </ul>
@@ -85,23 +84,23 @@
 
                 </div>
                 <div style="float: left;width: 80%;margin: 3% 0 0 3%;">
-                  <span style="float: left;width: 100%;">{{ item?.courseDates[0]?.monitor_id !== null ? getMonitorName(item?.courseDates[0]?.monitor_id) : 'No monitor asigned'}}</span><br>
-                  <span style="float: left;width: 100%;">{{ getLanguage(getMonitorLang(item?.courseDates[0]?.monitor_id)) }} · {{ getCountry(getMonitorProvince(item.courseDates[0]?.monitor_id)) }} · {{calculateAge(getMonitorBirth(item.courseDates[0]?.monitor_id)) }} &ensp;{{'years' | translate}}</span>
+                  <span style="float: left;width: 100%;" class="color-dark-always montserrat">{{ item?.courseDates[0]?.monitor_id !== null ? getMonitorName(item?.courseDates[0]?.monitor_id) : 'No monitor asigned'}}</span><br>
+                  <span style="float: left;width: 100%;" class="color-dark-always montserrat">{{ getLanguage(getMonitorLang(item?.courseDates[0]?.monitor_id)) }} · {{ getCountry(getMonitorProvince(item.courseDates[0]?.monitor_id)) }} · {{calculateAge(getMonitorBirth(item.courseDates[0]?.monitor_id)) }} &ensp;{{'years' | translate}}</span>
                 </div>
               </div>
               <mat-divider style="float: left;width: 100%;" class="text-border"></mat-divider>
 
-              <p style="padding: 5%;width: 40%;float: left;font-size: 13px; font-weight: bold;">{{'options' | translate}}</p>
+              <p style="padding: 5%;width: 40%;float: left;font-size: 13px; font-weight: bold;" class="color-dark-always">{{'options' | translate}}</p>
 
               <div style="width: 100%; float:left">
                 <div style="width: 100%; float:left;background: #e6e6e6;padding: 2%; margin-bottom: 15px;" >
                   <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-                    <div style="width: 50%;">
+                    <div style="width: 50%;" class="color-dark-always montserrat">
                       <strong>Forfait</strong>
                     </div>
 
                     <div style="float: right;width: 50%;">
-                      <p style="float: right;"> +{{getCourseExtraForfaitPrice(item.courseDates[0])}} CHF</p>
+                      <p style="float: right;" class="color-dark-always"> +{{getCourseExtraForfaitPrice(item.courseDates[0])}} CHF</p>
                     </div>
                   </div>
 
@@ -109,7 +108,7 @@
                     <ul>
                       <li *ngFor="let forfait of settings?.extras?.forfait">
                           <mat-checkbox class="radio" [value]="forfait" [disabled]="true" [checked]="getCourseExtraForfait(forfait, item.courseDates[0])">
-                            <span>{{forfait.id}}</span>
+                            <span class="color-dark-always">{{forfait.id}}</span>
                           </mat-checkbox>
                       </li>
 
@@ -163,7 +162,7 @@
               </div>
               <div style="width: 100%;float:left; margin-top: 10px">
                 <div>
-                  <p style="width: 60%;float: left;">{{'options_total' | translate }}</p>
+                  <p style="width: 60%;float: left;" class="color-dark-always">{{'options_total' | translate }}</p>
                   <p style="color: #EA0C60;">{{getCourseExtraForfaitPrice(item.courseDates[0])}} CHF</p>
                 </div>
               </div>
@@ -173,7 +172,7 @@
               <div style="width: 100%;float:left;">
 
                 <div>
-                  <p style="width: 60%;font-size: 21px;float:left">{{'booking_total' | translate }}</p>
+                  <p style="width: 60%;font-size: 21px;float:left" class="color-dark-always">{{'booking_total' | translate }}</p>
                   <p style="color: #EA0C60;">{{
 
                   parseFloatValue(((courses[bI]?.course_type === 2 && courses[bI]?.is_flexible ? getPrivateFlexPrice(item.courseDates)
@@ -209,9 +208,9 @@
               </div>
               <mat-divider style="float: left;width: 100%;" class="text-border"></mat-divider>
               <div style="width: 100%;float:left;margin: 20px 0 0 0;">
-                <p style="font-size: 12px;"><strong>{{'register' |translate}}</strong>:{{ bookingsToCreate[0].courseDates[0].created_at | date: 'dd/MM/YYYY'}} {{ bookingsToCreate[0].courseDates[0].created_at | date: 'HH:mm'}}</p>
-                <p style="font-size: 12px;"><strong>{{'from' |translate}}:</strong>: Admin</p>
-                <p style="font-size: 12px;"><strong>{{'by' |translate}}</strong>: {{user.first_name}} {{user.last_name}}</p>
+                <p style="font-size: 12px;" class="color-dark-always"><strong>{{'register' |translate}}</strong>:{{ bookingsToCreate[0].courseDates[0].created_at | date: 'dd/MM/YYYY'}} {{ bookingsToCreate[0].courseDates[0].created_at | date: 'HH:mm'}}</p>
+                <p style="font-size: 12px;" class="color-dark-always"><strong>{{'from' |translate}}:</strong>: Admin</p>
+                <p style="font-size: 12px;" class="color-dark-always"><strong>{{'by' |translate}}</strong>: {{user.first_name}} {{user.last_name}}</p>
               </div>
             </mat-card-content>
           </mat-card>
@@ -223,7 +222,7 @@
     </div>
 
 
-    <div class="column-container" *ngIf="!loading">
+    <div class="column-container flex-sections-bookings-right" *ngIf="!loading">
       <div class="card-container">
         <div class="card flex-auto" style="padding: 1%">
           <div class="px-6 py-4 border-b flex items-center">
@@ -233,8 +232,8 @@
           <mat-card style="width: 100%;padding:1%">
             <mat-card-header>
               <div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'" style="width:100px; height: 60px;"></div>
-              <mat-card-subtitle>{{getClientName(booking.client_main_id)}}</mat-card-subtitle>
-              <mat-card-subtitle>
+              <mat-card-subtitle class="color-dark-always">{{getClientName(booking.client_main_id)}}</mat-card-subtitle>
+              <mat-card-subtitle class="color-dark-always">
                 {{ getLanguage(getClient(booking.client_main_id)?.language1_id) }} · {{ getCountry(getClient(booking.client_main_id)?.country) }} · {{calculateAge(getClient(booking.client_main_id)?.birth_date) }} &ensp;{{'years' | translate}}
               </mat-card-subtitle>
               <mat-card-subtitle>
@@ -263,7 +262,7 @@
               <mat-slide-toggle color="accent" [(ngModel)]="booking.has_boukii_care" *ngIf="boukiiCarePrice" (change)="addBoukiiCare($event)" [disabled]="booking.status === 2" style="float: right;"></mat-slide-toggle>
             </div>-->
             <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
-            <h3 style="font-size: 1.5rem!important;">{{'summary' | translate}}</h3>
+            <h3 style="font-size: 1.5rem!important;" class="color-dark-always">{{'summary' | translate}}</h3>
             <div class="opaque-box">
               <span style="width: 100%; float:left">
                 <p style="float:left">{{'base_price' | translate }}</p>

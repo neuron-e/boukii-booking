@@ -415,3 +415,31 @@ img[mat-card-image] {
   flex: 1;
   justify-content: center;
 }
+.color-dark-always {
+  color:#444 !important;
+}
+::ng-deep .mdc-button__label {
+  color:#333 !important;
+}
+
+.flex-sections-bookings {
+  display:flex;justify-content:space-between;align-items:flex-start;flex-direction:row;
+}
+.flex-sections-bookings-left {
+  width:64%;min-width:64%;
+}
+.flex-sections-bookings-right {
+  width:36%;min-width:36%;
+}
+
+@media (max-width:1000px) {
+  .flex-sections-bookings {
+    display:flex;justify-content:center;align-items:center;flex-direction:column;
+  }
+  .flex-sections-bookings-left {
+    width:100%;margin-bottom:20px;
+  }
+  .flex-sections-bookings-right {
+    width:100%;
+  }
+}
