@@ -490,7 +490,7 @@
 
           <div class="actions flex items-center justify-end gap-2">
             <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' | translate }}</button>
-            <button [disabled]="formInfoAccount.invalid" color="primary" mat-raised-button matStepperNext>
+            <button [disabled]="formInfoAccount.invalid" color="accent" mat-raised-button matStepperNext>
               {{'next' | translate}}
             </button>
           </div>
@@ -579,7 +579,7 @@
 
           <div class="actions flex items-center justify-end gap-2">
             <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' | translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="primary" mat-raised-button matStepperNext>
+            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext>
               {{'next' |translate}}
             </button>
           </div>
@@ -711,7 +711,7 @@
 
           <div class="actions flex items-center justify-end gap-2">
             <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' | translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="primary" mat-raised-button matStepperNext>
+            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext>
               {{'save' |translate}}
             </button>
           </div>
@@ -746,7 +746,7 @@
 
           <div class="actions flex items-center justify-end gap-2">
             <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' | translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="primary" mat-raised-button matStepperNext (click)="save()">
+            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext (click)="save()">
               {{'save' | translate}}
             </button>
           </div>

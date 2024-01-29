@@ -14,11 +14,11 @@
   <mat-divider class="text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col">
-    <h1>{{defaults.message}}</h1>
+    <h1 [innerHTML]="defaults.message"></h1>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button color="primary" mat-flat-button [mat-dialog-close]="true">{{'confirm' | translate}}</button>
-    <button color="primary" mat-flat-button [mat-dialog-close]="false">{{'no' | translate}}</button>
+    <button color="accent" mat-flat-button [mat-dialog-close]="true"><span style="color: white"> {{'confirm' | translate}}</span></button>
+    <button color="accent" mat-flat-button [mat-dialog-close]="false"><span style="color: white"> {{'no' | translate}}</span></button>
   </mat-dialog-actions>
 </form>

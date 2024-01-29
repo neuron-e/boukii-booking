@@ -8,8 +8,13 @@
         <div style="height: 100%; padding: 1px" class="card flex-auto">
           <div class="px-6 py-4 border-b flex items-center">
             <h2 class="title m-0" style="width: 80%;">{{'booking_info' | translate}}</h2>
-            <button mat-raised-button color="primary" class="button-cancel" style="color: #fff;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="goTo('/bookings')">{{'back' | translate }}</button>
-            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;"  (click)="deleteBooking()">{{'bookings_page.detail.full_cancel' | translate}}</button>
+            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="goTo('/bookings')">
+              <span style="color:white">{{'back' | translate }}</span>
+            </button>
+            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;"  (click)="deleteBooking()">
+              <span style="color:white">{{'bookings_page.detail.full_cancel' | translate}}</span>
+
+            </button>
 
           </div>
           <mat-card class="reservation-detail-card" *ngFor="let item of bookingsToCreate; let bI = index">
@@ -51,7 +56,7 @@
             <div style="float:left; width: 100%">
 
               <p style="padding: 3%;width: 40%;float: left;font-size: 13px; font-weight: bold;">{{'activity' | translate}}</p>
-              <button mat-icon-button color="warn" class="delete-icon" (click)="deletePartialBooking(bI, item)" style="float: right;" *ngIf="bookingsToCreate.length > 1 && item.courseDates[0].status === 1">
+              <button mat-icon-button color="accent" class="delete-icon" (click)="deletePartialBooking(bI, item)" style="float: right;" *ngIf="bookingsToCreate.length > 1 && item.courseDates[0].status === 1">
                 <i class="fa fa-trash"></i>
               </button>
             </div>
@@ -251,11 +256,11 @@
             <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>-->
             <!--<div style="float: left;width: 100%;" *ngIf="!isNanValue(this.cancellationInsurance)">
               <p style="float: left;">{{'op_rem' | translate}}</p>
-              <mat-slide-toggle color="primary" [(ngModel)]="booking.has_cancellation_insurance" *ngIf="cancellationInsurance" (change)="addCancellationInsurance($event)" [disabled]="booking.status === 2" style="float: right;"></mat-slide-toggle>
+              <mat-slide-toggle color="accent" [(ngModel)]="booking.has_cancellation_insurance" *ngIf="cancellationInsurance" (change)="addCancellationInsurance($event)" [disabled]="booking.status === 2" style="float: right;"></mat-slide-toggle>
             </div>
             <div style="float: left;width: 100%;" *ngIf="!isNanValue(this.boukiiCarePrice) && boukiiCarePrice > 0">
               <p style="float: left;">Boukii Care</p>
-              <mat-slide-toggle color="primary" [(ngModel)]="booking.has_boukii_care" *ngIf="boukiiCarePrice" (change)="addBoukiiCare($event)" [disabled]="booking.status === 2" style="float: right;"></mat-slide-toggle>
+              <mat-slide-toggle color="accent" [(ngModel)]="booking.has_boukii_care" *ngIf="boukiiCarePrice" (change)="addBoukiiCare($event)" [disabled]="booking.status === 2" style="float: right;"></mat-slide-toggle>
             </div>-->
             <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
             <h3 style="font-size: 1.5rem!important;">{{'summary' | translate}}</h3>
@@ -331,17 +336,17 @@
               <mat-divider *ngIf="selectedSubButton==='1' || selectedSubButton==='2'" class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
               <div style="width:100%" class="square-buttons-container" *ngIf="selectedSubButton==='1' || selectedSubButton==='2'">
                 <p style="float:left;width: 100%;">{{'is_paid' | translate}}</p>
-                <mat-slide-toggle color="primary" [(ngModel)]="defaults.paid" [checked]="defaults.paid" style="float: right;"></mat-slide-toggle>
+                <mat-slide-toggle color="accent" [(ngModel)]="defaults.paid" [checked]="defaults.paid" style="float: right;"></mat-slide-toggle>
               </div>
               <mat-divider *ngIf="selectedSubButton==='1' || selectedSubButton==='2' || selectedSubButton === '3'" class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
               <div style="width:100%" class="square-buttons-container" *ngIf="selectedSubButton==='1' || selectedSubButton==='2' || selectedSubButton === '3'">
                 <button mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_booking' | translate }}</button>
               </div>
               <div class="square-buttons-container" *ngIf="selectedButton==='2'">
-                <button style="width:100%" mat-raised-button color="primary" class="square-button" (click)="create()">{{'confirm_email' |translate}}</button>
+                <button style="width:100%" mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_email' |translate}}</button>
               </div>
               <div class="square-buttons-container" *ngIf="selectedButton==='3'">
-                <button style="width:100%" mat-raised-button color="primary" class="square-button" (click)="create()">{{'confirm_booking' | translate }}</button>
+                <button style="width:100%" mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_booking' | translate }}</button>
               </div>
             </ng-container>
           </mat-card>

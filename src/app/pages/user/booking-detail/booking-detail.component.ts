@@ -877,7 +877,9 @@ export class BookingDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + this.finalPrice}
+      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
+        + `<span style="#F53D7C;font-size: 20px;">` + this.finalPrice + ' ' +  this.booking.currency + `</span>`
+      }
     });
 
     dialogRef.afterClosed().subscribe((data: any) => {
@@ -892,8 +894,8 @@ export class BookingDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + book.price_total}
-    });
+      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
+      + '<span style="#F53D7C;font-size: 20px;">' + book.price_total + ' ' +  this.booking.currency + '</span>'}});
 
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
