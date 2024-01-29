@@ -221,6 +221,8 @@ export class CourseComponent implements OnInit {
   settings: any;
   selectedDates: any = [];
 
+  defaultImage = '../../../assets/images/3.png';
+
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
               private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService) {

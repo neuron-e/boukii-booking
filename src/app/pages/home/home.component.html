@@ -181,7 +181,7 @@
 
     <div class="course-box-content">
       <div class="rounded-8 course-box-content-img">
-        <img src="{{course.image}}" class="rounded-8">
+        <img [src]="course.image !== null ? course?.image : defaultImage" class="rounded-8 course-image-img" />
       </div>
       <div>
         <!-- COLLECTIVE-->
@@ -289,7 +289,7 @@
           {{course.price}} CHF
         </div>
         <div class="course-wrapper-image">
-          <img src="{{course.image}}"/>
+          <img [src]="course.image !== null ? course?.image : defaultImage"/>
         </div>
         <div class="course-box-buttons">
           <div class="btn-back-grey rounded-8 button-style cursor-pointer width-100">

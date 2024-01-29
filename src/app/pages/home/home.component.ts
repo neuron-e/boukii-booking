@@ -83,6 +83,7 @@ export class HomeComponent implements OnInit {
   max_age: number;
   daySelected: any;
   userLogged: any;
+  defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, private activatedRoute: ActivatedRoute,
               private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService) {
