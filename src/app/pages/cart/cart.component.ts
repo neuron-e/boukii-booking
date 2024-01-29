@@ -4,6 +4,7 @@ import { ThemeService } from '../../services/theme.service';
 import {SchoolService} from '../../services/school.service';
 import {BookingService} from '../../services/booking.service';
 import {CartService} from '../../services/cart.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-cart',
@@ -31,7 +32,7 @@ export class CartComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
               private bookingService: BookingService, private activatedRoute: ActivatedRoute,
-              private cartService: CartService) { }
+              private cartService: CartService, private translateService: TranslateService) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -296,6 +297,15 @@ export class CartComponent implements OnInit {
       localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
 
       this.cartService.carData.next(cartArray);
+    }
+  }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
     }
   }
 }

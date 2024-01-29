@@ -1145,4 +1145,13 @@ export class BookingDetailComponent implements OnInit {
   onCloseBooking() {
     this.closeBooking.emit();
   }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
+    }
+  }
 }

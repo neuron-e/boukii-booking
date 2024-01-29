@@ -9,6 +9,7 @@ import {DatePipe} from '@angular/common';
 import {CartService} from '../../services/cart.service';
 import {BookingService} from '../../services/booking.service';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-course',
@@ -225,7 +226,7 @@ export class CourseComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService) {
+              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService) {
 
   }
 
@@ -745,4 +746,22 @@ export class CourseComponent implements OnInit {
     return isStartTimeValid && isEndTimeValid;
   }
 
+  getDescription(course: any) {
+
+    if (!course.translations || course.translations === null) {
+      return course.description;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].description;
+    }
+  }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
+    }
+  }
 }

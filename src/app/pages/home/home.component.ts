@@ -6,6 +6,7 @@ import {CoursesService} from '../../services/courses.service';
 import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {AuthService} from '../../services/auth.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -85,7 +86,7 @@ export class HomeComponent implements OnInit {
   userLogged: any;
   defaultImage = '../../../assets/images/3.png';
 
-  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, private activatedRoute: ActivatedRoute,
+  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
               private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService) {
   }
 
@@ -321,6 +322,35 @@ export class HomeComponent implements OnInit {
       default:
         this.currentDegreeRange = [];
         break;
+    }
+  }
+
+  getShotrDescription(course: any) {
+
+    if (!course.translations || course.translations === null) {
+      return course.short_description;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].short_description;
+    }
+  }
+
+  getDescription(course: any) {
+
+    if (!course.translations || course.translations === null) {
+      return course.description;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].description;
+    }
+  }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
     }
   }
 

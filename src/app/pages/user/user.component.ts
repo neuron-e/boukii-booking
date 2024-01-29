@@ -547,4 +547,13 @@ export class UserComponent implements OnInit {
     this.destroy$.next(true);
     this.destroy$.complete();
   }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
+    }
+  }
 }

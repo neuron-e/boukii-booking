@@ -2,7 +2,7 @@
 
 <div class="text-color mb-24 montserrat">
   <span class="text-color-light underline cursor-pointer montserrat" (click)="goTo(schoolData.slug)">{{'text_available_courses' | translate }}</span>
-  / {{course?.name}}
+  / {{getCourseName(course)}}
 </div>
 
 <div class="separator-line mb-32 mt-32"></div>
@@ -20,7 +20,7 @@
           Collectif Ski
         </div>
         <div class="text-white fw-semibold text-semibig">
-          {{course?.name}}
+          {{getCourseName(course)}}
         </div>
       </div>
     </div>
@@ -85,7 +85,7 @@
       </ng-container>
 
       <div class="show-desktop text-color-light mt-24 montserrat"
-           [innerHTML]="course?.description">
+           [innerHTML]="getDescription(course)">
       </div>
 
       <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true" class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-24" type="button">

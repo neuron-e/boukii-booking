@@ -263,7 +263,7 @@
 
               <ng-container matColumnDef="bookingusers[0].course.name">
                 <th mat-header-cell *matHeaderCellDef> Course Name </th>
-                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.bookingusers[0]?.course?.name || 'N/A'}} </td>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getCourseName(element.bookingusers[0]?.course) || 'N/A'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="price_total">
