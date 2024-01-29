@@ -178,7 +178,6 @@ export class UserComponent implements OnInit {
   }
 
   selectBooking(id: number) {
-    console.log(id);
     this.selectedBooking = false;
 
     setTimeout(() => {
@@ -186,6 +185,11 @@ export class UserComponent implements OnInit {
       this.bookingId = id;
       this.bookingSelectionChanged.emit(this.bookingId);
     }, 0);
+  }
+
+  hideBooking() {
+    this.selectedBooking = false;
+    this.bookingId = null;
   }
 
   getBookings() {
@@ -537,11 +541,6 @@ export class UserComponent implements OnInit {
 
       dataToModify.language6_id = langs[5].id;
     }
-  }
-
-  onCloseDetail() {
-    this.selectedBooking = false;
-    this.getData(this.id,true);
   }
 
   ngOnDestroy(): void {

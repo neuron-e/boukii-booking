@@ -278,7 +278,7 @@
         </div>
 
         <div style="width:100%;">
-          <vex-booking-detail [hidden]="!selectedBooking" (closeDetailEvent)="onCloseDetail()" [bookingId]="bookingId" [bookingSelectionChanged]="bookingSelectionChanged"></vex-booking-detail>
+          <vex-booking-detail [hidden]="!selectedBooking" (closeBooking)="hideBooking()" [bookingId]="bookingId" [bookingSelectionChanged]="bookingSelectionChanged"></vex-booking-detail>
         </div>
 
       </div>

@@ -8,7 +8,7 @@
         <div style="height: 100%; padding: 1px" class="card flex-auto">
           <div class="px-6 py-4 border-b flex items-center">
             <h2 class="title m-0" style="width: 80%;">{{'booking_info' | translate}}</h2>
-            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="goTo('/bookings')">
+            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="onCloseBooking()">
               {{'back' | translate }}
             </button>
             <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;"  (click)="deleteBooking()">
@@ -63,7 +63,7 @@
             <mat-card-header>
               <div mat-card-avatar [style.background-image]="'url(' + (getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? collectifIcon : privateIcon) + ')'" style="border-radius: 5px"></div>
               <mat-card-title class="mat-mdc-card-title">
-                <div style="float: left;width: 70%;font-size: 14px;" class="color-dark-always montserrat"> {{getCourse(item?.courseDates[0]?.course_id)?.name}} </div>
+                <div style="float: left;width: 70%;font-size: 14px;" class="color-dark-always montserrat"><strong class="montserrat"> {{getCourse(item?.courseDates[0]?.course_id)?.name}} </strong></div>
                 <div class="ng-tns-c545279033-6" style="float: left;font-size: 14px;width: 30%;text-align: right;color: #EA0C60;"> {{item?.courseDates[0]?.course_id?.price}} {{item?.courseDates[0]?.course_id?.currency}} </div>
             </mat-card-title>
               <mat-card-subtitle style="margin: 0;float: left;width: 100%;" class="color-dark-always montserrat">
@@ -74,7 +74,7 @@
             </mat-card-header>
             <mat-card-content>
               <ul style="font-size: 12px;padding: 0 0 0 18%;">
-                <li *ngFor="let date of item?.courseDates" class="color-dark-always montserrat">
+                <li *ngFor="let date of item?.courseDates" class="color-dark-always montserrat" style="font-size: 14px;">
                   <mat-icon style="height: 15px;width: 20px;" svgIcon="mat:calendar_today"></mat-icon>{{ date.date | date:'fullDate' }}
                 </li>
               </ul>
@@ -84,8 +84,8 @@
 
                 </div>
                 <div style="float: left;width: 80%;margin: 3% 0 0 3%;">
-                  <span style="float: left;width: 100%;" class="color-dark-always montserrat">{{ item?.courseDates[0]?.monitor_id !== null ? getMonitorName(item?.courseDates[0]?.monitor_id) : 'No monitor asigned'}}</span><br>
-                  <span style="float: left;width: 100%;" class="color-dark-always montserrat">{{ getLanguage(getMonitorLang(item?.courseDates[0]?.monitor_id)) }} · {{ getCountry(getMonitorProvince(item.courseDates[0]?.monitor_id)) }} · {{calculateAge(getMonitorBirth(item.courseDates[0]?.monitor_id)) }} &ensp;{{'years' | translate}}</span>
+                  <span style="float: left;width: 100%;font-size: 14px;" class="color-dark-always montserrat">{{ item?.courseDates[0]?.monitor_id !== null ? getMonitorName(item?.courseDates[0]?.monitor_id) : 'No monitor asigned'}}</span><br>
+                  <span style="float: left;width: 100%;font-size: 14px;" class="color-dark-always montserrat">{{ getLanguage(getMonitorLang(item?.courseDates[0]?.monitor_id)) }} · {{ getCountry(getMonitorProvince(item.courseDates[0]?.monitor_id)) }} · {{calculateAge(getMonitorBirth(item.courseDates[0]?.monitor_id)) }} &ensp;{{'years' | translate}}</span>
                 </div>
               </div>
               <mat-divider style="float: left;width: 100%;" class="text-border"></mat-divider>
@@ -96,7 +96,7 @@
                 <div style="width: 100%; float:left;background: #e6e6e6;padding: 2%; margin-bottom: 15px;" >
                   <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
                     <div style="width: 50%;" class="color-dark-always montserrat">
-                      <strong>Forfait</strong>
+                      <strong class="montserrat">Forfait</strong>
                     </div>
 
                     <div style="float: right;width: 50%;">

@@ -21,6 +21,8 @@ import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm
 export class BookingDetailComponent implements OnInit {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  @Output() closeBooking = new EventEmitter<void>();
+
   privateIcon = 'https://school.boukii.com/assets/icons/prive_ski2x.png';
   collectifIcon = 'https://school.boukii.com/assets/icons/collectif_ski2x.png';
   @Input()
@@ -1138,5 +1140,9 @@ export class BookingDetailComponent implements OnInit {
 
   parseFloatValue(value: any) {
     return parseFloat(value);
+  }
+
+  onCloseBooking() {
+    this.closeBooking.emit();
   }
 }
