@@ -26,25 +26,6 @@
                 {{'cancelled' | translate | uppercase }}
               </p>
 
-              <!--<div class="qrcodeImage">
-                <qrcode
-                  [qrdata]="item?.courseDates[0]?.client_id?.toString()"
-                  [allowEmptyString]="true"
-                  [ariaLabel]="'QR Code image with the following content...'"
-                  [cssClass]="'center'"
-                  [colorDark]="'#808080'"
-                  [colorLight]="'#ffffffff'"
-                  [elementType]="'canvas'"
-                  [errorCorrectionLevel]="'H'"
-                  [imageSrc]="'../../../../assets/img/10.png'"
-                  [imageHeight]="25"
-                  [imageWidth]="25"
-                  [margin]="4"
-                  [scale]="4"
-                  [title]="'A custom title attribute'"
-                  [width]="75"
-                ></qrcode>
-              </div>-->
             </div>
 
             <ng-container *ngFor="let bu of bookingUsersUnique">
@@ -332,11 +313,6 @@
               <span style="width: 100%; float:left">
                 <p style="float:left">{{'total' | translate | uppercase}}</p>
                 <p style="float:right">{{(finalPrice).toFixed(2)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
-              </span>
-
-              <span style="width: 100%; float:left" *ngIf="bookingPendingPrice">
-                <p style="float:left; color:#FB9B1B">{{'pending_payment' | translate | uppercase }}</p>
-                <p style="float:right; color:#FB9B1B">{{bookingPendingPrice.toFixed(2)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
             </div>
 

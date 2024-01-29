@@ -664,5 +664,13 @@
   "Client already exists": "El cliente ya existe",
   "error.client.register": "Ha ocurrido un error desconocido al crear el cliente, inténtelo de nuevo más tarde.",
   "title_not_found": "404 Página No Encontrada",
-  "text_not_found": "La página que buscas no existe o ha sido trasladada."
+  "text_not_found": "La página que buscas no existe o ha sido trasladada.",
+  "pending_payment": "Pendiente de pago",
+  "old_booking_price": "Precio de reserva anterior",
+  "current_booking_price": "Precio de reserva en curso",
+  "difference": "Diferencia",
+  "refund_text": "Reembolso pendiente",
+  "refund_title": "Esta reserva tiene un reembolso pendiente. ¿Quiere realizarlo ahora?",
+  "bookings_page.refund.gift_voucher_text": "Está a punto de cancelar una reserva. Se generará un bono.",
+  "update": "Modificar"
 }

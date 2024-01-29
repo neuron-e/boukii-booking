@@ -656,5 +656,13 @@
   "Client already exists": "Le client existe déjà",
   "error.client.register": "Une erreur inconnue s'est produite lors de la création du client, veuillez réessayer plus tard",
   "title_not_found": "404 Page Non Trouvée",
-  "text_not_found": "La page que vous recherchez n'existe pas ou a été déplacée."
+  "text_not_found": "La page que vous recherchez n'existe pas ou a été déplacée.",
+  "pending_payment": "Remarquable",
+  "old_booking_price": "Prix ​​de réserve précédent",
+  "current_booking_price": "Prix ​​de réserve en cours",
+  "difference": "Différence",
+  "refund_text": "En attente de remboursement",
+  "refund_title": "Cette réservation a un remboursement en attente. ",
+  "bookings_page.refund.gift_voucher_text": "Vous êtes sur le point d'annuler une réservation. ",
+  "update": "Modifier"
 }

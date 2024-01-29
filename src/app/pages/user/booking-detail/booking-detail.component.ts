@@ -874,9 +874,32 @@ export class BookingDetailComponent implements OnInit {
   }
 
   deleteBooking() {
+    const dialogRef = this.dialog.open(ConfirmModalComponent, {
+      width: '1000px',  // Asegurarse de que no haya un ancho máximo
+      panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
+      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + this.finalPrice}
+    });
+
+    dialogRef.afterClosed().subscribe((data: any) => {
+      if (data) {
+
+      }
+    });
+
   }
 
   deletePartialBooking(index: number, book: any) {
+    const dialogRef = this.dialog.open(ConfirmModalComponent, {
+      width: '1000px',  // Asegurarse de que no haya un ancho máximo
+      panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
+      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + book.price_total}
+    });
+
+    dialogRef.afterClosed().subscribe((data: any) => {
+      if (data) {
+
+      }
+    });
   }
 
   generateRandomNumber() {

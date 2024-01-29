@@ -659,5 +659,15 @@
   "Client already exists": "Client already exists",
   "error.client.register": "An unknown error has ocurred creating the client, try again late",
   "title_not_found": "404 Page Not Found",
-  "text_not_found": "The page you are looking for doesn't exist or has been moved."
+  "text_not_found": "The page you are looking for doesn't exist or has been moved.",
+  "pending_payment": "Outstanding",
+  "old_booking_price": "Previous reserve price",
+  "current_booking_price": "Reserve price in progress",
+  "difference": "Difference",
+  "refund_text": "Pending refund",
+  "refund_title": "This reservation has a refund pending. ",
+  "bookings_page.refund.gift_voucher_text": "You are about to cancel a reservation.",
+  "update": "Update",
+  "bookings_page.cancelations.refund_boukiipay_text": "The value of the reservation will be refunded through Boukii Pay.",
+  "bookings_page.cancelations.refund_no_boukiipay_text": "This reservation cannot be returned through Boukii Pay since it was not paid through this platform."
   }
