@@ -607,7 +607,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
 
   removeSport(idx: number, element: any) {
 
-    /*const dialogRef = this.dialog.open(ConfirmModalComponent, {
+    const dialogRef = this.dialog.open(ConfirmModalComponent, {
       maxWidth: '100vw',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
       data: {message: 'Do you want to remove this item? This action will be permanetly', title: 'Delete monitor course'}
@@ -618,12 +618,12 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
 
         this.crudService.delete('/client-sports', element.id)
           .subscribe(() => {
-            this.deletedItems.push(this.sportsCurrentData.data[idx]);
+            //this.deletedItems.push(this.sportsCurrentData.data[idx]);
             this.sportsCurrentData.data.splice(idx, 1);
             this.currentSportsTable.renderRows();
           })
       }
-    });*/
+    });
 
   }
 
@@ -687,7 +687,10 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
               });
 
               setTimeout(() => {
-                this.router.navigate(['/clients']);
+                //this.router.navigate(['/clients']);
+                this.editing = false;
+                this.editSportInfo = false;
+                this.getData(this.id);
 
               }, 2000);
           })

@@ -93,8 +93,6 @@ export class UserComponent implements OnInit {
       if (data !== null) {
         this.mainId = data.clients[0].id;
         this.userLogged = data;
-
-        console.log(this.userLogged);
         const getId = id === null ? this.mainId : id;
         this.id = getId;
         this.crudService.get('/clients/'+ getId)

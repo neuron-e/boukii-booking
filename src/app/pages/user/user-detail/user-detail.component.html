@@ -647,7 +647,7 @@
               <ng-container matColumnDef="delete">
                 <mat-header-cell *matHeaderCellDef class="delete-column">{{'delete' | translate}}</mat-header-cell>
                 <mat-cell *matCellDef="let element; let i = index" class="delete-column">
-                  <i class="fa fa-trash" style="color:black" (click)="removeSport(i, element)"></i>
+                  <i class="fa fa-trash cursor-pointer" style="color:black" (click)="removeSport(i, element)"></i>
                 </mat-cell>
               </ng-container>
               <!-- Ícono para eliminar

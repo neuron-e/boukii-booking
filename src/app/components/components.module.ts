@@ -14,13 +14,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ConfirmModalComponent } from './confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
 @NgModule({
   declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent],
   imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule
+    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule
   ],
   exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent]
 })
