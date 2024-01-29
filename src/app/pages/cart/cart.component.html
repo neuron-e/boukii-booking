@@ -19,7 +19,7 @@
             <img src="assets/icons/collectif_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 1"/>
             <img src="assets/icons/prive_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 2"/>
             <div class="course-box-title">
-              <div class="text-color text-medium fw-medium">{{cartItem.details[0].course.name}}</div>
+              <div class="text-color text-medium fw-medium">{{getCourseName(cartItem.details[0].course)}}</div>
               <span class="text-color-light text-small">Collectif Ski</span>
             </div>
           </div>

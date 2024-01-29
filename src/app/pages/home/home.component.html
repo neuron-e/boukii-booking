@@ -157,7 +157,7 @@
         <img src="assets/icons/prive_ski2x.png" *ngIf="course.course_type == 2"/>
         <img src="assets/icons/collectif_ski2x.png" *ngIf="course.course_type == 1"/>
         <div class="course-box-title">
-          <div class="text-color text-medium fw-medium">{{course.name}}</div>
+          <div class="text-color text-medium fw-medium">{{getCourseName(course)}}</div>
           <span class="text-color-light text-small">{{course.type}}</span>
         </div>
       </div>
@@ -221,7 +221,7 @@
 
     </div>
 
-    <div class="text-small text-color-light mt-24 montserrat" [innerHTML]="course.description"></div>
+    <div class="text-small text-color-light mt-24 montserrat" [innerHTML]="getDescription(course)"></div>
     <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
          (click)="showFullText()">{{'text_more' | translate }}</div>
     <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
@@ -239,7 +239,7 @@
             <img src="assets/icons/prive_ski2x.png" *ngIf="course.course_type == 2"/>
             <img src="assets/icons/collectif_ski2x.png" *ngIf="course.course_type == 1"/>
             <div class="course-box-title">
-              <div class="text-color text-medium fw-medium">{{course.name}}</div>
+              <div class="text-color text-medium fw-medium">{{getCourseName(course)}}</div>
               <span class="text-color-light text-small">{{course.type}}</span>
             </div>
           </div>
@@ -303,7 +303,7 @@
     </div>
 
     <div class="course-text-padding">
-      <div class="text-small text-color-light montserrat" [innerHTML]="course.short_description"></div>
+      <div class="text-small text-color-light montserrat" [innerHTML]="getShotrDescription(course)"></div>
       <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
            (click)="showFullText()">{{'text_more' | translate }}</div>
       <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"

@@ -1139,4 +1139,13 @@ export class BookingDetailComponent implements OnInit {
   parseFloatValue(value: any) {
     return parseFloat(value);
   }
+
+  getCourseName(course: any) {
+    if (!course.translations || course.translations === null) {
+      return course.name;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].name;
+    }
+  }
 }
