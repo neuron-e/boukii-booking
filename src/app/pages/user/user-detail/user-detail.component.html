@@ -204,8 +204,8 @@
                   <img [src]="item.icon_selected" style="border-radius: 10px 0 10px 10px; " [style.background-color]="item?.level?.color">
                 </div>
 
-                <div  *ngIf="!editSportInfo">
-                  <p class="m-0 caption text-hint">Sport</p>
+                <div  *ngIf="!editSportInfo" style="margin: 0 0 0 10px;">
+                  <p class="m-0 caption text-hint">{{'text_sport' | translate }}</p>
                   <p class="m-0 body-1">{{item?.name}}
                   </p>
                 </div>
@@ -218,7 +218,7 @@
                 </div>
 
                 <div  *ngIf="!editSportInfo">
-                  <p class="m-0 caption text-hint">Level</p>
+                  <p class="m-0 caption text-hint">{{'text_level' | translate}}</p>
                   <div style="padding: 5%;color: #fff;width: 100%;border-radius: 10px 0 10px;width: 250px;" [style.background-color]="item?.level?.color">
                     <p class="m-0 body-1" style="text-wrap: pretty;text-align: center;">{{item?.level?.annotation}} - {{item?.level?.name}}</p>
                   </div>
@@ -480,7 +480,7 @@
 
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
             <mat-form-field class="flex-auto">
-              <mat-label>Password</mat-label>
+              <mat-label>{{'text_password' | translate }}</mat-label>
               <input formControlName="password" matInput type="password" [(ngModel)]="defaultsUser.password">
 
             </mat-form-field>
