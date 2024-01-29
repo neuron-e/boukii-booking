@@ -28,7 +28,7 @@
   <div class="flex-sections-user" *ngIf="!loading && !editing">
     <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left" [formGroup]="formInfoAccount">
 
-      <div style="margin-left:0; margin-right: 1.5rem" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
+      <div style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;" class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
         <div class="px-6 py-4 border-b">
           <h2 class="title m-0">{{'users' | translate }}</h2>
         </div>
@@ -63,7 +63,7 @@
               />
             <div class="flex-auto">
               <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ user?.first_name }} {{ user?.last_name }}</h4>
-              <span class="body-2 m-0 leading-snug"  style="width: 10%; float:left" (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trash"></i></span>
+              <span class="body-2 m-0 leading-snug"  style="width: 10%; float:right" (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trash" style="color:black;font-size: 15px;"></i></span>
             </div>
           </div>
 

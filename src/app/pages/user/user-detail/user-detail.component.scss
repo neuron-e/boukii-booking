@@ -48,18 +48,26 @@
   }
 
 .flex-sections-user {
-  display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;flex-direction:row;
+  display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;flex-direction:row;gap:40px;
 }
 .flex-sections-user-left {
-  width:30%;min-width:30%;
+  width:calc(22% - 20px);min-width:calc(22% - 20px);
 }
 .flex-sections-user-right {
-  width:70%;min-width:70%;
+  width:calc(78% - 20px);min-width:calc(78% - 20px);
 }
 
+@media (max-width:1500px) {
+  .flex-sections-user-left {
+    width:calc(30% - 20px);min-width:calc(30% - 20px);
+  }
+  .flex-sections-user-right {
+    width:calc(70% - 20px);min-width:calc(70% - 20px);
+  }
+}
 @media (max-width:1000px) {
   .flex-sections-user {
-    display:flex;justify-content:center;align-items:center;margin-top:24px;flex-direction:column;
+    display:flex;justify-content:center;align-items:center;margin-top:24px;flex-direction:column;gap:initial;
   }
   .flex-sections-user-left {
     width:100%;margin-bottom:20px;
