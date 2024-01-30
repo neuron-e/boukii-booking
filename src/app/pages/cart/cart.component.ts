@@ -203,8 +203,18 @@ export class CartComponent implements OnInit {
   }
 
   getTotalItemExtraPrice(details: any[]): number {
-    return details.reduce((total, detail) => total + (parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))), 0);
-  }
+    return details.reduce((total, detail) => {
+      if (detail.extra && 'price' in detail.extra && 'tva' in detail.extra) {
+        const price = parseFloat(detail.extra.price);
+        const tva = parseFloat(detail.extra.tva);
+        const extraPrice = price + (price * (tva / 100));
+        if (!isNaN(extraPrice)) {
+          return total + extraPrice;
+        }
+      }
+      return total;
+    }, 0);
+  }  
 
   getBasePrice() {
     let ret = 0;

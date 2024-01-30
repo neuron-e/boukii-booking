@@ -98,6 +98,7 @@ export class HeaderComponent implements OnInit {
   switchLang(lang: any){
     this.translate.use(lang);
     this.selectedLang = lang;
+    this.toggleDropdownLang();
   }
 
   toggleTheme(): void {

@@ -532,7 +532,7 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    debugger;
+    //debugger;
     this.router.navigate(urls);
   }
 
