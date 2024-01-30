@@ -70,8 +70,17 @@
                 {{getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? 'colective' : 'private' | translate}}
                 {{getCourse(item?.courseDates[0]?.course_id)?.sport?.name}}
               </mat-card-subtitle>
-              <div style="color: #EA0C60;">{{ bookingUsersUnique[bI].price}} CHF {{getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible ? '/ per day' : ''}}</div>
-            </mat-card-header>
+              <div style="color: #EA0C60;" *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 2 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible ">
+                {{'from' | translate}} {{ getAmountCourse(bookingUsersUnique, bI)}} CHF
+
+                </div>
+              <div style="color: #EA0C60;" *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible">
+                {{ getAmountCourse(bookingUsersUnique, bI)}} CHF {{'/ per day'}}
+              </div>
+
+              <div style="color: #EA0C60;" *ngIf="!getCourse(item?.courseDates[0]?.course_id)?.is_flexible">
+                {{ getAmountCourse(bookingUsersUnique, bI)}} CHF
+              </div>             </mat-card-header>
             <mat-card-content>
               <ul style="font-size: 12px;padding: 0 0 0 18%;">
                 <li *ngFor="let date of item?.courseDates" class="color-dark-always montserrat" style="font-size: 14px;">
@@ -175,9 +184,7 @@
                   <p style="width: 60%;font-size: 21px;float:left" class="color-dark-always">{{'booking_total' | translate }}</p>
                   <p style="color: #EA0C60;">{{
 
-                  parseFloatValue(((courses[bI]?.course_type === 2 && courses[bI]?.is_flexible ? getPrivateFlexPrice(item.courseDates)
-                    : ((courses[bI]?.course_type === 1 && courses[bI]?.is_flexible)
-                    ? item?.price_total : (courses[bI]?.course_type === 1 ? item?.price_total : courses[bI]?.price * item.courseDates.length)))))
+                    parseFloatValue(parseFloatValue(getTotalBook(bI, item)))
                   + getCourseExtraForfaitPrice(item.courseDates[0])}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
                 </div>
               </div>
@@ -264,10 +271,15 @@
             <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
             <h3 style="font-size: 1.5rem!important;" class="color-dark-always">{{'summary' | translate}}</h3>
             <div class="opaque-box">
-              <span style="width: 100%; float:left">
+              <span style="width: 100%; float:left" *ngIf="booking.status !== 2">
                 <p style="float:left">{{'base_price' | translate }}</p>
                 <p style="float:right">{{getBasePrice(true)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
+              <span style="width: 100%; float:left" *ngIf="booking.status === 2">
+                <p style="float:left">{{'base_price' | translate }}</p>
+                <p style="float:right">{{getBasePriceForAnulations(true)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
+              </span>
+
 
               <span style="width: 100%; float:left" *ngIf="booking.has_reduction">
                 <p style="float:left">{{'reduction' | translate}}</p>
@@ -319,35 +331,6 @@
                 <p style="float:right">{{(finalPrice).toFixed(2)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
             </div>
-
-            <ng-container *ngIf="!booking.paid && booking.status !== 2">
-              <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
-              <div class="square-buttons-container">
-                <button mat-raised-button color="accent" class="square-button" (click)="selectedButton='1';selectedSubButton='0';" [class.selected]="selectedButton==='1'">{{'payment_direct' | translate}}</button>
-                <button mat-raised-button color="accent" class="square-button" (click)="selectedButton='2';selectedSubButton='0';defaults.payment_method_id = 3" [class.selected]="selectedButton==='2'">{{'payment_online' | translate}}</button>
-              </div>
-              <mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
-              <div class="square-buttons-container" *ngIf="selectedButton==='1'">
-                <button mat-raised-button color="accent" class="square-button" (click)="selectedSubButton='1';defaults.payment_method_id = 1" [class.selected]="selectedSubButton==='1'">{{'payment_cash' | translate}}</button>
-                <button mat-raised-button color="accent" class="square-button" (click)="selectedSubButton='2'; defaults.payment_method_id = 4" [class.selected]="selectedSubButton==='2'">{{'payment_other' | translate}}</button>
-                <button mat-raised-button color="accent" class="square-button" (click)="selectedSubButton='3'; defaults.payment_method_id = 2" [class.selected]="selectedSubButton==='3'">Boukii Pay</button>
-              </div>
-              <mat-divider *ngIf="selectedSubButton==='1' || selectedSubButton==='2'" class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
-              <div style="width:100%" class="square-buttons-container" *ngIf="selectedSubButton==='1' || selectedSubButton==='2'">
-                <p style="float:left;width: 100%;">{{'is_paid' | translate}}</p>
-                <mat-slide-toggle color="accent" [(ngModel)]="defaults.paid" [checked]="defaults.paid" style="float: right;"></mat-slide-toggle>
-              </div>
-              <mat-divider *ngIf="selectedSubButton==='1' || selectedSubButton==='2' || selectedSubButton === '3'" class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
-              <div style="width:100%" class="square-buttons-container" *ngIf="selectedSubButton==='1' || selectedSubButton==='2' || selectedSubButton === '3'">
-                <button mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_booking' | translate }}</button>
-              </div>
-              <div class="square-buttons-container" *ngIf="selectedButton==='2'">
-                <button style="width:100%" mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_email' |translate}}</button>
-              </div>
-              <div class="square-buttons-container" *ngIf="selectedButton==='3'">
-                <button style="width:100%" mat-raised-button color="accent" class="square-button" (click)="create()">{{'confirm_booking' | translate }}</button>
-              </div>
-            </ng-container>
           </mat-card>
         </div>
       </div>

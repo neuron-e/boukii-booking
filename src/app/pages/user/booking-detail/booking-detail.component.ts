@@ -330,7 +330,7 @@ export class BookingDetailComponent implements OnInit {
 
             const groupedByCourseId = bookingUser.data.reduce((accumulator: any, currentValue: any) => {
               // Obtiene el course_id del objeto actual
-              const key = currentValue.client_id;
+              const key = currentValue.course_id;
 
               // Si el acumulador ya no tiene este course_id como clave, inicialízalo
               if (!accumulator[key]) {
@@ -343,37 +343,36 @@ export class BookingDetailComponent implements OnInit {
               return accumulator;
             }, {});
 
-            for (const clientId in groupedByCourseId) {
-              if (groupedByCourseId.hasOwnProperty(clientId)) {
+            for (const courseId in groupedByCourseId) {
+              if (groupedByCourseId.hasOwnProperty(courseId)) {
 
 
-                this.crudService.get('/slug/courses/' + groupedByCourseId[clientId][0].course_id)
-                  .subscribe((course: any) => {
+                this.crudService.get('/admin/courses/' + courseId)
+                  .subscribe((course) => {
 
                     if (course.data.course_type === 2 && this.booking.old_id === null) {
 
                       const data: any = {price_total: 0, courseDates: [], degrees_sport: [], sport_id: null, clients: []}
 
-                        groupedByCourseId[clientId].forEach((element: any) => {
+                        groupedByCourseId[courseId].forEach((element: any) => {
 
                           if(parseFloat(element.price) !== 0) {
                             data.sport_id = course.data?.sport_id;
                             data.degrees_sport = this.degreesClient.filter(degree => degree.sport_id === course.data?.sport_id);
                             this.courses.push(course.data);
                             data.courseDates.push(element);
-                            this.clientsIds.push(clientId);
+                            this.clientsIds.push(element.client_id);
 
 
                           } else {
-                            data.clients.push(clientId);
-                            this.clientsIds.push(clientId);
-
+                            data.clients.push(courseId);
+                            this.clientsIds.push(element.client_id);
                           }
 
                         });
 
                         if(data.courseDates.length > 0) {
-                          this.bookingsToCreate.unshift(data);
+                          this.bookingsToCreate.push(data);
                         }
 
                     } else {
@@ -382,7 +381,7 @@ export class BookingDetailComponent implements OnInit {
                       const data: any = {price_total: 0, courseDates: [], degrees_sport: [], sport_id: null}
                       data.sport_id = course.data?.sport_id;
                       data.degrees_sport = this.degreesClient.filter(degree => degree.sport_id === course.data?.sport_id);
-                        groupedByCourseId[clientId].forEach((element: any, idx: any) => {
+                        groupedByCourseId[courseId].forEach((element: any, idx: any) => {
 
                           if (course.data.course_type === 1 && !course.data.is_flexible) {
                             if (idx === 0) {
@@ -430,6 +429,16 @@ export class BookingDetailComponent implements OnInit {
 
     });
   }
+
+  getAmountCourse(item: any, index: number) {
+    if (this.courses[index].course_type === 2 && this.courses[index].is_flexible) {
+      const priceRange = this.courses[index].price_range.find((a: any) => a[1] !== null);
+      return priceRange[this.bookingUsers.filter((b: any) => b.course_id === this.courses[index].id).length];
+    } else {
+      return this.courses[index].price;
+    }
+  }
+
 
   getUniqueBookingUsers() {
     const clientIds = new Set();
@@ -838,6 +847,16 @@ export class BookingDetailComponent implements OnInit {
     }
   }
 
+  getTotalBook(bI: number, item: any) {
+
+    if (this.courses[bI]?.course_type === 2 && this.courses[bI]?.is_flexible) {
+      return this.getPrivateFlexPrice(item.courseDates);
+    } else if (this.courses[bI]?.course_type === 1) {
+      return item?.price_total;
+    } else if (this.courses[bI]?.course_type === 2 && !this.courses[bI]?.is_flexible) {
+      return this.courses[bI]?.price * item.courseDates.length;
+    }
+  }
 
   getBasePrice(noDiscount = false): any {
     let ret = 0;
@@ -845,6 +864,44 @@ export class BookingDetailComponent implements OnInit {
     if (this.courses.length > 0) {
       this.bookingsToCreate.forEach((b: any, idx: any) => {
         if (b.courseDates[0].status === 1) {
+          if (this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
+            ret = ret + this.getPrivateFlexPrice(b.courseDates);
+            b.price_total = this.getPrivateFlexPrice(b.courseDates);
+          } else if (!this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
+            ret = ret + parseFloat(this.courses[idx]?.price)* b.courseDates.length;
+            b.price_total = parseFloat(this.courses[idx]?.price)* b.courseDates.length;
+          } else if (this.courses[idx].is_flexible && this.courses[idx].course_type === 1) {
+            const discounts = typeof this.courses[idx].discounts === 'string' ? JSON.parse(this.courses[idx].discounts) : this.courses[idx].discounts;
+            let price = b?.courseDates[0].price * b.courseDates.length;
+            let discount = 0;
+            ret = ret + (b?.courseDates[0].price * b.courseDates.length);
+            if (!noDiscount) {
+              discounts.forEach((element: any) => {
+                if (element.date === b.courseDates.length) {
+                  ret = ret - (ret * (element.percentage / 100));
+                  discount = price - (price * (element.percentage / 100));
+                }
+              });
+            }
+            ret = ret - discount;
+            b.price_total = price;
+          } else {
+            ret = ret + b?.price_total
+          }
+        }
+
+      });
+
+      return ret;
+    }
+
+  }
+
+  getBasePriceForAnulations(noDiscount = false): any {
+    let ret = 0;
+
+    if (this.courses.length > 0) {
+      this.bookingsToCreate.forEach((b: any, idx: any) => {
           if (this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
             ret = ret + this.getPrivateFlexPrice(b.courseDates);
             b.price_total = this.getPrivateFlexPrice(b.courseDates);
@@ -866,8 +923,6 @@ export class BookingDetailComponent implements OnInit {
           } else {
             ret = ret + b?.price_total
           }
-        }
-
       });
 
       return ret;
@@ -1007,8 +1062,8 @@ export class BookingDetailComponent implements OnInit {
     });
 
     if (this.booking.has_reduction) {
-      price = price - this.booking.price_reduction;
-  }
+        price = price - this.booking.price_reduction;
+    }
 
     if (this.bonus !== null && price > 0) {
       this.bonus.forEach((element: any) => {
@@ -1028,27 +1083,45 @@ export class BookingDetailComponent implements OnInit {
       });
     }
 
-    if(this.booking.has_cancellation_insurance) {
+    if(this.booking.has_cancellation_insurance && this.cancellationInsurance > 0) {
       price = price + (this.getBasePrice() * this.cancellationInsurance);
+    } else if (this.booking.has_cancellation_insurance) {
+      price = price + parseFloat(this.booking.price_cancellation_insurance);
+      this.tvaPrice = parseFloat(this.booking.price_cancellation_insurance);
     }
 
-    if(this.booking.has_boukii_care) {
+    if(this.booking.has_boukii_care && this.boukiiCarePrice > 0) {
       // coger valores de reglajes
       price = price  + (this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates());
+    } else if (this.booking.has_boukii_care) {
+      price = price + parseFloat(this.booking.price_boukii_care);
+      this.tvaPrice = parseFloat(this.booking.price_boukii_care);
     }
 
     // añadir desde reglajes el tva
-    if (this.tva && !isNaN(this.tva)) {
-      this.tvaPrice = price * this.tva;
-      this.finalPrice = price + (price * this.tva);
+    if (this.booking.status === 2) {
+      this.finalPrice = parseFloat(this.booking.price_total);
+      if (this.booking.has_tva) {
+        this.tvaPrice = parseFloat(this.booking.price_tva);
+      }
     } else {
-      this.finalPrice = price;
+      if ((this.tva && !isNaN(this.tva) || this.tva !== 0)) {
+        this.finalPrice = price + (price * this.tva);
+        this.tvaPrice = (price * this.tva);
+      } else if (this.booking.has_tva) {
+        this.tvaPrice = parseFloat(this.booking.price_tva);
+        this.finalPrice = price + this.tvaPrice;
+
+      } else {
+        this.finalPrice = price;
+      }
     }
+
     this.finalPriceNoTaxes = price;
 
     if (this.booking.paid_total) {
 
-      this.bookingPendingPrice = this.finalPrice - this.booking.paid_total;
+      this.bookingPendingPrice = this.finalPrice - parseFloat(this.booking.paid_total);
     } else {
       this.bookingPendingPrice = this.finalPrice;
     }
