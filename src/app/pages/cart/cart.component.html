@@ -79,7 +79,7 @@
           </div>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
             <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{ getTotalItemPrice(cartItem.details) }}</span> CHF
+              <span class="text-color fw-semibold text-medium">{{ getTotalBasePrice(cartItem.details) }}</span> CHF
             </div>
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
@@ -145,7 +145,7 @@
         {{'text_subtotal' | translate }}
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">{{getTotalCoursesPrice()}}</span> CHF
+        <span class="text-color fw-bold">{{getBasePrice()}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8" *ngIf="voucher">
@@ -154,6 +154,14 @@
       </div>
       <div class="text-color min-width-price">
         <span class="text-color fw-bold">-{{usedVoucherAmount}}</span> CHF
+      </div>
+    </div>
+    <div class="payment-price-flex mt-8">
+      <div class="text-color uppercase" *ngIf="getExtrasPrice() > 0">
+        {{'FORFAIT' | translate }}
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">+{{getExtrasPrice()}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8" *ngIf="hasInsurance">
