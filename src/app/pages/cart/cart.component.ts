@@ -55,7 +55,7 @@ export class CartComponent implements OnInit {
             this.user = JSON.parse(storageSlug);
             this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug+'-cart') ?? '{}'));
           }
-          this.totalPrice = this.getTotalCoursesPrice() + (this.tva && !isNaN(this.tva) ? this.getTotalCoursesPrice() * this.tva : 0);
+          this.updateTotal();
         }
       }
     );
@@ -205,7 +205,22 @@ export class CartComponent implements OnInit {
   }
 
   getInsurancePrice() {
-    return this.getTotalCoursesPrice() * this.cancellationInsurance;
+    return this.getBasePrice() * this.cancellationInsurance;
+  }
+
+  getExtrasPrice() {
+    let ret = 0;
+    this.cart.forEach((cart: any) => {
+      cart.details.forEach((detail: any) => {
+        ret = ret + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))
+      });
+    });
+
+    return ret;
+  }
+
+  getTotalBasePrice(details: any[]): number {
+    return details.reduce((total, detail) => total + parseFloat(detail.price), 0);
   }
 
   getTotalItemPrice(details: any[]): number {
@@ -227,14 +242,25 @@ export class CartComponent implements OnInit {
   }
 
   getBasePrice() {
-    let ret = 0;
+    let total = 0;
+    this.cart?.forEach(cartItem => {
 
-    this.cart.forEach(element => {
-      ret = ret + ((!element.courseDates[0].course.is_flexible && element.courseDates[0].course.course_type === 2)
-      ? element.price_total * element.courseDates.length : element.price_total);
+      if(cartItem.details[0].course.course_type ==1) {
+        if(!cartItem.details[0].course.is_flexible) {
+          total += parseFloat(cartItem.details[0].course.price);
+        } else {
+          //TODO: Revisar con flexible
+          total += this.getTotalBasePrice(cartItem.details);
+        }
+      } else {
+        if(cartItem.details[0].course.is_flexible) {
+          total += this.getTotalBasePrice(cartItem.details);
+        } else {
+          //TODO: Revisar sin flexible
+        }
+      }
     });
-
-    return ret;
+    return total;
   }
 
   getTotalCoursesPrice() {
@@ -260,9 +286,10 @@ export class CartComponent implements OnInit {
   }
 
   updateTotal() {
-    let basePrice = this.getTotalCoursesPrice();
+    let basePrice = this.getBasePrice();
     let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
     let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    let extrasPrice = this.getExtrasPrice();
     let totalPrice = basePrice;
 
     if (this.voucher) {
@@ -280,9 +307,9 @@ export class CartComponent implements OnInit {
       this.usedVoucherAmount = 0;
     }
 
-    if (this.tva && !isNaN(this.tva)) {
+    if ((this.tva && !isNaN(this.tva)) || this.tva > 0) {
 
-      totalPrice = (totalPrice + insurancePrice + boukiiCarePrice) + (totalPrice + insurancePrice + boukiiCarePrice) * this.tva;
+      totalPrice = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) + (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) * this.tva;
     } else {
       totalPrice = totalPrice + insurancePrice + boukiiCarePrice;
     }
