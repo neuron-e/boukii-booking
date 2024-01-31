@@ -321,11 +321,19 @@
                 <div class="text-color-light montserrat mt-12 margin-auto">
                   {{'text_duration' | translate }}
                 </div>
-                <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedDuration"
-                        (change)="updatePrice()">
-                  <option *ngFor="let range of availableDurations"
-                          [value]="convertToHoursAndMinutes(range.time_interval)">{{convertToHoursAndMinutes(range.time_interval)}}</option>
-                </select>
+                <ng-container *ngIf="course?.is_flexible">
+                  <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedDuration"
+                          (change)="updatePrice()">
+                    <option *ngFor="let range of availableDurations"
+                            [value]="convertToHoursAndMinutes(range)">{{convertToHoursAndMinutes(range)}}</option>
+                  </select>
+                </ng-container>
+                <ng-container *ngIf="!course?.is_flexible">
+                  <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedDuration">
+                    <option
+                            [value]="course.duration">{{course.duration}}</option>
+                  </select>
+                </ng-container>
               </div>
 
               <div class="reservation-price-flex mt-12">
