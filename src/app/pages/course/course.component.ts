@@ -255,7 +255,12 @@ export class CourseComponent implements OnInit {
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
-        this.availableDurations = this.getAvailableDurations(this.selectedHour);
+        if(this.course.is_flexible) {
+          this.availableDurations = this.getAvailableDurations(this.selectedHour);
+        } else {
+          this.selectedDuration = this.course.duration;
+        }
+
         this.initializeMonthNames();
         this.currentMonth = new Date().getMonth();
         this.currentYear = new Date().getFullYear();
@@ -329,9 +334,28 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
+    debugger;
     let bookingUsers:any = [];
     if(this.course.course_type == 2) {
       if(this.course.is_flexible) {
+        let course_date = this.findMatchingCourseDate();
+        bookingUsers.push({
+          'course': this.course,
+          'client': this.selectedUser,
+          'school_id': this.schoolData.id,
+          'client_id': this.selectedUser.id,
+          'price': this.course.price,
+          'currency': 'CHF',
+          'course_id': this.course.id,
+          'course_date_id': course_date.id,
+          'course_group_id': null,
+          'course_subgroup_id': null,
+          'date': course_date.date,
+          'hour_start': this.selectedHour,
+          'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+          'extra': this.selectedForfait
+        })
+      } else {
         let course_date = this.findMatchingCourseDate();
         bookingUsers.push({
           'course': this.course,
@@ -584,8 +608,21 @@ export class CourseComponent implements OnInit {
   }
 
   filteredPriceRange() {
-    return this.course.price_range.filter((item:any) => item.price !== '0.00'
-      && item.num_pax == this.selectedPaxes );
+    return this.course.price_range
+      .filter((range: any) => range.intervalo)
+      .map((range: any) => {
+        const parts = range.intervalo.split(' ');
+        let minutes = 0;
+        for (const part of parts) {
+          if (part.endsWith('h')) {
+            minutes += parseInt(part) * 60;
+          } else if (part.endsWith('m')) {
+            minutes += parseInt(part);
+          }
+        }
+        return minutes;
+      })
+      .sort((a: number, b: number) => a - b);
   }
 
   convertToHoursAndMinutes(minutes: number): string {
@@ -599,11 +636,8 @@ export class CourseComponent implements OnInit {
     const startTime = parseInt(selectedHour.split(':')[0]);
     const availableTime = endTime - startTime; // Tiempo disponible en horas
 
-    let durations = this.filteredPriceRange().filter((range: any) => {
-      const durationInHours = Math.floor(range.time_interval / 60);
-      return durationInHours <= availableTime;
-    });
-    this.selectedDuration = this.convertToHoursAndMinutes(durations[0].time_interval);
+    let durations = this.filteredPriceRange();
+    this.selectedDuration = this.convertToHoursAndMinutes(durations[0]);
     return durations;
   }
 
@@ -611,24 +645,46 @@ export class CourseComponent implements OnInit {
     let hours = [];
     const hourMin = parseInt(this.course.hour_min);
     const hourMax = parseInt(this.course.hour_max);
+    const duration = parseInt(this.course.duration);
 
-    // Obtener los intervalos de tiempo de los price_range y ordenarlos
-    let timeIntervals = this.filteredPriceRange().map((range:any) => range.time_interval).sort((a:any, b:any) => a - b);
+    if (!this.course.is_flexible) {
+      // Generar intervalos de 5 minutos desde la hora de inicio hasta la hora final,
+      // teniendo en cuenta la duración máxima
+      for (let hour = hourMin; hour < hourMax; hour++) {
+        for (let minute = 0; minute <= 60 - duration; minute += 5) {
+          let formattedHour = hour < 10 ? '0' + hour : '' + hour;
+          let formattedMinute = minute < 10 ? '0' + minute : '' + minute;
+          let formattedTime = `${formattedHour}:${formattedMinute}`;
+          hours.push(formattedTime);
+        }
+      }
+      // Añadir la hora final teniendo en cuenta la duración
+      let formattedHourMax = hourMax - 1 < 10 ? '0' + (hourMax - 1) : '' + (hourMax - 1);
+      let formattedTimeMax = `${formattedHourMax}:00`;
+      hours.push(formattedTimeMax);
+    } else {
+      // Obtener los intervalos de tiempo de los price_range y ordenarlos
+      let timeIntervals = this.filteredPriceRange();
 
-    // Calcular las diferencias entre intervalos consecutivos
-    let differences = timeIntervals.slice(1).map((value:any, index:any) => value - timeIntervals[index]);
+      // Calcular las diferencias entre intervalos consecutivos
+      let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
 
-    // Encontrar el intervalo mínimo en minutos
-    let minInterval = Math.min(...differences);
-    let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
+      // Encontrar el intervalo mínimo en minutos
+      let minInterval = Math.min(...differences);
+      let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
 
-    // Calcular las horas disponibles en intervalos de minInterval
-    for (let minute = hourMin * 60; minute <= hourMax * 60 - minDuration; minute += minInterval) {
-      let hour = Math.floor(minute / 60);
-      let min = minute % 60;
-      let formattedTime = `${hour < 10 ? '0' + hour : hour}:${min < 10 ? '0' + min : min}`;
-      hours.push(formattedTime);
+      // Calcular las horas disponibles en intervalos de minInterval
+      for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
+        let hour = Math.floor(minute / 60);
+        let min = minute % 60;
+        let formattedHour = hour < 10 ? '0' + hour : hour;
+        let formattedMin = min < 10 ? '0' + min : min;
+        let formattedTime = `${formattedHour}:${formattedMin}`;
+        hours.push(formattedTime);
+      }
     }
+
+
     this.selectedHour = hours[0];
     return hours;
   }
@@ -642,20 +698,19 @@ export class CourseComponent implements OnInit {
     const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
     const maxTimeInMinutes = hourMax * 60;
 
-    // Filtrar las duraciones disponibles
     this.availableDurations = this.filteredPriceRange()
-      .filter((range:any) => selectedTimeInMinutes + range.time_interval <= maxTimeInMinutes);
+      .filter((range:any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
 
     // Convertir la duración seleccionada a minutos
     const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration);
 
     // Comprobar si la duración seleccionada está dentro de las duraciones disponibles
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range:any) => range.time_interval === selectedDurationMinutes);
+      .some((range:any) => range === selectedDurationMinutes); // Cambiar esta línea
 
     // Si no está disponible, establecer la primera duración disponible
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0].time_interval);
+      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0]);
     }
   }
 
