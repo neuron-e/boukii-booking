@@ -549,11 +549,13 @@ export class UserComponent implements OnInit {
   }
 
   getCourseName(course: any) {
-    if (!course.translations || course.translations === null) {
-      return course.name;
-    } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].name;
+    if (course) {
+      if (!course.translations || course.translations === null) {
+        return course.name;
+      } else {
+        const translations = JSON.parse(course.translations);
+        return translations[this.translateService.currentLang].name;
+      }
     }
   }
 }

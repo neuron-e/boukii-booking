@@ -18,6 +18,7 @@ export class CartComponent implements OnInit {
   voucher: any;
   hasInsurance = false;
   hasBoukiiCare = false;
+  hasTva = false;
   totalPrice: number = 0;
   usedVoucherAmount: number = 0;
   user: any;
@@ -41,9 +42,13 @@ export class CartComponent implements OnInit {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
 
-          this.cancellationInsurance =  parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
+          this.cancellationInsurance = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);
+
+          this.hasInsurance = this.cancellationInsurance && !isNaN(this.cancellationInsurance) || this.cancellationInsurance > 0
+          this.hasBoukiiCare = this.boukiiCarePrice && !isNaN(this.boukiiCarePrice) || this.boukiiCarePrice > 0
+          this.hasTva = this.tva && !isNaN(this.tva) || this.tva > 0
 
           let storageSlug = localStorage.getItem(this.schoolData.slug+ '-boukiiUser');
           if(storageSlug) {
@@ -68,9 +73,14 @@ export class CartComponent implements OnInit {
       price_total: this.totalPrice,
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
+      has_boukii_care: this.hasInsurance,
+      price_boukii_care: this.boukiiCarePrice ? this.boukiiCarePrice() : 0,
+      has_tva: this.hasTva,
+      price_tva: this.hasTva ? this.getTotalCoursesPrice() * this.tva : 0,
       cart: this.getCleanedCartDetails(),
       voucher: this.voucher,
       voucherAmount: this.usedVoucherAmount,
+      source: 'web'
 
       // ... otros campos requeridos
     };
@@ -199,7 +209,7 @@ export class CartComponent implements OnInit {
   }
 
   getTotalItemPrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail.extra.price), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100)), 0);
   }
 
   getTotalItemExtraPrice(details: any[]): number {
@@ -214,7 +224,7 @@ export class CartComponent implements OnInit {
       }
       return total;
     }, 0);
-  }  
+  }
 
   getBasePrice() {
     let ret = 0;

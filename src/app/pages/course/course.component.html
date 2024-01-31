@@ -12,7 +12,7 @@
   <div class="course-section">
     <div class="rounded-8 course-image-wrapper">
       <div class="wrapper-back rounded-8"></div>
-      <img [src]="course.image !== null ? course?.image : defaultImage" class="rounded-8 course-image-img" />
+      <img [src]="course?.image !== null ? course?.image : defaultImage" class="rounded-8 course-image-img" />
       <div class="padding-box course-image-text">
         <div class="text-light-gray-bs fw-semibold course-image-icon montserrat">
           <img src="assets/icons/prive_ski2x.png" *ngIf="course?.course_type==2"/>

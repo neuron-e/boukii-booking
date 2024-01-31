@@ -172,6 +172,14 @@
         <span class="text-color fw-bold">+{{getBoukiiCarePrice()}}</span> CHF
       </div>
     </div>
+    <div class="payment-price-flex mt-8" *ngIf="hasTva">
+      <div class="text-color uppercase">
+        TVA
+      </div>
+      <div class="text-color min-width-price">
+        <span class="text-color fw-bold">+{{totalPrice * tva}}</span> CHF
+      </div>
+    </div>
     <div class="payment-price-flex mt-8">
       <div class="text-color uppercase">
         {{'text_total' | translate }}

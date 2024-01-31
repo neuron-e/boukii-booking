@@ -748,20 +748,26 @@ export class CourseComponent implements OnInit {
 
   getDescription(course: any) {
 
-    if (!course.translations || course.translations === null) {
-      return course.description;
-    } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].description;
+    if (course) {
+      if (!course.translations || course.translations === null) {
+        return course.description;
+      } else {
+        const translations = JSON.parse(course.translations);
+        return translations[this.translateService.currentLang].description;
+      }
     }
+
   }
 
   getCourseName(course: any) {
-    if (!course.translations || course.translations === null) {
-      return course.name;
-    } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].name;
+    if (course) {
+      if (!course.translations || course.translations === null) {
+        return course.name;
+      } else {
+        const translations = JSON.parse(course.translations);
+        return translations[this.translateService.currentLang].name;
+      }
     }
   }
+
 }
