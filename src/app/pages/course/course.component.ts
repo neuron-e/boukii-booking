@@ -257,6 +257,7 @@ export class CourseComponent implements OnInit {
         this.availableHours = this.getAvailableHours();
         if(this.course.is_flexible) {
           this.availableDurations = this.getAvailableDurations(this.selectedHour);
+          this.updatePrice();
         } else {
           this.selectedDuration = this.course.duration;
         }
@@ -265,6 +266,7 @@ export class CourseComponent implements OnInit {
         this.currentMonth = new Date().getMonth();
         this.currentYear = new Date().getFullYear();
         this.renderCalendar();
+
       }
     });
   }
@@ -608,21 +610,25 @@ export class CourseComponent implements OnInit {
   }
 
   filteredPriceRange() {
-    return this.course.price_range
-      .filter((range: any) => range.intervalo)
-      .map((range: any) => {
-        const parts = range.intervalo.split(' ');
-        let minutes = 0;
-        for (const part of parts) {
-          if (part.endsWith('h')) {
-            minutes += parseInt(part) * 60;
-          } else if (part.endsWith('m')) {
-            minutes += parseInt(part);
-          }
+    return this.course.price_range.filter((range: any) => {
+      // Verificar si todos los valores son null excepto el campo 'intervalo'
+      const keys = Object.keys(range).filter((key) => key !== 'intervalo');
+      const allNull = keys.every((key) => range[key] === null);
+
+      // Mantener el objeto si no todos los valores son null
+      return !allNull;
+    }).map((range: any) => {
+      const parts = range.intervalo.split(' ');
+      let minutes = 0;
+      for (const part of parts) {
+        if (part.endsWith('h')) {
+          minutes += parseInt(part) * 60;
+        } else if (part.endsWith('m')) {
+          minutes += parseInt(part);
         }
-        return minutes;
-      })
-      .sort((a: number, b: number) => a - b);
+      }
+      return minutes;
+    }).sort((a: number, b: number) => a - b);
   }
 
   convertToHoursAndMinutes(minutes: number): string {
@@ -686,6 +692,7 @@ export class CourseComponent implements OnInit {
 
 
     this.selectedHour = hours[0];
+
     return hours;
   }
 
@@ -719,19 +726,28 @@ export class CourseComponent implements OnInit {
     const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
 
     // Encontrar el price_range que coincida con la duración y el pax seleccionados
-    const matchingPriceRange = this.course.price_range.find((range:any) =>
-      range.time_interval === selectedDurationInMinutes && // Convertir horas a minutos para la comparación
-      range.num_pax == selectedPax
-    );
+    const matchingTimeRange = this.course.price_range.find((range: any) => {
+      const parts = range.intervalo.split(' ');
+      let rangeMinutes = 0;
+      for (const part of parts) {
+        if (part.endsWith('h')) {
+          rangeMinutes += parseInt(part) * 60;
+        } else if (part.endsWith('m')) {
+          rangeMinutes += parseInt(part);
+        }
+      }
+      return rangeMinutes === selectedDurationInMinutes;
+    });
 
-    // Actualizar el precio basado en el price_range encontrado
-    if (matchingPriceRange) {
-      this.course.price = matchingPriceRange.price;
+    // Calcular el precio basado en el rango de tiempo encontrado y el número de pax seleccionado
+    if (matchingTimeRange && matchingTimeRange[selectedPax]) {
+      this.course.price = matchingTimeRange[selectedPax];
     } else {
       // Si no hay una coincidencia, puedes establecer un precio predeterminado o dejarlo como está
       this.course.price = 0; // O cualquier valor predeterminado que desees
     }
   }
+
 
   convertHourToMinutes(hourString: string): number {
     const [hours, minutes] = hourString.split(':').map(Number);
