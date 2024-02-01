@@ -146,6 +146,7 @@
     "text_add_a_date": "Add a date",
     "text_add_date": "Add date",
     "text_select_user": "Select the user for the reservation",
+    "text_select_user_or_more": "Select one or more users for the reservation",
     "text_change_level": "Change course level",
     "text_no_dates_month": "No dates available this month",
     "text_select_date_disponibility": "Select a date with availability:",

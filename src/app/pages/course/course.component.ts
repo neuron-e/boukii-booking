@@ -190,6 +190,7 @@ export class CourseComponent implements OnInit {
   ];
   selectedLevel: any;
   selectedUser: any;
+  selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
   selectedForfait: any
 
@@ -336,45 +337,49 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    debugger;
+    //debugger;
     let bookingUsers:any = [];
     if(this.course.course_type == 2) {
       if(this.course.is_flexible) {
         let course_date = this.findMatchingCourseDate();
-        bookingUsers.push({
-          'course': this.course,
-          'client': this.selectedUser,
-          'school_id': this.schoolData.id,
-          'client_id': this.selectedUser.id,
-          'price': this.course.price,
-          'currency': 'CHF',
-          'course_id': this.course.id,
-          'course_date_id': course_date.id,
-          'course_group_id': null,
-          'course_subgroup_id': null,
-          'date': course_date.date,
-          'hour_start': this.selectedHour,
-          'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
-          'extra': this.selectedForfait
-        })
+        this.selectedUserMultiple.forEach((selectedUser, index) => {
+          bookingUsers.push({
+            'course': this.course,
+            'client': selectedUser,
+            'school_id': this.schoolData.id,
+            'client_id': selectedUser.id,
+            'price': index === 0 ? this.course.price : 0,
+            'currency': 'CHF',
+            'course_id': this.course.id,
+            'course_date_id': course_date.id,
+            'course_group_id': null,
+            'course_subgroup_id': null,
+            'date': course_date.date,
+            'hour_start': this.selectedHour,
+            'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+            'extra': this.selectedForfait
+          });
+        });
       } else {
         let course_date = this.findMatchingCourseDate();
-        bookingUsers.push({
-          'course': this.course,
-          'client': this.selectedUser,
-          'school_id': this.schoolData.id,
-          'client_id': this.selectedUser.id,
-          'price': this.course.price,
-          'currency': 'CHF',
-          'course_id': this.course.id,
-          'course_date_id': course_date.id,
-          'course_group_id': null,
-          'course_subgroup_id': null,
-          'date': course_date.date,
-          'hour_start': this.selectedHour,
-          'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
-          'extra': this.selectedForfait
-        })
+        this.selectedUserMultiple.forEach((selectedUser, index) => {
+          bookingUsers.push({
+            'course': this.course,
+            'client': selectedUser,
+            'school_id': this.schoolData.id,
+            'client_id': selectedUser.id,
+            'price': this.course.price,
+            'currency': 'CHF',
+            'course_id': this.course.id,
+            'course_date_id': course_date.id,
+            'course_group_id': null,
+            'course_subgroup_id': null,
+            'date': course_date.date,
+            'hour_start': this.selectedHour,
+            'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
+            'extra': this.selectedForfait
+          });
+        });
       }
     } else {
       if(this.course.is_flexible) {
@@ -444,20 +449,41 @@ export class CourseComponent implements OnInit {
         cart[this.course.id] = {};
       }
 
-      if (!cart[this.course.id][this.selectedUser.id]) {
-        cart[this.course.id][this.selectedUser.id] = [];
-        cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+      if (this.course.course_type === 2) {
+        const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
 
-        localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-
-        this.cartService.carData.next(cart);
-        //TODO: mostrar mensaje de curso guardado correctamente.
-
-        this.goTo(this.schoolData.slug);
+        const isAnyUserReserved = selectedUserIds.split('-').some(id => {
+          const idArray = id.split('-'); 
+          return idArray.some(singleId => {
+            const keys = Object.keys(cart[this.course.id]);
+            return keys.some(key => key.split('-').includes(singleId));
+          });
+        });
+  
+        if (!isAnyUserReserved) {
+          cart[this.course.id][selectedUserIds] = [];
+          cart[this.course.id][selectedUserIds].push(...bookingUsers);
+  
+          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+          this.cartService.carData.next(cart);
+          // TODO: mostrar mensaje de curso guardado correctamente.
+          this.goTo(this.schoolData.slug);
+        } else {
+          alert('Al menos uno de los clientes tiene una reserva para este curso');
+        }
       } else {
-        alert('El cliente tiene una reserva para este curso');
+        if (!cart[this.course.id][this.selectedUser.id]) {
+          cart[this.course.id][this.selectedUser.id] = [];
+          cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+  
+          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+          this.cartService.carData.next(cart);
+          // TODO: mostrar mensaje de curso guardado correctamente.
+          this.goTo(this.schoolData.slug);
+        } else {
+          alert('El cliente tiene una reserva para este curso');
+        }
       }
-
 
     }, error => {
       alert('El cliente tiene una reserva que hace overlap con este curso');
@@ -523,11 +549,22 @@ export class CourseComponent implements OnInit {
     return `#${r}${g}${b}`;
   }
 
-  selectUser(user: any) {
-    this.selectedUser = user;
-    this.selectedLevel = null;
-    this.showLevels = false;
-    this.calculateAvailableLevels(user);
+  selectUser(user: any, course_type: any) {
+    if(course_type == 2){
+      const index = this.selectedUserMultiple.indexOf(user);
+      if (index !== -1) {
+        this.selectedUserMultiple.splice(index, 1);
+      } else {
+        this.selectedUserMultiple.push(user);
+      }
+      this.updatePrice();
+    }
+    else{
+      this.selectedUser = user;
+      this.selectedLevel = null;
+      this.showLevels = false;
+      this.calculateAvailableLevels(user);
+    }
   }
 
   selectLevel(level: any) {
@@ -723,7 +760,8 @@ export class CourseComponent implements OnInit {
 
   updatePrice(): void {
     const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration); // Convertir duración a minutos
-    const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
+    //const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
+    const selectedPax = this.selectedUserMultiple.length;
 
     // Encontrar el price_range que coincida con la duración y el pax seleccionados
     const matchingTimeRange = this.course.price_range.find((range: any) => {

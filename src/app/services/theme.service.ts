@@ -68,7 +68,7 @@ export class ThemeService {
     } else {
       /*LIGHT MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-light.jpeg)');
-      root.style.setProperty('--background-color-screen', 'rgba(255, 255, 255, 0.9)');
+      root.style.setProperty('--background-color-screen', 'rgba(255, 255, 255, 1)');
       root.style.setProperty('--text-color', '#000000');
       root.style.setProperty('--text-color-light', '#333333');
       root.style.setProperty('--text-color-medium', '#9fa5ab');
@@ -135,7 +135,7 @@ export class ThemeService {
     } else {
       /*LIGHT MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-light.jpeg)');
-      root.style.setProperty('--background-color-screen', 'rgba(255, 255, 255, 0.9)');
+      root.style.setProperty('--background-color-screen', 'rgba(255, 255, 255, 1)');
       root.style.setProperty('--text-color', '#000000');
       root.style.setProperty('--text-color-light', '#333333');
       root.style.setProperty('--text-color-medium', '#9fa5ab');

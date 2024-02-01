@@ -166,24 +166,31 @@
         </div>
 
         <div class="text-color montserrat">
-          {{'text_select_user' | translate }}
+          <ng-container *ngIf="course?.course_type === 2">
+            {{'text_select_user_or_more' | translate }}
+          </ng-container>
+          <ng-container *ngIf="!(course?.course_type === 2)">
+            {{'text_select_user' | translate }}
+          </ng-container>
         </div>
 
         <div class="reservation-users">
-          <div class="reservation-user-box cursor-pointer" (click)="selectUser(userLogged.clients[0])" [ngClass]="{'opacity-full': selectedUser==userLogged.clients[0]}">
+          <div class="reservation-user-box cursor-pointer" (click)="selectUser(userLogged.clients[0],course?.course_type)"
+          [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])}">
             <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="185" [size]="70" [userImage]="userLogged?.clients[0].image"></app-level-user>
             <div class="text-color text-small montserrat reservation-user-title">
               <img src="assets/images/gold-crown.png">
               {{userLogged?.clients[0].last_name}}
             </div>
-            <div *ngIf="selectedUser==userLogged?.clients[0]" class="reservation-user-bullet"></div>
+            <div *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])" class="reservation-user-bullet"></div>
           </div>
-          <div class="reservation-user-box cursor-pointer" *ngFor="let utilizer of userLogged?.clients[0].utilizers" (click)="selectUser(utilizer)" [ngClass]="{'opacity-full': selectedUser==utilizer}">
+          <div class="reservation-user-box cursor-pointer" *ngFor="let utilizer of userLogged?.clients[0].utilizers" (click)="selectUser(utilizer,course?.course_type)"
+          [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}">
             <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels" [selectLevel]="182" [size]="70" [userImage]="themeService.avatarEmpty"></app-level-user>
             <div class="text-color text-small montserrat reservation-user-title">
               {{utilizer.last_name}}
             </div>
-            <div *ngIf="selectedUser==utilizer" class="reservation-user-bullet"></div>
+            <div *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)" class="reservation-user-bullet"></div>
           </div>
           <div class="reservation-user-box cursor-pointer opacity-full" (click)="openModalAddUser()">
             <div class="reservation-user-add">
@@ -253,7 +260,7 @@
         <!--PRIVATE-->
         <ng-container *ngIf="course?.course_type==2">
 
-          <ng-container *ngIf="selectedUser">
+          <ng-container *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat mt-12 margin-auto">
               {{'text_select_date_disponibility' | translate }}
             </div>
@@ -310,6 +317,7 @@
                   <option *ngFor="let hour of availableHours" [value]="hour">{{ hour }}</option>
                 </select>
 
+                <!--
                 <div class="text-color-light montserrat mt-12 margin-auto">
                   {{'text_people' | translate }}
                 </div>
@@ -317,6 +325,7 @@
                         (change)="updatePrice()">
                   <option *ngFor="let number of generateNumberArray(course.max_participants)" [value]="number">{{ number }}</option>
                 </select>
+                -->
 
                 <div class="text-color-light montserrat mt-12 margin-auto">
                   {{'text_duration' | translate }}
