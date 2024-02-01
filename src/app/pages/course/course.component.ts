@@ -491,9 +491,23 @@ export class CourseComponent implements OnInit {
   }
 
   calculateEndTime(startTime: string, duration: string): string {
+    let durationHours = 0;
+    let durationMinutes = 0;
+    if (duration.includes(":")) {
+      [durationHours, durationMinutes] = duration.split(':').map(Number);
+    } else {
+      const hoursMatch = duration.match(/(\d+)h/);
+      const minutesMatch = duration.match(/(\d+)min/);
+      if (hoursMatch) {
+        durationHours = parseInt(hoursMatch[1]);
+      }
+      if (minutesMatch) {
+        durationMinutes = parseInt(minutesMatch[1]);
+      }
+    }
+
     // Convertir la hora de inicio y la duración a minutos
     const [startHours, startMinutes] = startTime.split(':').map(Number);
-    const [durationHours, durationMinutes] = duration.split(':').map(Number);
 
     const startTotalMinutes = startHours * 60 + startMinutes;
     const durationTotalMinutes = durationHours * 60 + durationMinutes;
