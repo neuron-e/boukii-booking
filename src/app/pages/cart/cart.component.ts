@@ -72,9 +72,9 @@ export class CartComponent implements OnInit {
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
       has_boukii_care: this.hasInsurance,
-      price_boukii_care: this.boukiiCarePrice ? this.boukiiCarePrice() : 0,
+      price_boukii_care: this.boukiiCarePrice ? this.getBoukiiCarePrice() : 0,
       has_tva: this.hasTva,
-      price_tva: this.hasTva ? this.getTotalCoursesPrice() * this.tva : 0,
+      price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),
       voucher: this.voucher,
       voucherAmount: this.usedVoucherAmount,
@@ -85,7 +85,7 @@ export class CartComponent implements OnInit {
 
     console.log(bookingData);
 
-    this.bookingService.createBooking(bookingData).subscribe(
+    /*this.bookingService.createBooking(bookingData).subscribe(
       response => {
         console.log('Reserva creada con éxito', response);
         // Manejar respuesta exitosa
@@ -94,7 +94,7 @@ export class CartComponent implements OnInit {
         console.error('Error al crear la reserva', error);
         // Manejar error
       }
-    );
+    );*/
   }
 
   getCleanedCartDetails() {
@@ -224,7 +224,7 @@ export class CartComponent implements OnInit {
   }
 
   getTotalItemPrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100)), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail?.extra?.price) + (parseFloat(detail?.extra?.price) * (parseFloat(detail?.extra?.tva) / 100)), 0);
   }
 
   getTotalItemExtraPrice(details: any[]): number {
@@ -365,5 +365,5 @@ export class CartComponent implements OnInit {
     const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
     return sport ? sport.name : null;
   }
-  
+
 }
