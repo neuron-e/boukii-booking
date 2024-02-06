@@ -20,6 +20,7 @@ export class CartComponent implements OnInit {
   hasBoukiiCare = false;
   hasTva = false;
   totalPrice: number = 0;
+  totalNotaxes: number = 0;
   usedVoucherAmount: number = 0;
   user: any;
   cart: any[];
@@ -45,9 +46,6 @@ export class CartComponent implements OnInit {
           this.cancellationInsurance = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);
-
-          this.hasInsurance = this.cancellationInsurance && !isNaN(this.cancellationInsurance) || this.cancellationInsurance > 0
-          this.hasBoukiiCare = this.boukiiCarePrice && !isNaN(this.boukiiCarePrice) || this.boukiiCarePrice > 0
           this.hasTva = this.tva && !isNaN(this.tva) || this.tva > 0
 
           let storageSlug = localStorage.getItem(this.schoolData.slug+ '-boukiiUser');
@@ -259,6 +257,7 @@ export class CartComponent implements OnInit {
           total += this.getTotalBasePrice(cartItem.details);
         } else {
           //TODO: Revisar sin flexible
+          total += this.getTotalBasePrice(cartItem.details);
         }
       }
     });
@@ -293,6 +292,7 @@ export class CartComponent implements OnInit {
     let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
     let extrasPrice = this.getExtrasPrice();
     let totalPrice = basePrice;
+    let totalPriceNoTaxes = basePrice;
 
     if (this.voucher) {
       let voucherAmount = parseFloat(this.voucher.remaining_balance);
@@ -311,11 +311,14 @@ export class CartComponent implements OnInit {
 
     if ((this.tva && !isNaN(this.tva)) || this.tva > 0) {
 
+      totalPriceNoTaxes = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice);
       totalPrice = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) + (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) * this.tva;
     } else {
+      totalPriceNoTaxes = totalPrice + insurancePrice + boukiiCarePrice;
       totalPrice = totalPrice + insurancePrice + boukiiCarePrice;
     }
     this.totalPrice = totalPrice;
+    this.totalNotaxes = totalPriceNoTaxes;
   }
 
   getBoukiiCarePrice() {

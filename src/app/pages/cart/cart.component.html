@@ -128,7 +128,7 @@
         {{'text_refund_option' | translate }}
       </div>
       <div class="selected-custom">
-        <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance"  (change)="updateTotal()">
+        <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance" (change)="updateTotal()">
         <label for="insurance"></label>
       </div>
     </div>
@@ -155,7 +155,7 @@
         {{'text_subtotal' | translate }}
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">{{getBasePrice()}}</span> CHF
+        <span class="text-color fw-bold">{{getBasePrice().toFixed(2)}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8" *ngIf="voucher">
@@ -170,7 +170,7 @@
       <div class="text-color uppercase" *ngIf="getExtrasPrice() > 0">
         {{'FORFAIT' | translate }}
       </div>
-      <div class="text-color min-width-price">
+      <div class="text-color min-width-price" *ngIf="getExtrasPrice() > 0">
         <span class="text-color fw-bold">+{{getExtrasPrice()}}</span> CHF
       </div>
     </div>
@@ -195,7 +195,7 @@
         TVA
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">+{{totalPrice * tva}}</span> CHF
+        <span class="text-color fw-bold">+{{(totalNotaxes * tva).toFixed(2)}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8">
@@ -203,7 +203,7 @@
         {{'text_total' | translate }}
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">{{totalPrice}}</span> CHF
+        <span class="text-color fw-bold">{{totalPrice.toFixed(2)}}</span> CHF
       </div>
     </div>
 

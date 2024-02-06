@@ -474,29 +474,42 @@ export class CourseComponent implements OnInit {
         const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
 
         const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-          const idArray = id.split('-'); 
+          const idArray = id.split('-');
           return idArray.some(singleId => {
             const keys = Object.keys(cart[this.course.id]);
-            return keys.some(key => key.split('-').includes(singleId));
+            return keys.some(key => {
+              const userCourseIds = key.split('-');
+              const hasUserOverlap = userCourseIds.includes(singleId);
+
+              if (hasUserOverlap) {
+                let course_date = this.findMatchingCourseDate();
+                const userBookings = cart[this.course.id][key];
+                return userBookings.some((booking:any) => booking.course_date_id === course_date.id);
+              }
+
+              return false;
+            });
           });
         });
-  
+
         if (!isAnyUserReserved) {
-          cart[this.course.id][selectedUserIds] = [];
+          if (! cart[this.course.id][selectedUserIds]) {
+            cart[this.course.id][selectedUserIds] = [];
+          }
           cart[this.course.id][selectedUserIds].push(...bookingUsers);
-  
+
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           // TODO: mostrar mensaje de curso guardado correctamente.
           this.goTo(this.schoolData.slug);
         } else {
-          alert('Al menos uno de los clientes tiene una reserva para este curso');
+          alert('Al menos uno de los clientes tiene una reserva para este curso o coincide con la fecha seleccionada');
         }
       } else {
         if (!cart[this.course.id][this.selectedUser.id]) {
           cart[this.course.id][this.selectedUser.id] = [];
           cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-  
+
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           // TODO: mostrar mensaje de curso guardado correctamente.
