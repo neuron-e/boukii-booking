@@ -20,7 +20,17 @@
             <img src="assets/icons/prive_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 2"/>
             <div class="course-box-title">
               <div class="text-color text-medium fw-medium">{{getCourseName(cartItem.details[0].course)}}</div>
-              <span class="text-color-light text-small">Collectif Ski</span>
+              <span class="text-color-light text-small">
+                <ng-container *ngIf="cartItem.details[0].course.course_type==1">
+                  {{'colective' | translate }}
+                </ng-container>
+                <ng-container *ngIf="cartItem.details[0].course.course_type==2">
+                  {{'private' | translate }}
+                </ng-container>
+                <ng-container *ngIf="schoolData && schoolData.sports">
+                  {{ getSportName(cartItem.details[0].course.sport_id) }}
+                </ng-container>
+              </span>
             </div>
           </div>
           <div class="course-box-icons">

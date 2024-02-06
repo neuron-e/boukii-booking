@@ -359,5 +359,29 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  getWeekdays(settings: string): string {
+    const settingsObj = JSON.parse(settings);
+    const weekDays = settingsObj.weekDays;
+    const daysMap:any = {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Diamanche",
+    };
+
+    const activeDays = Object.entries(weekDays)
+      .filter(([_, isActive]) => isActive)
+      .map(([day]) => this.translateService.instant(daysMap[day]));
+
+    if (activeDays.length === 7) {
+      return `${this.translateService.instant('Lundi')} - ${this.translateService.instant('Diamanche')}`;
+    } else {
+      return activeDays.join(', ');
+    }
+  }
+
   protected readonly JSON = JSON;
 }

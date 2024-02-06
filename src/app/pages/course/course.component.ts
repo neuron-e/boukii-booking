@@ -241,6 +241,7 @@ export class CourseComponent implements OnInit {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
           console.log(this.settings);
+          console.log(this.schoolData);
         }
       }
     );
@@ -250,6 +251,7 @@ export class CourseComponent implements OnInit {
     });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      console.log(this.course);
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
@@ -264,13 +266,32 @@ export class CourseComponent implements OnInit {
         }
 
         this.initializeMonthNames();
-        this.currentMonth = new Date().getMonth();
-        this.currentYear = new Date().getFullYear();
+        if(this.course.date_start){
+          if(moment(this.course.date_start).isBefore(moment(), 'day')){
+            this.currentMonth = new Date().getMonth();
+            this.currentYear = new Date().getFullYear();
+          }
+          else{
+            this.currentMonth = new Date(this.course.date_start).getMonth();
+            this.currentYear = new Date(this.course.date_start).getFullYear();
+          }
+        }
+        else{
+          this.currentMonth = new Date().getMonth();
+          this.currentYear = new Date().getFullYear();
+        }
         this.renderCalendar();
 
       }
     });
   }
+/*
+  getSports() {
+    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
+      .subscribe((sport) => {
+        this.sports = sport.data;
+      })
+  }*/
 
   initializeMonthNames() {
     this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -892,5 +913,35 @@ export class CourseComponent implements OnInit {
       }
     }
   }
+
+  getWeekdays(settings: string): string {
+    const settingsObj = JSON.parse(settings);
+    const weekDays = settingsObj.weekDays;
+    const daysMap:any = {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Diamanche",
+    };
+
+    const activeDays = Object.entries(weekDays)
+      .filter(([_, isActive]) => isActive)
+      .map(([day]) => this.translateService.instant(daysMap[day]));
+
+    if (activeDays.length === 7) {
+      return `${this.translateService.instant('Lundi')} - ${this.translateService.instant('Diamanche')}`;
+    } else {
+      return activeDays.join(', ');
+    }
+  }
+
+  getSportName(sportId: number): string | null {
+    const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
+    return sport ? sport.name : null;
+  }
+  
 
 }

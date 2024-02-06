@@ -206,7 +206,7 @@
             <div
               class="text-small text-color-light pl-24 montserrat">{{course.course_dates[0].date | date: 'dd-MM-yyyy'}}
               - {{course.course_dates[course.course_dates.length - 1].date | date: 'dd-MM-yyyy'}}</div>
-            <div class="text-small text-color-light pl-24 montserrat">{{course.settings.day_start_res}} - {{course.settings.day_end_res}}</div>
+            <div class="text-small text-color-light pl-24 montserrat">{{ getWeekdays(course.settings) }}</div>
           </div>
           <div class="text-color montserrat course-box-content-text mt-12">
             <img [src]="themeService.clock">
@@ -268,7 +268,7 @@
           <div class="mt-8 course-box-content-list">
             <div class="text-small text-color-light montserrat">{{course.course_dates[0].date | date: 'dd-MM-yyyy'}}
               - {{course.course_dates[course.course_dates.length - 1].date | date: 'dd-MM-yyyy'}}</div>
-            <div class="text-small text-color-light montserrat">{{course.settings.day_start_res}} - {{course.settings.day_end_res}}</div>
+            <div class="text-small text-color-light montserrat">{{ getWeekdays(course.settings) }}</div>
           </div>
           <div class="text-color montserrat course-box-content-text mt-12">
             <img [src]="themeService.clock">

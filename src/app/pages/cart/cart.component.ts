@@ -357,4 +357,10 @@ export class CartComponent implements OnInit {
       return translations[this.translateService.currentLang].name;
     }
   }
+
+  getSportName(sportId: number): string | null {
+    const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
+    return sport ? sport.name : null;
+  }
+  
 }

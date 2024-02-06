@@ -17,7 +17,15 @@
         <div class="text-light-gray-bs fw-semibold course-image-icon montserrat">
           <img src="assets/icons/prive_ski2x.png" *ngIf="course?.course_type==2"/>
           <img src="assets/icons/collectif_ski2x.png" *ngIf="course?.course_type==1"/>
-          Collectif Ski
+          <ng-container *ngIf="course?.course_type==1">
+            {{'colective' | translate }}
+          </ng-container>
+          <ng-container *ngIf="course?.course_type==2">
+            {{'private' | translate }}
+          </ng-container>
+          <ng-container *ngIf="schoolData && schoolData.sports">
+            {{ getSportName(course?.sport_id) }}
+          </ng-container>
         </div>
         <div class="text-white fw-semibold text-semibig">
           {{getCourseName(course)}}
@@ -67,8 +75,8 @@
               {{'text_when_course' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat">07/01/2024 - 09/01/2024</div>
-              <div class="text-color-light pl-32 montserrat">Lundi - Dimanche</div>
+              <div class="text-color-light pl-32 montserrat">{{course?.date_start | date: 'dd/MM/yyyy'}} - {{course?.date_end | date: 'dd/MM/yyyy'}}</div>
+              <div class="text-color-light pl-32 montserrat">{{ getWeekdays(course?.settings) }}</div>
             </div>
           </div>
           <div>
@@ -77,7 +85,8 @@
               {{'text_course_duration' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat">{{'text_from_price' | translate }} {{course?.duration}}h</div>
+              <div class="text-color-light pl-32 montserrat" *ngIf="!course?.is_flexible">{{course?.duration}}</div>
+              <div class="text-color-light pl-32 montserrat" *ngIf="course?.is_flexible">{{'text_from_price' | translate }} {{course?.duration}}</div>
               <div class="text-color-light pl-32 montserrat">{{course?.hour_min}}h - {{course?.hour_max}}h</div>
             </div>
           </div>
