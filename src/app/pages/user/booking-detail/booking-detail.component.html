@@ -33,13 +33,13 @@
             </div>
 
             <ng-container *ngFor="let bu of bookingUsersUnique">
-              <mat-card-header *ngIf="booking.old_id === null && courses[bI].course_type === 2">
+              <mat-card-header *ngIf="booking.old_id === null && courses[bI].course_type === 2 && courses[bI].id === bu.course_id">
 
                 <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
                 [selectLevel]="getClientDegree(bu?.client_id, item.sport_id)" [size]="40" [userImage]="getClientAvatar(bu?.client_id)"></app-level-user>
                 <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
-                <mat-card-subtitle class="color-dark-always">{{getClientName(bu?.client_id)}}</mat-card-subtitle>
-                <mat-card-subtitle class="color-dark-always">{{ getLanguage(getClient(bu?.client_id)?.language1_id) }} · {{ getCountry(getClient(bu?.client_id)?.country) }} · {{calculateAge(getClient(bu?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
+                <mat-card-subtitle>{{getClientName(bu?.client_id)}}</mat-card-subtitle>
+                <mat-card-subtitle>{{ getLanguage(getClient(bu?.client_id)?.language1_id) }} · {{ getCountry(getClient(bu?.client_id)?.country) }} · {{calculateAge(getClient(bu?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
               </mat-card-header>
             </ng-container>
 
@@ -47,8 +47,8 @@
               <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
               [selectLevel]="getClientDegree(item?.courseDates[0]?.client_id,item.sport_id)" [size]="40" [userImage]="getClientAvatar(item?.courseDates[0]?.client_id)"></app-level-user>
               <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
-              <mat-card-subtitle class="color-dark-always">{{getClientName(item?.courseDates[0]?.client_id)}}</mat-card-subtitle>
-              <mat-card-subtitle class="color-dark-always">{{ getLanguage(getClient(item?.courseDates[0]?.client_id)?.language1_id) }} · {{ getCountry(getClient(item?.courseDates[0]?.client_id)?.country) }} · {{calculateAge(getClient(item?.courseDates[0]?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
+              <mat-card-subtitle>{{getClientName(item?.courseDates[0]?.client_id)}}</mat-card-subtitle>
+              <mat-card-subtitle>{{ getLanguage(getClient(item?.courseDates[0]?.client_id)?.language1_id) }} · {{ getCountry(getClient(item?.courseDates[0]?.client_id)?.country) }} · {{calculateAge(getClient(item?.courseDates[0]?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
             </mat-card-header>
 
             <mat-divider class="text-border"></mat-divider>
