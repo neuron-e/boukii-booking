@@ -98,8 +98,8 @@
             <div class="text-color">
               <span class="text-color fw-semibold text-medium">
                 {{cartItem.details[0].course.is_flexible ?
-                (cartItem.details.length * cartItem.details[0].course.price) + getTotalItemExtraPrice(cartItem.details) :
-                cartItem.details[0].course.price * 1 + getTotalItemExtraPrice(cartItem.details)  }}</span> CHF
+                (cartItem.details.length * cartItem.details[0].course.price) :
+                cartItem.details[0].course.price * 1  }}</span> CHF
             </div>
           </ng-container>
 

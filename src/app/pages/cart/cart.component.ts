@@ -374,12 +374,14 @@ export class CartComponent implements OnInit {
   }
 
   getBoukiiCarePrice() {
-    let ret = 0;
+    let dates = 0;
+    let paxes = 0;
     this.cart.forEach(element => {
-      ret = ret + (this.boukiiCarePrice * element.details.length);
+      dates = dates + element.details.length;
+      paxes = paxes + element.userId.split('-').length;
     });
 
-    return ret;
+    return dates * paxes * this.boukiiCarePrice;
   }
 
   goBack(url: string) {
