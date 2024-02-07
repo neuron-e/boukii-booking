@@ -9,7 +9,9 @@
   {{'text_your_cart' | translate }} ({{cart?.length}} {{'text_courses' | translate }})
 </div>
 
-<div class="cart-payment-section">
+<mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
+
+<div class="cart-payment-section" *ngIf="!loading">
   <!--Cart-->
   <div class="background-color-trans rounded-8 padding-box width-100">
     <ng-container *ngFor="let cartItem of cart">

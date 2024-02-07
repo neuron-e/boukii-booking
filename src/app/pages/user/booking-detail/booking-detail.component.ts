@@ -347,7 +347,7 @@ export class BookingDetailComponent implements OnInit {
               if (groupedByCourseId.hasOwnProperty(courseId)) {
 
 
-                this.crudService.get('/admin/courses/' + courseId)
+                this.crudService.get('/slug/courses/' + courseId)
                   .subscribe((course) => {
 
                     if (course.data.course_type === 2 && this.booking.old_id === null) {
@@ -931,6 +931,7 @@ export class BookingDetailComponent implements OnInit {
   }
 
   deleteBooking() {
+    this.loading = true;
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
@@ -942,12 +943,70 @@ export class BookingDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
 
+        if (this.booking.paid && this.booking.payrexx_reference !== null) {
+          this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
+          .subscribe(() => {
+            this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
+            .subscribe(() => {
+              this.crudService.post('/slug/bookings/refunds/'+this.id, {amount: this.finalPrice})
+                .subscribe(() => {
+                  this.crudService.update('/bookings', {status: 2}, this.booking.id)
+                    .subscribe(() => {
+                      this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
+                      .subscribe(() => {
+
+                        this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
+                        this.getData();
+                      })
+                    })
+                })
+            })
+          })
+        } else {
+          this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
+          .subscribe(() => {
+            this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
+            .subscribe(() => {
+              this.crudService.update('/bookings', {status: 2}, this.booking.id)
+                .subscribe(() => {
+                  this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
+                  .subscribe(() => {
+
+                    this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
+                    this.getData();
+                  })
+                })
+            })
+          })
+        }
+
+        this.bookingUsers.forEach((element: any) => {
+          this.crudService.update('/booking-users', {status: 2}, element.id)
+          .subscribe(() => {
+
+            /*this.bookingExtras.forEach(element => {
+              this.crudService.delete('/booking-user-extras', element.id)
+                .subscribe(() => {
+
+                })
+            });
+
+            this.courseExtra.forEach(element => {
+              this.crudService.delete('/course-extras', element.id)
+                .subscribe(() => {
+
+                })
+            });*/
+          })
+        });
       }
     });
 
   }
 
   deletePartialBooking(index: number, book: any) {
+    this.loading = true;
+
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
@@ -957,6 +1016,98 @@ export class BookingDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
 
+        if (this.booking.paid && this.booking.payrexx_reference !== null) {
+          this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
+          .subscribe(() => {
+            this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
+            .subscribe(() => {
+              this.crudService.post('/slug/bookings/refunds/'+this.id, {amount: this.bookingsToCreate[index].price_total})
+                .subscribe(() => {
+                  book.courseDates.forEach((element: any) => {
+                    this.crudService.update('/booking-users', {status: 2}, element.id)
+                    .subscribe(() => {
+                    })
+                  })
+
+                  this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
+                    .subscribe(() => {
+                    })
+                  this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
+                  this.getData();
+              })
+            })
+          })
+        } else {
+          this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
+          .subscribe(() => {
+            this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
+            .subscribe(() => {
+              book.courseDates.forEach((element: any) => {
+                this.crudService.update('/booking-users', {status: 2}, element.id)
+                .subscribe(() => {
+                })
+              })
+
+              this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
+                .subscribe(() => {
+                })
+              this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
+              this.getData();
+            })
+          })
+        }
+
+
+        setTimeout(() => {
+          if (this.bookingsToCreate.length === 0) {
+            this.crudService.update('/bookings', {status: 2}, this.id)
+            .subscribe(() => {
+              this.getData(true);
+
+            })
+
+          } else {
+            let price = parseFloat(this.booking.price_total);
+            /*const bookingExtras = this.bookingExtras.filter((b) => b.booking_user_id === book.courseDates.id);
+            const courseExtras = this.courseExtra.filter((b) => b.booking_user_id === book.courseDates.id);
+
+            bookingExtras.forEach(element => {
+              this.crudService.delete('/booking-user-extras', element.id)
+                .subscribe(() => {
+
+                })
+            });
+
+            courseExtras.forEach(element => {
+              this.crudService.delete('/course-extras', element.id)
+                .subscribe(() => {
+
+                })
+            });*/
+            if (this.tva && !isNaN(this.tva)) {
+              price = price + (price * this.tva);
+            }
+
+            if(this.booking.has_boukii_care) {
+              // coger valores de reglajes
+              price = price  + (this.boukiiCarePrice * 1 * this.bookingsToCreate[index].courseDates.length);
+            }
+
+            this.crudService.update('/bookings', {status: 3, paid_total: price}, this.id)
+            .subscribe(() => {
+              this.bookingsToCreate.splice(index, 1);
+              this.getData(true);
+
+            })
+
+            /*this.crudService.update('/bookings', {status: 3}, this.id)
+            .subscribe(() => {
+              this.bookingsToCreate.splice(index, 1);
+              this.getData(true);
+
+            })*/
+          }
+        }, 1000);
       }
     });
   }

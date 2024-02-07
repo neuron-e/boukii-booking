@@ -88,6 +88,7 @@ export class UserComponent implements OnInit {
   }
 
   getData(id = null, onChangeUser = false) {
+    this.loading = true;
     this.firstLoad = false;
     this.authService.getUserData().pipe(takeUntil(this.destroy$)).subscribe(data => {
       if (data !== null) {
@@ -199,6 +200,7 @@ export class UserComponent implements OnInit {
         console.log(bookings.data);
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
+        this.loading = false;
       })
   }
 
@@ -317,7 +319,7 @@ export class UserComponent implements OnInit {
     await this.getDegrees();
     this.selectedSport = this.clientSport[0];
     this.selectSportEvo(this.selectedSport);
-    this.loading = false;
+    //this.loading = false;
   } catch (error) {
     console.error(error);
   }

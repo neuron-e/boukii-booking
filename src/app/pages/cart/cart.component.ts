@@ -5,6 +5,7 @@ import {SchoolService} from '../../services/school.service';
 import {BookingService} from '../../services/booking.service';
 import {CartService} from '../../services/cart.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiCrudService } from 'src/app/services/crud.service';
 
 @Component({
   selector: 'app-cart',
@@ -29,12 +30,13 @@ export class CartComponent implements OnInit {
   cancellationInsurance: any;
   boukiiCarePrice: any;
   tva: any;
+  loading = true;
 
   conditionsHTML:string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
               private bookingService: BookingService, private activatedRoute: ActivatedRoute,
-              private cartService: CartService, private translateService: TranslateService) { }
+              private cartService: CartService, private translateService: TranslateService, private crudService: ApiCrudService) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -53,6 +55,8 @@ export class CartComponent implements OnInit {
             this.user = JSON.parse(storageSlug);
             this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug+'-cart') ?? '{}'));
           }
+
+          this.loading = false;
           this.updateTotal();
         }
       }
@@ -64,6 +68,34 @@ export class CartComponent implements OnInit {
   }
 
   sendBooking() {
+    this.loading = true;
+
+    const extras: any = [];
+
+    this.getExtras().forEach((element: any) => {
+     extras.push(
+      {
+        name: element.id,
+        quantity: 1,
+        price: element.price + ((element.price * element.tva) / 100)
+      }
+     )
+    });
+    const basket = {
+      payment_method_id: 2,
+      price_base: {name: 'Price Base', quantity: 1, price: this.getBasePrice()},
+      bonus: {total: 0, bonuses: []},
+      boukii_care: {name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0},
+      cancellation_insurance: {name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0},
+      extras: {total: this.getExtras().length, extras: extras},
+      tva: {name: 'TVA', quantity: 1, price: (this.tva && !isNaN(this.tva)) || this.tva > 0 ? this.totalNotaxes * this.tva : 0},
+      price_total: this.totalPrice,
+      paid_total: 0,
+      pending_amount: this.totalPrice,
+      redirectUrl: location.origin + location.pathname.replace('cart', 'user')
+    }
+
+
     const bookingData = {
       // Preparar los datos del booking
       school_id: this.schoolData.id,
@@ -71,30 +103,37 @@ export class CartComponent implements OnInit {
       price_total: this.totalPrice,
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
-      has_boukii_care: this.hasInsurance,
-      price_boukii_care: this.boukiiCarePrice ? this.getBoukiiCarePrice() : 0,
+      has_boukii_care: this.hasBoukiiCare,
+      price_boukii_care: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0,
       has_tva: this.hasTva,
       price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),
       voucher: this.voucher,
       voucherAmount: this.usedVoucherAmount,
-      source: 'web'
-
-      // ... otros campos requeridos
+      source: 'web',
+      basket: JSON.stringify(basket),
+      status: 3
     };
 
     console.log(bookingData);
+    console.log(basket);
 
-    /*this.bookingService.createBooking(bookingData).subscribe(
-      response => {
+    this.bookingService.createBooking(bookingData).subscribe(
+      (response: any)  => {
         console.log('Reserva creada con éxito', response);
-        // Manejar respuesta exitosa
+        this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
+
+            .subscribe((result: any) => {
+              console.log((result));
+              window.open(result.data, "_self");
+            })
       },
       error => {
         console.error('Error al crear la reserva', error);
+        this.loading = false;
         // Manejar error
       }
-    );*/
+    );
   }
 
   getCleanedCartDetails() {
@@ -212,6 +251,19 @@ export class CartComponent implements OnInit {
       cart.details.forEach((detail: any) => {
         if (detail.extra && detail.extra.price && detail.extra.tva) {
           ret = ret + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))
+        }
+      });
+    });
+
+    return ret;
+  }
+
+  getExtras() {
+    let ret: any = [];
+    this.cart.forEach((cart: any) => {
+      cart.details.forEach((detail: any) => {
+        if (detail.extra && detail.extra.price && detail.extra.tva) {
+          ret.push(detail.extra);
         }
       });
     });
