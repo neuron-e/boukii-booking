@@ -73,27 +73,34 @@ export class CartComponent implements OnInit {
     const extras: any = [];
 
     this.getExtras().forEach((element: any) => {
-     extras.push(
-      {
-        name: element.id,
-        quantity: 1,
-        price: element.price + ((element.price * element.tva) / 100)
-      }
-     )
+      extras.push(
+        {
+          name: element.id,
+          quantity: 1,
+          price: element.price + ((element.price * element.tva) / 100)
+        }
+      )
     });
     const basket = {
       payment_method_id: 2,
-      price_base: {name: 'Price Base', quantity: 1, price: this.getBasePrice()},
-      bonus: {total: 0, bonuses: []},
-      boukii_care: {name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0},
-      cancellation_insurance: {name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0},
-      extras: {total: this.getExtras().length, extras: extras},
-      tva: {name: 'TVA', quantity: 1, price: (this.tva && !isNaN(this.tva)) || this.tva > 0 ? this.totalNotaxes * this.tva : 0},
+      price_base: { name: 'Price Base', quantity: 1, price: this.getBasePrice() },
+      bonus: {
+        total: 0,
+        bonuses: this.voucher ? [{
+          'name': this.voucher.code,
+          'quantity': 1,
+          'price': -this.usedVoucherAmount
+        }] : []
+      },
+      boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
+      cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
+      extras: { total: this.getExtras().length, extras: extras },
+      tva: { name: 'TVA', quantity: 1, price: (this.tva && !isNaN(this.tva)) || this.tva > 0 ? this.totalNotaxes * this.tva : 0 },
       price_total: this.totalPrice,
       paid_total: 0,
       pending_amount: this.totalPrice,
       redirectUrl: location.origin + location.pathname.replace('cart', 'user')
-    }
+    };
 
 
     const bookingData = {
@@ -123,10 +130,10 @@ export class CartComponent implements OnInit {
         console.log('Reserva creada con éxito', response);
         this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
 
-            .subscribe((result: any) => {
-              console.log((result));
-              window.open(result.data, "_self");
-            })
+          .subscribe((result: any) => {
+            console.log((result));
+            window.open(result.data, "_self");
+          })
       },
       error => {
         console.error('Error al crear la reserva', error);

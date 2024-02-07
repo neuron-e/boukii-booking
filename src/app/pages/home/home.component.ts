@@ -92,22 +92,29 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
   //  this.userLogged = JSON.parse(localStorage.getItem(this.authService.slug+ '-boukiiUser') ?? '');
-    this.selectedAgeType = 1; // Valor por defecto
-    this.selectedDegreeType = 1; // Valor por defecto
-    this.selectedCourseType = 1; // Valor por defecto
-    this.setAgeRange();
 
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
+          this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
+          this.selectedDegreeType =  parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
+          this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
+
+          this.setAgeRange();
           if (this.schoolData?.sports?.length > 0) {
             // Establecer el ID del primer deporte como seleccionado por defecto
-            this.selectedSportId = this.schoolData.sports[0].id;
+            this.selectedSportId =
+              parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ??  this.schoolData.sports[0].id);
+
+       /*     this.selectedSportId = this.schoolData.sports[0].id;*/
             //this.degreesSports = this.schoolData.degrees.filter((r: any) => r.sport_id == this.selectedSportId);
             this.initializeMonthNames();
-            this.currentMonth = new Date().getMonth();
-            this.currentYear = new Date().getFullYear();
+            const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+            this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+
+            const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+            this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
             this.getCourses();
           }
         }
@@ -133,6 +140,8 @@ export class HomeComponent implements OnInit {
   reloadFilters() {
     this.setAgeRange();
     this.setDegreeRange();
+    localStorage.setItem(this.schoolData.slug + '-selectedCourseType', this.selectedCourseType.toString())
+    localStorage.setItem(this.schoolData.slug + '-selectedSportId', this.selectedSportId.toString())
     this.getCourses();
   }
 
@@ -191,6 +200,8 @@ export class HomeComponent implements OnInit {
         this.currentMonth = 11;
         this.currentYear--;
       }
+      localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
+      localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
       this.getCourses();
     }
   }
@@ -201,6 +212,8 @@ export class HomeComponent implements OnInit {
       this.currentMonth = 0;
       this.currentYear++;
     }
+    localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
+    localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
     this.getCourses();
   }
 
@@ -300,6 +313,7 @@ export class HomeComponent implements OnInit {
         this.max_age = 99;
         break;
     }
+    localStorage.setItem(this.schoolData.slug + '-selectedAgeType', this.selectedAgeType.toString())
   }
 
   setDegreeRange(): void {
@@ -323,6 +337,7 @@ export class HomeComponent implements OnInit {
         this.currentDegreeRange = [];
         break;
     }
+    localStorage.setItem(this.schoolData.slug + '-selectedDegreeType', this.selectedDegreeType.toString())
   }
 
   getShotrDescription(course: any) {

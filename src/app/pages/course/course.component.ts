@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {trigger, state, style, transition, animate} from '@angular/animations';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {ThemeService} from '../../services/theme.service';
 import {CoursesService} from '../../services/courses.service';
 import {AuthService} from '../../services/auth.service';
@@ -9,7 +9,7 @@ import {DatePipe} from '@angular/common';
 import {CartService} from '../../services/cart.service';
 import {BookingService} from '../../services/booking.service';
 import * as moment from 'moment';
-import { TranslateService } from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-course',
@@ -268,8 +268,11 @@ export class CourseComponent implements OnInit {
         this.initializeMonthNames();
         if(this.course.date_start){
           if(moment(this.course.date_start).isBefore(moment(), 'day')){
-            this.currentMonth = new Date().getMonth();
-            this.currentYear = new Date().getFullYear();
+            const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+            this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+
+            const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+            this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
           }
           else{
             this.currentMonth = new Date(this.course.date_start).getMonth();
@@ -277,21 +280,27 @@ export class CourseComponent implements OnInit {
           }
         }
         else{
-          this.currentMonth = new Date().getMonth();
-          this.currentYear = new Date().getFullYear();
+          const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+          this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+
+          const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+          this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
+
+
+
         }
         this.renderCalendar();
 
       }
     });
   }
-/*
-  getSports() {
-    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
-      .subscribe((sport) => {
-        this.sports = sport.data;
-      })
-  }*/
+  /*
+    getSports() {
+      this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
+        .subscribe((sport) => {
+          this.sports = sport.data;
+        })
+    }*/
 
   initializeMonthNames() {
     this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -354,6 +363,10 @@ export class CourseComponent implements OnInit {
       const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
 
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
+      if(this.course.is_flexible) {
+        this.updateAvailableDurations(this.selectedHour);
+      }
+
     }
   }
 
@@ -605,7 +618,9 @@ export class CourseComponent implements OnInit {
       } else {
         this.selectedUserMultiple.push(user);
       }
-      this.updatePrice();
+      if(this.course.is_flexible) {
+        this.updatePrice();
+      }
     }
     else{
       this.selectedUser = user;
@@ -955,6 +970,6 @@ export class CourseComponent implements OnInit {
     const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
     return sport ? sport.name : null;
   }
-  
+
 
 }
