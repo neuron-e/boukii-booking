@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
   /** Filters**/
   selectedDegreeType: number;
   degreeValues: any = {
-    doesntMatter: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    doesntMatter: null,
     novice: [1, 2, 3],
     intermediate: [4, 5, 6],
     advanced: [7, 8, 9],
