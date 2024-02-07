@@ -36,6 +36,9 @@ export class CoursesService extends ApiService{
     if (params.client_id) {
       httpParams = httpParams.append('client_id', params.client_id);
     }
+    if (params.degree_order) {
+      httpParams = httpParams.append('degree_order', params.degree_order);
+    }
     if (params.degree_id) {
       httpParams = httpParams.append('degree_id', params.degree_id);
     }
