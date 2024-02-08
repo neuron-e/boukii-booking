@@ -10,6 +10,7 @@ import {CartService} from '../../services/cart.service';
 import {BookingService} from '../../services/booking.service';
 import * as moment from 'moment';
 import {TranslateService} from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-course',
@@ -227,7 +228,7 @@ export class CourseComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService) {
+              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
 
   }
 
@@ -616,7 +617,12 @@ export class CourseComponent implements OnInit {
       if (index !== -1) {
         this.selectedUserMultiple.splice(index, 1);
       } else {
-        this.selectedUserMultiple.push(user);
+        if(this.selectedUserMultiple.length < this.course.max_participants){
+          this.selectedUserMultiple.push(user);
+        }
+        else{
+          this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', {duration: 3000});
+        }
       }
       if(this.course.is_flexible) {
         this.updatePrice();
