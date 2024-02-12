@@ -77,6 +77,7 @@
             <div class="mt-8 course-content-list">
               <div class="text-color-light pl-32 montserrat">{{course?.date_start | date: 'dd/MM/yyyy'}} - {{course?.date_end | date: 'dd/MM/yyyy'}}</div>
               <div class="text-color-light pl-32 montserrat">{{ getWeekdays(course?.settings) }}</div>
+              <div class="text-color-light pl-32 montserrat">{{'text_max_participants' | translate }}: {{course?.max_participants}}</div>
             </div>
           </div>
           <div>
@@ -176,7 +177,7 @@
 
         <div class="text-color montserrat">
           <ng-container *ngIf="course?.course_type === 2">
-            {{'text_select_user_or_more' | translate }}
+            {{'text_select_user_or_more' | translate }} {{course?.max_participants}}
           </ng-container>
           <ng-container *ngIf="!(course?.course_type === 2)">
             {{'text_select_user' | translate }}
