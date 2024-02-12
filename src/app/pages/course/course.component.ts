@@ -222,6 +222,7 @@ export class CourseComponent implements OnInit {
   schoolData: any;
   settings: any;
   selectedDates: any = [];
+  collectivePrice: any = 0;
 
   defaultImage = '../../../assets/images/3.png';
 
@@ -291,6 +292,8 @@ export class CourseComponent implements OnInit {
         }
         this.renderCalendar();
 
+      } else {
+        this.collectivePrice = this.course.price;
       }
     });
   }
@@ -430,7 +433,7 @@ export class CourseComponent implements OnInit {
               'subGroup': courseSubgroup,
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
-              'price': this.course.price,
+              'price': this.collectivePrice,
               'currency': 'CHF',
               'course_id': this.course.id,
               'course_date_id': date.id,
@@ -701,8 +704,25 @@ export class CourseComponent implements OnInit {
     if (index === -1) {
       this.selectedDates.push(date);
     } else {
-      this.selectedDates.splice(1, index);
+      this.selectedDates.splice(index, 1);
     }
+    this.updateCollectivePrice();
+  }
+  updateCollectivePrice() {
+    let collectivePrice = this.course.price;
+    if(this.course.discounts) {
+      let discounts = JSON.parse(this.course.discounts);
+      discounts.forEach((discount:any) => {
+        // Verificar si el date coincide con la longitud de las fechas seleccionadas
+        if (this.selectedDates.length === discount.date) {
+          // Aplicar descuento al precio colectivo
+          var discountApplied = collectivePrice * (discount.percentage / 100);
+          collectivePrice = collectivePrice - discountApplied;
+        }
+      });
+
+    }
+    this.collectivePrice = collectivePrice;
   }
 
   generateNumberArray(max: number): number[] {
