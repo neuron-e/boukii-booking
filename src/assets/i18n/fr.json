@@ -191,7 +191,11 @@
     "text_new_booking": "Nouvelle réservation",
     "text_delete_return_courses": "Supprimer et retourner à la liste des cours",
     "text_add_another_type": "Ajouter un autre type de cours",
-
+  "text_forfait": "Forfait",
+  "text_tva": "TVA",
+  "text_ideal_course": "Trouvez votre cours idéal",
+  "conditions_html": "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours peuvent être effectuées soit via le site Web, par téléphone ou directement à nos bureaux.<br><br>• Si votre séjour a lieu pendant les périodes de vacances scolaires, nous vous recommandons de réserver vos cours au moins un mois à l'avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, du Nouvel An, de la Jeunesse et des Lève-tôt seront déplacés aux Diablerets ou dans la station Magic Pass la plus proche.<br><br>• Le paiement total de nos services en cours collectifs/privés est dû au moment de votre réservation, ce qui valide votre inscription.",
+  "text_no_degrees": "Aucun niveau disponible pour cet utilisateur",
     "add": "Ajouter...",
   "add_client": "Ajouter un client",
   "add_task": "Ajouter une tâche",
@@ -666,5 +670,6 @@
   "refund_text": "En attente de remboursement",
   "refund_title": "Cette réservation a un remboursement en attente. ",
   "bookings_page.refund.gift_voucher_text": "Vous êtes sur le point d'annuler une réservation. ",
-  "update": "Modifier"
+  "update": "Modifier",
+
 }

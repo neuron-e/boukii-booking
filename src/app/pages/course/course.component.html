@@ -124,7 +124,7 @@
               [value]="extra"
             />
             <label class="text-color-light montserrat" for="radio-course-{{extra.id}}">
-              {{extra.name}} - {{extra.price}} / date
+              {{extra.name}} - {{extra.price}} / {{'date' | translate }}
             </label>
           </div>
         </ng-container>
@@ -149,7 +149,7 @@
             {{'text_price' | translate }}
           </div>
           <div class="text-medium text-color">
-            <span class="text-medium fw-bold">200</span> CHF /date
+            <span class="text-medium fw-bold">200</span> CHF /{{'date' | translate }}
           </div>
         </div>
         <div>
@@ -260,7 +260,7 @@
                 </ng-container>
               </div>
               <div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
-                <p>No hay niveles disponibles para este usuario.</p>
+                <p> {{'text_no_degrees' | translate }}</p>
               </div>
             </div>
           </ng-container>
@@ -385,7 +385,7 @@
               <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF
             </div>
             <div class="text-medium text-color" *ngIf="course.is_flexible">
-              <span class="text-color text-medium fw-bold" > {{collectivePrice}}</span> CHF /date
+              <span class="text-color text-medium fw-bold" > {{collectivePrice}}</span> CHF /{{'date' | translate }}
             </div>
           </div>
           <div>

@@ -45,7 +45,7 @@
             <div class="text-color-light montserrat" *ngFor="let date of cartItem.details">
               · {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
             <ng-container *ngIf="cartItem.details[0].extra">
-              Forfait
+              {{'text_forfait' | translate }}
               <div class="text-color">
                 {{cartItem.details[0].extra.name}}
               </div>
@@ -78,7 +78,7 @@
 
             <!-- Iterar sobre clientes únicos -->
             <ng-container *ngIf="cartItem.details[0].extra">
-              Forfait
+              {{'text_forfait' | translate }}
               <div class="text-color">
                 {{cartItem.details[0].extra.name}}
               </div>
@@ -194,7 +194,7 @@
     </div>
     <div class="payment-price-flex mt-8" *ngIf="hasTva">
       <div class="text-color uppercase">
-        TVA
+        {{'text_tva' | translate }}
       </div>
       <div class="text-color min-width-price">
         <span class="text-color fw-bold">+{{(totalNotaxes * tva).toFixed(2)}}</span> CHF
@@ -240,4 +240,4 @@
 </div>
 
 <app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
-<app-modal-conditions [isOpen]="isModalConditions" [data]="conditionsHTML" (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-conditions [isOpen]="isModalConditions" [data]="'conditions_html' | translate " (onClose)="closeModalConditions()"></app-modal-conditions>
