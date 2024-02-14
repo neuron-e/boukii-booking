@@ -11,7 +11,8 @@
             <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="onCloseBooking()">
               {{'back' | translate }}
             </button>
-            <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;"  (click)="deleteBooking()">
+            <button mat-raised-button color="accent" class="button-cancel" [disabled]="checkIsCancellable()"
+              style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;" (click)="deleteBooking()">
               {{'bookings_page.detail.full_cancel' | translate}}
             </button>
 
@@ -55,7 +56,7 @@
             <div style="float:left; width: 100%">
 
               <p style="padding: 3%;width: 40%;float: left;font-size: 13px; font-weight: bold;" class="color-dark-always">{{'activity' | translate}}</p>
-              <button mat-icon-button color="accent" class="delete-icon" (click)="deletePartialBooking(bI, item)" style="float: right;" *ngIf="bookingsToCreate.length > 1 && item.courseDates[0].status === 1">
+              <button mat-icon-button color="accent" class="delete-icon" (click)="deletePartialBooking(bI, item)" style="float: right;" *ngIf="bookingsToCreate.length > 1 && item.courseDates[0].status === 1 && checkIsCancellable()">
                 <i class="fa fa-trash"></i>
               </button>
             </div>

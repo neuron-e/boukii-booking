@@ -202,6 +202,7 @@ export class BookingDetailComponent implements OnInit {
   cancelationOp = null;
 
   degreesClient:any[]=[];
+  today = moment();
 
   private subscription: Subscription;
   constructor(private dialog: MatDialog, private crudService: ApiCrudService, private authService: AuthService, private activatedRoute: ActivatedRoute,
@@ -428,6 +429,25 @@ export class BookingDetailComponent implements OnInit {
       });
 
     });
+  }
+
+  checkIsCancellable() {
+    const today = moment();
+    if (this.booking.has_cancellation_insurance) {
+      if (this.cancelationOp !== null) {
+        const todayPlusOpRem = today.subtract(this.cancelationOp, 'h');
+        return todayPlusOpRem.isBefore(this.today);
+      }
+      return false;
+    } else {
+      if (this.cancelationOp !== null) {
+
+
+        const todayPlusNoOpRem = today.subtract(this.cancelationNoOp, 'h');
+        return todayPlusNoOpRem.isBefore(this.today);
+      }
+      return false;
+    }
   }
 
   getAmountCourse(item: any, index: number) {
@@ -932,7 +952,6 @@ export class BookingDetailComponent implements OnInit {
   }
 
   deleteBooking() {
-    this.loading = true;
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
@@ -943,6 +962,7 @@ export class BookingDetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
+        this.loading = true;
 
         if (this.booking.paid && this.booking.payrexx_reference !== null) {
           this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
@@ -1016,7 +1036,7 @@ export class BookingDetailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
-
+        this.loading = true;
         if (this.booking.paid && this.booking.payrexx_reference !== null) {
           this.crudService.create('/booking-logs', {booking_id: this.id, action: 'refund_boukii_pay', before_change: 'confirmed', user_id: this.user.id, reason: data.reason})
           .subscribe(() => {

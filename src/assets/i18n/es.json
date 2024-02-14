@@ -673,5 +673,7 @@
   "refund_text": "Reembolso pendiente",
   "refund_title": "Esta reserva tiene un reembolso pendiente. ¿Quiere realizarlo ahora?",
   "bookings_page.refund.gift_voucher_text": "Está a punto de cancelar una reserva. Se generará un bono.",
-  "update": "Modificar"
+  "update": "Modificar",
+  "no_paid": "No pagado"
+
 }

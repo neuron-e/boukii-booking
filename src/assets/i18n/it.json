@@ -667,5 +667,6 @@
   "refund_text": "Rimborso in attesa",
   "refund_title": "Questa prenotazione ha un rimborso in sospeso. ",
   "bookings_page.refund.gift_voucher_text": "Stai per cancellare una prenotazione. ",
-  "update": "Modificare"
+  "update": "Modificare",
+  "no_paid": "Non pagato"
 }
