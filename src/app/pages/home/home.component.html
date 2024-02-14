@@ -7,7 +7,7 @@
 <div class="filter-calendar-section">
   <div class="filter-section">
     <div class="text-vbig fw-semibold text-color">
-      Trouvez votre cours idéal
+      {{'text_ideal_course' | translate }}
     </div>
     <div class="text-color-light montserrat">
       <span class="text-color montserrat">{{'text_filters_a' | translate }}</span> {{'text_filters_b' | translate }}
@@ -162,7 +162,7 @@
         </div>
       </div>
       <div class="text-color fw-medium pb-8 text-align-right min-width-price"
-           *ngIf="course.is_flexible">{{course.price}} CHF /date
+           *ngIf="course.is_flexible">{{course.price}} CHF /{{'date' | translate }}
       </div>
       <div class="text-color fw-medium pb-8 text-align-right min-width-price"
            *ngIf="!course.is_flexible">{{course.price}} CHF
@@ -283,7 +283,7 @@
       </div>
       <div class="course-wrapper-right">
         <div class="text-color fw-medium" *ngIf="course.is_flexible">
-          {{course.price}} CHF /date
+          {{course.price}} CHF /{{'date' | translate }}
         </div>
         <div class="text-color fw-medium" *ngIf="!course.is_flexible">
           {{course.price}} CHF

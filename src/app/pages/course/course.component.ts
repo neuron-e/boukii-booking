@@ -10,6 +10,7 @@ import {CartService} from '../../services/cart.service';
 import {BookingService} from '../../services/booking.service';
 import * as moment from 'moment';
 import {TranslateService} from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-course',
@@ -222,12 +223,13 @@ export class CourseComponent implements OnInit {
   schoolData: any;
   settings: any;
   selectedDates: any = [];
+  collectivePrice: any = 0;
 
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService) {
+              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
 
   }
 
@@ -291,6 +293,8 @@ export class CourseComponent implements OnInit {
         }
         this.renderCalendar();
 
+      } else {
+        this.collectivePrice = this.course.price;
       }
     });
   }
@@ -430,7 +434,7 @@ export class CourseComponent implements OnInit {
               'subGroup': courseSubgroup,
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
-              'price': this.course.price,
+              'price': this.collectivePrice,
               'currency': 'CHF',
               'course_id': this.course.id,
               'course_date_id': date.id,
@@ -616,7 +620,12 @@ export class CourseComponent implements OnInit {
       if (index !== -1) {
         this.selectedUserMultiple.splice(index, 1);
       } else {
-        this.selectedUserMultiple.push(user);
+        if(this.selectedUserMultiple.length < this.course.max_participants){
+          this.selectedUserMultiple.push(user);
+        }
+        else{
+          this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', {duration: 3000});
+        }
       }
       if(this.course.is_flexible) {
         this.updatePrice();
@@ -701,8 +710,25 @@ export class CourseComponent implements OnInit {
     if (index === -1) {
       this.selectedDates.push(date);
     } else {
-      this.selectedDates.splice(1, index);
+      this.selectedDates.splice(index, 1);
     }
+    this.updateCollectivePrice();
+  }
+  updateCollectivePrice() {
+    let collectivePrice = this.course.price;
+    if(this.course.discounts) {
+      let discounts = JSON.parse(this.course.discounts);
+      discounts.forEach((discount:any) => {
+        // Verificar si el date coincide con la longitud de las fechas seleccionadas
+        if (this.selectedDates.length === discount.date) {
+          // Aplicar descuento al precio colectivo
+          var discountApplied = collectivePrice * (discount.percentage / 100);
+          collectivePrice = collectivePrice - discountApplied;
+        }
+      });
+
+    }
+    this.collectivePrice = collectivePrice;
   }
 
   generateNumberArray(max: number): number[] {
