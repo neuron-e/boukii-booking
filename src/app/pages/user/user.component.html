@@ -8,10 +8,10 @@
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
 
 <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading">
-  <mat-tab label="Datos">
+  <mat-tab label="{{'data' | translate}}">
     <app-user-detail #userDetail (idChange)="handleIdChange($event)"></app-user-detail>
   </mat-tab>
-  <mat-tab label="Deportes">
+  <mat-tab label="{{'sports' | translate}}">
 
     <div class="container py-6" style="max-width: none" *ngIf="!loading">
       <div class="card overflow-hidden">
@@ -54,7 +54,7 @@
                 <img
                   [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
                   [ngStyle]="{
-                    'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
+                    'border': mainId == id ? '#FF3085 1px solid' : 'none'
                   }"
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none" style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
@@ -69,7 +69,7 @@
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none"
                   [ngStyle]="{
-                    'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
+                    'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
                   }"
                   style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
                   <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">{{ user?.first_name }} {{ user?.last_name }}</div>
@@ -179,7 +179,7 @@
 
     </div>
   </mat-tab>
-  <mat-tab label="Reservas">
+  <mat-tab label="{{'bookings' | translate }}">
 
     <div class="container py-6" style="max-width: none" *ngIf="!loading">
       <div class="card overflow-hidden">
@@ -274,7 +274,7 @@
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" style="cursor: pointer;"></tr>
             </table>
           </div>
         </div>

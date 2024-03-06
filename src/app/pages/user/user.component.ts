@@ -271,12 +271,15 @@ export class UserComponent implements OnInit {
 
     this.allLevels?.sort((a:any, b:any) => a.degree_order - b.degree_order);
 
-    this.goals?.forEach((element:any) => {
-      if (element.degree_id === sport.level.id) {
+    if (sport && sport?.level) {
 
-        this.selectedGoal.push(element);
-      }
-    });
+      this.goals?.forEach((element:any) => {
+        if (element.degree_id === sport.level.id) {
+
+          this.selectedGoal.push(element);
+        }
+      });
+    }
     this.coloring = false;
   }
 
