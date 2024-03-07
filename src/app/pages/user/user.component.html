@@ -9,7 +9,7 @@
 
 <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading">
   <mat-tab label="{{'data' | translate}}">
-    <app-user-detail #userDetail (idChange)="handleIdChange($event)"></app-user-detail>
+    <app-user-detail #userDetail [idParent]="id" (idChange)="handleIdChange($event)"></app-user-detail>
   </mat-tab>
   <mat-tab label="{{'sports' | translate}}">
 
@@ -166,7 +166,7 @@
               <div class="py-3 flex items-center">
 
                 <div style="float: left; width:100%;">
-                  <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="150" [userImage]="userLogged.clients[0].image"></app-level-user>
+                  <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="150" [userImage]="defaults.image"></app-level-user>
 
                 </div>
               </div>

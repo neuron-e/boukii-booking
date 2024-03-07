@@ -111,6 +111,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
     active_station: null
   }
   @Output() idChange = new EventEmitter<any>();
+  @Input() idParent: any;
 
   defaultsObservations = {
     id: null,
@@ -165,7 +166,12 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
         if (data) {
           this.schoolData = data.data;
 
-          this.getData();
+          if (this.idParent) {
+            this.getData(this.idParent);
+          }
+          else{
+            this.getData();
+          }
         }
       }
     );
@@ -175,7 +181,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
     this.loading = true;
     this.id = id;
     this.idChange.emit(id);
-    this.getData(id, true);
+    //this.getData(id, true);
   }
 
   changeClientDataB(id: any) {
@@ -190,6 +196,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
 
     if (data !== null) {
         this.mainId = data.clients[0].id;
+        this.mainClient = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
 
@@ -199,9 +206,11 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
         this.defaults = data.data;
 
         this.currentImage = data.data.image;
+        /*
         if (!onChangeUser) {
           this.mainClient = data.data;
         }
+        */
 
         this.crudService.get('/users/'+data.data.user_id)
           .pipe(takeUntil(this.destroy$))
@@ -550,11 +559,11 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/slug/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+    this.crudService.list('/slug/clients/' + this.mainId +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.mainId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientUsers = data.data;
-        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
+        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.mainId)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data) => {
           data.data.forEach((element: any) => {

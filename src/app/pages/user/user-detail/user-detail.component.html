@@ -38,7 +38,7 @@
             class="flex items-center" (click)="changeClientData(mainId)">
             <img
 
-              [src]="mainClient?.image === null || mainClient?.image === '' ? '../../../../assets/img/avatar.png': mainClient?.image"
+              [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': mainClient.clients[0]?.image"
               [ngStyle]="{
                 'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
               }"
@@ -46,7 +46,7 @@
               class="avatar ltr:mr-3 rtl:ml-3 flex-none" />
 
             <div class="flex-auto">
-              <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ mainClient?.first_name }} {{ mainClient?.last_name }}</h4>
+              <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ mainClient.clients[0]?.first_name }} {{ mainClient.clients[0]?.last_name }}</h4>
             </div>
           </div>
           <div
@@ -379,7 +379,7 @@
           class="flex items-center" (click)="changeClientData(mainId)">
           <img
 
-            [src]="mainClient?.image === null || mainClient?.image === '' ? '../../../../assets/img/avatar.png': mainClient?.image"
+            [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': mainClient.clients[0]?.image"
             [ngStyle]="{
               'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
             }"
@@ -387,7 +387,7 @@
             class="avatar ltr:mr-3 rtl:ml-3 flex-none" />
 
           <div class="flex-auto">
-            <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ mainClient?.first_name }} {{ mainClient?.last_name }}</h4>
+            <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{ mainClient.clients[0]?.first_name }} {{ mainClient.clients[0]?.last_name }}</h4>
           </div>
         </div>
         <div
@@ -399,7 +399,7 @@
             alt="Profile Picture"
             class="avatar ltr:mr-3 rtl:ml-3 flex-none"
             [ngStyle]="{
-              'border': +id === defaults.id && this.id !== mainId ? '#FF3085 1px solid' : 'none'
+              'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
             }"
             />
           <div class="flex-auto">
