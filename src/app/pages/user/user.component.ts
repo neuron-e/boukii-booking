@@ -53,7 +53,8 @@ export class UserComponent implements OnInit {
   bookings: any = [];
   dataSource: any = [];
 
-  displayedColumns: string[] = ['bookingusers[0].course.name', 'price_total'];
+  displayedColumns: string[] = [ 'icon', 'bookingusers[0].course.name', 'dates', 'has_cancellation_insurance',
+    'has_insurance', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
   mainId: any;
 
   defaults: any;
@@ -191,6 +192,93 @@ export class UserComponent implements OnInit {
   hideBooking() {
     this.selectedBooking = false;
     this.bookingId = null;
+  }
+
+  getMinMaxDates(data: any[]): { minDate: string, maxDate: string, days: number } {
+    let days = 0;
+    if (data.length === 0) {
+      return { minDate: '', maxDate: '', days: days };
+    }
+
+    let minDate = new Date(data[0].date);
+    let maxDate = new Date(data[0].date);
+
+    data.forEach(item => {
+      const currentDate = new Date(item.date);
+      if (currentDate < minDate) {
+        minDate = currentDate;
+      }
+      if (currentDate > maxDate) {
+        maxDate = currentDate;
+      }
+      days = days + 1;
+    });
+
+    return { minDate: minDate.toISOString(), maxDate: maxDate.toISOString(), days: days };
+  }
+
+  getMinMaxHours(data: any[]): { minHour: string, maxHour: string } {
+    if (data.length === 0) {
+      return {minHour: '', maxHour: ''};
+    }
+    let minHour:any = null;
+    let maxHour:any = null;
+    if (data[0].course.course_type === 2) {
+      minHour = data[0].hour_start;
+      maxHour = this.calculateHourEnd(data[0].hour_start, data[0].course.duration);
+
+    } else {
+      minHour = data[0].hour_start;
+      maxHour = data[0].hour_end.replace(':00', '');
+
+      data.forEach(item => {
+        if (item.hour_start < minHour) {
+          minHour = item.hour_start;
+        }
+        if (item.hour_end > maxHour) {
+          maxHour = item.hour_end.replace(':00', '');
+        }
+      });
+    }
+
+    minHour = minHour.replace(':00', '');
+
+    return { minHour, maxHour };
+  }
+
+  getPaymentMethod(id: number) {
+    switch(id) {
+      case 1:
+        return 'CASH';
+      case 2:
+        return 'BOUKII PAY';
+      case 3:
+        return 'ONLINE';
+      case 4:
+        return 'AUTRE';
+      case 5:
+        return 'payment_no_payment';
+
+      default:
+        return 'payment_no_payment'
+    }
+  }
+
+  calculateHourEnd(hour: any, duration: any) {
+    if(duration.includes('h') && duration.includes('min')) {
+      const hours = duration.split(' ')[0].replace('h', '');
+      const minutes = duration.split(' ')[1].replace('min', '');
+
+      return moment(hour, 'HH:mm').add(hours, 'h').add(minutes, 'm').format('HH:mm');
+    } else if(duration.includes('h')) {
+      const hours = duration.split(' ')[0].replace('h', '');
+
+      return moment(hour, 'HH:mm').add(hours, 'h').format('HH:mm');
+    } else {
+      const minutes = duration.split(' ')[0].replace('min', '');
+
+      return moment(hour, 'HH:mm').add(minutes, 'm').format('HH:mm');
+    }
   }
 
   getBookings() {

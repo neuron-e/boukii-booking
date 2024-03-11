@@ -673,5 +673,8 @@
   "refund_title": "Questa prenotazione ha un rimborso in sospeso. ",
   "bookings_page.refund.gift_voucher_text": "Stai per cancellare una prenotazione. ",
   "update": "Modificare",
+  "payment_method": "Metodo di pagamento",
+  "has_insurance": "Assicurazione",
+  "has_boukii_Care": "B.Care",
   "no_paid": "Non pagato"
 }

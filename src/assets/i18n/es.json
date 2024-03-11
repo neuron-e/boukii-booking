@@ -678,6 +678,9 @@
   "refund_title": "Esta reserva tiene un reembolso pendiente. ¿Quiere realizarlo ahora?",
   "bookings_page.refund.gift_voucher_text": "Está a punto de cancelar una reserva. Se generará un bono.",
   "update": "Modificar",
+  "payment_method": "Método de pago",
+  "has_insurance": "Reembolso",
+  "has_boukii_Care": "B.Care",
   "no_paid": "No pagado"
 
 }

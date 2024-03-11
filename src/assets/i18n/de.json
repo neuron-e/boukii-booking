@@ -674,5 +674,8 @@
   "refund_title": "Für diese Reservierung steht eine Rückerstattung aus. ",
   "bookings_page.refund.gift_voucher_text": "Sie sind im Begriff, eine Reservierung zu stornieren. ",
   "update": "Ändern",
+  "payment_method": "Zahlungsmethode",
+  "has_insurance": "Versicherung",
+  "has_boukii_Care": "B.Care",
   "no_paid": "Nicht bezahlt"
 }

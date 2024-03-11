@@ -674,6 +674,9 @@
   "refund_title": "This reservation has a refund pending. ",
   "bookings_page.refund.gift_voucher_text": "You are about to cancel a reservation.",
   "update": "Update",
+  "payment_method": "Payment method",
+  "has_insurance": "Insurance",
+  "has_boukii_Care": "B.Care",
   "bookings_page.cancelations.refund_boukiipay_text": "The value of the reservation will be refunded through Boukii Pay.",
   "bookings_page.cancelations.refund_no_boukiipay_text": "This reservation cannot be returned through Boukii Pay since it was not paid through this platform.",
   "no_paid": "Not payed"

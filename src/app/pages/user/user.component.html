@@ -263,13 +263,65 @@
           <div class="flex-auto">
             <table *ngIf="dataSource" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                <td *matCellDef="let element" mat-cell style="height: 80px; width: 80px">
+                  <img [src]="element.sport" class="avatar h-8 w-8 align-middle"
+                       style="border-radius: 5px; height: 70%; width: 100%;">
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dates">
+                <th mat-header-cell *matHeaderCellDef> {{ 'dates' | translate }} </th>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)">
+                  <strong>{{ getMinMaxDates(element.bookingusers).minDate | date: 'dd/MM/YYYY'}}<br>{{ getMinMaxDates(element.bookingusers).maxDate| date: 'dd/MM/YYYY' }}</strong><br>
+                  {{getMinMaxHours(element.bookingusers).minHour }}h - {{getMinMaxHours(element.bookingusers).maxHour}}h
+                </td>
+              </ng-container>
+
+
               <ng-container matColumnDef="bookingusers[0].course.name">
-                <th mat-header-cell *matHeaderCellDef> Course Name </th>
+                <th mat-header-cell *matHeaderCellDef> {{ 'course' | translate }} </th>
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getCourseName(element.bookingusers[0]?.course) || 'N/A'}} </td>
               </ng-container>
 
+              <ng-container  matColumnDef="has_cancellation_insurance">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell> {{ 'has_boukii_Care' | translate }}</th>
+                <td *matCellDef="let element" mat-cell>
+                  <div *ngIf="element" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                  <div *ngIf="!element" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                </td>
+              </ng-container>
+
+              <ng-container  matColumnDef="has_insurance">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell> {{ 'has_insurance' | translate }}</th>
+                <td *matCellDef="let element" mat-cell>
+                  <div *ngIf="element" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                  <div *ngIf="!element" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="payment_method">
+                <th mat-header-cell *matHeaderCellDef> {{ 'payment_method' | translate }} </th>
+                <td mat-cell *matCellDef="let element" > {{getPaymentMethod(element.payment_method_id)}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="payment_status">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell >{{ "ispaid" | translate }}</th>
+                <td *matCellDef="let element" mat-cell [style.color]=" element ? '#CEE741' : 'red'">
+                  {{ (element ? 'yes' : 'no')| translate | uppercase }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="cancelation_status">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell > {{ "status" | translate }}</th>
+                <td *matCellDef="let element" mat-cell [style.color]=" element === 1 ? '#CEE741' : '#fac710'">
+                  {{ (element === 1 ? 'active' : element === 2 ? 'cancelled' : 'partial_cancelled') | translate | uppercase }}
+                </td>
+              </ng-container>
+
               <ng-container matColumnDef="price_total">
-                <th mat-header-cell *matHeaderCellDef> Price </th>
+                <th mat-header-cell *matHeaderCellDef> {{ 'price' | translate }} </th>
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{element.price_total}} CHF</td>
               </ng-container>
 
