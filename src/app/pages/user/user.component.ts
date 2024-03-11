@@ -34,10 +34,12 @@ export class UserComponent implements OnInit {
   selectedGoal: any = [];
   schoolSports: any = [];
   goals: any = [];
+  evaluationFullfiled: any = [];
+  evaluations: any = [];
   countries = MOCK_COUNTRIES;
   languages: any = [];
   selectedLanguages:any = [];
-
+  sportIdx: any = -1;
   userLogged: any;
   schoolData: any;
   sportsCurrentData = new _MatTableDataSource([]);
@@ -112,6 +114,7 @@ export class UserComponent implements OnInit {
                 await this.getClientSchool();
                 await this.getClientSport();
                 await this.getClientObservations();
+                await this.getEvaluations();
                 this.getBookings();
 
                 if (!onChangeUser) {
@@ -358,11 +361,11 @@ export class UserComponent implements OnInit {
     });
 
     this.allLevels?.sort((a:any, b:any) => a.degree_order - b.degree_order);
-
+    this.sportIdx = this.allLevels.findIndex((al: any) => al.id === sport.degree_id);
     if (sport && sport?.level) {
 
       this.goals?.forEach((element:any) => {
-        if (element.degree_id === sport.level.id) {
+        if (element.degree_id === sport.degree_id) {
 
           this.selectedGoal.push(element);
         }
@@ -392,14 +395,23 @@ export class UserComponent implements OnInit {
 
   calculateGoalsScore() {
     let ret = 0;
-    this.selectedGoal.forEach((element: any) => {
-      if (element.goal) {
 
-        ret = ret + element.goal;
-      }
-    });
+    const goals = this.goals.filter((g: any) => g.degree_id == this.selectedSport.level.id);
 
-    return ret;
+    if (goals.length > 0) {
+      const maxPoints = goals.length * 10;
+      this.evaluationFullfiled.forEach((element: any) => {
+        if (element.score) {
+
+          ret = ret + element.score;
+        }
+      });
+
+      return (ret / maxPoints) * 100;
+    } else {
+      return ret;
+    }
+
   }
 
   async getClientSport() {
@@ -429,22 +441,18 @@ export class UserComponent implements OnInit {
   getGoals() {
     this.clientSport.forEach((cs: any) => {
 
-      this.crudService.list('/degrees-school-sport-goals', 1, 10000, 'desc', 'id', '&degree_id='+cs.degree_id)
-        .pipe(takeUntil(this.destroy$))
+      cs.degrees.forEach((dg: any) => {
+        this.crudService.list('/degrees-school-sport-goals', 1, 10000, 'desc', 'id', '&degree_id='+dg.id)
         .subscribe((data) => {
-          data.data.forEach((goal: any) => {
 
-          this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&degrees_school_sport_goals_id='+goal.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((ev: any) => {
-              if (ev.data.length > 0) {
-                goal.score = ev.data[0].score;
-              }
+          data.data.forEach((element: any) => {
 
-              this.goals.push(goal);
-            });
+            this.goals.push(element);
           });
+
         })
+      });
+
     });
   }
 
@@ -650,5 +658,71 @@ export class UserComponent implements OnInit {
         return translations[this.translateService.currentLang].name;
       }
     }
+  }
+
+  async getEvaluations() {
+    this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+      .subscribe((data) => {
+        this.evaluations = data.data;
+
+        data.data.forEach((evaluation: any) => {
+
+          this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id='+evaluation.id)
+            .subscribe((ev: any) => {
+              ev.data.forEach((element: any) => {
+                this.evaluationFullfiled.push(element);
+
+              });
+
+            });
+          });
+      })
+  }
+
+  getEvaluationsData(): any {
+    let ret: any = [];
+
+    this.evaluations.forEach((element: any) => {
+      if (element.degree_id === this.selectedSport.level.id) {
+        ret.push(element);
+      }
+    });
+
+    return ret;
+  }
+
+  changeLevel(nextLevel: any) {
+    this.selectedGoal = [];
+    this.sportIdx = this.sportIdx + nextLevel;
+
+    if (this.sportIdx < 0) {
+      this.sportIdx = 0;
+    } else if (this.sportIdx >= this.allLevels.length) {
+      this.sportIdx = this.allLevels.length - 1;
+    }
+    this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
+    this.selectedSport.level = this.allLevels[this.sportIdx];
+    this.goals.forEach((element: any) => {
+      if (element.degree_id === this.allLevels[this.sportIdx].id) {
+
+        this.selectedGoal.push(element);
+      }
+    });
+    this.coloring = false;
+  }
+
+  getGoalImage(): string {
+    let ret = '';
+
+    if (this.selectedGoal.length > 0) {
+      this.allLevels.forEach((element: any) => {
+        if (element.id === this.selectedGoal[0].degree_id) {
+          ret = element.image;
+        }
+      });
+    }
+
+
+    return ret;
   }
 }

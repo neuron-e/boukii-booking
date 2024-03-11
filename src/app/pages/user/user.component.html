@@ -90,88 +90,127 @@
         </div>
         <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right" *ngIf="!loading">
           <div class="flex-auto">
-          <div class="card">
-            <div class="px-6 py-4 border-b">
-              <h2 class="title m-0">{{'sport_evolution' | translate }}
-              </h2>
-            </div>
-
-            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
-              <div class="py-3 flex items-center">
-                <div style="width:100%;display:flex;gap:12px;align-items:flex-start;">
-                  <div style="display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:center;" *ngFor="let item of clientSport" (click)="selectSportEvo(item)">
-                    <img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected" style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;"
-                    [ngStyle]="{
-                      'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
-                      'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
-                    }">
-                    <p style="text-align: center;font-size:14px;text-wrap: nowrap;" class="montserrat"> {{item.name}}</p>
-                  </div>
-                </div>
+            <div class="card">
+              <div class="px-6 py-4 border-b">
+                <h2 class="title m-0">{{'sport_evolution' | translate }}
+                </h2>
               </div>
-            </div>
 
-            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%;display: flex;align-items: center;justify-content: space-between;gap: 24px;">
-              <div class="py-3 flex items-center">
-                <div style="float: left; width:100%;">
+              <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
+                <div class="py-3 flex items-center">
                   <div style="float: left; width:100%;">
-                    <div style="float: left; width:20%;">
-                      <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
-                    </div>
-                    <div style="float: left; width:80%;">
-                      <p style="float: left; width:100%;font-size: 12px;color:black;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore() / this.selectedGoal.length}}%</p>
-                      <h1 style="float: left; width:100%;font-size: 20px;color:black;">{{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}</h1>
-                    </div>
-
-                    <div style="float: left; width:100%;margin: 2% 0 0 0;">
-                      <mat-progress-bar mode="determinate" [value]="calculateGoalsScore()" [color]="selectedSport?.level?.color"></mat-progress-bar>
-
-                    </div>
-
-                    <div style="float: left; width:100%;margin: 4% 0 0 0;" *ngFor="let goal of selectedGoal">
-
-                      <div style="float: left; width:3%;margin-right: 15px;">
-                        <!-- añadir icono aqui-->
-                      </div>
-
-                      <div style="float: left; width:80%;">
-                        <div class="montserrat" style="color:black;">{{goal.name}} </div>
-                      </div>
-
-                      <div style="float: left; width:5%;margin-right: 15px;">
-      <!-- añadir icono aqui-->
-                      </div>
-
-                      <div style="float: left; width:5%;margin-right: 15px;">
-      <!-- añadir icono aqui-->
-                      </div>
-
-                      <div style="float: left; width:5%;">
-      <!-- añadir icono aqui-->
-                      </div>
-
+                    <div style="float: left; width:25%;" *ngFor="let item of clientSport" (click)="selectSportEvo(item)">
+                      <img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected" style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;"
+                      [ngStyle]="{
+                        'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
+                        'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
+                      }">
+                      <p style="width: 100%;float: left;text-wrap: nowrap;"> {{item.name}}</p>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style="border-bottom: 1px solid #ededed; padding:5%">
+                <div class="py-3 flex items-center">
+                  <div style="float: left; width:100%;">
+                    <div style="float: left; width:100%;">
+
+                      <div style="float: left; width:20%;">
+                        <img [src]="selectedSport?.icon_selected" [style.background]="selectedSport?.level?.color" [style.border]="selectedSport?.level?.color" style="float: left;border-radius: 20%;border:1px solid">
+                      </div>
+                      <div style="float: left; width:80%;">
+
+                        <p style="float: left; width:100%;font-size: 12px;">{{selectedSport?.level?.league}} - {{calculateGoalsScore() === 0 ? 0 : calculateGoalsScore()}}%</p>
+                        <h1 style="float: left; width:100%;font-size: 20px;position: relative;left: -5%;">
+                          <i class="fa fa-chevron-left" class="icon-sm flex-none" style="float:left;position: relative;left: -30%;cursor:pointer;" (click)="changeLevel(-1)"><</i>
+                          {{selectedSport?.level?.annotation}} / {{selectedSport?.level?.name}}
+                          <i class="fa fa-chevron-right" class="icon-sm flex-none" style="float:right;position: relative;left: 10%;cursor:pointer;"(click)="changeLevel(1)">></i>
+                        </h1>
 
 
+                      </div>
 
-                  <div style="float: left; width:100%;margin-top: 5%" *ngIf="false">
-                    <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
+                      <div style="float: left; width:100%;margin: 2% 0 0 0;">
+
+                        <mat-progress-bar mode="determinate" [value]="calculateGoalsScore()" [color]="selectedSport?.level?.color"></mat-progress-bar>
+
+                      </div>
+
+                      <div style="float: left; width:100%;margin: 4% 0 0 0;" *ngFor="let goal of selectedGoal">
+
+                        <div style="float: left; width:3%;margin-right: 15px;">
+                          <i class="fa fa-circle" aria-hidden="true"></i>
+
+                        </div>
+
+                        <div style="float: left; width:70%;">
+                          <p>{{goal.name}} </p>
+                        </div>
+
+                        <div style="float: left; width:5%;margin-right: 15px;">
+                          <i class="fa fa-circle" aria-hidden="true" style="color: red"></i>
+
+                        </div>
+
+                        <div style="float: left; width:5%;margin-right: 15px;">
+                          <i class="fa fa-star" aria-hidden="true" style="color: yellow"></i>
+
+                        </div>
+
+                        <div style="float: left; width:5%;">
+                          <i class="fa fa-check" aria-hidden="true" style="color: green"></i>
+
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!--<div style="float: left; width:100%;margin-top: 5%" >
+                      <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
+                      <h2 style="float: left; width:100%;font-size: 20px;" *ngIf="getEvaluationsData().length === 0">{{'no_data' | translate }}</h2>
+
+                    </div>-->
+
+                    <div style="float: left; width:100%;margin-top: 5%" >
+                      <h1 style="float: left; width:100%;font-size: 20px;">{{'multimedia' | translate }}</h1>
+                      <h2 style="float: left; width:100%;font-size: 20px;" *ngIf="getEvaluationsData().length === 0">{{'no_data' | translate }}</h2>
+                      <div style="float: left; width: 100%; border-radius: 10px;" *ngFor="let item of getEvaluationsData()">
+                        <ng-container style="float: left; width: 25%; border-radius: 10px;" *ngFor="let file of item.files">
+                          <img *ngIf="file.type === 'image'" [src]="file.file" style="height: 150px;width: 150px;object-fit: cover;">
+
+                          <video *ngIf="file.type === 'video'" width="150" heigth="150" controls>
+                            <source [src]="file.file" type="video/mp4">
+                            <source [src]="file.file" type="video/ogg">
+                          </video>
+
+                        </ng-container>
+                      </div>
+
+                    </div>
+
+                    <div style="float: left; width:100%;margin-top: 5%" >
+                      <h1 style="float: left; width:100%;font-size: 20px;">{{'monitor_comments' | translate }}</h1>
+                      <h2 style="float: left; width:100%;font-size: 20px;" *ngIf="getEvaluationsData().length === 0">{{'no_data' | translate }}</h2>
+                      <mat-form-field class="flex-auto" style="width: 100%" *ngFor="let item of getEvaluationsData()">
+                        <input matInput [readonly]=true type="text" [value]="item.observations">
+
+                      </mat-form-field>
+
+                    </div>
 
                   </div>
 
                 </div>
+                <div class="py-3 flex items-center">
 
-              </div>
-              <div class="py-3 flex items-center">
+                  <div style="float: left; width:100%;">
+                    <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="200" [userImage]="getGoalImage()"></app-level-user>
 
-                <div style="float: left; width:100%;">
-                  <app-level-user *ngIf="!coloring" [allLevels]="allLevels" [selectLevel]="selectedSport?.level?.id" [size]="150" [userImage]="defaults.image"></app-level-user>
-
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 

@@ -679,5 +679,8 @@
   "has_boukii_Care": "B.Care",
   "bookings_page.cancelations.refund_boukiipay_text": "The value of the reservation will be refunded through Boukii Pay.",
   "bookings_page.cancelations.refund_no_boukiipay_text": "This reservation cannot be returned through Boukii Pay since it was not paid through this platform.",
-  "no_paid": "Not payed"
+  "no_paid": "Not payed",
+  "monitor_comments": "Monitor Comments",
+  "multimedia": "Multimedia",
+  "no_data": "There is no data to show"
   }

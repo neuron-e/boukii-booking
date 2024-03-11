@@ -674,5 +674,8 @@
   "payment_method": "Moyen de paiement",
   "has_insurance": "Assurance",
   "has_boukii_Care": "B.Care",
-  "no_paid": "Pas payé"
+  "no_paid": "Pas payé",
+  "monitor_comments": "Surveiller les commentaires",
+  "multimedia": "Multimédia",
+  "no_data": "Il n'y a aucune donnée à afficher"
 }
