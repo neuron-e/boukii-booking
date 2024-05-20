@@ -56,6 +56,7 @@
     "text_user": "Utilisateur",
     "text_new_user": "Nouveau utilisateur",
     "text_add_to_cart": "Ajouter au panier",
+    "text_added_to_cart": "Cours ajouté au panier avec succès",
     "text_add_user": "Ajouteur utilisateur",
     "text_confirm": "Confirmer",
     "text_reset_password1": "Placez votre nouveau mot de passe dans le champ ci-dessous",

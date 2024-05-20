@@ -44,7 +44,6 @@ export class CartComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
-          debugger;
           this.cancellationInsurance = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);

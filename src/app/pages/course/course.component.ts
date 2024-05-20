@@ -388,7 +388,6 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    //debugger;
     let bookingUsers:any = [];
     if(this.course.course_type == 2) {
       if(this.course.is_flexible) {
@@ -531,9 +530,9 @@ export class CourseComponent implements OnInit {
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           // TODO: mostrar mensaje de curso guardado correctamente.
-          this.goTo(this.schoolData.slug);
+          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', {duration: 3000});
         } else {
-          alert('Al menos uno de los clientes tiene una reserva para este curso o coincide con la fecha seleccionada');
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
         }
       } else {
         if (!cart[this.course.id][this.selectedUser.id]) {
@@ -542,15 +541,18 @@ export class CourseComponent implements OnInit {
 
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
-          // TODO: mostrar mensaje de curso guardado correctamente.
+          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', {duration: 3000});
+
           this.goTo(this.schoolData.slug);
         } else {
-          alert('El cliente tiene una reserva para este curso');
+
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
         }
       }
 
     }, error => {
-      alert('El cliente tiene una reserva que hace overlap con este curso');
+      this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
+
     })
   }
 
@@ -688,7 +690,6 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    //debugger;
     this.router.navigate(urls);
   }
 

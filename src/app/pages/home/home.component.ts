@@ -169,7 +169,6 @@ export class HomeComponent implements OnInit {
         );
         return acc.concat(formattedDates);
       }, []);
-      // debugger;
       if (!this.daySelected) {
         this.renderCalendar();
       }
