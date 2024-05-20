@@ -374,6 +374,20 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  getCoursePrice(course: any) {
+    if (course) {
+      if(course.course_type == 2 && course.is_flexible) {
+        const priceRange = course.price_range.find((a:any) => a[1] !== null);
+        return priceRange[1];
+      } else{
+        return course.price
+      }
+    }
+
+    return 0;
+  }
+
+
   getWeekdays(settings: string): string {
     const settingsObj = JSON.parse(settings);
     const weekDays = settingsObj.weekDays;

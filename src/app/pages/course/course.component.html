@@ -1,4 +1,4 @@
-<app-header [isModalLogin]="isModalLogin" [isModalNewUser]="isModalNewUser"></app-header>
+<app-header [isModalLogin]="isModalLogin" [isModalNewUser]="isModalNewUser" (onCloseLogin)="closeModalLogin()" (onCloseNewUser)="closeModalNewUser()"></app-header>
 
 <div class="text-color mb-24 montserrat">
   <span class="text-color-light underline cursor-pointer montserrat" (click)="goTo(schoolData.slug)">{{'text_available_courses' | translate }}</span>
@@ -114,17 +114,16 @@
       <ng-container *ngIf="course?.options">
         <p>Forfait</p>
         <ng-container *ngFor="let extra of settings.extras.forfait">
-
           <div class="checkbox-circle pl-32">
             <input
               id="radio-course-{{extra.id}}"
-              type="radio"
+              type="checkbox"
               name="forfaitSelection"
-              [(ngModel)]="selectedForfait"
-              [value]="extra"
+              [checked]="selectedForfait === extra"
+              (change)="toggleForfaitSelection(extra)"
             />
             <label class="text-color-light montserrat" for="radio-course-{{extra.id}}">
-              {{extra.name}} - {{extra.price}} / {{'date' | translate }}
+              {{extra.name}} - {{extra.price}}{{course?.currency}} /  {{'date' | translate }}
             </label>
           </div>
         </ng-container>
@@ -149,12 +148,12 @@
             {{'text_price' | translate }}
           </div>
           <div class="text-medium text-color">
-            <span class="text-medium fw-bold">200</span> CHF /{{'date' | translate }}
+            <span class="text-medium fw-bold">{{ getCoursePrice(course) }}</span> {{ course?.currency }} /{{'date' | translate }}
           </div>
         </div>
         <div>
           <button class="btn-back-primary rounded-8 button-style cursor-pointer width-100 mb-12" type="button"
-                  (click)="isModalLogin = !isModalLogin">
+                  (click)="openModalLogin()">
             {{'text_already_client' | translate }}
           </button>
           <button class="btn-back-grey rounded-8 button-style cursor-pointer width-100" type="button"
@@ -323,7 +322,7 @@
                   {{'text_hour' | translate }}
                 </div>
                 <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedHour"
-                        (change)="course.is_flexible && updateAvailableDurations(selectedHour)">
+                        (change)="course?.is_flexible && updateAvailableDurations(selectedHour)">
                   <option *ngFor="let hour of availableHours" [value]="hour">{{ hour }}</option>
                 </select>
 
@@ -350,7 +349,7 @@
                 <ng-container *ngIf="!course?.is_flexible">
                   <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedDuration">
                     <option
-                            [value]="course.duration">{{course.duration}}</option>
+                            [value]="course?.duration">{{course?.duration}}</option>
                   </select>
                 </ng-container>
               </div>
@@ -360,7 +359,7 @@
                   {{'text_price' | translate }}
                 </div>
                 <div class="text-medium text-color">
-                  <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF
+                  <span class="text-color text-medium fw-bold" > {{course?.price}}</span> {{ course?.currency }}
                 </div>
               </div>
               <div>
@@ -381,11 +380,11 @@
             <div class="text-medium text-color uppercase">
               {{'text_price' | translate }}
             </div>
-            <div class="text-medium text-color" *ngIf="!course.is_flexible">
-              <span class="text-color text-medium fw-bold" > {{course.price}}</span> CHF
+            <div class="text-medium text-color" *ngIf="!course?.is_flexible">
+              <span class="text-color text-medium fw-bold" > {{course?.price}}</span> {{ course?.currency }}
             </div>
-            <div class="text-medium text-color" *ngIf="course.is_flexible">
-              <span class="text-color text-medium fw-bold" > {{collectivePrice}}</span> CHF /{{'date' | translate }}
+            <div class="text-medium text-color" *ngIf="course?.is_flexible">
+              <span class="text-color text-medium fw-bold" > {{collectivePrice}}</span> {{ course?.currency }} /{{'date' | translate }}
             </div>
           </div>
           <div>

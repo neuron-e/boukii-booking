@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {ApiService} from './api.service';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, lastValueFrom, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,19 +25,18 @@ export class AuthService extends ApiService {
 
   }
 
-  async login(data:any) {
+  async login(data: any): Promise<any> {
     try {
-
-      this.http.post(this.baseUrl + '/slug/login', data, {headers: this.getHeaders()})
-        .subscribe((data: any) => {
-          localStorage.setItem(this.extractSlugFromRoute(this.route.snapshot) + '-boukiiUser', JSON.stringify(data.data.user));
-          this.user.next(data.data.user)
-          console.log(this.user);
-          return this.user;
-/*          this.router.navigate(['/home']);*/
-        })
+      const response: any = await lastValueFrom(this.http.post(this.baseUrl + '/slug/login', data, { headers: this.getHeaders() }));
+      const user = response.data.user;
+      localStorage.setItem(this.extractSlugFromRoute(this.route.snapshot) + '-boukiiUser', JSON.stringify(user));
+      this.user.next(user);
+      console.log(this.user);
+      return user;
     } catch (error) {
       console.error('Error during login:', error);
+      throw error;
     }
   }
+
 }

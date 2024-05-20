@@ -298,6 +298,19 @@ export class CourseComponent implements OnInit {
       }
     });
   }
+
+  openModalLogin() {
+    this.isModalLogin = !this.isModalLogin;
+  }
+
+  toggleForfaitSelection(extra: any) {
+    if (this.selectedForfait === extra) {
+      this.selectedForfait = null; // Deselect if already selected
+    } else {
+      this.selectedForfait = extra; // Select the clicked option
+    }
+  }
+
   /*
     getSports() {
       this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
@@ -662,6 +675,14 @@ export class CourseComponent implements OnInit {
     this.isModalAddUser = true;
   }
 
+  closeModalLogin() {
+    this.isModalLogin = false;
+  }
+
+  closeModalNewUser() {
+    this.isModalNewUser = false;
+  }
+
   closeModalAddUser() {
     this.isModalAddUser = false;
   }
@@ -966,6 +987,19 @@ export class CourseComponent implements OnInit {
         return translations[this.translateService.currentLang].name;
       }
     }
+  }
+
+  getCoursePrice(course: any) {
+    if (course) {
+      if(course.course_type == 2 && course.is_flexible) {
+        const priceRange = course.price_range.find((a:any) => a[1] !== null);
+        return priceRange[1];
+      } else{
+        return course.price
+      }
+    }
+
+    return 0;
   }
 
   getWeekdays(settings: string): string {

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
@@ -18,9 +18,12 @@ export class HeaderComponent implements OnInit {
   isOpenDropdownLang = false;
   isOpenDropdownUser = false;
   selectedLang = 'fr';
+  selectedLangFlag = '/assets/images/fr.png';
 
   @Input() isModalLogin:boolean=false;
   @Input() isModalNewUser:boolean=false;
+  @Output() onCloseLogin = new EventEmitter<void>();
+  @Output() onCloseNewUser = new EventEmitter<void>();
 
   constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService, private activatedRoute: ActivatedRoute,
               private schoolService: SchoolService, private authService: AuthService, private cartService: CartService) { }
@@ -37,6 +40,9 @@ export class HeaderComponent implements OnInit {
             this.userLogged = JSON.parse(storageSlug);
             const cart = localStorage.getItem(this.schoolData.data.slug+'-cart');
             this.cart = cart || '';
+            this.selectedLang  = localStorage.getItem(this.schoolData.data.slug+'-lang') || 'fr';
+            this.translate.use(this.selectedLang);
+            this.selectedLangFlag = '/assets/images/'+this.selectedLang+'.png'
             if (slug!==null) {
               this.cart = JSON.parse(slug !== null ? slug : '');
             }
@@ -98,6 +104,8 @@ export class HeaderComponent implements OnInit {
   switchLang(lang: any){
     this.translate.use(lang);
     this.selectedLang = lang;
+    this.selectedLangFlag = '/assets/images/'+lang+'.png'
+    localStorage.setItem(this.schoolData.data.slug+'-lang', lang);
     this.toggleDropdownLang();
   }
 
@@ -111,6 +119,7 @@ export class HeaderComponent implements OnInit {
 
   closeModalLogin() {
     this.isModalLogin = false;
+    this.onCloseLogin.emit();
   }
 
   openModalNewUser() {
@@ -119,6 +128,7 @@ export class HeaderComponent implements OnInit {
 
   closeModalNewUser() {
     this.isModalNewUser = false;
+    this.onCloseNewUser.emit();
   }
 
   goTo(...urls: string[]) {

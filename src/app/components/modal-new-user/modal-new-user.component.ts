@@ -51,26 +51,20 @@ export class ModalNewUserComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.loginForm && this.loginForm.invalid) {
+    if (!this.loginForm || this.loginForm.invalid) {
       return;
     }
 
-    const formData = this.loginForm ? this.loginForm.value : null;
+    const formData = this.loginForm.value;
+
     this.clientService.createClient(formData).subscribe(
       (res) => {
-        console.log('Cliente creado exitosamente:', res);
-        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
-
+        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
         this.onClose.emit();
       },
       (error) => {
-        let errorMessage = this.translateService.instant(error.error.message);
-
-        if(!errorMessage) {
-          errorMessage = 'error.client.register'
-        }
-
-        this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+        let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
+        this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
       }
     );
   }

@@ -91,7 +91,7 @@
           </div>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
             <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{ getTotalBasePrice(cartItem.details) }}</span> CHF
+              <span class="text-color fw-semibold text-medium">{{ getTotalBasePrice(cartItem.details) }}</span> {{ cartItem.details[0].course.currency }}
             </div>
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
@@ -99,7 +99,7 @@
               <span class="text-color fw-semibold text-medium">
                 {{cartItem.details[0].course.is_flexible ?
                 (cartItem.details.length * cartItem.details[0].price) :
-                cartItem.details[0].course.price * 1  }}</span> CHF
+                cartItem.details[0].course.price * 1  }}</span> {{ cartItem.details[0].course.currency }}
             </div>
           </ng-container>
 
@@ -124,8 +124,8 @@
   </div>
 
   <!--Payment-->
-  <div class="background-color-trans rounded-8 padding-box payment-section">
-    <div class="payment-refund-check" *ngIf="!isNanValue(this.cancellationInsurance)">
+  <div class="background-color-trans rounded-8 padding-box payment-section" *ngIf="cart?.length">
+    <div class="payment-refund-check" *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0">
       <div class="text-color">
         {{'text_refund_option' | translate }}
       </div>
@@ -134,7 +134,7 @@
         <label for="insurance"></label>
       </div>
     </div>
-    <div class="payment-refund-check" style="margin: 10px 0 0 0" *ngIf="!isNanValue(this.boukiiCarePrice)">
+    <div class="payment-refund-check" style="margin: 10px 0 0 0" *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0">
       <div class="text-color">
         Boukii Care
       </div>

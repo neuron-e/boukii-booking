@@ -3,6 +3,9 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import {ClientService} from '../../services/client.service';
 import {AuthService} from '../../services/auth.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-modal-add-user',
@@ -31,43 +34,54 @@ export class ModalAddUserComponent implements OnInit {
   birthDate: string = '';
   language: string = '1';
 
+  addUserForm: FormGroup;
+
   constructor(public themeService: ThemeService, private clientService: ClientService,
-              private authService: AuthService) { }
+              private authService: AuthService, private fb: FormBuilder, private snackbar: MatSnackBar,
+              private translateService: TranslateService) {
+    this.addUserForm = this.fb.group({
+      first_name: ['', Validators.required],
+      last_name: ['', Validators.required],
+      birth_date: ['', Validators.required],
+      language1_id: ['', Validators.required]
+    })
+  }
 
   ngOnInit(): void {
   }
 
-  closeModal() {
-    const utilizerData = {
-      name: this.firstName,
-      last_name: this.lastName,
-      birth_date: this.birthDate,
-      language1_id: this.language,
-    };
+  onSubmit() {
+    if (!this.addUserForm || this.addUserForm.invalid) {
+      return;
+    }
 
-    // Obtener el ID del cliente principal de donde sea necesario
+    const formData = this.addUserForm.value;
+
     let storageSlug = localStorage.getItem(this.slug+ '-boukiiUser');
     if(storageSlug) {
       let userLogged = JSON.parse(storageSlug);
-      this.clientService.createUtilizer(utilizerData, userLogged.clients[0].id).subscribe(
+      this.clientService.createUtilizer(formData, userLogged.clients[0].id).subscribe(
         (res) => {
-          userLogged.clients[0].utilizers.push(utilizerData);
+          userLogged.clients[0].utilizers.push(formData);
 
           this.authService.user.next(userLogged);
 
           // Actualiza el objeto completo del usuario en localStorage.
           localStorage.setItem(this.slug + '-boukiiUser', JSON.stringify(userLogged));
+          this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
 
           this.onClose.emit();
         },
         (error) => {
-          console.log(error);
+          let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
+          this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
         }
       );
     }
+  }
 
-
-
+  closeModal() {
+    this.onClose.emit();
   }
 
 }

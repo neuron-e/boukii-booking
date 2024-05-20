@@ -10,7 +10,8 @@
         <img [src]="themeService.modeIcon" (click)="toggleTheme()" class="icon-mode cursor-pointer" />
         <div class="header-dropdown">
             <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownLang()">
-                {{'text_language' | translate }}
+              <img [src]="selectedLangFlag" class="selected-lang-flag" style="width: 24px">
+              <span>{{ selectedLang | uppercase }}</span>
                 <img [src]="themeService.arrowUp"
                     [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
             </div>

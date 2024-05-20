@@ -5,38 +5,38 @@
       <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
     </div>
 
-    <div class="modal-form">
+    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()"  class="modal-form">
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{'text_first_name' | translate }}
         </div>
-        <input type="text" class="form-control width-100" [(ngModel)]="firstName" />
+        <input type="text" class="form-control width-100" formControlName="first_name" />
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{'text_last_name' | translate }}
         </div>
-        <input type="text" class="form-control width-100" [(ngModel)]="lastName" />
+        <input type="text" class="form-control width-100" formControlName="last_name" />
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{'text_birth_date' | translate }}
         </div>
-        <input type="date" class="form-control width-100" [(ngModel)]="birthDate" />
+        <input type="date" class="form-control width-100" formControlName="birth_date" />
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{'text_language' | translate }}
         </div>
-        <select class="form-control width-100" [(ngModel)]="language">
-          <option value="1">French</option>
-          <option value="2">English</option>
-          <option value="3">Spanish</option>
+        <select class="form-control width-100" formControlName="language1_id">
+          <option value="1">{{ 'france' | translate }}</option>
+          <option value="2">{{ 'english' | translate }}</option>
+          <option value="3">{{ 'spanish' | translate }}</option>
         </select>
       </div>
-    </div>
+    </form>
 
-    <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+    <button type="submit" [disabled]="addUserForm?.invalid" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
       {{'text_confirm' | translate }}
     </button>
   </div>

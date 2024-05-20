@@ -162,7 +162,7 @@
         </div>
       </div>
       <div class="text-color fw-medium pb-8 text-align-right min-width-price"
-           *ngIf="course.is_flexible">{{course.price}} CHF /{{'date' | translate }}
+           *ngIf="course.is_flexible">{{getCoursePrice(course)}} CHFs /{{'date' | translate }}
       </div>
       <div class="text-color fw-medium pb-8 text-align-right min-width-price"
            *ngIf="!course.is_flexible">{{course.price}} CHF
