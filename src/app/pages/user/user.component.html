@@ -52,7 +52,7 @@
               <div
                 class="flex items-center" (click)="changeClientData(userLogged.clients[0].id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
                 <img
-                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
+                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
                   [ngStyle]="{
                     'border': mainId == id ? '#FF3085 1px solid' : 'none'
                   }"
@@ -65,7 +65,7 @@
                 *ngFor="let user of clientUsers"
                 class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
                 <img
-                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none"
                   [ngStyle]="{
@@ -77,10 +77,7 @@
 
               <div style="cursor:pointer"
                 class="flex items-center">
-                <!--<mat-icon svgIcon="mat:add"></mat-icon>
-                <div class="flex-auto" (click)="addUtilisateur()">
-                  <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
-                </div>-->
+
               </div>
 
 
@@ -262,7 +259,7 @@
               <div
                 class="flex items-center" (click)="changeClientData(userLogged.clients[0].id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
                 <img
-                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': userLogged.clients[0]?.image"
+                  [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
                   [ngStyle]="{
                     'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
                   }"
@@ -275,7 +272,7 @@
                 *ngFor="let user of clientUsers"
                 class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)" style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
                 <img
-                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+                  [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
                   alt="Profile Picture"
                   class="avatar ltr:mr-3 rtl:ml-3 flex-none"
                   [ngStyle]="{
@@ -313,15 +310,15 @@
               <ng-container matColumnDef="dates">
                 <th mat-header-cell *matHeaderCellDef> {{ 'dates' | translate }} </th>
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)">
-                  <strong>{{ getMinMaxDates(element.bookingusers).minDate | date: 'dd/MM/YYYY'}}<br>{{ getMinMaxDates(element.bookingusers).maxDate| date: 'dd/MM/YYYY' }}</strong><br>
-                  {{getMinMaxHours(element.bookingusers).minHour }}h - {{getMinMaxHours(element.bookingusers).maxHour}}h
+                  <strong>{{ getMinMaxDates(element.booking_users).minDate | date: 'dd/MM/YYYY'}}<br>{{ getMinMaxDates(element.booking_users).maxDate| date: 'dd/MM/YYYY' }}</strong><br>
+                  {{getMinMaxHours(element.booking_users).minHour }}h - {{getMinMaxHours(element.booking_users).maxHour}}h
                 </td>
               </ng-container>
 
 
-              <ng-container matColumnDef="bookingusers[0].course.name">
+              <ng-container matColumnDef="booking_users[0].course.name">
                 <th mat-header-cell *matHeaderCellDef> {{ 'course' | translate }} </th>
-                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getCourseName(element.bookingusers[0]?.course) || 'N/A'}} </td>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getCourseName(element.booking_users[0]?.course) || 'N/A'}} </td>
               </ng-container>
 
               <ng-container  matColumnDef="has_cancellation_insurance">

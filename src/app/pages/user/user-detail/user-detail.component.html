@@ -38,7 +38,7 @@
             class="flex items-center" (click)="changeClientData(mainId)">
             <img
 
-              [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': mainClient.clients[0]?.image"
+              [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': mainClient.clients[0]?.image"
               [ngStyle]="{
                 'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
               }"
@@ -54,7 +54,7 @@
             class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)">
             <img
 
-              [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+              [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
               alt="Profile Picture"
               class="avatar ltr:mr-3 rtl:ml-3 flex-none"
               [ngStyle]="{
@@ -379,7 +379,7 @@
           class="flex items-center" (click)="changeClientData(mainId)">
           <img
 
-            [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/img/avatar.png': mainClient.clients[0]?.image"
+            [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': mainClient.clients[0]?.image"
             [ngStyle]="{
               'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
             }"
@@ -395,7 +395,7 @@
           class="flex items-center" style="cursor:pointer;" (click)="changeClientData(user.id)">
           <img
 
-            [src]="user?.image === null || user?.image === '' ? '../../../../assets/img/avatar.png': user?.image"
+            [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
             alt="Profile Picture"
             class="avatar ltr:mr-3 rtl:ml-3 flex-none"
             [ngStyle]="{
@@ -436,7 +436,7 @@
 
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
             <div class="image-container">
-              <img [src]="defaults.image !== null ? defaults.image : '../../../../assets/img/no-image.jpg'" alt="Image Preview" style="width: 200px;height: 200px;border-radius: 100%;object-fit: fill;">
+              <img [src]="defaults.image !== null ? defaults.image : '../../../../assets/images/no-image.jpg'" alt="Image Preview" style="width: 200px;height: 200px;border-radius: 100%;object-fit: fill;">
             </div>
 
             <div class="input-container">

@@ -5,8 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ApiCrudService } from 'src/app/services/crud.service';
 import { SchoolService } from 'src/app/services/school.service';
 import { _MatTableDataSource } from '@angular/material/table';
-import { Observable, map, startWith, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {Observable, map, startWith, Subject, retry, of, tap, forkJoin, switchMap} from 'rxjs';
+import {catchError, takeUntil} from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import * as moment from 'moment';
@@ -55,7 +55,7 @@ export class UserComponent implements OnInit {
   bookings: any = [];
   dataSource: any = [];
 
-  displayedColumns: string[] = [ 'icon', 'bookingusers[0].course.name', 'dates', 'has_cancellation_insurance',
+  displayedColumns: string[] = [ 'icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
     'has_insurance', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
   mainId: any;
 
@@ -68,7 +68,7 @@ export class UserComponent implements OnInit {
   firstLoad:boolean = true;
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
+              private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -88,6 +88,10 @@ export class UserComponent implements OnInit {
     if (index === 0) {
       this.userDetailComponent.changeClientDataB(this.defaults.id);
     }
+    if(index === 1) {
+      this.selectedSport = this.clientSport[0];
+      this.selectSportEvo(this.selectedSport);
+    }
   }
 
   getData(id = null, onChangeUser = false) {
@@ -99,42 +103,95 @@ export class UserComponent implements OnInit {
         this.userLogged = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
-        this.crudService.get('/clients/'+ getId)
+        this.crudService.get('/clients/'+ getId, ['user', 'clientSports.degree', 'clientSports.sport',
+          'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
           .pipe(takeUntil(this.destroy$))
-          .subscribe((client) => {
+          .subscribe(async (client) => {
             this.defaults = client.data;
+            this.defaultsUser = client.data.user;
+            this.defaults = client.data;
+            this.evaluations = client.data.evaluations;
+            this.evaluationFullfiled = [];
+            this.evaluations.forEach((ev:any) => {
+              ev.evaluation_fulfilled_goals.forEach((element:any) => {;
+                this.evaluationFullfiled.push(element);
+              });
+            });
+            if (client.data.observations.length > 0) {
+              this.defaultsObservations = client.data[0];
+            } else {
+              this.defaultsObservations = {
+                id: null,
+                general: '',
+                notes: '',
+                historical: '',
+                client_id: null,
+                school_id: null
+              };
+            }
+            this.getBookings();
 
-            this.crudService.get('/users/'+client.data.user_id)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(async (user)=> {
 
 
-                await this.getSchoolSportDegrees();
-                await this.getLanguages(data.clients[0]);
-                await this.getClientSchool();
-                await this.getClientSport();
-                await this.getClientObservations();
-                await this.getEvaluations();
-                this.getBookings();
+            const requestsClient = {
+              clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
+                console.error('Error fetching client school:', error);
+                return of([]); // Devuelve un array vacío en caso de error
+              })),
+              clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
+                console.error('Error fetching client sport:', error);
+                return of([]); // Devuelve un array vacío en caso de error
+              })),
+              languages: this.getLanguages().pipe(retry(3), catchError(error => {
+                console.error('Error fetching languages:', error);
+                return of([]); // Devuelve un array vacío en caso de error
+              }))
+            };
 
-                if (!onChangeUser) {
-                  this.getClientUtilisateurs();
+            return forkJoin(requestsClient).subscribe((results) => {
+              console.log('All data loaded', results);
+              if (!onChangeUser) {
+                this.getClientUtilisateurs();
+              }
+              const langs = [];
+              this.languages.forEach((element:any) => {
+                if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
+                  element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
+                  langs.push(element);
                 }
-                this.defaultsUser = user.data;
+              });
+              this.loading = false;
+            });
 
-              })
-        })
+           // await this.getSchoolSportDegrees();
+           // await this.getLanguages(data.clients[0]);
+            //await this.getClientSchool();
+            //await this.getClientSport();
+/*            await this.getClientObservations();
+            await this.getEvaluations();*/
+
+
+          })
       }
     });
   }
 
-  async getClientSchool() {
+  async getClientSchoolold() {
     try {
       const data:any = await this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
       this.clientSchool = data.data;
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getClientSchool() {
+    return this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
+      .pipe(
+        map((data) => {
+          this.clientSchool = data.data;
+        })
+      );
   }
 
   async getClientObservations() {
@@ -160,16 +217,16 @@ export class UserComponent implements OnInit {
         this.clientUsers = data.data;
         console.log(this.clientUsers);
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((data) => {
-          data.data.forEach((element: any) => {
-            this.clientUsers.forEach((cl: any) => {
-              if (element.client_id === cl.id) {
-                cl.utilizer_id = element.id;
-              }
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((data) => {
+            data.data.forEach((element: any) => {
+              this.clientUsers.forEach((cl: any) => {
+                if (element.client_id === cl.id) {
+                  cl.utilizer_id = element.id;
+                }
+              });
             });
-          });
-        })
+          })
 
       })
   }
@@ -285,23 +342,24 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id, '&with[]=bookingusers.course')
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id,
+      '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))
       .subscribe((bookings) => {
         console.log(bookings.data);
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
-        this.loading = false;
+
       })
   }
 
-  setInitLanguages(user: any) {
-
-    this.languages.forEach((element: any) => {
-      if(element.id === user.language1_id || element.id === user.language2_id || element.id === user.language3_id
-        || element.id === user.language4_id || element.id === user.language5_id || element.id === user.language6_id) {
-          this.selectedLanguages.push(element);
-        }
+  setInitLanguages() {
+    this.selectedLanguages = [];
+    this.languages.forEach((element:any) => {
+      if(element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
+        || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
+        this.selectedLanguages.push(element);
+      }
     });
   }
 
@@ -313,7 +371,7 @@ export class UserComponent implements OnInit {
       const m = today.getMonth() - birthDate.getMonth();
 
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
+        age--;
       }
 
       return age;
@@ -333,14 +391,23 @@ export class UserComponent implements OnInit {
     return country ? country.name : 'NDF';
   }
 
-  async getLanguages(user: any) {
+  async getLanguagesold(user: any) {
     try {
       const data:any = await this.crudService.list('/languages', 1, 1000).toPromise();
       this.languages = data.data.reverse();
-      this.setInitLanguages(user);
+      this.setInitLanguages();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getLanguages() {
+    return this.crudService.list('/languages', 1, 1000).pipe(
+      tap((data) => {
+        this.languages = data.data.reverse();
+        this.setInitLanguages();
+      })
+    );
   }
 
   selectSportEvo(sport: any) {
@@ -414,19 +481,38 @@ export class UserComponent implements OnInit {
 
   }
 
-  async getClientSport() {
-  try {
-    const data:any = await this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
-    this.clientSport = data.data;
-    await this.getSports();
-    await this.getDegrees();
-    this.selectedSport = this.clientSport[0];
-    this.selectSportEvo(this.selectedSport);
-    //this.loading = false;
-  } catch (error) {
-    console.error(error);
+  async getClientSportOld() {
+    try {
+      const data:any = await this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+      this.clientSport = data.data;
+      await this.getSports();
+      await this.getDegrees();
+      this.selectedSport = this.clientSport[0];
+      this.selectSportEvo(this.selectedSport);
+      //this.loading = false;
+    } catch (error) {
+      console.error(error);
+    }
   }
-}
+
+  getClientSport() {
+    return this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='
+      + this.id + "&school_id=" + this.schoolData.id, '', null, '', ['degree.degreesSchoolSportGoals'])
+      .pipe(
+        switchMap((data) => {
+          this.clientSport = data.data;
+          this.selectedSport = this.clientSport[0];
+          this.goals = [];
+
+          this.clientSport.forEach((element:any) => {
+            element.level = element.degree;
+
+          });
+
+          return this.getSchoolSportDegrees();
+        })
+      );
+  }
 
   getDegrees() {
     this.clientSport.forEach((element: any) => {
@@ -443,20 +529,20 @@ export class UserComponent implements OnInit {
 
       cs.degrees.forEach((dg: any) => {
         this.crudService.list('/degrees-school-sport-goals', 1, 10000, 'desc', 'id', '&degree_id='+dg.id)
-        .subscribe((data) => {
+          .subscribe((data) => {
 
-          data.data.forEach((element: any) => {
+            data.data.forEach((element: any) => {
 
-            this.goals.push(element);
-          });
+              this.goals.push(element);
+            });
 
-        })
+          })
       });
 
     });
   }
 
-  async getSchoolSportDegrees() {
+  async getSchoolSportDegreesold() {
     try {
       const sport:any = await this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id).toPromise();
       this.schoolSports = sport.data;
@@ -469,6 +555,51 @@ export class UserComponent implements OnInit {
       console.error(error);
     }
   }
+
+  getSchoolSportDegrees() {
+    return this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
+      this.schoolData.id, '', null, '', ['sport', 'degrees.degreesSchoolSportGoals'])
+      .pipe(
+        map((sport) => {
+          this.schoolSports = sport.data;
+          this.schoolSports.forEach((sport:any) => {
+            sport.name = sport.sport.name;
+            sport.icon_selected = sport.sport.icon_selected;
+            sport.icon_unselected = sport.sport.icon_unselected;
+            sport.degrees.forEach((degree:any) => {
+              degree.degrees_school_sport_goals.forEach((goal:any) => {
+                this.goals.push(goal);
+              });
+            });
+
+            this.clientSport.forEach((element:any) => {
+              if (element.sport_id === sport.sport_id) {
+                element.name = sport.name;
+                element.icon_selected = sport.icon_selected;
+                element.icon_unselected = sport.icon_unselected;
+                element.degrees = sport.degrees;
+              }
+            });
+          });
+          this.sportsCurrentData.data = this.clientSport;
+          const availableSports:any = [];
+          this.schoolSports.forEach((element:any) => {
+            if (!this.sportsCurrentData.data.find((s:any) => s.sport_id === element.sport_id)) {
+              availableSports.push(element);
+            }
+          });
+
+          this.filteredSports = this.sportsControl.valueChanges.pipe(
+            startWith(''),
+            map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
+          );
+
+
+          //return this.getGoals();
+        })
+      );
+  }
+
 
   getSports() {
     this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
@@ -551,10 +682,10 @@ export class UserComponent implements OnInit {
 
           if(data.action === 'add') {
             this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              //this.getClientUtilisateurs(); --> Deberia añadirse al objeto del usuario
-            })
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((res) => {
+                //this.getClientUtilisateurs(); --> Deberia añadirse al objeto del usuario
+              })
           } else {
             const user = {
               username: data.data.name,
@@ -591,28 +722,28 @@ export class UserComponent implements OnInit {
             this.setLanguagesUtilizateur(data.data.languages, client);
 
             this.crudService.create('/users', user)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((user) => {
-              client.user_id = user.data.id;
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((user) => {
+                client.user_id = user.data.id;
 
-              this.crudService.create('/clients', client)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((clientCreated) => {
-                  this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+                this.crudService.create('/clients', client)
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe((clientCreated) => {
+                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
 
-                  this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe((clientSchool) => {
+                    this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                      .pipe(takeUntil(this.destroy$))
+                      .subscribe((clientSchool) => {
 
-                      setTimeout(() => {
-                        this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe((res) => {
-                          //this.getClientUtilisateurs(); --> añadir al usuario
-                        })}, 1000);
-                    });
-                })
-            })
+                        setTimeout(() => {
+                          this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe((res) => {
+                              //this.getClientUtilisateurs(); --> añadir al usuario
+                            })}, 1000);
+                      });
+                  })
+              })
           }
         }
       });
@@ -675,7 +806,7 @@ export class UserComponent implements OnInit {
               });
 
             });
-          });
+        });
       })
   }
 

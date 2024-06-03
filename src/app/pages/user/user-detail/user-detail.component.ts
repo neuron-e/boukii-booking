@@ -6,8 +6,8 @@ import { MatTable, _MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { Observable, map, startWith, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {Observable, map, startWith, Subject, forkJoin, retry, of, switchMap, tap} from 'rxjs';
+import {catchError, takeUntil} from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import { ApiCrudService } from 'src/app/services/crud.service';
@@ -24,9 +24,9 @@ import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm
 })
 export class UserDetailComponent {
 
-private destroy$: Subject<boolean> = new Subject<boolean>();
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-@ViewChild('sportsCurrentTable') currentSportsTable: MatTable<any>;
+  @ViewChild('sportsCurrentTable') currentSportsTable: MatTable<any>;
 
   showInfo = true;
   showPersonalInfo = true;
@@ -143,7 +143,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
   clientSport: any = [];
   clients: any = [];
   clientSchool: any = [];
-  goals = [];
+  goals:any = [];
   mainId: any;
   showDetail: boolean = false;
   detailData: any;
@@ -151,8 +151,8 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
   schoolData: any;
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
-     private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
-     private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService) {
+              private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
+              private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService) {
 
     this.today = new Date();
     this.minDate = new Date(this.today);
@@ -165,13 +165,17 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
       data => {
         if (data) {
           this.schoolData = data.data;
-
-          if (this.idParent) {
+          this.getInitialData().pipe(
+            switchMap(() => this.getData(this.idParent))
+          ).subscribe(() => {
+            // Aquí puedes realizar cualquier lógica adicional después de obtener los datos iniciales y los datos principales.
+          });
+/*          if (this.idParent) {
             this.getData(this.idParent);
           }
           else{
             this.getData();
-          }
+          }*/
         }
       }
     );
@@ -187,138 +191,250 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
   changeClientDataB(id: any) {
     this.loading = true;
     this.id = id;
-    this.getData(id, true);
+    this.getData(id, true).subscribe(results => {
+
+    });
+  }
+
+  getInitialData() {
+
+    const requestsInitial = {
+      languages: this.getLanguages().pipe(retry(3), catchError(error => {
+        console.error('Error fetching languages:', error);
+        return of([]); // Devuelve un array vacío en caso de error
+      })),
+      stations: this.getStations().pipe(retry(3), catchError(error => {
+        console.error('Error fetching stations:', error);
+        return of([]); // Devuelve un array vacío en caso de error
+      })),
+      clients: this.getClients().pipe(retry(3), catchError(error => {
+        console.error('Error fetching clients:', error);
+        return of([]); // Devuelve un array vacío en caso de error
+      })),
+    };
+
+    return forkJoin(requestsInitial).pipe(tap((results) => {
+      console.log('All data loaded', results);
+      this.formInfoAccount = this.fb.group({
+        image: [''],
+        name: ['', Validators.required],
+        surname: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        username: [''],
+        password: [''],
+
+      });
+
+      this.formPersonalInfo = this.fb.group({
+        fromDate: [''],
+        phone: [''],
+        mobile: ['', Validators.required],
+        address: [''],
+        postalCode: [''],
+        lang: [''],
+        country: this.myControlCountries,
+        province: this.myControlProvinces
+
+      });
+
+      this.formSportInfo = this.fb.group({
+        sportName: [''],
+      });
+
+      this.formOtherInfo = this.fb.group({
+        summary: [''],
+        notes: [''],
+        hitorical: ['']
+      });
+
+    }));
+
   }
 
   getData(id = null, onChangeUser = false) {
 
-    this.authService.getUserData().pipe(takeUntil(this.destroy$)).subscribe(data => {
+    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data:any) => {
 
-    if (data !== null) {
+      if (data !== null) {
         this.mainId = data.clients[0].id;
         this.mainClient = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
 
-      this.crudService.get('/clients/'+ getId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.defaults = data.data;
+        return this.crudService.get('/clients/'+ getId, ['user', 'clientSports.degree', 'clientSports.sport',
+          'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
+          .pipe(takeUntil(this.destroy$), switchMap((data) => {
 
-        this.currentImage = data.data.image;
-        /*
-        if (!onChangeUser) {
-          this.mainClient = data.data;
-        }
-        */
+            this.defaultsUser = data.data.user;
+            this.defaults = data.data;
 
-        this.crudService.get('/users/'+data.data.user_id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((user)=> {
-
-
-            this.getSchoolSportDegrees();
-            this.getLanguages();
-            this.getStations();
-            this.getClientSchool();
-            this.getClientSport();
-            this.getClients();
-            this.getClientObservations();
-
-            if (!onChangeUser) {
-              this.getClientUtilisateurs();
+            if (data.data.observations.length > 0) {
+              this.defaultsObservations = data.data[0];
+            } else {
+              this.defaultsObservations = {
+                id: null,
+                general: '',
+                notes: '',
+                historical: '',
+                client_id: null,
+                school_id: null
+              };
             }
-            this.defaultsUser = user.data;
+            this.currentImage = data.data.image;
 
-            this.formInfoAccount = this.fb.group({
-              image: [''],
-              name: ['', Validators.required],
-              surname: ['', Validators.required],
-              email: ['', [Validators.required, Validators.email]],
-              username: [''],
-              password: [''],
+            const requestsClient = {
+              clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
+                console.error('Error fetching client school:', error);
+                return of([]); // Devuelve un array vacío en caso de error
+              })),
+              clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
+                console.error('Error fetching client sport:', error);
+                return of([]); // Devuelve un array vacío en caso de error
+              }))
+            };
+            return forkJoin(requestsClient).pipe(tap((results) => {
 
-            });
+              if (!onChangeUser) {
+                this.getClientUtilisateurs();
+              }
 
-            this.formPersonalInfo = this.fb.group({
-              fromDate: [''],
-              phone: [''],
-              mobile: ['', Validators.required],
-              address: [''],
-              postalCode: [''],
-              lang: [''],
-              country: this.myControlCountries,
-              province: this.myControlProvinces
+              this.formInfoAccount = this.fb.group({
+                image: [''],
+                name: ['', Validators.required],
+                surname: ['', Validators.required],
+                email: ['', [Validators.required, Validators.email]],
+                username: [''],
+                password: [''],
 
-            });
-
-            this.formSportInfo = this.fb.group({
-              sportName: [''],
-            });
-
-            this.formOtherInfo = this.fb.group({
-              summary: [''],
-              notes: [''],
-              hitorical: ['']
-            });
-
-            if(!onChangeUser) {
-
-              this.filteredCountries = this.myControlCountries.valueChanges.pipe(
-                startWith(''),
-                map(value => typeof value === 'string' ? value : value.name),
-                map(name => name ? this._filterCountries(name) : this.countries.slice())
-              );
-
-              this.myControlCountries.valueChanges.subscribe(country => {
-                this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
-                this.filteredProvinces = this._filterProvinces(country?.id);
               });
 
-              /*this.filteredLevel = this.levelForm.valueChanges.pipe(
-                startWith(''),
-                map((value: any) => typeof value === 'string' ? value : value?.annotation),
-                map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
-              );*/
+              this.formPersonalInfo = this.fb.group({
+                fromDate: [''],
+                phone: [''],
+                mobile: ['', Validators.required],
+                address: [''],
+                postalCode: [''],
+                lang: [''],
+                country: this.myControlCountries,
+                province: this.myControlProvinces
 
-              this.filteredLanguages = this.languagesControl.valueChanges.pipe(
-                startWith(''),
-                map(language => (language ? this._filterLanguages(language) : this.languages.slice()))
-              );
+              });
 
-            }
-            setTimeout(() => {
+              this.formSportInfo = this.fb.group({
+                sportName: [''],
+              });
+
+              this.formOtherInfo = this.fb.group({
+                summary: [''],
+                notes: [''],
+                hitorical: ['']
+              });
+
+              if(!onChangeUser) {
+
+                this.filteredCountries = this.myControlCountries.valueChanges.pipe(
+                  startWith(''),
+                  map(value => typeof value === 'string' ? value : value.name),
+                  map(name => name ? this._filterCountries(name) : this.countries.slice())
+                );
+
+                this.myControlCountries.valueChanges.subscribe(country => {
+                  this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
+                  this.filteredProvinces = this._filterProvinces(country?.id);
+                });
+
+                /*this.filteredLevel = this.levelForm.valueChanges.pipe(
+                  startWith(''),
+                  map((value: any) => typeof value === 'string' ? value : value?.annotation),
+                  map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
+                );*/
+
+                this.filteredLanguages = this.languagesControl.valueChanges.pipe(
+                  startWith(''),
+                  map(language => (language ? this._filterLanguages(language) : this.languages.slice()))
+                );
+
+              }
+
 
               this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
               this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
               this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
               this.languagesControl.setValue(this.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
-              this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
-              || this.defaults?.language5_id || this.defaults?.language6_id)));
+                this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
+                || this.defaults?.language5_id || this.defaults?.language6_id)));
 
               this.loading = false;
 
-            }, 500);
+            }));
 
-          })
-        })
+          }))
       }
-    })
+      return of(null);
+    }),
+      catchError(error => {
+        console.error('Error in getData:', error);
+        return of(null); // Handle error and provide fallback
+      }))
   }
 
-  getSchoolSportDegrees() {
+  getSchoolSportDegreesOld() {
     this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((sport) => {
         this.schoolSports = sport.data;
         sport.data.forEach((element: any, idx: any) => {
           this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((data) => {
-            this.schoolSports[idx].degrees = data.data;
-          });
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((data) => {
+              this.schoolSports[idx].degrees = data.data;
+            });
         });
       })
+  }
+
+  getSchoolSportDegrees() {
+    return this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
+      this.schoolData.id, '', null, '', ['sport', 'degrees.degreesSchoolSportGoals'])
+      .pipe(
+        map((sport) => {
+          this.schoolSports = sport.data;
+          this.schoolSports.forEach((sport:any) => {
+            sport.name = sport.sport.name;
+            sport.icon_selected = sport.sport.icon_selected;
+            sport.icon_unselected = sport.sport.icon_unselected;
+            sport.degrees.forEach((degree:any) => {
+              degree.degrees_school_sport_goals.forEach((goal:any) => {
+                this.goals.push(goal);
+              });
+            });
+
+            this.clientSport.forEach((element:any) => {
+              if (element.sport_id === sport.sport_id) {
+                element.name = sport.name;
+                element.icon_selected = sport.icon_selected;
+                element.icon_unselected = sport.icon_unselected;
+                element.degrees = sport.degrees;
+              }
+            });
+          });
+          this.sportsCurrentData.data = this.clientSport;
+          const availableSports:any = [];
+          this.schoolSports.forEach((element:any) => {
+            if (!this.sportsCurrentData.data.find((s:any) => s.sport_id === element.sport_id)) {
+              availableSports.push(element);
+            }
+          });
+
+          this.filteredSports = this.sportsControl.valueChanges.pipe(
+            startWith(''),
+            map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
+          );
+
+
+          //return this.getGoals();
+        })
+      );
   }
 
 
@@ -394,16 +510,44 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
       })
   }
 
-  getClientSchool() {
+  getClientSchoolOld() {
     this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data) => {
-      this.clientSchool = data.data;
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.clientSchool = data.data;
 
-    })
+      })
+  }
+
+  getClientSchool() {
+    return this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id',
+      '&client_id=' + this.id)
+      .pipe(takeUntil(this.destroy$),
+        map((data) => {
+          this.clientSchool = data.data;
+        })
+      );
   }
 
   getClientSport() {
+    return this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='
+      + this.id + "&school_id=" + this.schoolData.id, '', null, '', ['degree.degreesSchoolSportGoals'])
+      .pipe(takeUntil(this.destroy$),
+        switchMap((data:any) => {
+          this.clientSport = data.data;
+          this.selectedSport = this.clientSport[0];
+          this.goals = [];
+
+          this.clientSport.forEach((element:any) => {
+            element.level = element.degree;
+
+          });
+          return this.getSchoolSportDegrees();
+        })
+      );
+  }
+
+  getClientSportOld() {
     this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
@@ -443,7 +587,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
     }
   }
 
-  getStations() {
+  getStationsOld() {
     this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((station) => {
@@ -458,14 +602,30 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
       })
   }
 
+  getStations() {
+    return this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
+      .pipe(
+        switchMap((station) => {
+          const stationRequests = station.data.map((element:any) =>
+            this.crudService.get('/stations/' + element.station_id).pipe(
+              map(data => data.data)
+            )
+          );
+          return forkJoin(stationRequests);
+        }),
+        tap((stations) => {
+          this.stations = stations;
+        })
+      );
+  }
+
 
   getLanguages() {
-    this.crudService.list('/languages', 1, 1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
+    return this.crudService.list('/languages', 1, 1000)
+      .pipe(takeUntil(this.destroy$), tap((data) => {
         this.languages = data.data.reverse();
         this.setInitLanguages();
-      })
+      }))
   }
 
   /**Countries */
@@ -564,16 +724,16 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
       .subscribe((data) => {
         this.clientUsers = data.data;
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.mainId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((data) => {
-          data.data.forEach((element: any) => {
-            this.clientUsers.forEach((cl: any) => {
-              if (element.client_id === cl.id) {
-                cl.utilizer_id = element.id;
-              }
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((data) => {
+            data.data.forEach((element: any) => {
+              this.clientUsers.forEach((cl: any) => {
+                if (element.client_id === cl.id) {
+                  cl.utilizer_id = element.id;
+                }
+              });
             });
-          });
-        })
+          })
 
       })
   }
@@ -609,8 +769,8 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
     this.languages.forEach((element: any) => {
       if(element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
         || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
-          this.selectedLanguages.push(element);
-        }
+        this.selectedLanguages.push(element);
+      }
     });
   }
 
@@ -670,39 +830,39 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
             this.defaultsObservations.school_id = this.schoolData.id;
             if (this.defaultsObservations.id) {
               this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((obs) => {
-                console.log('client observation created');
-              })
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((obs) => {
+                  console.log('client observation created');
+                })
 
             }
 
-              this.sportsData.data.forEach((element: any) => {
+            this.sportsData.data.forEach((element: any) => {
 
-                this.crudService.create('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id})
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe(() => {
-                    console.log('client sport created');
-                  })
-              });
+              this.crudService.create('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id})
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                  console.log('client sport created');
+                })
+            });
 
-              this.sportsCurrentData.data.forEach((element: any) => {
+            this.sportsCurrentData.data.forEach((element: any) => {
 
-                this.crudService.update('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id}, element.id)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe(() => {
-                    console.log('client sport updated');
-                  })
-              });
+              this.crudService.update('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id}, element.id)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                  console.log('client sport updated');
+                })
+            });
 
-              setTimeout(() => {
-                //this.router.navigate(['/clients']);
-                this.editing = false;
-                this.editSportInfo = false;
-                this.sportsData.data = [];
-                this.getData(this.id);
+            setTimeout(() => {
+              //this.router.navigate(['/clients']);
+              this.editing = false;
+              this.editSportInfo = false;
+              this.sportsData.data = [];
+              this.getData(this.id);
 
-              }, 2000);
+            }, 2000);
           })
       })
   }
@@ -770,7 +930,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
     const diff = today.diff(dateBirth, 'years');
 
     return diff >= 18;
-}
+  }
 
   addUtilisateur() {
 
@@ -786,10 +946,10 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
 
           if(data.action === 'add') {
             this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((res) => {
-              this.getClientUtilisateurs();
-            })
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((res) => {
+                this.getClientUtilisateurs();
+              })
           } else {
             const user = {
               username: data.data.name,
@@ -826,28 +986,28 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
             this.setLanguagesUtilizateur(data.data.languages, client);
 
             this.crudService.create('/users', user)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((user) => {
-              client.user_id = user.data.id;
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((user) => {
+                client.user_id = user.data.id;
 
-              this.crudService.create('/clients', client)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((clientCreated) => {
-                  this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+                this.crudService.create('/clients', client)
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe((clientCreated) => {
+                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
 
-                  this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe((clientSchool) => {
+                    this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                      .pipe(takeUntil(this.destroy$))
+                      .subscribe((clientSchool) => {
 
-                      setTimeout(() => {
-                        this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe((res) => {
-                          this.getClientUtilisateurs();
-                        })}, 1000);
-                    });
-                })
-            })
+                        setTimeout(() => {
+                          this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe((res) => {
+                              this.getClientUtilisateurs();
+                            })}, 1000);
+                      });
+                  })
+              })
           }
         }
       });
@@ -942,7 +1102,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
       const m = today.getMonth() - birthDate.getMonth();
 
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
+        age--;
       }
 
       return age;
@@ -962,20 +1122,20 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
         .subscribe((course) => {
           this.detailData.course = course.data;
           this.crudService.get('/sports/'+this.detailData.course.sport_id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((sport) => {
-            this.detailData.sport = sport.data;
-          });
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((sport) => {
+              this.detailData.sport = sport.data;
+            });
 
           if (this.detailData.degree_id !== null) {
             this.crudService.get('/degrees/'+this.detailData.degree_id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((degree) => {
-              this.detailData.degree = degree.data;
-            })
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((degree) => {
+                this.detailData.degree = degree.data;
+              })
           }
 
-      })
+        })
 
       this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id='+this.detailData.booking.id)
         .pipe(takeUntil(this.destroy$))
@@ -986,7 +1146,7 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
             if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
               this.detailData.users.push(element);
 
-                this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+element.client_id)
+              this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+element.client_id)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe((cd) => {
 
@@ -1040,11 +1200,11 @@ private destroy$: Subject<boolean> = new Subject<boolean>();
   }
 
   getClients() {
-    this.crudService.list('/slug/clients/mains', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((client) => {
+    return this.crudService.list('/slug/clients/mains',
+      1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      .pipe(takeUntil(this.destroy$), tap((client) => {
         this.clients = client.data;
-      })
+      }))
   }
 
   getDateIndex() {

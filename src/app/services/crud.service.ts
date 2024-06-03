@@ -24,8 +24,16 @@ export class ApiCrudService extends ApiService {
     this.user = user;
   }
 
-  get(url: string) {
-    return this.http.get<ApiResponse>(this.baseUrl + url, { headers: this.getHeaders()});
+  get(url: string, relations: any[] = []) {
+    let relationsParams = '';
+    if (relations.length > 0) {
+      relationsParams = '?' + relations.map((relation) => `with[]=${relation}`).join('&');
+    }
+
+    // Construir la URL completa
+    const fullUrl = this.baseUrl + url + relationsParams;
+
+    return this.http.get<ApiResponse>(fullUrl, { headers: this.getHeaders() });
   }
 
   getAll(url: string) {
@@ -34,10 +42,17 @@ export class ApiCrudService extends ApiService {
   }
 
   list(model: string, numPage: number = 1, perPage: number = 10, order: string = 'desc', orderColumn: string = 'id',
-       search: string = '', exclude: string = '', user: any = null, filter: string = ''): Observable < ApiResponse > {
+       search: string = '', exclude: string = '', user: any = null, filter: string = '', relations: any = []): Observable < ApiResponse > {
 
 
-    const url = this.baseUrl + model + '?perPage=' + perPage + '&page=' + numPage + '&order=' + order + '&orderColumn=' + orderColumn + '&search=' +search +'&exclude=' + exclude + filter;
+    let relationsParams = '';
+    if (relations.length > 0) {
+      relationsParams = relations.map((relation: string) => `&with[]=${relation}`).join('');
+    }
+
+    // Construir la URL completa
+    const url = this.baseUrl + model + '?perPage=' + perPage + '&page=' + numPage + '&order=' + order
+      + '&orderColumn=' + orderColumn + '&search=' + search + '&exclude=' + exclude + filter + relationsParams;
 
     return this.http.get<ApiResponse>(url,
       { headers: this.getHeaders() });
