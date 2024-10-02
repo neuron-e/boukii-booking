@@ -6,6 +6,7 @@ import {BookingService} from '../../services/booking.service';
 import {CartService} from '../../services/cart.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiCrudService } from 'src/app/services/crud.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-cart',
@@ -36,7 +37,8 @@ export class CartComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
               private bookingService: BookingService, private activatedRoute: ActivatedRoute,
-              private cartService: CartService, private translateService: TranslateService, private crudService: ApiCrudService) { }
+              private cartService: CartService, private translateService: TranslateService,
+              private crudService: ApiCrudService, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -48,6 +50,28 @@ export class CartComponent implements OnInit {
           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);
           this.hasTva = this.tva && !isNaN(this.tva) || this.tva > 0
+
+          this.activatedRoute.queryParams.subscribe(params => {
+            const status = params['status'];
+
+            if (status === 'success') {
+              // Mostrar snackbar de éxito
+              this.snackBar.open(this.translateService.instant('Booking completed successfully!'), 'Close', {
+                duration: 3000, // Duración del snackbar en milisegundos
+              });
+
+              // Limpiar el carrito
+              this.cartService.carData.next(null);
+              localStorage.removeItem(this.schoolData?.slug + '-cart'); // Limpiar el carrito del local storage
+
+            } else if (status === 'cancel' || status === 'failed') {
+              // Mostrar snackbar de error
+              this.snackBar.open(this.translateService.instant('Payment error: Booking could not be completed'), 'Close', {
+                duration: 3000,
+              });
+            }
+          });
+
 
           let storageSlug = localStorage.getItem(this.schoolData.slug+ '-boukiiUser');
           if(storageSlug) {
@@ -253,14 +277,15 @@ export class CartComponent implements OnInit {
 
   getExtrasPrice() {
     let ret = 0;
-    this.cart.forEach((cart: any) => {
-      cart.details.forEach((detail: any) => {
-        if (detail.extra && detail.extra.price && detail.extra.tva) {
-          ret = ret + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))
-        }
+    if (this.cart) {
+      this.cart.forEach((cart: any) => {
+        cart.details.forEach((detail: any) => {
+          if (detail.extra && detail.extra.price && detail.extra.tva) {
+            ret = ret + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))
+          }
+        });
       });
-    });
-
+    }
     return ret;
   }
 
