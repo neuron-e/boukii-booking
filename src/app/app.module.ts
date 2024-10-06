@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,9 +13,9 @@ import { ComponentsModule } from './components/components.module';
 
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {MatIconModule} from '@angular/material/icon';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AddClientUserModalComponent } from './pages/user/add-client-user/add-client-user.component';
 import { AddClientUserModalModule } from './pages/user/add-client-user/add-client-user.module';
@@ -26,7 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BookingDetailComponent } from './pages/user/booking-detail/booking-detail.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { UserDetailComponent } from './pages/user/user-detail/user-detail.component';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -43,8 +43,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatListModule } from '@angular/material/list';
 import { NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { MatSortModule } from '@angular/material/sort';
-import {SlugResolver} from './resolver/slug.resolver';
+import { SlugResolver } from './resolver/slug.resolver';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
+import { FooterComponent } from './layout/footer/app.component';
+import { HeaderComponent } from './layout/header/app.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -58,7 +60,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     UserComponent,
     BookingDetailComponent,
     UserDetailComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    HeaderComponent, 
+    FooterComponent
   ],
   imports: [
     BrowserModule,
@@ -103,7 +107,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatListModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
-    MatSortModule
+    MatSortModule,
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

@@ -1,12 +1,14 @@
-<app-header></app-header>
+<!--<app-header></app-header>-->
 
-<div (click)="goBack('home')" class="text-color-light montserrat cursor-pointer reservation-return">
+<div (click)="goBack('home')"
+  class="text-color-light montserrat cursor-pointer reservation-return">
   <img [src]="themeService.arrowReturn">
   {{'text_continue' | translate }}
 </div>
 
 <div class="text-color fw-semibold text-medium mt-24 mb-32">
-  {{'text_your_cart' | translate }} ({{cart?.length}} {{'text_courses' | translate }})
+  {{'text_your_cart' | translate }} ({{cart.length}} {{'text_courses' |
+  translate }})
 </div>
 
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
@@ -15,13 +17,16 @@
   <!--Cart-->
   <div class="background-color-trans rounded-8 padding-box width-100">
     <ng-container *ngFor="let cartItem of cart">
-      <div class="course-box" >
+      <div class="course-box">
         <div class="course-box-header">
           <div class="course-box-icon">
-            <img src="assets/icons/collectif_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 1"/>
-            <img src="assets/icons/prive_ski2x.png" *ngIf="cartItem.details[0].course.course_type == 2"/>
+            <img src="assets/icons/collectif_ski2x.png"
+              *ngIf="cartItem.details[0].course.course_type == 1" />
+            <img src="assets/icons/prive_ski2x.png"
+              *ngIf="cartItem.details[0].course.course_type == 2" />
             <div class="course-box-title">
-              <div class="text-color text-medium fw-medium">{{getCourseName(cartItem.details[0].course)}}</div>
+              <div
+                class="text-color text-medium fw-medium">{{getCourseName(cartItem.details[0].course)}}</div>
               <span class="text-color-light text-small">
                 <ng-container *ngIf="cartItem.details[0].course.course_type==1">
                   {{'colective' | translate }}
@@ -36,30 +41,42 @@
             </div>
           </div>
           <div class="course-box-icons">
-            <img [src]="themeService.add" (click)="goTo(schoolData.slug + '/course',cartItem.courseId)" class="course-box-add cursor-pointer">
-            <img [src]="themeService.trash" class="course-box-delete cursor-pointer" (click)="deleteCartItem(cartItem)">
+            <img [src]="themeService.add"
+              (click)="goTo(schoolData.slug + '/course',cartItem.courseId)"
+              class="course-box-add cursor-pointer">
+            <img [src]="themeService.trash"
+              class="course-box-delete cursor-pointer"
+              (click)="deleteCartItem(cartItem)">
           </div>
         </div>
         <div class="course-box-dates">
-          <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 1">
-            <div class="text-color-light montserrat" *ngFor="let date of cartItem.details">
-              · {{date.date | date: 'dd-MM-yyyy'}}  {{date.hour_start.substring(0,5) }} - {{date.hour_end.substring(0,5)}}</div>
+          <div class="course-content-list"
+            *ngIf="cartItem.details[0].course.course_type == 1">
+            <div class="text-color-light montserrat"
+              *ngFor="let date of cartItem.details">
+              · {{date.date | date: 'dd-MM-yyyy'}}
+              {{date.hour_start.substring(0,5) }} -
+              {{date.hour_end.substring(0,5)}}</div>
             <ng-container *ngIf="cartItem.details[0].extra">
               {{'text_forfait' | translate }}
               <div class="text-color">
                 {{cartItem.details[0].extra.name}}
               </div>
             </ng-container>
-            <div class="text-color-light montserrat mt-12" >{{cartItem.details[0].subGroup.degree.name}}</div>
+            <div
+              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div>
             <div class="text-color-light montserrat list-flex">
               <img [src]="themeService.user" />
-              {{cartItem.details[0].client.first_name + ' ' + cartItem.details[0].client.last_name}}
+              {{cartItem.details[0].client.first_name + ' ' +
+              cartItem.details[0].client.last_name}}
             </div>
 
           </div>
-          <div class="course-content-list" *ngIf="cartItem.details[0].course.course_type == 2">
+          <div class="course-content-list"
+            *ngIf="cartItem.details[0].course.course_type == 2">
             <!-- Iterar sobre fechas únicas -->
-            <div class="text-color-light montserrat list-flex" *ngFor="let detail of getUniqueDates(cartItem.details)">
+            <div class="text-color-light montserrat list-flex"
+              *ngFor="let detail of getUniqueDates(cartItem.details)">
               <img [src]="themeService.calendar" />
               {{ detail.date | date: 'dd-MM-yyyy' }}
               <img [src]="themeService.clock" />
@@ -67,13 +84,14 @@
             </div>
 
             <!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
-        <!--    <div class="text-color-light montserrat list-flex">
+            <!--    <div class="text-color-light montserrat list-flex">
               <img [src]="themeService.clock" />
               {{ cartItem.details[0].hour_start }} - {{ cartItem.details[0].hour_end }}
             </div>-->
 
             <div class="text-color-light montserrat pl-18">
-              {{ getUniqueClients(cartItem.details).length }} {{ 'text_people_under' | translate }}
+              {{ getUniqueClients(cartItem.details).length }} {{
+              'text_people_under' | translate }}
             </div>
 
             <!-- Iterar sobre clientes únicos -->
@@ -83,15 +101,18 @@
                 {{cartItem.details[0].extra.name}}
               </div>
             </ng-container>
-              <div class="text-color-light montserrat list-flex mt-12" *ngFor="let client of getUniqueClients(cartItem.details)">
-                <img [src]="themeService.user" />
-                {{ client.first_name + ' ' + client.last_name }}
-              </div>
+            <div class="text-color-light montserrat list-flex mt-12"
+              *ngFor="let client of getUniqueClients(cartItem.details)">
+              <img [src]="themeService.user" />
+              {{ client.first_name + ' ' + client.last_name }}
+            </div>
 
           </div>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
             <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{ getTotalBasePrice(cartItem.details) }}</span> {{ cartItem.details[0].course.currency }}
+              <span class="text-color fw-semibold text-medium">{{
+                getTotalBasePrice(cartItem.details) }}</span> {{
+              cartItem.details[0].course.currency }}
             </div>
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
@@ -99,7 +120,8 @@
               <span class="text-color fw-semibold text-medium">
                 {{cartItem.details[0].course.is_flexible ?
                 (cartItem.details.length * cartItem.details[0].price) :
-                cartItem.details[0].course.price * 1  }}</span> {{ cartItem.details[0].course.currency }}
+                cartItem.details[0].course.price * 1 }}</span> {{
+              cartItem.details[0].course.currency }}
             </div>
           </ng-container>
 
@@ -116,7 +138,9 @@
 
     <div class="separator-line mb-32 mt-32"></div>
 
-    <button (click)="goTo(schoolData.slug )" class="btn-back-grey rounded-8 button-style-icon cursor-pointer button-right" type="button">
+    <button (click)="goTo(schoolData.slug )"
+      class="btn-back-grey rounded-8 button-style-icon cursor-pointer button-right"
+      type="button">
       <img src="/assets/icons/icons-outline-add.png">
       {{'text_add_other_booking' | translate }}
     </button>
@@ -124,29 +148,36 @@
   </div>
 
   <!--Payment-->
-  <div class="background-color-trans rounded-8 padding-box payment-section" *ngIf="cart?.length">
-    <div class="payment-refund-check" *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0">
+  <div class="background-color-trans rounded-8 padding-box payment-section"
+    *ngIf="cart?.length">
+    <div class="payment-refund-check"
+      *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0">
       <div class="text-color">
         {{'text_refund_option' | translate }}
       </div>
       <div class="selected-custom">
-        <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance" (change)="updateTotal()">
+        <input type="checkbox" id="insurance" [(ngModel)]="hasInsurance"
+          (change)="updateTotal()">
         <label for="insurance"></label>
       </div>
     </div>
-    <div class="payment-refund-check" style="margin: 10px 0 0 0" *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0">
+    <div class="payment-refund-check" style="margin: 10px 0 0 0"
+      *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0">
       <div class="text-color">
         Boukii Care
       </div>
       <div class="selected-custom">
-        <input type="checkbox" id="boukiiCare" [(ngModel)]="hasBoukiiCare"  (change)="updateTotal()">
+        <input type="checkbox" id="boukiiCare" [(ngModel)]="hasBoukiiCare"
+          (change)="updateTotal()">
         <label for="boukiiCare"></label>
       </div>
     </div>
-    <button (click)="openModalVoucher()" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+    <button (click)="openModalVoucher()"
+      class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24"
+      type="button">
       {{'text_use_voucher' | translate }}
     </button>
-   <!--<button (click)="voucher = null"  *ngIf="voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
+    <!--<button (click)="voucher = null"  *ngIf="voucher" class="btn-back-primary rounded-8 button-style cursor-pointer button-center mt-24" type="button">
       {{'text_use_voucher_remove' | translate }}
     </button>-->
     <div class="text-color fw-semibold mt-32">
@@ -157,12 +188,14 @@
         {{'text_subtotal' | translate }}
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">{{getBasePrice().toFixed(2)}}</span> CHF
+        <span class="text-color fw-bold">{{getBasePrice().toFixed(2)}}</span>
+        CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8" *ngIf="voucher">
       <div class="text-color uppercase">
-        <img [src]="themeService.trash" class="course-box-delete cursor-pointer" (click)="voucher = null"> {{'text_voucher' | translate }}
+        <img [src]="themeService.trash" class="course-box-delete cursor-pointer"
+          (click)="voucher = null"> {{'text_voucher' | translate }}
       </div>
       <div class="text-color min-width-price">
         <span class="text-color fw-bold">-{{usedVoucherAmount}}</span> CHF
@@ -197,7 +230,8 @@
         {{'text_tva' | translate }}
       </div>
       <div class="text-color min-width-price">
-        <span class="text-color fw-bold">+{{(totalNotaxes * tva).toFixed(2)}}</span> CHF
+        <span class="text-color fw-bold">+{{(totalNotaxes *
+          tva).toFixed(2)}}</span> CHF
       </div>
     </div>
     <div class="payment-price-flex mt-8">
@@ -213,21 +247,28 @@
       <div class="payment-conditions mt-32">
         <div class="checkbox-custom">
           <input type="checkbox" id="conditions">
-          <label for="conditions" class="checkbox-custom-label-normal text-color-light montserrat"></label>
+          <label for="conditions"
+            class="checkbox-custom-label-normal text-color-light montserrat"></label>
         </div>
-        <div for="conditions" class="checkbox-custom-label-normal text-color-light montserrat">
+        <div for="conditions"
+          class="checkbox-custom-label-normal text-color-light montserrat">
           {{'text_i_accept_terms' | translate }}
-          <span (click)="openModalConditions()" class="text-color-light underline cursor-pointer">{{'text_booking_conditions' | translate }}</span>
+          <span (click)="openModalConditions()"
+            class="text-color-light underline cursor-pointer">{{'text_booking_conditions'
+            | translate }}</span>
         </div>
       </div>
-      <button (click)="sendBooking()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100" type="button">
+      <button (click)="sendBooking()"
+        class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100"
+        type="button">
         {{'text_end_and_pay' | translate }}
       </button>
       <div class="text-color-light montserrat mt-12">
         {{'text_payment2' | translate }}
       </div>
 
-      <div class="payment-title-icon mt-32 pt-12 text-color fw-semibold text-medium">
+      <div
+        class="payment-title-icon mt-32 pt-12 text-color fw-semibold text-medium">
         <img src="/assets/icons/payment_landing_pink.svg">
         {{'text_payment1' | translate }}
       </div>
@@ -239,5 +280,8 @@
   </div>
 </div>
 
-<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
-<app-modal-conditions [isOpen]="isModalConditions" [data]="'conditions_html' | translate " (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
+  (onClose)="closeModalVoucher($event)"></app-modal-voucher>
+<app-modal-conditions [isOpen]="isModalConditions"
+  [data]="'conditions_html' | translate "
+  (onClose)="closeModalConditions()"></app-modal-conditions>

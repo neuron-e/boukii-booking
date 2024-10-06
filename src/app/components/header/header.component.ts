@@ -7,7 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {CartService} from '../../services/cart.service';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-header-old',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

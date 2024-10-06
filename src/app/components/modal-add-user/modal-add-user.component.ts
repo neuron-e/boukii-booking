@@ -1,11 +1,11 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
-import {ClientService} from '../../services/client.service';
-import {AuthService} from '../../services/auth.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {TranslateService} from '@ngx-translate/core';
+import { ClientService } from '../../services/client.service';
+import { AuthService } from '../../services/auth.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-modal-add-user',
@@ -37,8 +37,8 @@ export class ModalAddUserComponent implements OnInit {
   addUserForm: FormGroup;
 
   constructor(public themeService: ThemeService, private clientService: ClientService,
-              private authService: AuthService, private fb: FormBuilder, private snackbar: MatSnackBar,
-              private translateService: TranslateService) {
+    private authService: AuthService, private fb: FormBuilder, private snackbar: MatSnackBar,
+    private translateService: TranslateService) {
     this.addUserForm = this.fb.group({
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
@@ -57,8 +57,8 @@ export class ModalAddUserComponent implements OnInit {
 
     const formData = this.addUserForm.value;
 
-    let storageSlug = localStorage.getItem(this.slug+ '-boukiiUser');
-    if(storageSlug) {
+    let storageSlug = localStorage.getItem(this.slug + '-boukiiUser');
+    if (storageSlug) {
       let userLogged = JSON.parse(storageSlug);
       this.clientService.createUtilizer(formData, userLogged.clients[0].id).subscribe(
         (res) => {
