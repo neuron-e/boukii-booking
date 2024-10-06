@@ -1,11 +1,11 @@
 .header {
   height: 75px;
   width: 100%;
-  position: fixed;
   background-color: white;
   display: flex;
   align-items: center;
   padding: 0 5%;
+  border-bottom: 1px solid var(--Grey-03, #dee6ea);
 }
 
 .title1 {
@@ -30,19 +30,24 @@ span {
   cursor: pointer;
   top: calc(100% - 24px);
   background-color: white;
-  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  padding: 5px 0;
   > div {
     display: flex;
-    gap: 5px;
+    padding: 5px;
     > span {
       width: 24px;
       text-align: -webkit-center;
     }
   }
+  > div:hover {
+    background-color: gray;
+  }
 }
 img {
   cursor: pointer;
+}
+.rotate-arrow {
+  transform: rotate(180deg);
 }
