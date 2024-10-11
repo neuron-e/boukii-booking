@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
+import {environment} from '../environments/environment';
 
 @Injectable()
 export class SlugInterceptor implements HttpInterceptor {
@@ -10,7 +11,8 @@ export class SlugInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    const slug = this.route.snapshot.paramMap.get('slug') || '';
+    const slug = environment.slug || this.route.snapshot.paramMap.get('slug') || '';
+    debugger;
 
     const authReq = req.clone({
       headers: req.headers.set('slug', slug)

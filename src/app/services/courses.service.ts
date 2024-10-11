@@ -42,10 +42,10 @@ export class CoursesService extends ApiService{
     if (params.degree_id) {
       httpParams = httpParams.append('degree_id', params.degree_id);
     }
-    if (params.min_age && params.min_age != 1 && params.max_age != 99) {
+    if (params.min_age) {
       httpParams = httpParams.append('min_age', params.min_age);
     }
-    if (params.max_age && params.min_age != 1 && params.max_age != 99) {
+    if (params.max_age) {
       httpParams = httpParams.append('max_age', params.max_age);
     }
     return this.http.get<ApiResponse>(url, { headers: this.getHeaders(), params: httpParams });
