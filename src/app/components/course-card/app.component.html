@@ -1,6 +1,7 @@
 <div class="card">
     <div class="card-header">
-        <img src="assets/icons/ejemplo1.png" alt="Imagen de esquiadores"
+        <img [src]="data.image || '../../../assets/images/3.png'"
+            alt="Imagen de esquiadores"
             class="card-image">
         <div class="left-icon">
             <img [src]="data.icon" alt="Icono naranja">
@@ -11,24 +12,24 @@
     </div>
     <div class="card-body">
         <h3 class="card-title">
-            {{data.name}}
+            {{getCourseName()}}
         </h3>
-        <p class="price">{{data.price}} {{data.currency}} /Fecha</p>
-        <p class="description" [innerHTML]="data.short_description"> </p>
+        <p class="price">
+            {{getCoursePrice()}} {{data.currency}} / {{"Fecha" | translate}}
+        </p>
+        <p class="description" [innerHTML]="getShotrDescription()"> </p>
         <div class="dates">
             <img src="assets/icons/calendar.png" alt="Calendario" class="icon">
             <div>
-                <span>desde <strong>{{data.date_start | date}}</strong>
+                <span>Desde <strong>{{data.date_start | date}}</strong>
                     hasta
                     <strong>{{data.date_end | date}}</strong></span>
                 <br>
 
                 <span>
-                    <ng-container
-                        *ngFor="let item of data.course_dates; index as i">
-                        {{Week[getWeekDay(item.date)]}}{{i===data.course_dates.length-2?" y":i>data.course_dates.length-2?"":","}}
-                    </ng-container>
-                    {{data.course_dates[0].hour_start}}–{{data.course_dates[0].hour_end}}</span>
+                    {{getWeekDay()}}
+                    {{findMinHourStart()}}–{{findMaxHourEnd()}}
+                </span>
             </div>
         </div>
         <div class="max-group">

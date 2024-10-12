@@ -80,7 +80,8 @@
       *ngFor="let degreeOption of degreeOptions">
       {{degreeOption.label | translate }}</option>
   </select>
-  <img src="assets/icons/search.png" alt>
+  <img src="assets/icons/search.png" alt (click)="searchCourses()"
+    style="cursor: pointer;">
 </div>
 
 <button class="search-button">
@@ -88,27 +89,44 @@
   Que curso te interesa?
 </button>
 
-<div class="Section">
-  <span class="titleSection">Cursos destacados</span>
-  <div class="card-container">
-    <app-home-course-card [data]="item"
-      *ngFor="let item of DestacadoCourse">
-    </app-home-course-card>
+<ng-container *ngIf="ResultCourse">
+  <div class="Section">
+    <span class="titleSection">{{ResultCourse.length}}
+      resultado{{ResultCourse.length>1?"s":""}}</span>
+    <span style="margin: 10px;cursor: pointer;"
+      (click)="ResultCourse=undefined">X</span>
+    <div class="card-container">
+      <app-home-course-card [data]="item"
+        *ngFor="let item of ResultCourse">
+      </app-home-course-card>
+    </div>
   </div>
-</div>
-<div class="Section">
-  <span class="titleSection">Banner</span>
-</div>
-<div class="Section">
-  <span class="titleSection">Proximos cursos</span>
-  <div class="card-container">
-    <app-home-course-card [data]="item"
-      *ngFor="let item of ProximosCourse">
-    </app-home-course-card>
+</ng-container>
+<ng-container *ngIf="!ResultCourse">
+
+  <div class="Section">
+    <span class="titleSection">Cursos destacados</span>
+    <div class="card-container">
+      <app-home-course-card [data]="item"
+        *ngFor="let item of DestacadoCourse">
+      </app-home-course-card>
+    </div>
   </div>
-</div>
-<div class="Section">
+  <div class="Section">
+    <img src="assets/images/banner.png" alt>
+  </div>
+  <div class="Section">
+    <span class="titleSection">Proximos cursos</span>
+    <div class="card-container">
+      <app-home-course-card [data]="item"
+        *ngFor="let item of ProximosCourse">
+      </app-home-course-card>
+    </div>
+  </div>
+</ng-container>
+<div class="Section" style="text-align: -webkit-center;">
   <span class="titleSection">
     Patrocinadores
   </span>
+  <img src="assets/images/patrocinio.png" alt style="margin: 30px 0;">
 </div>
