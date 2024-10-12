@@ -5,8 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ApiCrudService } from 'src/app/services/crud.service';
 import { SchoolService } from 'src/app/services/school.service';
 import { _MatTableDataSource } from '@angular/material/table';
-import {Observable, map, startWith, Subject, retry, of, tap, forkJoin, switchMap} from 'rxjs';
-import {catchError, takeUntil} from 'rxjs/operators';
+import { Observable, map, startWith, Subject, retry, of, tap, forkJoin, switchMap } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import * as moment from 'moment';
@@ -23,7 +23,7 @@ import { AddClientUserModalComponent } from './add-client-user/add-client-user.c
 })
 export class UserComponent implements OnInit {
 
-  @ViewChild('userDetail') userDetailComponent:any;
+  @ViewChild('userDetail') userDetailComponent: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   selectedSport: any;
@@ -38,7 +38,7 @@ export class UserComponent implements OnInit {
   evaluations: any = [];
   countries = MOCK_COUNTRIES;
   languages: any = [];
-  selectedLanguages:any = [];
+  selectedLanguages: any = [];
   sportIdx: any = -1;
   userLogged: any;
   schoolData: any;
@@ -55,7 +55,7 @@ export class UserComponent implements OnInit {
   bookings: any = [];
   dataSource: any = [];
 
-  displayedColumns: string[] = [ 'icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
+  displayedColumns: string[] = ['icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
     'has_insurance', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
   mainId: any;
 
@@ -63,12 +63,12 @@ export class UserComponent implements OnInit {
   defaultsUser: any;
   defaultsObservations: any;
   clientSchool = [];
-  clientUsers:any[] = [];
+  clientUsers: any[] = [];
 
-  firstLoad:boolean = true;
+  firstLoad: boolean = true;
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-              private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
+    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -76,7 +76,7 @@ export class UserComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          if(this.firstLoad){
+          if (this.firstLoad) {
             this.getData();
           }
         }
@@ -88,7 +88,7 @@ export class UserComponent implements OnInit {
     if (index === 0) {
       this.userDetailComponent.changeClientDataB(this.defaults.id);
     }
-    if(index === 1) {
+    if (index === 1) {
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
     }
@@ -97,13 +97,13 @@ export class UserComponent implements OnInit {
   getData(id = null, onChangeUser = false) {
     this.loading = true;
     this.firstLoad = false;
-    this.authService.getUserData().pipe(takeUntil(this.destroy$)).subscribe(data => {
+    this.authService.getUserData().subscribe(data => {
       if (data !== null) {
         this.mainId = data.clients[0].id;
         this.userLogged = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
-        this.crudService.get('/clients/'+ getId, ['user', 'clientSports.degree', 'clientSports.sport',
+        this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
           'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
           .pipe(takeUntil(this.destroy$))
           .subscribe(async (client) => {
@@ -112,8 +112,9 @@ export class UserComponent implements OnInit {
             this.defaults = client.data;
             this.evaluations = client.data.evaluations;
             this.evaluationFullfiled = [];
-            this.evaluations.forEach((ev:any) => {
-              ev.evaluation_fulfilled_goals.forEach((element:any) => {;
+            this.evaluations.forEach((ev: any) => {
+              ev.evaluation_fulfilled_goals.forEach((element: any) => {
+                ;
                 this.evaluationFullfiled.push(element);
               });
             });
@@ -130,9 +131,6 @@ export class UserComponent implements OnInit {
               };
             }
             this.getBookings();
-
-
-
             const requestsClient = {
               clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
                 console.error('Error fetching client school:', error);
@@ -147,30 +145,20 @@ export class UserComponent implements OnInit {
                 return of([]); // Devuelve un array vacío en caso de error
               }))
             };
-
             return forkJoin(requestsClient).subscribe((results) => {
               console.log('All data loaded', results);
               if (!onChangeUser) {
                 this.getClientUtilisateurs();
               }
               const langs = [];
-              this.languages.forEach((element:any) => {
+              this.languages.forEach((element: any) => {
                 if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
                   element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
                   langs.push(element);
                 }
               });
-              this.loading = false;
+              setTimeout(() => this.loading = false, 0);
             });
-
-           // await this.getSchoolSportDegrees();
-           // await this.getLanguages(data.clients[0]);
-            //await this.getClientSchool();
-            //await this.getClientSport();
-/*            await this.getClientObservations();
-            await this.getEvaluations();*/
-
-
           })
       }
     });
@@ -178,7 +166,7 @@ export class UserComponent implements OnInit {
 
   async getClientSchoolold() {
     try {
-      const data:any = await this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+      const data: any = await this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id=' + this.id).toPromise();
       this.clientSchool = data.data;
     } catch (error) {
       console.error(error);
@@ -196,7 +184,7 @@ export class UserComponent implements OnInit {
 
   async getClientObservations() {
     try {
-      const data:any = await this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+      const data: any = await this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id=' + this.id).toPromise();
       this.defaultsObservations = data.data.length > 0 ? data.data[0] : {
         id: null,
         general: '',
@@ -211,12 +199,12 @@ export class UserComponent implements OnInit {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/slug/clients/' + this.id +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.id)
+    this.crudService.list('/slug/clients/' + this.id + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientUsers = data.data;
         console.log(this.clientUsers);
-        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.id)
+        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
             data.data.forEach((element: any) => {
@@ -236,7 +224,7 @@ export class UserComponent implements OnInit {
   }
 
   goBack(url: string) {
-    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
+    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug']]);
   }
 
   selectBooking(id: number) {
@@ -279,10 +267,10 @@ export class UserComponent implements OnInit {
 
   getMinMaxHours(data: any[]): { minHour: string, maxHour: string } {
     if (data.length === 0) {
-      return {minHour: '', maxHour: ''};
+      return { minHour: '', maxHour: '' };
     }
-    let minHour:any = null;
-    let maxHour:any = null;
+    let minHour: any = null;
+    let maxHour: any = null;
     if (data[0].course.course_type === 2) {
       minHour = data[0].hour_start;
       maxHour = this.calculateHourEnd(data[0].hour_start, data[0].course.duration);
@@ -307,7 +295,7 @@ export class UserComponent implements OnInit {
   }
 
   getPaymentMethod(id: number) {
-    switch(id) {
+    switch (id) {
       case 1:
         return 'CASH';
       case 2:
@@ -325,12 +313,12 @@ export class UserComponent implements OnInit {
   }
 
   calculateHourEnd(hour: any, duration: any) {
-    if(duration.includes('h') && duration.includes('min')) {
+    if (duration.includes('h') && duration.includes('min')) {
       const hours = duration.split(' ')[0].replace('h', '');
       const minutes = duration.split(' ')[1].replace('min', '');
 
       return moment(hour, 'HH:mm').add(hours, 'h').add(minutes, 'm').format('HH:mm');
-    } else if(duration.includes('h')) {
+    } else if (duration.includes('h')) {
       const hours = duration.split(' ')[0].replace('h', '');
 
       return moment(hour, 'HH:mm').add(hours, 'h').format('HH:mm');
@@ -342,7 +330,7 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id='+this.defaults.id,
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.defaults.id,
       '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))
       .subscribe((bookings) => {
@@ -355,8 +343,8 @@ export class UserComponent implements OnInit {
 
   setInitLanguages() {
     this.selectedLanguages = [];
-    this.languages.forEach((element:any) => {
-      if(element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
+    this.languages.forEach((element: any) => {
+      if (element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
         || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
         this.selectedLanguages.push(element);
       }
@@ -364,7 +352,7 @@ export class UserComponent implements OnInit {
   }
 
   calculateAge(birthDateString: string) {
-    if(birthDateString && birthDateString !== null) {
+    if (birthDateString && birthDateString !== null) {
       const today = new Date();
       const birthDate = new Date(birthDateString);
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -393,7 +381,7 @@ export class UserComponent implements OnInit {
 
   async getLanguagesold(user: any) {
     try {
-      const data:any = await this.crudService.list('/languages', 1, 1000).toPromise();
+      const data: any = await this.crudService.list('/languages', 1, 1000).toPromise();
       this.languages = data.data.reverse();
       this.setInitLanguages();
     } catch (error) {
@@ -427,11 +415,11 @@ export class UserComponent implements OnInit {
       this.allLevels.push(element);
     });
 
-    this.allLevels?.sort((a:any, b:any) => a.degree_order - b.degree_order);
+    this.allLevels?.sort((a: any, b: any) => a.degree_order - b.degree_order);
     this.sportIdx = this.allLevels.findIndex((al: any) => al.id === sport.degree_id);
     if (sport && sport?.level) {
 
-      this.goals?.forEach((element:any) => {
+      this.goals?.forEach((element: any) => {
         if (element.degree_id === sport.degree_id) {
 
           this.selectedGoal.push(element);
@@ -441,11 +429,11 @@ export class UserComponent implements OnInit {
     this.coloring = false;
   }
 
-  lightenColor(hexColor:any, percent:any) {
+  lightenColor(hexColor: any, percent: any) {
 
-    let r:any = parseInt(hexColor.substring(1, 3), 16);
-    let g:any = parseInt(hexColor.substring(3, 5), 16);
-    let b:any = parseInt(hexColor.substring(5, 7), 16);
+    let r: any = parseInt(hexColor.substring(1, 3), 16);
+    let g: any = parseInt(hexColor.substring(3, 5), 16);
+    let b: any = parseInt(hexColor.substring(5, 7), 16);
 
     // Increase the lightness
     r = Math.round(r + (255 - r) * percent / 100);
@@ -483,7 +471,7 @@ export class UserComponent implements OnInit {
 
   async getClientSportOld() {
     try {
-      const data:any = await this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id).toPromise();
+      const data: any = await this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id=' + this.id).toPromise();
       this.clientSport = data.data;
       await this.getSports();
       await this.getDegrees();
@@ -504,7 +492,7 @@ export class UserComponent implements OnInit {
           this.selectedSport = this.clientSport[0];
           this.goals = [];
 
-          this.clientSport.forEach((element:any) => {
+          this.clientSport.forEach((element: any) => {
             element.level = element.degree;
 
           });
@@ -516,7 +504,7 @@ export class UserComponent implements OnInit {
 
   getDegrees() {
     this.clientSport.forEach((element: any) => {
-      this.crudService.get('/degrees/'+element.degree_id)
+      this.crudService.get('/degrees/' + element.degree_id)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data) => {
           element.level = data.data;
@@ -528,7 +516,7 @@ export class UserComponent implements OnInit {
     this.clientSport.forEach((cs: any) => {
 
       cs.degrees.forEach((dg: any) => {
-        this.crudService.list('/degrees-school-sport-goals', 1, 10000, 'desc', 'id', '&degree_id='+dg.id)
+        this.crudService.list('/degrees-school-sport-goals', 1, 10000, 'desc', 'id', '&degree_id=' + dg.id)
           .subscribe((data) => {
 
             data.data.forEach((element: any) => {
@@ -544,11 +532,11 @@ export class UserComponent implements OnInit {
 
   async getSchoolSportDegreesold() {
     try {
-      const sport:any = await this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id).toPromise();
+      const sport: any = await this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id).toPromise();
       this.schoolSports = sport.data;
 
       for (let [idx, element] of sport.data.entries()) {
-        const data:any = await this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id).toPromise();
+        const data: any = await this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id=' + element.sport_id).toPromise();
         this.schoolSports[idx].degrees = data.data;
       }
     } catch (error) {
@@ -562,17 +550,17 @@ export class UserComponent implements OnInit {
       .pipe(
         map((sport) => {
           this.schoolSports = sport.data;
-          this.schoolSports.forEach((sport:any) => {
+          this.schoolSports.forEach((sport: any) => {
             sport.name = sport.sport.name;
             sport.icon_selected = sport.sport.icon_selected;
             sport.icon_unselected = sport.sport.icon_unselected;
-            sport.degrees.forEach((degree:any) => {
-              degree.degrees_school_sport_goals.forEach((goal:any) => {
+            sport.degrees.forEach((degree: any) => {
+              degree.degrees_school_sport_goals.forEach((goal: any) => {
                 this.goals.push(goal);
               });
             });
 
-            this.clientSport.forEach((element:any) => {
+            this.clientSport.forEach((element: any) => {
               if (element.sport_id === sport.sport_id) {
                 element.name = sport.name;
                 element.icon_selected = sport.icon_selected;
@@ -582,9 +570,9 @@ export class UserComponent implements OnInit {
             });
           });
           this.sportsCurrentData.data = this.clientSport;
-          const availableSports:any = [];
-          this.schoolSports.forEach((element:any) => {
-            if (!this.sportsCurrentData.data.find((s:any) => s.sport_id === element.sport_id)) {
+          const availableSports: any = [];
+          this.schoolSports.forEach((element: any) => {
+            if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
               availableSports.push(element);
             }
           });
@@ -602,12 +590,12 @@ export class UserComponent implements OnInit {
 
 
   getSports() {
-    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         data.data.forEach((element: any) => {
           this.schoolSports.forEach((sport: any) => {
-            if(element.id === sport.sport_id) {
+            if (element.id === sport.sport_id) {
               sport.name = element.name;
               sport.icon_selected = element.icon_selected;
               sport.icon_unselected = element.icon_unselected;
@@ -618,7 +606,7 @@ export class UserComponent implements OnInit {
         this.schoolSports.forEach((element: any) => {
 
           this.clientSport.forEach((sport: any) => {
-            if(element.sport_id === sport.sport_id) {
+            if (element.sport_id === sport.sport_id) {
               sport.name = element.name;
               sport.icon_selected = element.icon_selected;
               sport.icon_unselected = element.icon_unselected;
@@ -633,7 +621,7 @@ export class UserComponent implements OnInit {
 
         const availableSports: any = [];
         this.schoolSports.forEach((element: any) => {
-          if(!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
+          if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
             availableSports.push(element);
           }
         });
@@ -674,14 +662,14 @@ export class UserComponent implements OnInit {
       const dialogRef = this.dialog.open(AddClientUserModalComponent, {
         width: '600px',  // Asegurarse de que no haya un ancho máximo
         panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-        data: {id: this.schoolData.id}
+        data: { id: this.schoolData.id }
       });
 
       dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         if (data) {
 
-          if(data.action === 'add') {
-            this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
+          if (data.action === 'add') {
+            this.crudService.create('/clients-utilizers', { client_id: data.ret, main_id: parseInt(this.id) })
               .pipe(takeUntil(this.destroy$))
               .subscribe((res) => {
                 //this.getClientUtilisateurs(); --> Deberia añadirse al objeto del usuario
@@ -709,12 +697,12 @@ export class UserComponent implements OnInit {
               province: this.userLogged.clients[0].province,
               country: this.userLogged.clients[0].country,
               image: null,
-              language1_id:null,
-              language2_id:null,
-              language3_id:null,
-              language4_id:null,
-              language5_id:null,
-              language6_id:null,
+              language1_id: null,
+              language2_id: null,
+              language3_id: null,
+              language4_id: null,
+              language5_id: null,
+              language6_id: null,
               user_id: null,
               station_id: this.userLogged.clients[0].station_id
             }
@@ -729,18 +717,19 @@ export class UserComponent implements OnInit {
                 this.crudService.create('/clients', client)
                   .pipe(takeUntil(this.destroy$))
                   .subscribe((clientCreated) => {
-                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
 
-                    this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                    this.crudService.create('/clients-schools', { client_id: clientCreated.data.id, school_id: this.schoolData.id })
                       .pipe(takeUntil(this.destroy$))
                       .subscribe((clientSchool) => {
 
                         setTimeout(() => {
-                          this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                          this.crudService.create('/clients-utilizers', { client_id: clientCreated.data.id, main_id: this.id })
                             .pipe(takeUntil(this.destroy$))
                             .subscribe((res) => {
                               //this.getClientUtilisateurs(); --> añadir al usuario
-                            })}, 1000);
+                            })
+                        }, 1000);
                       });
                   })
               })
@@ -748,7 +737,7 @@ export class UserComponent implements OnInit {
         }
       });
     } else {
-      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', {duration: 3000});
+      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
     }
 
   }
@@ -792,13 +781,13 @@ export class UserComponent implements OnInit {
   }
 
   async getEvaluations() {
-    this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .subscribe((data) => {
         this.evaluations = data.data;
 
         data.data.forEach((evaluation: any) => {
 
-          this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id='+evaluation.id)
+          this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id=' + evaluation.id)
             .subscribe((ev: any) => {
               ev.data.forEach((element: any) => {
                 this.evaluationFullfiled.push(element);

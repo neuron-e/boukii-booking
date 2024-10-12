@@ -97,7 +97,8 @@
       (click)="ResultCourse=undefined">X</span>
     <div class="card-container">
       <app-home-course-card [data]="item"
-        *ngFor="let item of ResultCourse">
+        *ngFor="let item of ResultCourse"
+        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
       </app-home-course-card>
     </div>
   </div>
@@ -108,7 +109,8 @@
     <span class="titleSection">Cursos destacados</span>
     <div class="card-container">
       <app-home-course-card [data]="item"
-        *ngFor="let item of DestacadoCourse">
+        *ngFor="let item of DestacadoCourse"
+        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
       </app-home-course-card>
     </div>
   </div>
@@ -119,7 +121,8 @@
     <span class="titleSection">Proximos cursos</span>
     <div class="card-container">
       <app-home-course-card [data]="item"
-        *ngFor="let item of ProximosCourse">
+        *ngFor="let item of ProximosCourse"
+        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
       </app-home-course-card>
     </div>
   </div>

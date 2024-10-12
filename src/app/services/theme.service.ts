@@ -38,8 +38,8 @@ export class ThemeService {
       /*DARK MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-dark.jpg)');
       root.style.setProperty('--background-color-screen', 'rgba(22, 28, 40, 0.8)');
-      root.style.setProperty('--text-color', '#ffffff');
-      root.style.setProperty('--text-color-light', '#ffffff');
+      root.style.setProperty('--text-color', '#000');
+      root.style.setProperty('--text-color-light', '#000');
       root.style.setProperty('--text-color-medium', '#2b2f37');
       root.style.setProperty('--background-color-trans', 'rgba(22, 28, 40, 0.8)');
       root.style.setProperty('--background-color-full', '#161c28');
@@ -106,8 +106,8 @@ export class ThemeService {
       /*DARK MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-dark.jpg)');
       root.style.setProperty('--background-color-screen', 'rgba(22, 28, 40, 0.8)');
-      root.style.setProperty('--text-color', '#ffffff');
-      root.style.setProperty('--text-color-light', '#ffffff');
+      root.style.setProperty('--text-color', '#000');
+      root.style.setProperty('--text-color-light', '#000');
       root.style.setProperty('--text-color-medium', '#2b2f37');
       root.style.setProperty('--background-color-trans', 'rgba(22, 28, 40, 0.8)');
       root.style.setProperty('--background-color-full', '#161c28');

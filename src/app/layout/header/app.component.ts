@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { SchoolService } from 'src/app/services/school.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
@@ -7,11 +9,22 @@ import { ThemeService } from 'src/app/services/theme.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class HeaderComponent {
-  constructor(public themeService: ThemeService, public translate: TranslateService) { }
+export class HeaderComponent implements OnInit {
+  constructor(public themeService: ThemeService, public translate: TranslateService, public router: Router, private schoolService: SchoolService) { }
   isOpenDropdownLang: boolean = false;
   selectedLang = 'es';
+  schoolData: any
+  ngOnInit(): void {
+    this.schoolService.getSchoolData().subscribe(
 
+      data => {
+        if (data) {
+          this.schoolData = data.data
+        }
+      }
+
+    );
+  }
   switchLang(lang: any) {
     this.translate.use(lang);
     this.selectedLang = lang;

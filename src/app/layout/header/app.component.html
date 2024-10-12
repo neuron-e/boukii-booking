@@ -1,5 +1,6 @@
 <div class="header">
-    <div style="display: flex;">
+    <div style="display: flex;"
+        (click)="router.navigate([schoolData.slug])">
         <img src="assets/images/school-logo.png" class="icon36" alt>
         <p style="line-height: 14px; margin: 0 12px;">
             <span class="title1">
@@ -51,7 +52,8 @@
                     [ngClass]="{'fw-semibold': selectedLang=='it'}">IT</span>
             </div>
         </div>
-        <div style="padding: 5px;">
+        <div style="padding: 5px;"
+            (click)="router.navigate([schoolData.slug+'/user'])">
             <img src="assets/icons/login.png"
                 class="icon24">
         </div>

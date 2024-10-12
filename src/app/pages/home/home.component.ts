@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
   daySelected: any;
   userLogged: any;
 
-  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
+  constructor(public router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
     private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
     private fb: UntypedFormBuilder) {
   }
