@@ -8,7 +8,6 @@ import { DatePipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { CourseCardComponent } from 'src/app/components/course-card/app.component';
 
 @Component({
   selector: 'app-home',
@@ -26,25 +25,13 @@ import { CourseCardComponent } from 'src/app/components/course-card/app.componen
 })
 export class HomeComponent implements OnInit {
   FormGroup: UntypedFormGroup;
-  ResultCourse: any = [1, 2, 3, 4, 5]
-  DestacadoCourse: any = [1, 2, 3, 4, 5]
-  ProximosCourse: any = [1, 2, 3, 4, 5]
-
-  monthNames: string[] = [];
-  weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-  currentMonth: number;
-  currentYear: number;
-  firstDayOfMonth: any;
-  lastDayOfMonth: any;
-  days: any[] = [];
+  ResultCourse: any
+  DestacadoCourse: any
+  ProximosCourse: any
 
   schoolData: any = null;
   sports: any[];
-  courses: any[];
 
-  activeDates: string[] = [];
-
-  //SEE MORE -> do it for each course
   fullText: string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros tempor, sollicitudin sem sit amet, ornare augue. Cras eget neque fermentum, rutrum dolor at, vulputate odio. Duis nec pulvinar eros. Ut et interdum ante. Nulla id quam lectus. In efficitur congue nisi, vel dapibus felis egestas sed.';
   displayedText: string;
   displayedTextOld: string;
@@ -111,18 +98,8 @@ export class HomeComponent implements OnInit {
 
           this.setAgeRange();
           if (this.schoolData?.sports?.length > 0) {
-            // Establecer el ID del primer deporte como seleccionado por defecto
             this.selectedSportId =
               parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
-
-            /*     this.selectedSportId = this.schoolData.sports[0].id;*/
-            //this.degreesSports = this.schoolData.degrees.filter((r: any) => r.sport_id == this.selectedSportId);
-            this.initializeMonthNames();
-            const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
-            this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
-            const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
-            this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
             this.getCourses();
           }
         }
@@ -151,34 +128,25 @@ export class HomeComponent implements OnInit {
     localStorage.setItem(this.schoolData.slug + '-selectedCourseType', this.selectedCourseType.toString())
     localStorage.setItem(this.schoolData.slug + '-selectedSportId', this.selectedSportId.toString())
     this.getCourses();
+
   }
 
-  async getCourses() {
-    const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-    const firstDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, 1);
-    const lastDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, daysInMonth);
+  getCourses() {
     let params = {
-      'start_date': this.daySelected ?? firstDayOfMonth,
-      'end_date': this.daySelected ?? lastDayOfMonth,
-      'course_type': this.selectedCourseType,
-      'degree_order': this.currentDegreeRange,
-      'sport_id': this.selectedSportId,
-      'max_age': this.max_age,
-      'min_age': this.min_age
+      'start_date': this.formatDate(2024, 1, 1),
+      'end_date': this.formatDate(2034, 1, 1),
+      //'course_type': this.selectedCourseType,
+      //'degree_order': this.currentDegreeRange,
+      //'sport_id': this.selectedSportId,
+      //'max_age': this.max_age,
+      //'min_age': this.min_age
     };
-    this.coursesService.getCoursesAvailableByDates(params).subscribe(res => {
-      this.courses = res.data;
-      this.activeDates = [];
-      this.activeDates = this.courses.reduce((acc, course) => {
-        const formattedDates = course.course_dates.map((dateObj: any) =>
-          this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
-        );
-        return acc.concat(formattedDates);
-      }, []);
-      if (!this.daySelected) {
-        this.renderCalendar();
-      }
-    });
+    this.coursesService.getCoursesAvailableByDates(params)
+      .subscribe(res => {
+        this.ResultCourse = res.data;
+        this.DestacadoCourse = res.data;
+        this.ProximosCourse = res.data;
+      });
   }
 
   showFullText() {
@@ -193,85 +161,11 @@ export class HomeComponent implements OnInit {
     this.showSeeLess = false;
   }
 
-  initializeMonthNames() {
-    this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-  }
 
-  prevMonth() {
-    if (this.currentYear > new Date().getFullYear() || (this.currentYear === new Date().getFullYear() && this.currentMonth > new Date().getMonth())) {
-      this.currentMonth--;
-      if (this.currentMonth < 0) {
-        this.currentMonth = 11;
-        this.currentYear--;
-      }
-      localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
-      localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
-      this.getCourses();
-    }
-  }
-
-  nextMonth() {
-    this.currentMonth++;
-    if (this.currentMonth > 11) {
-      this.currentMonth = 0;
-      this.currentYear++;
-    }
-    localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
-    localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
-    this.getCourses();
-  }
-
-  renderCalendar(getCourses = true) {
-    const startDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
-    const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-
-    // Último día del mes: ya calculaste los días en el mes, solo usa esta información para obtener la fecha
-    this.firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-    this.lastDayOfMonth = new Date(this.currentYear, this.currentMonth, daysInMonth);
-
-
-    this.days = [];
-    //Start monday
-    let adjustedStartDay = startDay - 1;
-    if (adjustedStartDay < 0) adjustedStartDay = 6;
-
-    for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({ number: '', active: false });
-    }
-
-    for (let i = 1; i <= daysInMonth; i++) {
-      const spanDate = new Date(this.currentYear, this.currentMonth, i);
-      const isPast = spanDate < new Date();
-      const formattedMonth = (this.currentMonth + 1).toString().padStart(2, '0');
-      const formattedDay = i.toString().padStart(2, '0');
-      const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
-      const isActive = !isPast && this.activeDates.includes(dateStr);
-      this.days.push({ number: i, active: isActive, selected: false, past: isPast });
-    }
-
-    let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
-    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({ number: '', active: false });
-    }
-
-  }
 
   formatDate(year: number, month: number, day: number): string {
     return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   }
-
-  selectDay(day: any) {
-    if (day.active) {
-      this.days.forEach(d => d.selected = false);
-      day.selected = true;
-      const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
-      this.daySelected = formattedDate;
-      this.getCourses();
-    } else {
-      this.daySelected = null;
-    }
-  }
-
 
   goTo(url: string) {
     this.router.navigate([url]);

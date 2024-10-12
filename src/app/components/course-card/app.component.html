@@ -3,32 +3,37 @@
         <img src="assets/icons/ejemplo1.png" alt="Imagen de esquiadores"
             class="card-image">
         <div class="left-icon">
-            <img src="assets/icons/iconocursoejemplo.png" alt="Icono naranja">
+            <img [src]="data.icon" alt="Icono naranja">
         </div>
         <div class="favorite-icon">
             <img src="assets/icons/destacado.png" alt="Favorito">
         </div>
     </div>
     <div class="card-body">
-        <h3 class="card-title">Curso colectivo fix, texto largo se tiene que
-            cortar después de 2 line...</h3>
-        <p class="price">60.00 CHFs /Fecha</p>
-        <p class="description">
-            Resumen qui. Curso colectivo flex sept apto a todas las edades. Si
-            el texto es largo se c...
-        </p>
+        <h3 class="card-title">
+            {{data.name}}
+        </h3>
+        <p class="price">{{data.price}} {{data.currency}} /Fecha</p>
+        <p class="description" [innerHTML]="data.short_description"> </p>
         <div class="dates">
             <img src="assets/icons/calendar.png" alt="Calendario" class="icon">
             <div>
-                <span>desde <strong>25.03.2024</strong> hasta
-                    <strong>25.04.2024</strong></span>
+                <span>desde <strong>{{data.date_start | date}}</strong>
+                    hasta
+                    <strong>{{data.date_end | date}}</strong></span>
                 <br>
-                <span>mar, jue, sab y dom 09:00–11:00</span>
+
+                <span>
+                    <ng-container
+                        *ngFor="let item of data.course_dates; index as i">
+                        {{Week[getWeekDay(item.date)]}}{{i===data.course_dates.length-2?" y":i>data.course_dates.length-2?"":","}}
+                    </ng-container>
+                    {{data.course_dates[0].hour_start}}–{{data.course_dates[0].hour_end}}</span>
             </div>
         </div>
         <div class="max-group">
             <img src="assets/icons/people.png" alt="Grupo máximo" class="icon">
-            <span>Max. 7</span>
+            <span>Max. {{data.max_participants}}</span>
         </div>
     </div>
 </div>
