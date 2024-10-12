@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://api.boukii.golembyte.com/api',
+  slug: null,
+  baseUrl: 'https://api.boukii.com/api',
 };
 
 /*

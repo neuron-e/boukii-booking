@@ -6,14 +6,16 @@ import { CartComponent } from './pages/cart/cart.component';
 import { UserComponent } from './pages/user/user.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { SlugResolver } from './resolver/slug.resolver';
+import {SlugGuard} from './slug.guard';
 
 const routes: Routes = [
-  { path: '404', component: PageNotFoundComponent },
-  { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver } },
+  { path: '404', canActivate: [SlugGuard], component: PageNotFoundComponent },
+  { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver }},
   { path: ':slug/course/:id', component: CourseComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/cart', component: CartComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/user', component: UserComponent, resolve: { schoolData: SlugResolver } },
-  { path: '**', component: PageNotFoundComponent },
+  { path: '**', canActivate: [SlugGuard], component: PageNotFoundComponent },
+
 ];
 
 const routerOptions: ExtraOptions = {
