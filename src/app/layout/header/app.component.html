@@ -14,7 +14,7 @@
 
     <!--<img [src]="themeService.modeIcon" (click)="themeService.toggleTheme()"
         class="icon24" style="margin-left: auto;" />-->
-    <div style="display: flex;margin-left: auto;">
+    <div style="display: flex;margin-left: auto;position: relative;">
         <div (click)="isOpenDropdownLang=!isOpenDropdownLang"
             style="display: flex; padding: 5px; gap: 5px;">
             <img src="assets/icons/lang.png"
@@ -51,7 +51,10 @@
                     [ngClass]="{'fw-semibold': selectedLang=='it'}">IT</span>
             </div>
         </div>
-        <span class="title1" style="margin-left: 20px;">Login</span>
+        <div style="padding: 5px;">
+            <img src="assets/icons/login.png"
+                class="icon24">
+        </div>
     </div>
 
 </div>

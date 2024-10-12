@@ -1,12 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {ThemeService} from '../../services/theme.service';
-import {CoursesService} from '../../services/courses.service';
-import {SchoolService} from '../../services/school.service';
-import {DatePipe} from '@angular/common';
-import {AuthService} from '../../services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { ThemeService } from '../../services/theme.service';
+import { CoursesService } from '../../services/courses.service';
+import { SchoolService } from '../../services/school.service';
+import { DatePipe } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { CourseCardComponent } from 'src/app/components/course-card/app.component';
 
 @Component({
   selector: 'app-home',
@@ -20,13 +22,13 @@ import { TranslateService } from '@ngx-translate/core';
       })),
       transition('void <=> *', animate(300))
     ])
-  ]
+  ],
 })
 export class HomeComponent implements OnInit {
-
-  tooltipsFilter: boolean[] = [];
-  tooltipsLevel: boolean[] = [];
-  showMoreFilters: boolean = false;
+  FormGroup: UntypedFormGroup;
+  ResultCourse: any = [1, 2, 3, 4, 5]
+  DestacadoCourse: any = [1, 2, 3, 4, 5]
+  ProximosCourse: any = [1, 2, 3, 4, 5]
 
   monthNames: string[] = [];
   weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -40,8 +42,6 @@ export class HomeComponent implements OnInit {
   sports: any[];
   courses: any[];
 
-  isModalLogin:boolean=false;
-  isModalNewUser:boolean=false;
   activeDates: string[] = [];
 
   //SEE MORE -> do it for each course
@@ -62,18 +62,18 @@ export class HomeComponent implements OnInit {
     expert: [10, 11, 12]
   };
   degreeOptions = [
-    {id: 1, label: 'text_doesnt_matter', tooltips: []},
-    {id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']}
+    { id: 1, label: 'text_doesnt_matter', tooltips: [] },
+    { id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] }
   ];
   ageOptions = [
-    {id: 1, label: 'text_all_ages'},
-    {id: 2, label: 'text_ages2'},
-    {id: 3, label: 'text_ages3'},
-    {id: 4, label: 'text_ages4'},
-    {id: 5, label: 'text_adults'}
+    { id: 1, label: 'text_all_ages' },
+    { id: 2, label: 'text_ages2' },
+    { id: 3, label: 'text_ages3' },
+    { id: 4, label: 'text_ages4' },
+    { id: 5, label: 'text_adults' }
   ];
   currentDegreeRange: number[] = [];
   selectedSportId: number;
@@ -87,27 +87,35 @@ export class HomeComponent implements OnInit {
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
-              private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService) {
+    private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
+    private fb: UntypedFormBuilder) {
   }
 
+
   ngOnInit(): void {
-  //  this.userLogged = JSON.parse(localStorage.getItem(this.authService.slug+ '-boukiiUser') ?? '');
+    //  this.userLogged = JSON.parse(localStorage.getItem(this.authService.slug+ '-boukiiUser') ?? '');
+    this.FormGroup = this.fb.group({
+      deporte: ["", Validators.required],
+      cursoType: ["", Validators.required],
+      edat: ["", Validators.required],
+      nivel: ["", Validators.required],
+    })
 
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
           this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
-          this.selectedDegreeType =  parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
+          this.selectedDegreeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
           this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
 
           this.setAgeRange();
           if (this.schoolData?.sports?.length > 0) {
             // Establecer el ID del primer deporte como seleccionado por defecto
             this.selectedSportId =
-              parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ??  this.schoolData.sports[0].id);
+              parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
 
-       /*     this.selectedSportId = this.schoolData.sports[0].id;*/
+            /*     this.selectedSportId = this.schoolData.sports[0].id;*/
             //this.degreesSports = this.schoolData.degrees.filter((r: any) => r.sport_id == this.selectedSportId);
             this.initializeMonthNames();
             const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
@@ -145,12 +153,10 @@ export class HomeComponent implements OnInit {
     this.getCourses();
   }
 
-  getCourses() {
+  async getCourses() {
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     const firstDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, 1);
     const lastDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, daysInMonth);
-
-
     let params = {
       'start_date': this.daySelected ?? firstDayOfMonth,
       'end_date': this.daySelected ?? lastDayOfMonth,
@@ -175,7 +181,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  //SEE MORE -> do it for each course
   showFullText() {
     this.displayedText = this.fullText;
     this.showSeeMore = false;
@@ -199,8 +204,8 @@ export class HomeComponent implements OnInit {
         this.currentMonth = 11;
         this.currentYear--;
       }
-      localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
-      localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
+      localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
+      localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
       this.getCourses();
     }
   }
@@ -211,8 +216,8 @@ export class HomeComponent implements OnInit {
       this.currentMonth = 0;
       this.currentYear++;
     }
-    localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
-    localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
+    localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
+    localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
     this.getCourses();
   }
 
@@ -231,7 +236,7 @@ export class HomeComponent implements OnInit {
     if (adjustedStartDay < 0) adjustedStartDay = 6;
 
     for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
@@ -241,12 +246,12 @@ export class HomeComponent implements OnInit {
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
       const isActive = !isPast && this.activeDates.includes(dateStr);
-      this.days.push({number: i, active: isActive, selected: false, past: isPast});
+      this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
 
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
     for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
   }
@@ -267,19 +272,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  showTooltipFilter(index: number) {
-    this.tooltipsFilter[index] = true;
-  }
-
-  hideTooltipFilter(index: number) {
-    this.tooltipsFilter[index] = false;
-  }
-
-  /*
-  getFilteredGoals(degree:number): any[] {
-    return this.degreeGoals.filter((goal:any) => goal.sport.id === this.selectedSport && goal.degree.id === degree);
-  }
-  */
 
   goTo(url: string) {
     this.router.navigate([url]);
@@ -375,10 +367,10 @@ export class HomeComponent implements OnInit {
 
   getCoursePrice(course: any) {
     if (course) {
-      if(course.course_type == 2 && course.is_flexible) {
-        const priceRange = course.price_range.find((a:any) => a[1] !== null);
+      if (course.course_type == 2 && course.is_flexible) {
+        const priceRange = course.price_range.find((a: any) => a[1] !== null);
         return priceRange[1];
-      } else{
+      } else {
         return course.price
       }
     }
@@ -386,11 +378,10 @@ export class HomeComponent implements OnInit {
     return 0;
   }
 
-
   getWeekdays(settings: string): string {
     const settingsObj = JSON.parse(settings);
     const weekDays = settingsObj.weekDays;
-    const daysMap:any = {
+    const daysMap: any = {
       "monday": "Lundi",
       "tuesday": "Mardi",
       "wednesday": "Mercredi",

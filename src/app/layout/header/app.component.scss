@@ -28,7 +28,7 @@ span {
 .dropdown {
   position: absolute;
   cursor: pointer;
-  top: calc(100% - 24px);
+  top: 100%;
   background-color: white;
   display: flex;
   flex-direction: column;

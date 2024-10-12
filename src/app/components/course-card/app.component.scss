@@ -1,0 +1,117 @@
+* {
+  font-family: DM Sans;
+}
+
+.card {
+  width: 320px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  position: relative;
+}
+
+.card-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.left-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.left-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.favorite-icon {
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+
+.favorite-icon img {
+  width: 38px;
+  height: 46px;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+  line-height: 1.2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.price {
+  color: #666;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.description {
+  font-size: 14px;
+  color: #555;
+  margin: 10px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.dates,
+.max-group {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  margin: 5px 0;
+}
+
+.icon {
+  width: 24px; /* Ajuste del tamaño del ícono */
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.card-body span {
+  display: inline-block;
+  margin-left: 5px;
+  color: #555;
+}
+
+.card-body strong {
+  font-weight: bold;
+  color: #000;
+}
+
+.max-group {
+  margin-top: 10px;
+}
+
+.max-group .icon {
+  width: 24px; /* Ajustar tamaño del ícono del grupo */
+  height: 24px;
+}
+
+.max-group span {
+  font-size: 14px;
+  color: #333;
+}

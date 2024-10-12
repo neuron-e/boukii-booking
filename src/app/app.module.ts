@@ -47,6 +47,7 @@ import { SlugResolver } from './resolver/slug.resolver';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { FooterComponent } from './layout/footer/app.component';
 import { HeaderComponent } from './layout/header/app.component';
+import { CourseCardComponent } from './components/course-card/app.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -55,13 +56,14 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [
     AppComponent,
     HomeComponent,
+    CourseCardComponent,
     CourseComponent,
     CartComponent,
     UserComponent,
     BookingDetailComponent,
     UserDetailComponent,
     PageNotFoundComponent,
-    HeaderComponent, 
+    HeaderComponent,
     FooterComponent
   ],
   imports: [
