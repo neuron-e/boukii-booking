@@ -32,7 +32,10 @@
               "src/styles.scss",
               "src/styles/tailwind.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "moment"
+            ]
           },
           "configurations": {
             "production": {

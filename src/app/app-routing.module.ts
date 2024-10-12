@@ -14,7 +14,6 @@ const routes: Routes = [
   { path: ':slug/cart', component: CartComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/user', component: UserComponent, resolve: { schoolData: SlugResolver } },
   { path: '**', component: PageNotFoundComponent },
-
 ];
 
 const routerOptions: ExtraOptions = {
