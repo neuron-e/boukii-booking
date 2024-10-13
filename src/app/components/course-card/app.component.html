@@ -6,7 +6,7 @@
         <div class="left-icon">
             <img [src]="data.icon" alt="Icono naranja">
         </div>
-        <div class="favorite-icon">
+        <div class="favorite-icon" *ngIf="data.destacado">
             <img src="assets/icons/destacado.png" alt="Favorito">
         </div>
     </div>

@@ -1,15 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {ThemeService} from '../../services/theme.service';
-import {CoursesService} from '../../services/courses.service';
-import {AuthService} from '../../services/auth.service';
-import {SchoolService} from '../../services/school.service';
-import {DatePipe} from '@angular/common';
-import {CartService} from '../../services/cart.service';
-import {BookingService} from '../../services/booking.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { ThemeService } from '../../services/theme.service';
+import { CoursesService } from '../../services/courses.service';
+import { AuthService } from '../../services/auth.service';
+import { SchoolService } from '../../services/school.service';
+import { DatePipe } from '@angular/common';
+import { CartService } from '../../services/cart.service';
+import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -218,7 +218,7 @@ export class CourseComponent implements OnInit {
   selectedPaxes: any = 1;
   selectedDuration: any;
   availableDurations: any[] = [];
-  availableHours : any[] = [];
+  availableHours: any[] = [];
 
   schoolData: any;
   settings: any;
@@ -228,8 +228,8 @@ export class CourseComponent implements OnInit {
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
-              private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-              private datePipe: DatePipe,  private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
+    private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
+    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
 
   }
 
@@ -260,7 +260,7 @@ export class CourseComponent implements OnInit {
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
-        if(this.course.is_flexible) {
+        if (this.course.is_flexible) {
           this.availableDurations = this.getAvailableDurations(this.selectedHour);
           this.updatePrice();
         } else {
@@ -268,20 +268,20 @@ export class CourseComponent implements OnInit {
         }
 
         this.initializeMonthNames();
-        if(this.course.date_start){
-          if(moment(this.course.date_start).isBefore(moment(), 'day')){
+        if (this.course.date_start) {
+          if (moment(this.course.date_start).isBefore(moment(), 'day')) {
             const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
             this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
 
             const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
             this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
           }
-          else{
+          else {
             this.currentMonth = new Date(this.course.date_start).getMonth();
             this.currentYear = new Date(this.course.date_start).getFullYear();
           }
         }
-        else{
+        else {
           const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
           this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
 
@@ -353,7 +353,7 @@ export class CourseComponent implements OnInit {
     if (adjustedStartDay < 0) adjustedStartDay = 6;
 
     for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
@@ -363,12 +363,12 @@ export class CourseComponent implements OnInit {
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
       const isActive = !isPast && this.activeDates.includes(dateStr);
-      this.days.push({number: i, active: isActive, selected: false, past: isPast});
+      this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
 
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
     for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
   }
@@ -380,7 +380,7 @@ export class CourseComponent implements OnInit {
       const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
 
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
-      if(this.course.is_flexible) {
+      if (this.course.is_flexible) {
         this.updateAvailableDurations(this.selectedHour);
       }
 
@@ -388,9 +388,9 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    let bookingUsers:any = [];
-    if(this.course.course_type == 2) {
-      if(this.course.is_flexible) {
+    let bookingUsers: any = [];
+    if (this.course.course_type == 2) {
+      if (this.course.is_flexible) {
         let course_date = this.findMatchingCourseDate();
         this.selectedUserMultiple.forEach((selectedUser, index) => {
           bookingUsers.push({
@@ -432,11 +432,11 @@ export class CourseComponent implements OnInit {
         });
       }
     } else {
-      if(this.course.is_flexible) {
+      if (this.course.is_flexible) {
         this.course.course_dates.forEach((date: any) => {
 
           if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
-            let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
+            let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
             bookingUsers.push({
               'course': this.course,
@@ -462,7 +462,7 @@ export class CourseComponent implements OnInit {
         })
       } else {
         this.course.course_dates.forEach((date: any) => {
-          let courseGroup = date.course_groups.find((i:any) => i.degree_id == this.selectedLevel.id);
+          let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
           let courseSubgroup = courseGroup.course_subgroups[0];
           bookingUsers.push({
             'course': this.course,
@@ -487,7 +487,7 @@ export class CourseComponent implements OnInit {
       }
     }
 
-    this.bookingService.checkOverlap(bookingUsers).subscribe( res=> {
+    this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
       let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
       let cart: any = {};
 
@@ -513,7 +513,7 @@ export class CourseComponent implements OnInit {
               if (hasUserOverlap) {
                 let course_date = this.findMatchingCourseDate();
                 const userBookings = cart[this.course.id][key];
-                return userBookings.some((booking:any) => booking.course_date_id === course_date.id);
+                return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
               }
 
               return false;
@@ -522,7 +522,7 @@ export class CourseComponent implements OnInit {
         });
 
         if (!isAnyUserReserved) {
-          if (! cart[this.course.id][selectedUserIds]) {
+          if (!cart[this.course.id][selectedUserIds]) {
             cart[this.course.id][selectedUserIds] = [];
           }
           cart[this.course.id][selectedUserIds].push(...bookingUsers);
@@ -530,9 +530,9 @@ export class CourseComponent implements OnInit {
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           // TODO: mostrar mensaje de curso guardado correctamente.
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', {duration: 3000});
+          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
         } else {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
         }
       } else {
         if (!cart[this.course.id][this.selectedUser.id]) {
@@ -541,17 +541,17 @@ export class CourseComponent implements OnInit {
 
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', {duration: 3000});
+          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
 
           this.goTo(this.schoolData.slug);
         } else {
 
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
         }
       }
 
     }, error => {
-      this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
+      this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
 
     })
   }
@@ -598,7 +598,7 @@ export class CourseComponent implements OnInit {
     const selectedDate = new Date(year, month - 1, day);
 
     // Buscar en courseDates una fecha que coincida
-    const matchingDate = this.course.course_dates.find((courseDate:any) => {
+    const matchingDate = this.course.course_dates.find((courseDate: any) => {
       // Convertir la fecha de courseDate a objeto Date
       const courseDateObject = new Date(courseDate.date);
 
@@ -630,23 +630,23 @@ export class CourseComponent implements OnInit {
   }
 
   selectUser(user: any, course_type: any) {
-    if(course_type == 2){
+    if (course_type == 2) {
       const index = this.selectedUserMultiple.indexOf(user);
       if (index !== -1) {
         this.selectedUserMultiple.splice(index, 1);
       } else {
-        if(this.selectedUserMultiple.length < this.course.max_participants){
+        if (this.selectedUserMultiple.length < this.course.max_participants) {
           this.selectedUserMultiple.push(user);
         }
-        else{
-          this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', {duration: 3000});
+        else {
+          this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', { duration: 3000 });
         }
       }
-      if(this.course.is_flexible) {
+      if (this.course.is_flexible) {
         this.updatePrice();
       }
     }
-    else{
+    else {
       this.selectedUser = user;
       this.selectedLevel = null;
       this.showLevels = false;
@@ -738,9 +738,9 @@ export class CourseComponent implements OnInit {
   }
   updateCollectivePrice() {
     let collectivePrice = this.course.price;
-    if(this.course.discounts) {
+    if (this.course.discounts) {
       let discounts = JSON.parse(this.course.discounts);
-      discounts.forEach((discount:any) => {
+      discounts.forEach((discount: any) => {
         // Verificar si el date coincide con la longitud de las fechas seleccionadas
         if (this.selectedDates.length === discount.date) {
           // Aplicar descuento al precio colectivo
@@ -754,7 +754,7 @@ export class CourseComponent implements OnInit {
   }
 
   generateNumberArray(max: number): number[] {
-    return Array.from({length: max}, (v, k) => k + 1);
+    return Array.from({ length: max }, (v, k) => k + 1);
   }
 
   filteredPriceRange() {
@@ -854,14 +854,14 @@ export class CourseComponent implements OnInit {
     const maxTimeInMinutes = hourMax * 60;
 
     this.availableDurations = this.filteredPriceRange()
-      .filter((range:any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
+      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
 
     // Convertir la duración seleccionada a minutos
     const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration);
 
     // Comprobar si la duración seleccionada está dentro de las duraciones disponibles
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range:any) => range === selectedDurationMinutes); // Cambiar esta línea
+      .some((range: any) => range === selectedDurationMinutes); // Cambiar esta línea
 
     // Si no está disponible, establecer la primera duración disponible
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
@@ -913,7 +913,7 @@ export class CourseComponent implements OnInit {
       : Object.values(this.course?.availableDegrees || {});
 
     // Calcula si hay niveles disponibles
-    this.hasLevelsAvailable = availableDegreesArray.some((level:any) =>
+    this.hasLevelsAvailable = availableDegreesArray.some((level: any) =>
       level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.age_min, level.age_max)
     );
 
@@ -926,11 +926,11 @@ export class CourseComponent implements OnInit {
   }
 
 
-  hasMatchingSportLevel(level:any): boolean {
+  hasMatchingSportLevel(level: any): boolean {
     // Obtén el deporte seleccionado por el usuario
-    const selectedSport = this.selectedUser?.sports?.find((sport:any) => sport.id === level.sport_id);
+    const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
 
-    if(!selectedSport) {
+    if (!selectedSport) {
       return true;
     }
 
@@ -992,10 +992,10 @@ export class CourseComponent implements OnInit {
 
   getCoursePrice(course: any) {
     if (course) {
-      if(course.course_type == 2 && course.is_flexible) {
-        const priceRange = course.price_range.find((a:any) => a[1] !== null);
+      if (course.course_type == 2 && course.is_flexible) {
+        const priceRange = course.price_range.find((a: any) => a[1] !== null);
         return priceRange[1];
-      } else{
+      } else {
         return course.price
       }
     }
@@ -1006,7 +1006,7 @@ export class CourseComponent implements OnInit {
   getWeekdays(settings: string): string {
     const settingsObj = JSON.parse(settings);
     const weekDays = settingsObj.weekDays;
-    const daysMap:any = {
+    const daysMap: any = {
       "monday": "Lundi",
       "tuesday": "Mardi",
       "wednesday": "Mercredi",
@@ -1028,9 +1028,40 @@ export class CourseComponent implements OnInit {
   }
 
   getSportName(sportId: number): string | null {
-    const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
+    const sport = this.schoolData.sports.find((s: any) => s.id === sportId);
     return sport ? sport.name : null;
   }
+  getWeekDay(): string {
+    const uniqueDays: Set<number> = new Set();
+    this.course.course_dates.forEach((item: any) => {
+      const day = new Date(item.date).getDay();
+      uniqueDays.add(day);
+    });
+    const dayNames: string[] = Array.from(uniqueDays).map(day => this.Week[day]);
+    if (dayNames.length === 0) return "";
+    if (dayNames.length === 1) return dayNames[0];
+    const lastDay = dayNames.pop();
+    return dayNames.join(", ") + " y " + lastDay;
+  }
+  Week: string[] = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"]
 
+  findMaxHourEnd(): string {
+    const maxHourStart = Math.max(
+      ...this.course.course_dates.map((date: any) => {
+        return parseInt(date.hour_end.replace(":", ""));
+      })
+    );
+    const maxHourString = maxHourStart.toString().padStart(4, "0");
+    return `${maxHourString.slice(0, 2)}:${maxHourString.slice(2)}`;
+  }
+  findMinHourStart(): string {
+    const maxHourStart = Math.max(
+      ...this.course.course_dates.map((date: any) => {
+        return parseInt(date.hour_start.replace(":", ""));
+      })
+    );
+    const minHourString = maxHourStart.toString().padStart(4, "0");
+    return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
+  }
 
 }

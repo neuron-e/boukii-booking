@@ -6,14 +6,10 @@
 }
 .course-section {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
 }
+
 .course-image-wrapper {
   width: 100%;
-  height: 260px;
-  position: relative;
   box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
 }
 .wrapper-back {
@@ -36,9 +32,6 @@
   height: 100%;
 }
 .course-image-text {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -87,6 +80,8 @@
 .reservation-box {
   display: flex;
   width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
   flex-direction: column;
   gap: 24px;
 }
@@ -308,100 +303,11 @@
   display: block !important;
 }
 
-@media (max-width: 1000px) {
-  .course-content-flex {
-    display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    justify-content: flex-start;
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 870px) {
-  .show-mobile {
-    display: flex !important;
-  }
-  .show-desktop {
-    display: none !important;
-  }
-
+@media (max-width: 800px) {
   .course-reservation-section {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 44px;
-    flex-wrap: wrap;
+    flex-direction: column;
   }
   .reservation-section {
-    width: 100%;
-    min-width: auto;
-  }
-  .course-image-wrapper {
-    height: 200px;
-  }
-  .course-content-flex {
-    display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    justify-content: space-between;
-    flex-direction: row;
-  }
-}
-@media (max-width: 500px) {
-  .course-image-wrapper {
-    height: 160px;
-  }
-  .reservation-user-box {
-    width: 88px;
-    min-width: 88px;
-    max-width: 88px;
-  }
-}
-@media (max-width: 470px) {
-  .course-content-flex {
-    display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    justify-content: flex-start;
-    flex-direction: column;
-  }
-}
-@media (max-width: 360px) {
-  .calendar {
-    padding: 12px 8px;
-  }
-  .header-calendar-arrows {
-    gap: 8px;
-  }
-  .weekdays span {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 28px;
-    line-height: 28px;
-  }
-  .days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 28px;
-    line-height: 28px;
-  }
-  .days .day-span-b {
-    width: 28px;
-    height: 28px;
-  }
-}
-@media (max-width: 340px) {
-  .weekdays span {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 26px;
-    line-height: 26px;
-  }
-  .days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 26px;
-    line-height: 26px;
-  }
-  .days .day-span-b {
-    width: 26px;
-    height: 26px;
+    display: none;
   }
 }
