@@ -33,7 +33,7 @@
         class="course-image-img" style="border-radius: 20px;" />
     </div>
 
-    <div class="course-content" style="margin-top: 16px;">
+    <div class="course-content">
 
       <span style="color: var(--Dark-01, #222);
 font-family: Dinamit;
@@ -43,7 +43,8 @@ font-weight: 500;
 line-height: 23px;">
         {{course.price}} {{course.currency}} /Fecha
       </span>
-      <div class="dates" style="display: flex;gap: 8px;">
+      <div class="dates"
+        style="display: flex;gap: 8px;align-items: center;">
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
           <span style="color: black;">Desde <strong>{{course.date_start |
@@ -57,7 +58,8 @@ line-height: 23px;">
           </span>
         </div>
       </div>
-      <div class="max-group" style="display: flex;gap: 8px;">
+      <div class="max-group"
+        style="display: flex;gap: 8px;align-items: center;">
         <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
         <span style="color: black;">Max. {{course.max_participants}}</span>
         <span style="color: black;"
@@ -66,7 +68,7 @@ line-height: 23px;">
         </span>
       </div>
 
-      <ng-container *ngIf="course?.course_type==1">
+      <!--<ng-container *ngIf="course?.course_type==1">
         <div class="text-color text-medium montserrat course-content-title">
           <img [src]="themeService.calendar">
           {{'text_choose_dates' | translate }}
@@ -139,29 +141,36 @@ line-height: 23px;">
             </div>
           </div>
         </div>
-      </ng-container>
+      </ng-container>-->
 
-      <div class="show-desktop text-color-light mt-24 montserrat"
+      <span style="color: var(--Grey-01, #8B9099);
+      font-family: 'DM Sans';
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 16px;">
+        {{"DESCRIPCIÓN" |translate}}
+      </span>
+      <div class="show-desktop text-color-light montserrat"
         [innerHTML]="getDescription(course)">
       </div>
 
-      <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true"
-        class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-24"
-        type="button">
-        {{'text_more' | translate }}
-      </button>
-
-      <ng-container *ngIf="showMoreFilters">
-        <div class="show-mobile text-color-light mt-24 montserrat"
-          [innerHTML]="'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam at eros tempor, sollicitudin sem sit amet, ornare augue. Cras eget neque fermentum, rutrum dolor at, vulputate odio. Duis nec pulvinar eros. Ut et interdum ante. Nulla id quam lectus. In efficitur congue nisi, vel dapibus felis egestas sed.'">
-        </div>
-
-        <button (click)="showMoreFilters=false"
-          class="show-mobile btn-back-grey rounded-8 button-style width-fit-content cursor-pointer mt-12"
-          type="button">
-          {{'text_less' | translate }}
-        </button>
+      <span style="color: var(--Grey-01, #8B9099);
+      font-family: 'DM Sans';
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 16px;">
+        {{"NIVELES" |translate}}
+      </span>
+      <ng-container *ngFor="let item of course.availableDegrees">
+        <span
+          style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;"
+          [style.backgroundColor]="item.color">
+          {{item.name}}
+        </span>
       </ng-container>
+
       <ng-container *ngIf="course?.options">
         <p>Forfait</p>
         <ng-container *ngFor="let extra of settings.extras.forfait">
