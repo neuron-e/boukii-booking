@@ -84,7 +84,7 @@
     style="cursor: pointer;">
 </div>
 
-<button class="search-button">
+<button class="search-button" (click)="FilterModal=true">
   <img src="assets/icons/search2.png" alt="Buscar" class="search-icon" />
   Que curso te interesa?
 </button>
@@ -104,12 +104,11 @@
   </div>
 </ng-container>
 <ng-container *ngIf="!ResultCourse">
-
   <div class="Section">
     <span class="titleSection">Cursos destacados</span>
     <div class="card-container">
       <app-home-course-card [data]="item"
-        *ngFor="let item of DestacadoCourse"
+        *ngFor="let item of DestacadoCourse; index as i"
         (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
       </app-home-course-card>
     </div>
@@ -133,3 +132,45 @@
   </span>
   <img src="assets/images/patrocinio.png" alt style="margin: 30px 0;">
 </div>
+
+<app-mobile-modal *ngIf="FilterModal" title="Encuentra tu curso ideal"
+  (Close)="FilterModal=false">
+  <div body [formGroup]="FormGroup" class="filterMobile">
+    <select
+      [style.color]="FormGroup.controls['deporte'].value?'#222222':'#8B9099'"
+      formControlName="deporte">
+      <option disabled selected hidden value>
+        {{"Deporte" | translate}}
+      </option>
+      <option [value]="sport.id"
+        *ngFor="let sport of schoolData?.sports">{{sport.name}}</option>
+    </select>
+    <select formControlName="cursoType"
+      [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'">
+      <option disabled selected hidden value>
+        {{"Tipo de curso" | translate}}
+      </option>
+      <option [value]="1">{{'text_collectivescourses'| translate }}</option>
+      <option [value]="2">{{'text_privatecourses'| translate }}</option>
+    </select>
+    <select formControlName="edat"
+      [style.color]="FormGroup.controls['edat'].value?'#222222':'#8B9099'">
+      <option disabled selected hidden value>
+        {{"Edat" | translate}}
+      </option>
+      <option [value]="ageOption.id"
+        *ngFor="let ageOption of ageOptions">{{ageOption.label | translate
+        }}</option>
+    </select>
+    <select formControlName="nivel"
+      [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'">
+      <option disabled selected hidden value>
+        {{"Nivel" | translate}}
+      </option>
+      <option [value]="degreeOption.id"
+        *ngFor="let degreeOption of degreeOptions">
+        {{degreeOption.label | translate }}</option>
+    </select>
+    <button (click)="searchCourses();FilterModal=false"> Buscar </button>
+  </div>
+</app-mobile-modal>

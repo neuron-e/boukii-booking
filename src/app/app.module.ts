@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AddClientUserModalComponent } from './pages/user/add-client-user/add-client-user.component';
 import { AddClientUserModalModule } from './pages/user/add-client-user/add-client-user.module';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -48,6 +47,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { FooterComponent } from './layout/footer/app.component';
 import { HeaderComponent } from './layout/header/app.component';
 import { CourseCardComponent } from './components/course-card/app.component';
+import { MobileModalComponent } from './components/mobile-modal/app.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -64,7 +64,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     UserDetailComponent,
     PageNotFoundComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    MobileModalComponent
   ],
   imports: [
     BrowserModule,

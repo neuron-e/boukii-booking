@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit {
   ResultCourse: any
   DestacadoCourse: any
   ProximosCourse: any
+  FilterModal: boolean = false
 
   schoolData: any = null;
   sports: any[];
@@ -87,11 +88,6 @@ export class HomeComponent implements OnInit {
       }
     );
 
-    this.authService.getUserData().subscribe(
-      data => {
-        this.userLogged = data;
-      }
-    );
   }
 
   getCourses() {

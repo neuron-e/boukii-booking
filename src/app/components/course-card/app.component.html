@@ -25,7 +25,6 @@
                     hasta
                     <strong>{{data.date_end | date}}</strong></span>
                 <br>
-
                 <span>
                     {{getWeekDay()}}
                     {{findMinHourStart()}}–{{findMaxHourEnd()}}
@@ -35,6 +34,10 @@
         <div class="max-group">
             <img src="assets/icons/people.png" alt="Grupo máximo" class="icon">
             <span>Max. {{data.max_participants}}</span>
+            <span
+                *ngIf="data.age_max<99 && data.age_min>1">
+                ,{{data.age_min}}-{{data.age_max}}+ años
+            </span>
         </div>
     </div>
 </div>

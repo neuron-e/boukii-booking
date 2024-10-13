@@ -1,0 +1,10 @@
+<div class="modal">
+    <div class="head">
+        <img src="assets/icons/arrow-left.png" alt class="icon24"
+            (click)="Close.emit()">
+        <span>{{title}}</span>
+        <img src="assets/icons/x.png" alt class="icon24"
+            style="margin-left: auto;" (click)="Close.emit()">
+    </div>
+    <ng-content class="body" select="[body]"> </ng-content>
+</div>

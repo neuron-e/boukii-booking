@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {ApiService} from './api.service';
-import {BehaviorSubject, lastValueFrom, Observable} from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { ApiService } from './api.service';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +31,6 @@ export class AuthService extends ApiService {
       const user = response.data.user;
       localStorage.setItem(this.extractSlugFromRoute(this.route.snapshot) + '-boukiiUser', JSON.stringify(user));
       this.user.next(user);
-      console.log(this.user);
       return user;
     } catch (error) {
       console.error('Error during login:', error);

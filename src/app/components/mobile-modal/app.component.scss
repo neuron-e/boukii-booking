@@ -1,0 +1,28 @@
+.modal {
+  height: 100vh;
+  position: fixed;
+  width: 100vw;
+  z-index: 999999999999;
+  top: 0;
+  background-color: white;
+  left: 0;
+}
+
+.head {
+  height: 75px;
+  border-bottom: 1px solid #c7d0d3;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  color: black;
+  gap: 8px;
+  font-weight: 500;
+}
+
+* {
+  font-family: "Dinamit", sans-serif;
+  font-size: 14px;
+}
+span {
+  color: black;
+}
