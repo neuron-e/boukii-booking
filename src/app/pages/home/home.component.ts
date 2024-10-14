@@ -7,6 +7,9 @@ import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {AuthService} from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+import {Observable, of, tap} from 'rxjs';
+import {ApiCrudService} from '../../services/crud.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-home',
@@ -85,9 +88,13 @@ export class HomeComponent implements OnInit {
   daySelected: any;
   userLogged: any;
   defaultImage = '../../../assets/images/3.png';
+  season: any = [];
+  holidays: any = [];
+  myHolidayDates: any = [];
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
-              private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService) {
+              private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
+              private crudService: ApiCrudService) {
   }
 
   ngOnInit(): void {
@@ -100,7 +107,7 @@ export class HomeComponent implements OnInit {
           this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
           this.selectedDegreeType =  parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
           this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
-
+          this.getSeason(this.schoolData.id);
           this.setAgeRange();
           if (this.schoolData?.sports?.length > 0) {
             // Establecer el ID del primer deporte como seleccionado por defecto
@@ -240,7 +247,7 @@ export class HomeComponent implements OnInit {
       const formattedMonth = (this.currentMonth + 1).toString().padStart(2, '0');
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
-      const isActive = !isPast && this.activeDates.includes(dateStr);
+      const isActive = !isPast && this.activeDates.includes(dateStr) && this.inUseDatesFilter(spanDate);
       this.days.push({number: i, active: isActive, selected: false, past: isPast});
     }
 
@@ -253,6 +260,39 @@ export class HomeComponent implements OnInit {
 
   formatDate(year: number, month: number, day: number): string {
     return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  }
+
+  getSeason(schoolId: number): Observable<any> {
+    // Si ya tenemos la temporada, devolverla directamente
+    if (this.season) {
+      return of(this.season); // Devuelve un Observable con la temporada almacenada
+    }
+
+    // Si no está almacenada, hacemos la llamada a la API
+    return this.crudService
+      .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' + schoolId + '&is_active=1')
+      .pipe(
+        tap((response) => {
+          this.season = response.data[0]; // Guardamos la temporada en caché
+          this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+          this.holidays.forEach((element: any) => {
+            this.myHolidayDates.push(moment(element).toDate());
+          });
+        })
+      );
+  }
+
+  inUseDatesFilter = (d: Date): boolean => {
+    if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
+
+    const formattedDate = moment(d).format('YYYY-MM-DD');
+    const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
+    const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
+    // Encuentra si la fecha actual está en myHolidayDates.
+    const isHoliday = this.myHolidayDates.some((x:any) => x.getTime() === time);
+
+    // La fecha debería ser seleccionable si no es un día festivo y está activa (o sea, active no es falso ni 0).
+    return !isHoliday;
   }
 
   selectDay(day: any) {
