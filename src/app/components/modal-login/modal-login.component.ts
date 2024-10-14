@@ -1,10 +1,10 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../services/auth.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {TranslateService} from '@ngx-translate/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-modal-login',
@@ -27,10 +27,10 @@ export class ModalLoginComponent implements OnInit {
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
   loginForm: FormGroup;
-  isForgotPass:boolean=false;
+  isForgotPass: boolean = false;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
-              private snackbar: MatSnackBar, private translateService: TranslateService) {
+    private snackbar: MatSnackBar, private translateService: TranslateService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -61,7 +61,7 @@ export class ModalLoginComponent implements OnInit {
 
 
   closeModal() {
-    this.isForgotPass=false;
+    this.isForgotPass = false;
     this.onClose.emit();
   }
 

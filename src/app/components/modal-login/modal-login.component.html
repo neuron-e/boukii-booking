@@ -53,25 +53,26 @@
       </form>
     </ng-container>
     <ng-container *ngIf="isForgotPass">
-      <div
-        class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+
+      <div class="text-color fw-semibold text-semibig modal-flex-title">
         {{'text_reset_password' | translate }}
-        <img src="assets/icons/icons-outline-close.svg" class="cursor-pointer"
+        <img [src]="themeService.close" class="cursor-pointer"
           (click)="closeModal()" />
       </div>
-      <div class="modal-form">
-        <div class="modal-form-block-full">
-          <div class="text-color-light text-small uppercase">
-            {{'text_email' | translate }}
-          </div>
-          <input type="email" class="form-control width-100" />
-        </div>
-      </div>
-      <button (click)="closeModal()"
-        class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100"
-        type="button">
-        {{'text_reset_password' | translate }}
-      </button>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="flex-auto"
+          style="width: 100%">
+          <mat-label>{{'text_email' | translate}}</mat-label>
+          <input matInput type="email" formControlName="email"
+            required>
+        </mat-form-field>
+        <button (click)="closeModal()"
+          class="button-primary"
+          style="margin-top: 16px;"
+          type="button">
+          {{'text_reset_password' | translate }}
+        </button>
+      </form>
     </ng-container>
   </div>
 </div>

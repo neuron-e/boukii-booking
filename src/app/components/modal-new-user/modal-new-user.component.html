@@ -2,108 +2,126 @@
   <div class="modal-content background-color-full rounded-8"
     (click)="$event.stopPropagation()">
     <div
-      class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+      class="text-color fw-semibold text-semibig modal-flex-title">
       {{ 'text_new_client' | translate }}
       <img [src]="themeService.close" class="cursor-pointer"
         (click)="closeModal()" />
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="modal-form">
-      <div class="modal-form-block-full">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_email' | translate }}
-        </div>
-        <input type="email" class="form-control width-100"
-          formControlName="email" />
 
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_password' | translate }}
-        </div>
-        <input type="password" class="form-control width-100"
-          formControlName="password" />
+      <div
+        style="width: 100%; height: 100%; padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px; background: #D2EFFF; border-radius: 8px; justify-content: flex-start; align-items: flex-start; gap: 8px; display: inline-flex;margin-bottom: 14px;">
+        <div style="width: 24px; height: 24px; position: relative">
 
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_repeat_password' | translate }}
+          <img src="assets/icons/info.png" alt>
         </div>
-        <input type="password" class="form-control width-100"
-          formControlName="confirmPassword" />
-
+        <div
+          style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; gap: 4px; display: inline-flex">
+          <div
+            style="align-self: stretch; color: #222222; font-size: 14px; font-family: DM Sans; font-weight: 400; line-height: 18px; word-wrap: break-word">La
+            cuenta tiene que ser creada por el administrador de la cuenta. Si
+            desea reservar cursos para menores, podrás añadir uno o más usuarios
+            una vez registrado. </div>
+        </div>
       </div>
 
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_first_name' | translate }}
-        </div>
-        <input type="text" class="form-control width-100"
-          formControlName="first_name" />
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_first_name' | translate}}</mat-label>
+        <input matInput type="text" formControlName="first_name"
+          required>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_last_name' | translate }}
-        </div>
-        <input type="text" class="form-control width-100"
-          formControlName="last_name" />
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_last_name' | translate}}</mat-label>
+        <input matInput type="text" formControlName="last_name"
+          required>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_birth_date' | translate }}
-        </div>
-        <input type="date" class="form-control width-100"
-          formControlName="birth_date" />
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_birth_date' | translate}}</mat-label>
+        <input matInput type="date" formControlName="birth_date"
+          required>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_phone' | translate }}
-        </div>
-        <input type="text" class="form-control width-100"
-          formControlName="phone" />
+      <mat-form-field appearance="outline" class="widthInput">
+        <mat-label>{{'text_language' | translate}} 1</mat-label>
+        <input type="text" matInput
+          formControlName="language1_id" [matAutocomplete]="autoStation">
+        <mat-autocomplete #autoStation="matAutocomplete"
+          [displayWith]="displayFn">
+          <mat-option *ngFor="let item of langs" [value]="item">
+            {{ item.lang | translate }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-third">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_language' | translate }} 1
-        </div>
-        <select class="form-control width-100" formControlName="language1_id">
-          <option value="1">{{ 'france' | translate }}</option>
-          <option value="2">{{ 'english' | translate }}</option>
-          <option value="3">{{ 'spanish' | translate }}</option>
-        </select>
+      <mat-form-field appearance="outline" class="widthInput">
+        <mat-label>{{'text_language' | translate}} 2</mat-label>
+        <input type="text" matInput
+          formControlName="language2_id" [matAutocomplete]="autoStation">
+        <mat-autocomplete #autoStation="matAutocomplete"
+          [displayWith]="displayFn">
+          <mat-option *ngFor="let item of langs" [value]="item">
+            {{ item.lang | translate }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-third">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_language' | translate }} 2
-        </div>
-        <select class="form-control width-100" formControlName="language2_id">
-          <option value="1">{{ 'france' | translate }}</option>
-          <option value="2">{{ 'english' | translate }}</option>
-          <option value="3">{{ 'spanish' | translate }}</option>
-        </select>
+      <mat-form-field appearance="outline" class="widthInput">
+        <mat-label>{{'text_language' | translate}} 3</mat-label>
+        <input type="text" matInput
+          formControlName="language3_id" [matAutocomplete]="autoStation">
+        <mat-autocomplete #autoStation="matAutocomplete"
+          [displayWith]="displayFn">
+          <mat-option *ngFor="let item of langs" [value]="item">
+            {{ item.lang | translate }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-      </div>
-      <div class="modal-form-block-third">
-        <div class="text-color-light text-small uppercase">
-          {{ 'text_language' | translate }} 3
-        </div>
-        <select class="form-control width-100" formControlName="language3_id">
-          <option value="1">{{ 'france' | translate }}</option>
-          <option value="2">{{ 'english' | translate }}</option>
-          <option value="3">{{ 'spanish' | translate }}</option>
-        </select>
+      <mat-form-field appearance="outline" class="flex-auto"
+        style="width: 100%">
+        <mat-label>{{'text_email' | translate}}</mat-label>
+        <input matInput type="email" formControlName="email"
+          required>
+      </mat-form-field>
 
-      </div>
+      <mat-form-field appearance="outline" class="flex-auto"
+        style="width: calc(50% - 8px)">
+        <mat-label>{{'text_password' | translate}}</mat-label>
+        <input matInput type="password" formControlName="password"
+          required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_repeat_password' | translate}}</mat-label>
+        <input matInput type="password" formControlName="confirmPassword"
+          required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_phone' | translate}}</mat-label>
+        <input matInput type="text" formControlName="phone"
+          required>
+      </mat-form-field>
 
       <button type="submit" [disabled]="loginForm.invalid"
-        class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100">
+        class="button-primary">
         {{ 'text_confirm' | translate }}
       </button>
+      <div style="width: 100%;    text-align: -webkit-center;">
+        Ya tienes una cuenta?
+      </div>
+      <div (click)="goLogin.emit()"
+        style="color: var(--Primary, #E91E63);
+      font-weight: 600;
+      width: 100%; 
+      text-align: -webkit-center;
+      line-height: 18px;"
+        class="cursor-pointer">
+        {{'Log in' | translate }}
+      </div>
     </form>
   </div>
 </div>

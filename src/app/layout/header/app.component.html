@@ -60,6 +60,9 @@
     </div>
 </div>
 <app-modal-login [isOpen]="schoolService.isModalLogin"
-    (onClose)="schoolService.isModalLogin=false"></app-modal-login>
+    (onClose)="schoolService.isModalLogin=false">
+</app-modal-login>
 <app-modal-new-user [isOpen]="schoolService.isModalNewUser"
-    (onClose)="schoolService.isModalNewUser=false"></app-modal-new-user>
+    (onClose)="schoolService.isModalNewUser=false"
+    (goLogin)="schoolService.isModalNewUser=false;schoolService.isModalLogin=true">
+</app-modal-new-user>

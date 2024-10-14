@@ -26,9 +26,14 @@ export class ModalNewUserComponent implements OnInit {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
+  @Output() goLogin = new EventEmitter<void>();
 
   loginForm: FormGroup;
-
+  langs: any[] = [
+    { id: 1, lang: "france" },
+    { id: 2, lang: "english" },
+    { id: 3, lang: "spanish" },
+  ]
   constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService,
     private snackbar: MatSnackBar, private translateService: TranslateService) {
     this.loginForm = this.fb.group({
@@ -39,7 +44,7 @@ export class ModalNewUserComponent implements OnInit {
       last_name: ['', Validators.required],
       birth_date: ['', Validators.required],
       phone: ['', Validators.required],
-      language1_id: ['', Validators.required],
+      language1_id: [1, Validators.required],
       language2_id: [''],
       language3_id: [''],
     }, {
@@ -84,5 +89,7 @@ export class ModalNewUserComponent implements OnInit {
   closeModal() {
     this.onClose.emit();
   }
-
+  displayFn(d: any): string {
+    return d.lang
+  }
 }
