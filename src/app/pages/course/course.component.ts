@@ -979,6 +979,17 @@ export class CourseComponent implements OnInit {
 
   }
 
+  getShotrDescription(course: any) {
+
+    if (!course.translations || course.translations === null) {
+      return course.short_description;
+    } else {
+      const translations = JSON.parse(course.translations);
+      return translations[this.translateService.currentLang].short_description;
+    }
+  }
+
+
   getCourseName(course: any) {
     if (course) {
       if (!course.translations || course.translations === null) {

@@ -27,6 +27,7 @@ export class ModalLoginComponent implements OnInit {
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
   loginForm: FormGroup;
+  mailRecover = '';
   isForgotPass:boolean=false;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
@@ -59,6 +60,29 @@ export class ModalLoginComponent implements OnInit {
     }
   }
 
+  sendMail() {
+    if (this.mailRecover) {
+      let data = {
+        email: this.mailRecover,
+        type: 2
+      }
+      this.authService.sendMailPassword(data)
+        .then((res: any) => {
+          if (res) {
+            this.closeModal();
+          } else {
+            //TODO: cambiar el texto
+            let errorMessage = this.translateService.instant('error.client.register');
+            this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+          }
+        })
+        .catch(error => {
+          let errorMessage = this.translateService.instant(error.error.message);
+          this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+        });
+      console.log(this.loginForm.value);
+    }
+  }
 
   closeModal() {
     this.isForgotPass=false;

@@ -221,7 +221,10 @@
 
     </div>
 
-    <div class="text-small text-color-light mt-24 montserrat" [innerHTML]="getDescription(course)"></div>
+    <div class="text-small text-color-light montserrat" [ngClass]="{'hidden': showSeeLess}"
+         [innerHTML]="getShotrDescription(course)"></div>
+    <div class="text-small text-color-light montserrat"
+         [ngClass]="{'hidden':showSeeMore }"  [innerHTML]="getDescription(course)"></div>
     <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
          (click)="showFullText()">{{'text_more' | translate }}</div>
     <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
@@ -303,7 +306,10 @@
     </div>
 
     <div class="course-text-padding">
-      <div class="text-small text-color-light montserrat" [innerHTML]="getShotrDescription(course)"></div>
+      <div class="text-small text-color-light montserrat" [ngClass]="{'hidden': showSeeLess}"
+           [innerHTML]="getShotrDescription(course)"></div>
+      <div class="text-small text-color-light montserrat"
+           [ngClass]="{'hidden':showSeeMore }"  [innerHTML]="getDescription(course)"></div>
       <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
            (click)="showFullText()">{{'text_more' | translate }}</div>
       <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"

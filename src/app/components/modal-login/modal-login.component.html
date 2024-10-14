@@ -43,11 +43,11 @@
           <div class="text-color-light text-small uppercase">
             {{'text_email' | translate }}
           </div>
-          <input type="email" class="form-control width-100" />
+          <input type="email" [(ngModel)]="mailRecover" class="form-control width-100" />
         </div>
       </div>
 
-      <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+      <button (click)="sendMail()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
         {{'text_reset_password' | translate }}
       </button>
     </ng-container>
