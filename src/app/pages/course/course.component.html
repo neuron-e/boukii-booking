@@ -34,7 +34,6 @@
     </div>
 
     <div class="course-content" *ngIf="course">
-
       <span style="color: var(--Dark-01, #222);
 font-family: Dinamit;
 font-size: 18px;
@@ -198,13 +197,13 @@ line-height: 23px;">
 
       <!-- NOT LOGGED-->
       <ng-container *ngIf="!userLogged">
-        <div class="text-color text-medium fw-semibold">
+        <!--<div class="text-color text-medium fw-semibold">
           {{'text_booking' | translate }}
-        </div>
-        <div class="text-color montserrat">
+        </div>-->
+        <div style="width: 100%;" class="text-color montserrat">
           {{'text_booking1' | translate }}
         </div>
-        <div class="reservation-price-flex">
+        <!--<div class="reservation-price-flex">
           <div class="text-medium text-color uppercase">
             {{'text_price' | translate }}
           </div>
@@ -212,28 +211,26 @@ line-height: 23px;">
             <span class="text-medium fw-bold">{{ getCoursePrice(course)
               }}</span> {{ course?.currency }} /{{'date' | translate }}
           </div>
-        </div>
-        <div>
-          <button
-            style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;font-family: 'DM Sans'"
-            class="rounded-8 button-style cursor-pointer width-100 mb-12"
-            type="button"
-            (click)="schoolService.isModalLogin=true">
-            {{'text_already_client' | translate }}
-          </button>
-          <button
-            style="height: 40px;border-radius: 3px;color: black;background-color: white;font-family: 'DM Sans';border:1px solid black;"
-            class="rounded-8 button-style cursor-pointer width-100"
-            type="button"
-            (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
-            {{'text_new_client' | translate }}
-          </button>
-        </div>
-        <div (click)="goTo('home')"
+        </div>-->
+        <button
+          style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;font-family: 'DM Sans'"
+          class="rounded-8 button-style cursor-pointer width-100"
+          type="button"
+          (click)="schoolService.isModalLogin=true">
+          {{'text_already_client' | translate }}
+        </button>
+        <button
+          style="height: 40px;border-radius: 3px;color: black;background-color: white;font-family: 'DM Sans';border:1px solid black;"
+          class="rounded-8 button-style cursor-pointer width-100"
+          type="button"
+          (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
+          {{'text_new_client' | translate }}
+        </button>
+        <!--<div (click)="goTo('home')"
           class="text-color-light montserrat cursor-pointer reservation-return">
           <img [src]="themeService.arrowReturn">
           {{'text_return_courses' | translate }}
-        </div>
+        </div>-->
       </ng-container>
       <ng-container *ngIf="userLogged">
         <div class="text-color text-medium fw-semibold">
