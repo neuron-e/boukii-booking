@@ -65,7 +65,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     PageNotFoundComponent,
     HeaderComponent,
     FooterComponent,
-    MobileModalComponent
+    MobileModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -104,13 +104,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatRadioModule,
     MatMenuModule,
     MatDividerModule,
-    MatFormFieldModule,
     MatNativeDateModule,
     MatDatepickerModule,
     MatListModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
     MatSortModule,
+    MatFormFieldModule,
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

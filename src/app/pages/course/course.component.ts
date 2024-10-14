@@ -11,6 +11,7 @@ import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HeaderComponent } from 'src/app/layout/header/app.component';
 
 @Component({
   selector: 'app-course',
@@ -209,10 +210,7 @@ export class CourseComponent implements OnInit {
   days: any[] = [];
 
   activeDates: string[] = [];
-
   isModalAddUser: boolean = false;
-  isModalLogin: boolean = false;
-  isModalNewUser: boolean = false;
 
   selectedHour: string = '';
   selectedPaxes: any = 1;
@@ -228,8 +226,9 @@ export class CourseComponent implements OnInit {
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
-    private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
+    private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
+    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar,
+  ) {
 
   }
 
@@ -297,10 +296,6 @@ export class CourseComponent implements OnInit {
         this.collectivePrice = this.course.price;
       }
     });
-  }
-
-  openModalLogin() {
-    this.isModalLogin = !this.isModalLogin;
   }
 
   toggleForfaitSelection(extra: any) {
@@ -667,23 +662,12 @@ export class CourseComponent implements OnInit {
     this.tooltipsFilter[index] = false;
   }
 
-  /*
-  getFilteredGoals(degree:number): any[] {
-    return this.degreeGoals.filter((goal:any) => goal.sport.id === this.selectedSport && goal.degree.id === degree);
-  }
-  */
+
 
   openModalAddUser() {
     this.isModalAddUser = true;
   }
 
-  closeModalLogin() {
-    this.isModalLogin = false;
-  }
-
-  closeModalNewUser() {
-    this.isModalNewUser = false;
-  }
 
   closeModalAddUser() {
     this.isModalAddUser = false;

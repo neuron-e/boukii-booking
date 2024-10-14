@@ -33,7 +33,7 @@
         class="course-image-img" style="border-radius: 20px;" />
     </div>
 
-    <div class="course-content">
+    <div class="course-content" *ngIf="course">
 
       <span style="color: var(--Dark-01, #222);
 font-family: Dinamit;
@@ -218,14 +218,14 @@ line-height: 23px;">
             style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;font-family: 'DM Sans'"
             class="rounded-8 button-style cursor-pointer width-100 mb-12"
             type="button"
-            (click)="openModalLogin()">
+            (click)="schoolService.isModalLogin=true">
             {{'text_already_client' | translate }}
           </button>
           <button
             style="height: 40px;border-radius: 3px;color: black;background-color: white;font-family: 'DM Sans';border:1px solid black;"
             class="rounded-8 button-style cursor-pointer width-100"
             type="button"
-            (click)="isModalNewUser = !isModalNewUser">
+            (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
             {{'text_new_client' | translate }}
           </button>
         </div>

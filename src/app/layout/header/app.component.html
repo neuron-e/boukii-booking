@@ -12,7 +12,6 @@
             </span>
         </p>
     </div>
-
     <!--<img [src]="themeService.modeIcon" (click)="themeService.toggleTheme()"
         class="icon24" style="margin-left: auto;" />-->
     <div style="display: flex;margin-left: auto;position: relative;">
@@ -52,11 +51,15 @@
                     [ngClass]="{'fw-semibold': selectedLang=='it'}">IT</span>
             </div>
         </div>
+        <!--(click)="router.navigate([schoolData.slug+'/user'])"-->
         <div style="padding: 5px;"
-            (click)="router.navigate([schoolData.slug+'/user'])">
+            (click)="schoolService.isModalLogin=true">
             <img src="assets/icons/login.png"
                 class="icon24">
         </div>
     </div>
-
 </div>
+<app-modal-login [isOpen]="schoolService.isModalLogin"
+    (onClose)="schoolService.isModalLogin=false"></app-modal-login>
+<app-modal-new-user [isOpen]="schoolService.isModalNewUser"
+    (onClose)="schoolService.isModalNewUser=false"></app-modal-new-user>
