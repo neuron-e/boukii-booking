@@ -35,9 +35,13 @@
 
     <div class="course-content">
       <ng-container *ngIf="course?.course_type==1">
-        <div class="text-color text-medium montserrat course-content-title">
+        <div class="text-color text-medium montserrat course-content-title" *ngIf="course.is_flexible">
           <img [src]="themeService.calendar">
           {{'text_choose_dates' | translate }}
+        </div>
+        <div class="text-color text-medium montserrat course-content-title" *ngIf="!course.is_flexible">
+          <img [src]="themeService.calendar">
+          {{'text_availability' | translate }}
         </div>
         <div class="mt-12 course-content-list">
           <div *ngIf="!course.is_flexible">
