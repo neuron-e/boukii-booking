@@ -82,7 +82,7 @@ option:not(:first-of-type) {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   margin: 0 auto;
   padding: 20px;
 }
@@ -122,7 +122,6 @@ option:not(:first-of-type) {
     background-position: right 0 top 50%;
     background-size: contain;
     font-size: 16px;
-    
   }
   > button {
     font-family: "DM Sans", sans-serif;
