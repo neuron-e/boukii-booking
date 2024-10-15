@@ -4,7 +4,13 @@
             alt="Imagen de esquiadores"
             class="card-image">
         <div class="left-icon">
-            <img [src]="data.icon" alt="Icono naranja">
+            <img src="assets/icons/prive_ski2x.png"
+                *ngIf="data.course_type==2" />
+            <img src="assets/icons/collectif_ski2x.png"
+                *ngIf="data.course_type==1" />
+            <img *ngIf="data.course_type!==1 && data.course_type!==2"
+                [src]="data.icon"
+                alt="Icono naranja">
         </div>
         <div class="favorite-icon" *ngIf="data.destacado">
             <img src="assets/icons/destacado.png" alt="Favorito">

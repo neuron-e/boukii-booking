@@ -15,7 +15,7 @@
             *ngIf="course?.course_type==2" />
           <img src="assets/icons/collectif_ski2x.png"
             *ngIf="course?.course_type==1" />
-          <ng-container *ngIf="course?.course_type==1">
+          <!--<ng-container *ngIf="course?.course_type==1">
             {{'colective' | translate }}
           </ng-container>
           <ng-container *ngIf="course?.course_type==2">
@@ -23,7 +23,7 @@
           </ng-container>
           <ng-container *ngIf="schoolData && schoolData.sports">
             {{ getSportName(course?.sport_id) }}
-          </ng-container>
+          </ng-container>-->
           <div class="text-white fw-semibold text-semibig">
             {{getCourseName(course)}}
           </div>
@@ -141,6 +141,17 @@ line-height: 23px;">
           </div>
         </div>
       </ng-container>-->
+      <span style="color: var(--Grey-01, #8B9099);
+      font-family: 'DM Sans';
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 16px;">
+        {{"RESUMEN" |translate}}
+      </span>
+      <div class="show-desktop text-color-light montserrat"
+        [innerHTML]="getShotrDescription(course)">
+      </div>
 
       <span style="color: var(--Grey-01, #8B9099);
       font-family: 'DM Sans';
