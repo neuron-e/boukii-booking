@@ -183,16 +183,14 @@ export class HomeComponent implements OnInit {
   }
 
   //SEE MORE -> do it for each course
-  showFullText() {
-    this.displayedText = this.fullText;
-    this.showSeeMore = false;
-    this.showSeeLess = true;
+  showFullText(course: any) {
+    course.showSeeMore = false;
+    course.showSeeLess = true;
   }
 
-  showLessText() {
-    this.displayedText = this.displayedTextOld;
-    this.showSeeMore = true;
-    this.showSeeLess = false;
+  showLessText(course: any) {
+    course.showSeeMore = true;
+    course.showSeeLess = false;
   }
 
   initializeMonthNames() {

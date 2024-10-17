@@ -5,6 +5,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TranslateService} from '@ngx-translate/core';
+import {SchoolService} from '../../services/school.service';
 
 @Component({
   selector: 'app-modal-login',
@@ -31,7 +32,7 @@ export class ModalLoginComponent implements OnInit {
   isForgotPass:boolean=false;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
-              private snackbar: MatSnackBar, private translateService: TranslateService) {
+              private snackbar: MatSnackBar, private translateService: TranslateService, private schoolService: SchoolService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -61,28 +62,36 @@ export class ModalLoginComponent implements OnInit {
   }
 
   sendMail() {
-    if (this.mailRecover) {
-      let data = {
-        email: this.mailRecover,
-        type: 2
-      }
-      this.authService.sendMailPassword(data)
-        .then((res: any) => {
-          if (res) {
-            this.closeModal();
-          } else {
-            //TODO: cambiar el texto
-            let errorMessage = this.translateService.instant('error.client.register');
-            this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+    this.schoolService.getSchoolData().subscribe(
+      data => {
+        if (data) {
+          let schoolData = data.data;
+          if (this.mailRecover) {
+            let data = {
+              email: this.mailRecover,
+              type: 2,
+              school_id: schoolData.id
+            }
+            this.authService.sendMailPassword(data)
+              .then((res: any) => {
+                if (res) {
+                  this.closeModal();
+                } else {
+                  //TODO: cambiar el texto
+                  let errorMessage = this.translateService.instant('error.client.register');
+                  this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+                }
+              })
+              .catch(error => {
+                let errorMessage = this.translateService.instant(error.error.message);
+                this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+              });
+            console.log(this.loginForm.value);
           }
-        })
-        .catch(error => {
-          let errorMessage = this.translateService.instant(error.error.message);
-          this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
-        });
-      console.log(this.loginForm.value);
-    }
+        }
+      });
   }
+
 
   closeModal() {
     this.isForgotPass=false;

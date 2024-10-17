@@ -220,15 +220,16 @@
       </div>
 
     </div>
-
-    <div class="text-small text-color-light montserrat" [ngClass]="{'hidden': showSeeLess}"
-         [innerHTML]="getShotrDescription(course)"></div>
+    <div class="text-color text-medium fw-medium">{{'text_short_description' | translate}}</div>
     <div class="text-small text-color-light montserrat"
-         [ngClass]="{'hidden':showSeeMore }"  [innerHTML]="getDescription(course)"></div>
-    <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
-         (click)="showFullText()">{{'text_more' | translate }}</div>
-    <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
-         (click)="showLessText()">{{'text_less' | translate }}</div>
+         [innerHTML]="getShotrDescription(course)"></div>
+    <div class="text-color text-medium fw-medium" *ngIf="course.showSeeLess" style="margin-top: 10px">{{'text_description' | translate}}</div>
+    <div class="text-small text-color-light montserrat"
+         [ngClass]="{'hidden':!course.showSeeLess }"  [innerHTML]="getDescription(course)"></div>
+    <div *ngIf="!course.showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
+         (click)="showFullText(course)">{{'text_more' | translate }}</div>
+    <div *ngIf="course.showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
+         (click)="showLessText(course)">{{'text_less' | translate }}</div>
 
   </div>
   <!--/DESKTOP-->
@@ -306,14 +307,14 @@
     </div>
 
     <div class="course-text-padding">
-      <div class="text-small text-color-light montserrat" [ngClass]="{'hidden': showSeeLess}"
-           [innerHTML]="getShotrDescription(course)"></div>
+      <div class="text-color text-medium fw-medium">{{'text_short_description' | translate}}</div>
       <div class="text-small text-color-light montserrat"
-           [ngClass]="{'hidden':showSeeMore }"  [innerHTML]="getDescription(course)"></div>
-      <div *ngIf="showSeeMore" class="text-color underline mt-8 montserrat text-small cursor-pointer"
-           (click)="showFullText()">{{'text_more' | translate }}</div>
-      <div *ngIf="showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
-           (click)="showLessText()">{{'text_less' | translate }}</div>
+           [innerHTML]="getShotrDescription(course)"></div>
+      <div class="text-color text-medium fw-medium" *ngIf="course.showSeeLess" style="margin-top: 10px">{{'text_description' | translate}}</div>
+      <div *ngIf="!course.showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
+           (click)="showFullText(course)">{{'text_more' | translate }}</div>
+      <div *ngIf="course.showSeeLess" class="text-color underline mt-8 montserrat text-small cursor-pointer"
+           (click)="showLessText(course)">{{'text_less' | translate }}</div>
     </div>
 
   </div>

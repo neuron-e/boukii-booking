@@ -206,7 +206,7 @@ export class BookingDetailComponent implements OnInit {
 
   private subscription: Subscription;
   constructor(private dialog: MatDialog, private crudService: ApiCrudService, private authService: AuthService, private activatedRoute: ActivatedRoute,
-    private snackbar: MatSnackBar, private schoolService: SchoolService, private router: Router, private translateService: TranslateService) {
+    private snackbar: MatSnackBar, private schoolService: SchoolService, private router: Router, public translateService: TranslateService) {
 
     this.minDate = new Date(); // Establecer la fecha mínima como la fecha actual
   }
@@ -298,7 +298,6 @@ export class BookingDetailComponent implements OnInit {
         this.crudService.get('/bookings/'+this.id)
         .subscribe((data) => {
           this.booking = data.data;
-
           this.crudService.list('/vouchers-logs', 1, 10000, 'asc', 'id', '&booking_id='+this.id)
             .subscribe((vl) => {
               if(vl.data.length > 0) {
@@ -324,7 +323,8 @@ export class BookingDetailComponent implements OnInit {
               }
             })
 
-        this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id='+this.id)
+        this.crudService.list('/booking-users', 1, 10000, 'desc', 'id',
+          '&booking_id='+this.id, '', null, '', ['courseDate', 'course'])
           .subscribe((bookingUser) => {
             this.bookingUsers = bookingUser.data;
             this.getUniqueBookingUsers();
@@ -432,19 +432,41 @@ export class BookingDetailComponent implements OnInit {
   }
 
   checkIsCancellable() {
-    const today = moment();
+    // Encuentra el bookingUser con la fecha y hora más temprana
+    const earliestBookingUser = this.bookingUsers.reduce((earliest:any, current:any) => {
+      const earliestDateTime = moment(`${earliest.course_date.date}`).set({
+        hour: moment(earliest.hour_start, 'HH:mm').hour(),
+        minute: moment(earliest.hour_start, 'HH:mm').minute()
+      });
+      const currentDateTime = moment(`${current.course_date.date}`).set({
+        hour: moment(current.hour_start, 'HH:mm').hour(),
+        minute: moment(current.hour_start, 'HH:mm').minute()
+      });
+      return currentDateTime.isBefore(earliestDateTime) ? current : earliest;
+    });
+
+    // Combina la fecha y hora de inicio del bookingUser más temprano
+    const earliestDateTime = moment(`${earliestBookingUser.course_date.date}`).set({
+      hour: moment(earliestBookingUser.hour_start, 'HH:mm').hour(),
+      minute: moment(earliestBookingUser.hour_start, 'HH:mm').minute()
+    });
+
+    if (this.booking.cancellation_status == 'finished') {
+      return false;
+    }
+
     if (this.booking.has_cancellation_insurance) {
       if (this.cancelationOp !== null) {
-        const todayPlusOpRem = today.subtract(this.cancelationOp, 'h');
-        return todayPlusOpRem.isBefore(this.today);
+        // Usa earliestDateTime en lugar de today
+        const earliestPlusOpRem = earliestDateTime.subtract(this.cancelationOp, 'h');
+        return this.today.isBefore(earliestPlusOpRem);
       }
       return false;
     } else {
       if (this.cancelationOp !== null) {
-
-
-        const todayPlusNoOpRem = today.subtract(this.cancelationNoOp, 'h');
-        return todayPlusNoOpRem.isBefore(this.today);
+        // Usa earliestDateTime en lugar de today
+        const earliestPlusNoOpRem = earliestDateTime.subtract(this.cancelationNoOp, 'h');
+        return this.today.isBefore(earliestPlusNoOpRem);
       }
       return false;
     }
@@ -804,6 +826,18 @@ export class BookingDetailComponent implements OnInit {
     });
   }
 
+  isFinishedBookingUser(bu:any): boolean {
+    // Compara la fecha más futura con la fecha actual
+    return bu.status === 1 &&
+      new Date(bu.date) < new Date();
+  }
+
+  isActiveBookingUser(bu:any): boolean {
+    // Compara la fecha más futura con la fecha actual
+    return bu.status === 1 &&
+      new Date(bu.date) > new Date();
+  }
+
 
   calculateHourEnd(hour: any, duration: any) {
     if(duration.includes('h') && duration.includes('min')) {
@@ -855,8 +889,8 @@ export class BookingDetailComponent implements OnInit {
   calculateDiscounts() {
     if (this.courses.length > 0) {
       this.bookingsToCreate.forEach((b: any, idx: any) => {
-        if (b.courseDates[0].status === 1) {if (this.courses[idx].is_flexible && this.courses[idx].course_type === 1) {
-            const discounts = typeof this.courses[idx].discounts === 'string' ? JSON.parse(this.courses[idx].discounts) : this.courses[idx].discounts;
+        if (b.courseDates[0].status === 1) {if (b.courseDates[0].course.is_flexible && b.courseDates[0].course.course_type === 1) {
+            const discounts = typeof b.courseDates[0].course.discounts === 'string' ? JSON.parse(b.courseDates[0].course.discounts) : b.courseDates[0].course.discounts;
             discounts.forEach((element: any) => {
               if (element.date === b.courseDates.length) {
                 this.discounts.push(this.getBasePrice(true) * (element.percentage / 100));
@@ -879,36 +913,49 @@ export class BookingDetailComponent implements OnInit {
     }
   }
 
-  getBasePrice(noDiscount = false): any {
+  getBasePrice(noDiscount = false) {
     let ret = 0;
 
     if (this.courses.length > 0) {
-      this.bookingsToCreate.forEach((b: any, idx: any) => {
-        if (b.courseDates[0].status === 1) {
-          if (this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
-            ret = ret + this.getPrivateFlexPrice(b.courseDates);
-            b.price_total = this.getPrivateFlexPrice(b.courseDates);
-          } else if (!this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
-            ret = ret + parseFloat(this.courses[idx]?.price)* b.courseDates.length;
-            b.price_total = parseFloat(this.courses[idx]?.price)* b.courseDates.length;
-          } else if (this.courses[idx].is_flexible && this.courses[idx].course_type === 1) {
-            const discounts = typeof this.courses[idx].discounts === 'string' ? JSON.parse(this.courses[idx].discounts) : this.courses[idx].discounts;
-            let price = b?.courseDates[0].price * b.courseDates.length;
-            let discount = 0;
-            ret = ret + (b?.courseDates[0].price * b.courseDates.length);
-            if (!noDiscount) {
-              discounts.forEach((element: any) => {
-                if (element.date === b.courseDates.length) {
-                  ret = ret - (ret * (element.percentage / 100));
-                  discount = price - (price * (element.percentage / 100));
-                }
-              });
-            }
-            ret = ret - discount;
-            b.price_total = price;
-          } else {
-            ret = ret + b?.price_total
+      this.bookingsToCreate.forEach((b:any, idx:any) => {
+
+        if (
+          b.courseDates[0].course.is_flexible &&
+          (b.courseDates[0].course.course_type === 2 || b.courseDates[0].course.course_type === 3)
+        ) {
+          ret = ret + this.getPrivateFlexPrice(b.courseDates);
+          b.price_total = this.getPrivateFlexPrice(b.courseDates);
+        } else if (
+          !b.courseDates[0].course.is_flexible &&
+          b.courseDates[0].course.course_type === 2
+        ) {
+          ret =
+            ret + parseFloat(b.courseDates[0].course?.price) * b.courseDates.length;
+          b.price_total =
+            parseFloat(b.courseDates[0].course?.price) * b.courseDates.length;
+        } else if (
+          b.courseDates[0].course.is_flexible &&
+          b.courseDates[0].course.course_type === 1
+        ) {
+          const discounts =
+            typeof b.courseDates[0].course.discounts === "string"
+              ? JSON.parse(b.courseDates[0].course.discounts)
+              : b.courseDates[0].course.discounts;
+          let price = b?.courseDates[0].price * b.courseDates.length;
+          let discount = 0;
+          ret = ret + b?.courseDates[0].price * b.courseDates.length;
+          if (!noDiscount) {
+            discounts.forEach((element:any) => {
+              if (element.date === b.courseDates.length) {
+                ret = ret - ret * (element.percentage / 100);
+                discount = price - price * (element.percentage / 100);
+              }
+            });
           }
+          ret = ret - discount;
+          b.price_total = price;
+        } else {
+          ret = ret + b?.price_total;
         }
 
       });
@@ -916,6 +963,7 @@ export class BookingDetailComponent implements OnInit {
       return ret;
     }
 
+    return ret;
   }
 
   getBasePriceForAnulations(noDiscount = false): any {
@@ -923,14 +971,14 @@ export class BookingDetailComponent implements OnInit {
 
     if (this.courses.length > 0) {
       this.bookingsToCreate.forEach((b: any, idx: any) => {
-          if (this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
+          if (b.courseDates[0].course.is_flexible && b.courseDates[0].course.course_type === 2) {
             ret = ret + this.getPrivateFlexPrice(b.courseDates);
             b.price_total = this.getPrivateFlexPrice(b.courseDates);
-          } else if (!this.courses[idx].is_flexible && this.courses[idx].course_type === 2) {
-            ret = ret + parseFloat(this.courses[idx]?.price)* b.courseDates.length;
-            b.price_total = parseFloat(this.courses[idx]?.price)* b.courseDates.length;
-          } else if (this.courses[idx].is_flexible && this.courses[idx].course_type === 1) {
-            const discounts = typeof this.courses[idx].discounts === 'string' ? JSON.parse(this.courses[idx].discounts) : this.courses[idx].discounts;
+          } else if (!b.courseDates[0].course.is_flexible && b.courseDates[0].course.course_type === 2) {
+            ret = ret + parseFloat(b.courseDates[0].course?.price)* b.courseDates.length;
+            b.price_total = parseFloat(b.courseDates[0].course?.price)* b.courseDates.length;
+          } else if (b.courseDates[0].course.is_flexible && b.courseDates[0].course.course_type === 1) {
+            const discounts = typeof b.courseDates[0].course.discounts === 'string' ? JSON.parse(b.courseDates[0].course.discounts) : b.courseDates[0].course.discounts;
             ret = ret + (b?.courseDates[0].price * b.courseDates.length);
             if (!noDiscount) {
               discounts.forEach((element: any) => {
@@ -955,8 +1003,9 @@ export class BookingDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       width: '1000px',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
-        + `<span style="#F53D7C;font-size: 20px;">` + this.finalPrice + ' ' +  this.booking.currency + `</span>`
+      data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'),
+        message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
+        + `<span style="#F53D7C;font-size: 20px;">` + this.booking.paid_total + ' ' +  this.booking.currency + `</span>`
       }
     });
 
@@ -969,7 +1018,7 @@ export class BookingDetailComponent implements OnInit {
           .subscribe(() => {
             this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
             .subscribe(() => {
-              this.crudService.post('/slug/bookings/refunds/'+this.id, {amount: this.finalPrice})
+              this.crudService.post('/slug/bookings/refunds/'+this.id, {amount: this.booking.paid_total})
                 .subscribe(() => {
                   this.crudService.update('/bookings', {status: 2}, this.booking.id)
                     .subscribe(() => {

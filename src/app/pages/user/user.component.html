@@ -321,38 +321,39 @@
                 <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getCourseName(element.booking_users[0]?.course) || 'N/A'}} </td>
               </ng-container>
 
-              <ng-container  matColumnDef="has_cancellation_insurance">
+              <ng-container  matColumnDef="has_boukii_care">
                 <th *matHeaderCellDef class="uppercase" mat-header-cell> {{ 'has_boukii_Care' | translate }}</th>
-                <td *matCellDef="let element" mat-cell>
-                  <div *ngIf="element" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-                  <div *ngIf="!element" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                <td *matCellDef="let element" mat-cell (click)="selectBooking(element.id)">
+                  <div *ngIf="element.has_boukii_care" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                  <div *ngIf="!element.has_boukii_care" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
                 </td>
               </ng-container>
 
-              <ng-container  matColumnDef="has_insurance">
-                <th *matHeaderCellDef class="uppercase" mat-header-cell> {{ 'has_insurance' | translate }}</th>
-                <td *matCellDef="let element" mat-cell>
-                  <div *ngIf="element" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-                  <div *ngIf="!element" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+              <ng-container  matColumnDef="has_cancellation_insurance">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell> {{ 'text_refund_option' | translate }}</th>
+                <td *matCellDef="let element" mat-cell (click)="selectBooking(element.id)">
+                  <div *ngIf="element.has_cancellation_insurance" style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
+                  <div *ngIf="!element.has_cancellation_insurance" style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="payment_method">
                 <th mat-header-cell *matHeaderCellDef> {{ 'payment_method' | translate }} </th>
-                <td mat-cell *matCellDef="let element" > {{getPaymentMethod(element.payment_method_id)}} </td>
+                <td mat-cell *matCellDef="let element" (click)="selectBooking(element.id)"> {{getPaymentMethod(element.payment_method_id)}} </td>
               </ng-container>
 
               <ng-container matColumnDef="payment_status">
                 <th *matHeaderCellDef class="uppercase" mat-header-cell >{{ "ispaid" | translate }}</th>
-                <td *matCellDef="let element" mat-cell [style.color]=" element ? '#CEE741' : 'red'">
-                  {{ (element ? 'yes' : 'no')| translate | uppercase }}
+                <td *matCellDef="let element" mat-cell [style.color]=" element.isPaid ? '#CEE741' : 'red'" (click)="selectBooking(element.id)">
+                  {{ (element.isPaid ? 'yes' : 'no')| translate | uppercase }}
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="cancelation_status">
+              <ng-container matColumnDef="cancellation_status">
                 <th *matHeaderCellDef class="uppercase" mat-header-cell > {{ "status" | translate }}</th>
-                <td *matCellDef="let element" mat-cell [style.color]=" element === 1 ? '#CEE741' : '#fac710'">
-                  {{ (element === 1 ? 'active' : element === 2 ? 'cancelled' : 'partial_cancelled') | translate | uppercase }}
+                <td *matCellDef="let element" mat-cell [style.color]=" element.cancellation_status === 'active'
+                || element.cancellation_status == 'finished' ? '#CEE741' : '#fac710'" (click)="selectBooking(element.id)">
+                  {{ element.cancellation_status | translate  }}
                 </td>
               </ng-container>
 

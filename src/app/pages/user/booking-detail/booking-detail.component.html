@@ -11,8 +11,8 @@
             <button mat-raised-button color="accent" class="button-cancel" style="color: #fff !important;background: #f53d7c;padding: 1%;width: 20%; border-radius: 0; " (click)="onCloseBooking()">
               {{'back' | translate }}
             </button>
-            <button mat-raised-button color="accent" class="button-cancel" [disabled]="checkIsCancellable()"
-              style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;" (click)="deleteBooking()">
+            <button mat-raised-button color="accent" class="button-cancel" [disabled]="!checkIsCancellable()"
+                    style="color: #fff !important;background: #f53d7c;padding: 1%;width: 35%; border-radius: 0; margin: 0 0 0 2%;" (click)="deleteBooking()">
               {{'bookings_page.detail.full_cancel' | translate}}
             </button>
 
@@ -37,7 +37,7 @@
               <mat-card-header *ngIf="booking.old_id === null && courses[bI].course_type === 2 && courses[bI].id === bu.course_id">
 
                 <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
-                [selectLevel]="getClientDegree(bu?.client_id, item.sport_id)" [size]="40" [userImage]="getClientAvatar(bu?.client_id)"></app-level-user>
+                                [selectLevel]="getClientDegree(bu?.client_id, item.sport_id)" [size]="40" [userImage]="getClientAvatar(bu?.client_id)"></app-level-user>
                 <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
                 <mat-card-subtitle>{{getClientName(bu?.client_id)}}</mat-card-subtitle>
                 <mat-card-subtitle>{{ getLanguage(getClient(bu?.client_id)?.language1_id) }} · {{ getCountry(getClient(bu?.client_id)?.country) }} · {{calculateAge(getClient(bu?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
@@ -46,7 +46,7 @@
 
             <mat-card-header *ngIf="(booking.old_id === null || booking.old_id !== null) && courses[bI].course_type === 1">
               <app-level-user mat-card-avatar *ngIf="item.degrees_sport && item.degrees_sport.length" [allLevels]="item.degrees_sport"
-              [selectLevel]="getClientDegree(item?.courseDates[0]?.client_id,item.sport_id)" [size]="40" [userImage]="getClientAvatar(item?.courseDates[0]?.client_id)"></app-level-user>
+                              [selectLevel]="getClientDegree(item?.courseDates[0]?.client_id,item.sport_id)" [size]="40" [userImage]="getClientAvatar(item?.courseDates[0]?.client_id)"></app-level-user>
               <!--<div mat-card-avatar [style.background-image]="'url(' + getClientAvatar(booking.client_main_id) + ')'"></div>-->
               <mat-card-subtitle>{{getClientName(item?.courseDates[0]?.client_id)}}</mat-card-subtitle>
               <mat-card-subtitle>{{ getLanguage(getClient(item?.courseDates[0]?.client_id)?.language1_id) }} · {{ getCountry(getClient(item?.courseDates[0]?.client_id)?.country) }} · {{calculateAge(getClient(item?.courseDates[0]?.client_id)?.birth_date) }} {{'years' |translate}}</mat-card-subtitle>
@@ -66,7 +66,7 @@
               <mat-card-title class="mat-mdc-card-title">
                 <div style="float: left;width: 70%;font-size: 14px;" class="color-dark-always montserrat"> <strong class="montserrat"> {{getCourseName(getCourse(item?.courseDates[0]?.course_id))}} </strong></div>
                 <div class="ng-tns-c545279033-6" style="float: left;font-size: 14px;width: 30%;text-align: right;color: #EA0C60;"> {{item?.courseDates[0]?.course_id?.price}} {{item?.courseDates[0]?.course_id?.currency}} </div>
-            </mat-card-title>
+              </mat-card-title>
               <mat-card-subtitle style="margin: 0;float: left;width: 100%;" class="color-dark-always montserrat">
                 {{getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? 'colective' : 'private' | translate}}
                 {{getCourse(item?.courseDates[0]?.course_id)?.sport?.name}}
@@ -74,7 +74,7 @@
               <div style="color: #EA0C60;" *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 2 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible ">
                 {{'from' | translate}} {{ getAmountCourse(bookingUsersUnique, bI)}} CHF
 
-                </div>
+              </div>
               <div style="color: #EA0C60;" *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible">
                 {{ getAmountCourse(bookingUsersUnique, bI)}} CHF {{'/ per day'}}
               </div>
@@ -117,9 +117,9 @@
                   <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
                     <ul>
                       <li *ngFor="let forfait of settings?.extras?.forfait">
-                          <mat-checkbox class="radio" [value]="forfait" [disabled]="true" [checked]="getCourseExtraForfait(forfait, item.courseDates[0])">
-                            <span class="color-dark-always">{{forfait.id}}</span>
-                          </mat-checkbox>
+                        <mat-checkbox class="radio" [value]="forfait" [disabled]="true" [checked]="getCourseExtraForfait(forfait, item.courseDates[0])">
+                          <span class="color-dark-always">{{forfait.id}}</span>
+                        </mat-checkbox>
                       </li>
 
                     </ul>
@@ -185,8 +185,8 @@
                   <p style="width: 60%;font-size: 21px;float:left" class="color-dark-always">{{'booking_total' | translate }}</p>
                   <p style="color: #EA0C60;">{{
 
-                    parseFloatValue(parseFloatValue(getTotalBook(bI, item)))
-                  + getCourseExtraForfaitPrice(item.courseDates[0])}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
+                      parseFloatValue(parseFloatValue(getTotalBook(bI, item)))
+                      + getCourseExtraForfaitPrice(item.courseDates[0])}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
                 </div>
               </div>
               <mat-divider style="float: left;width: 100%;" class="text-border"></mat-divider>
@@ -329,7 +329,7 @@
 
               <span style="width: 100%; float:left">
                 <p style="float:left">{{'total' | translate | uppercase}}</p>
-                <p style="float:right">{{(finalPrice).toFixed(2)}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
+                <p style="float:right">{{booking?.price_total}} {{bookingsToCreate.length > 0 ? bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
             </div>
           </mat-card>
