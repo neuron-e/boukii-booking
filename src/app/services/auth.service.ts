@@ -12,18 +12,13 @@ export class AuthService extends ApiService {
   public user = new BehaviorSubject<any>(null);
 
 
-  constructor(private router: Router, http: HttpClient, route: ActivatedRoute) {
-    super(http, route);
-
-  }
+  constructor(http: HttpClient, route: ActivatedRoute) { super(http, route) }
 
   getUserData(): Observable<any> {
     return this.user.asObservable();
   }
 
-  setUserData() {
-
-  }
+  setUserData() { }
 
   async login(data: any): Promise<any> {
     try {

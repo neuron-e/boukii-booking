@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import {SchoolService} from '../../services/school.service';
+import { SchoolService } from '../../services/school.service';
 
 @Component({
   selector: 'app-modal-login',
@@ -57,7 +57,6 @@ export class ModalLoginComponent implements OnInit {
           let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
           this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
         });
-      console.log(this.loginForm.value);
     }
   }
 
@@ -79,12 +78,12 @@ export class ModalLoginComponent implements OnInit {
                 } else {
                   //TODO: cambiar el texto
                   let errorMessage = this.translateService.instant('error.client.register');
-                  this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+                  this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
                 }
               })
               .catch(error => {
                 let errorMessage = this.translateService.instant(error.error.message);
-                this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+                this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
               });
             console.log(this.loginForm.value);
           }
