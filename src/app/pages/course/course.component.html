@@ -68,9 +68,13 @@ line-height: 23px;">
       </div>
 
       <!--<ng-container *ngIf="course?.course_type==1">
-        <div class="text-color text-medium montserrat course-content-title">
+        <div class="text-color text-medium montserrat course-content-title" *ngIf="course.is_flexible">
           <img [src]="themeService.calendar">
           {{'text_choose_dates' | translate }}
+        </div>
+        <div class="text-color text-medium montserrat course-content-title" *ngIf="!course.is_flexible">
+          <img [src]="themeService.calendar">
+          {{'text_availability' | translate }}
         </div>
         <div class="mt-12 course-content-list">
           <div *ngIf="!course.is_flexible">
@@ -149,6 +153,9 @@ line-height: 23px;">
       line-height: 16px;">
         {{"RESUMEN" |translate}}
       </span>
+      <div class="show-desktop text-color-light mt-24 montserrat"
+           [innerHTML]="getShotrDescription(course)">
+      </div>
       <div class="show-desktop text-color-light montserrat"
         [innerHTML]="getShotrDescription(course)">
       </div>
@@ -237,7 +244,7 @@ line-height: 23px;">
           (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
           {{'text_new_client' | translate }}
         </button>
-        <!--<div (click)="goTo('home')"
+        <!--<div (click)="goTo(schoolData.slug )"
           class="text-color-light montserrat cursor-pointer reservation-return">
           <img [src]="themeService.arrowReturn">
           {{'text_return_courses' | translate }}

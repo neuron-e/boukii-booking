@@ -38,4 +38,16 @@ export class AuthService extends ApiService {
     }
   }
 
+  async sendMailPassword(data: any): Promise<any> {
+    try {
+      const response: any = await lastValueFrom(this.http.post(this.baseUrl + '/forgot-password', data,
+        { headers: this.getHeaders() }
+      ));
+      return response.data;
+    } catch (error) {
+      console.error('Error during sen mailing:', error);
+      throw error;
+    }
+  }
+
 }

@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ThemeService {
-  private isDarkMode: boolean = true;
+  private isDarkMode: boolean = false;
   modeIcon:string;
   arrowLeft:string;
   arrowRight:string;
@@ -22,10 +22,10 @@ export class ThemeService {
   close:string;
 
   constructor() {
-    const savedTheme = localStorage.getItem('isDarkMode');
+/*    const savedTheme = localStorage.getItem('isDarkMode');
     if (savedTheme) {
       this.isDarkMode = JSON.parse(savedTheme);
-    }
+    }*/
     this.setThemeConstants();
   }
 

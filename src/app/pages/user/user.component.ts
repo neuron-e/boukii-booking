@@ -15,6 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddClientUserModalComponent } from './add-client-user/add-client-user.component';
+import {CartService} from '../../services/cart.service';
 
 @Component({
   selector: 'app-user',
@@ -56,7 +57,7 @@ export class UserComponent implements OnInit {
   dataSource: any = [];
 
   displayedColumns: string[] = ['icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
-    'has_insurance', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
+    'has_boukii_care', 'payment_method', 'payment_status', 'cancellation_status', 'price_total'];
   mainId: any;
 
   defaults: any;
@@ -68,7 +69,7 @@ export class UserComponent implements OnInit {
   firstLoad: boolean = true;
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
+              private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
 
@@ -82,6 +83,26 @@ export class UserComponent implements OnInit {
         }
       }
     );
+    this.activatedRoute.queryParams.subscribe(params => {
+      const status = params['status'];
+
+      if (status === 'success') {
+        // Mostrar snackbar de éxito
+        this.snackbar.open(this.translateService.instant('Booking completed successfully!'), 'Close', {
+          duration: 3000,  verticalPosition: "top"// Duración del snackbar en milisegundos
+        });
+
+        // Limpiar el carrito
+        this.cartService.carData.next(null);
+        localStorage.removeItem(this.schoolData?.slug + '-cart'); // Limpiar el carrito del local storage
+
+      } else if (status === 'cancel' || status === 'failed') {
+        // Mostrar snackbar de error
+        this.snackbar.open(this.translateService.instant('Payment error: Booking could not be completed'), 'Close', {
+          duration: 3000, verticalPosition: "top"
+        });
+      }
+    });
   }
 
   onTabChange(index: number) {
@@ -305,10 +326,10 @@ export class UserComponent implements OnInit {
       case 4:
         return 'AUTRE';
       case 5:
-        return 'payment_no_payment';
+        return this.translateService.instant('payment_no_payment');
 
       default:
-        return 'payment_no_payment'
+        return this.translateService.instant('payment_no_payment');
     }
   }
 

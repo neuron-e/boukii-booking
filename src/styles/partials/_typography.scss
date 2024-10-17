@@ -53,6 +53,17 @@
   @include mat.typography-level($config, body-1);
 }
 
+/* Excluye los elementos .body-1 y p dentro de .rich-text */
+.rich-text .body-1,
+.rich-text p {
+  // Aquí puedes restablecer la tipografía o dejar que herede otros estilos
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  // O cualquier estilo que quieras aplicar en este contexto
+}
+
 .caption {
   @include mat.typography-level($config, caption);
 }

@@ -59,6 +59,20 @@
         <img [src]="themeService.close" class="cursor-pointer"
           (click)="closeModal()" />
       </div>
+
+      <div class="modal-form">
+
+        <div class="modal-form-block-full">
+          <div class="text-color-light text-small uppercase">
+            {{'text_email' | translate }}
+          </div>
+          <input type="email" [(ngModel)]="mailRecover" class="form-control width-100" />
+        </div>
+      </div>
+
+      <button (click)="sendMail()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+        {{'text_reset_password' | translate }}
+      </button>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="flex-auto"
           style="width: 100%">

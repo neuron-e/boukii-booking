@@ -246,7 +246,7 @@
     <div>
       <div class="payment-conditions mt-32">
         <div class="checkbox-custom">
-          <input type="checkbox" id="conditions">
+          <input type="checkbox" id="conditions"  [(ngModel)]="conditionsAccepted">
           <label for="conditions"
             class="checkbox-custom-label-normal text-color-light montserrat"></label>
         </div>
@@ -259,7 +259,7 @@
         </div>
       </div>
       <button (click)="sendBooking()"
-        class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100"
+        [disabled]="!conditionsAccepted" class="btn-back-primary rounded-8 button-style cursor-pointer mt-24 width-100"
         type="button">
         {{'text_end_and_pay' | translate }}
       </button>

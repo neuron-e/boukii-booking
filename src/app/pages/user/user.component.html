@@ -424,24 +424,24 @@
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="has_cancellation_insurance">
+              <ng-container matColumnDef="has_boukii_care">
                 <th *matHeaderCellDef class="uppercase" mat-header-cell> {{
                   'has_boukii_Care' | translate }}</th>
-                <td *matCellDef="let element" mat-cell>
-                  <div *ngIf="element"
+                <td *matCellDef="let element" mat-cell (click)="selectBooking(element.id)">
+                  <div *ngIf="element.has_boukii_care"
                     style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-                  <div *ngIf="!element"
+                  <div *ngIf="!element.has_boukii_care"
                     style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="has_insurance">
+              <ng-container matColumnDef="has_cancellation_insurance">
                 <th *matHeaderCellDef class="uppercase" mat-header-cell> {{
-                  'has_insurance' | translate }}</th>
-                <td *matCellDef="let element" mat-cell>
-                  <div *ngIf="element"
+                  'text_refund_option' | translate }}</th>
+                <td *matCellDef="let element" mat-cell (click)="selectBooking(element.id)">
+                  <div *ngIf="element.has_cancellation_insurance"
                     style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-                  <div *ngIf="!element"
+                  <div *ngIf="!element.has_cancellation_insurance"
                     style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
                 </td>
               </ng-container>
@@ -454,10 +454,8 @@
               </ng-container>
 
               <ng-container matColumnDef="payment_status">
-                <th *matHeaderCellDef class="uppercase" mat-header-cell>{{
-                  "ispaid" | translate }}</th>
-                <td *matCellDef="let element" mat-cell
-                  [style.color]=" element ? '#CEE741' : 'red'">
+                <th *matHeaderCellDef class="uppercase" mat-header-cell >{{ "ispaid" | translate }}</th>
+                <td *matCellDef="let element" mat-cell [style.color]=" element ? '#CEE741' : 'red'">
                   {{ (element ? 'yes' : 'no')| translate | uppercase }}
                 </td>
               </ng-container>
