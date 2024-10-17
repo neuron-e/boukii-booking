@@ -15,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddClientUserModalComponent } from './add-client-user/add-client-user.component';
-import {CartService} from '../../services/cart.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-user',
@@ -69,7 +69,7 @@ export class UserComponent implements OnInit {
   firstLoad: boolean = true;
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-              private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute) { }
+    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute, private cartService: CartService) { }
 
   ngOnInit(): void {
 
@@ -89,7 +89,7 @@ export class UserComponent implements OnInit {
       if (status === 'success') {
         // Mostrar snackbar de éxito
         this.snackbar.open(this.translateService.instant('Booking completed successfully!'), 'Close', {
-          duration: 3000,  verticalPosition: "top"// Duración del snackbar en milisegundos
+          duration: 3000, verticalPosition: "top"// Duración del snackbar en milisegundos
         });
 
         // Limpiar el carrito
