@@ -244,17 +244,6 @@
               <mat-card-subtitle class="color-dark-always">
                 {{ getLanguage(getClient(booking.client_main_id)?.language1_id) }} · {{ getCountry(getClient(booking.client_main_id)?.country) }} · {{calculateAge(getClient(booking.client_main_id)?.birth_date) }} &ensp;{{'years' | translate}}
               </mat-card-subtitle>
-              <mat-card-subtitle>
-                <button mat-icon-button color="accent">
-                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
-                </button>
-                <button mat-icon-button color="accent">
-                  <i class="fa fa-phone" aria-hidden="true"></i>
-                </button>
-                <button mat-icon-button color="accent">
-                  <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                </button>
-              </mat-card-subtitle>
             </mat-card-header>
             <!--<mat-divider class="text-border" style="margin: 10px 0 10px 0"></mat-divider>
             <button mat-raised-button color="accent" (click)="addReduction()" [disabled]="booking.status === 2">{{'apply_reduction' | translate}}</button>
