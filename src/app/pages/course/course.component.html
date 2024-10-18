@@ -211,7 +211,7 @@
         </button>
       </div>
 
-      <div *ngIf="userLogged">
+      <div *ngIf="userLogged && course">
         <div style="
         color: white;font-size: 16px;font-family: Dinamit;
          font-weight: 500;line-height: 20px;
@@ -222,30 +222,43 @@
         <div
           style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
           <span style="
-          color: #E91E63;
           font-size: 12px;
           font-family: DM Sans;
           font-weight: 400;
           line-height: 16px;
-          word-wrap: break-word"> PARTICIPANTE </span>
+          word-wrap: break-word"
+            [style.color]="courseFlux===0?'#E91E63':'#8B9099'"> PARTICIPANTE
+          </span>
           <img src="assets/icons/arrow-right.png" class="icon20">
           <span style="
-          color: #8B9099;
           font-size: 12px;
           font-family: DM Sans;
           font-weight: 400;
           line-height: 16px;
-          word-wrap: break-word"> NIVEL </span>
+          word-wrap: break-word"
+            [style.color]="courseFlux===1?'#E91E63':'#8B9099'"> NIVEL </span>
+          <img src="assets/icons/arrow-right.png" class="icon20"
+            *ngIf="course.is_flexible">
+          <span
+            *ngIf="course.is_flexible"
+            style="
+            font-size: 12px;
+            font-family: DM Sans;
+            font-weight: 400;
+            line-height: 16px;
+            word-wrap: break-word"
+            [style.color]="courseFlux===2?'#E91E63':'#8B9099'"> FECHA </span>
           <img src="assets/icons/arrow-right.png" class="icon20">
           <span style="
-          color: #8B9099;
-          font-size: 12px;
-          font-family: DM Sans;
-          font-weight: 400;
-          line-height: 16px;
-          word-wrap: break-word"> EXTRAS </span>
+              font-size: 12px;
+              font-family: DM Sans;
+              font-weight: 400;
+              line-height: 16px;
+              word-wrap: break-word"
+            [style.color]="courseFlux===3?'#E91E63':'#8B9099'"> EXTRAS </span>
         </div>
-        <div class="reservation-users" style="padding: 20px;">
+        <div class="reservation-users" style="padding: 20px;"
+          *ngIf="courseFlux===0">
           <div style="
           color: #222222;
            font-size: 14px;
@@ -303,72 +316,104 @@
         </div>
 
         <!--COLLECTIVE-->
-        <ng-container *ngIf="course?.course_type==1">
-          <ng-container *ngIf="selectedUser">
-            <div class="text-color montserrat mt-12">
-              {{'text_select_level' | translate }}
+        <div *ngIf="course?.course_type==1 && courseFlux===1"
+          style="padding: 20px;">
+          <div style="
+          color: #222222;
+           font-size: 14px;
+           font-family: DM Sans;
+           font-weight: 400;
+           line-height: 18px;
+           word-wrap: break-word">
+            {{'text_select_level' | translate }}
+          </div>
+          <div *ngIf="!selectedLevel"
+            style="
+            background-color: rgba(210, 239, 255, 1);
+          color: #222222;
+           font-size: 14px;
+           font-family: DM Sans;
+           font-weight: 400;border-radius: 8px;margin-top: 12px; margin-bottom: 20px;
+           line-height: 18px; padding: 10px;display: flex;gap: 8px; align-items: center;
+           word-wrap: break-word">
+            <img src="assets/icons/info.png" alt class="icon24">
+            {{ 'text_no_level' | translate }}
+          </div>
+
+          <div>
+
+            <!--<div *ngIf="selectedLevel" class="rounded-8 level-wrapper"
+              (mouseenter)="showTooltipFilter(0)"
+              (mouseleave)="hideTooltipFilter(0)">
+              <div
+                [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.league}}</div>
+              <div class="text-color">{{selectedLevel.name}}</div>
+              <div class="level-check">
+                <img src="assets/icons/check.png" />
+              </div>
+
+              <div class="tooltip-container-level background-color-trans"
+                *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+                <div class="text-small montserrat text-color-light"
+                  *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
+                  {{goal.name}}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <div *ngIf="!selectedLevel"
-                class="text-color fw-semibold montserrat mt-12">
-                {{ 'text_no_level' | translate }}
-              </div>
+            <div
+              class="text-color montserrat cursor-pointer reservation-return mt-24 mb-24"
+              (click)="showLevels=!showLevels">
+              <img [src]="themeService.edit">
+              {{'text_change_level' | translate }}
+            </div>-->
 
-              <div *ngIf="selectedLevel" class="rounded-8 level-wrapper"
-                (mouseenter)="showTooltipFilter(0)"
-                (mouseleave)="hideTooltipFilter(0)">
+            <div
+              *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length > 0"
+              class="levels-section">
+              <ng-container
+                *ngFor="let level of course?.availableDegrees;let i = index">
                 <div
-                  [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.league}}</div>
-                <div class="text-color">{{selectedLevel.name}}</div>
-                <div class="level-check">
-                  <img src="assets/icons/check.png" />
+                  *ngIf="i===0 || course?.availableDegrees[i].level !== course?.availableDegrees[i-1].level"
+                  style="
+                color: #8B9099;
+                 font-size: 12px;
+                 font-family: DM Sans;
+                 font-weight: 600;
+                 line-height: 16px;
+                 word-wrap: break-word">
+                  {{level.level }}
                 </div>
 
-                <div class="tooltip-container-level background-color-trans"
-                  *ngIf="tooltipsFilter[0]" [@fadeInOut]>
-                  <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
-                  <div class="text-small montserrat text-color-light"
-                    *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
-                    {{goal.name}}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="text-color montserrat cursor-pointer reservation-return mt-24 mb-24"
-                (click)="showLevels=!showLevels">
-                <img [src]="themeService.edit">
-                {{'text_change_level' | translate }}
-              </div>
-
-              <div
-                *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length > 0"
-                class="levels-section">
-                <ng-container
-                  *ngFor="let level of course?.availableDegrees;let i = index">
-
-                  <div (click)="selectLevel(level)"
-                    class="rounded-8 level-wrapper cursor-pointer"
-                    *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
-                       hasMatchingSportLevel(level)">
+                <mat-checkbox
+                  *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
+                       hasMatchingSportLevel(level)"
+                  style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);"
+                  [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}">
+                  <div style="display: flex;gap: 8px;">
                     <div
-                      [ngStyle]="{'color': level.color}">{{level.annotation}}</div>
-                    <div class="text-color">{{level.name}}</div>
+                      [ngStyle]="{'color': level.color}"
+                      style="
+                       font-size: 12px;
+                       font-family: DM Sans;
+                       font-weight: 400;
+                       line-height: 16px;
+                       word-wrap: break-word">
+                      {{level.annotation}} {{level.name}}
+                    </div>
                     <div *ngIf="level == selectedLevel" class="level-check">
                       <img src="assets/icons/check.png" />
                     </div>
                   </div>
-                </ng-container>
-              </div>
-              <div
-                *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
-                <p> {{'text_no_degrees' | translate }}</p>
-              </div>
+                </mat-checkbox>
+              </ng-container>
             </div>
-          </ng-container>
-
-        </ng-container>
+            <div
+              *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
+              <p> {{'text_no_degrees' | translate }}</p>
+            </div>
+          </div>
+        </div>
 
         <!--PRIVATE-->
         <ng-container *ngIf="course?.course_type==2">
@@ -514,8 +559,9 @@
             </div>
           </div>
           <div style="padding: 20px;">
-            <button (click)="addBookingToCart()"
-              [disabled]="!selectedUser || !selectedLevel"
+            <button
+              (click)="next()"
+              [disabled]="!selectedUser && !selectedLevel"
               style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;

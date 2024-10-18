@@ -156,6 +156,7 @@
   gap: 12px;
   flex-wrap: wrap;
   justify-content: space-between;
+  flex-direction: column;
 }
 .level-wrapper {
   background-color: var(--level-background);
@@ -326,7 +327,6 @@
     }
   }
   .reservation-box {
-    padding: 16px;
     flex-wrap: wrap;
     flex-direction: row;
   }
@@ -373,4 +373,3 @@
   line-height: 18px;
   word-wrap: break-word;
 }
-

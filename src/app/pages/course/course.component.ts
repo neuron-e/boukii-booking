@@ -31,7 +31,8 @@ export class CourseComponent implements OnInit {
   today: Date = new Date();
   userLogged: any;
   course: any;
-  courseType: number = 2;
+  courseType: number = 1;
+  courseFlux: number = 0
   dataLevels = [
     {
       'id': 181,
@@ -1055,5 +1056,21 @@ export class CourseComponent implements OnInit {
     const minHourString = maxHourStart.toString().padStart(4, "0");
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
+  next() {
 
+    if (this.courseFlux === 0) {
+
+    } else if (this.courseFlux === 1) {
+      this.selectLevel(this.selectedLevel)
+      if (!this.course.is_flexible) {
+        this.courseFlux++
+      }
+
+    } else if (this.courseFlux === 2) {
+
+    } else {
+
+    }
+    this.courseFlux++
+  }
 }
