@@ -169,21 +169,48 @@
         <span class="descripcion2">
           {{"Forfait" |translate}}
         </span>
-        <ng-container *ngFor="let extra of settings.extras.forfait">
-          <div class="checkbox-circle pl-32">
-            <input
-              id="radio-course-{{extra.id}}"
-              type="checkbox"
-              name="forfaitSelection"
-              [checked]="selectedForfait === extra"
-              (change)="toggleForfaitSelection(extra)" />
-            <label class="text-color-light montserrat"
-              for="radio-course-{{extra.id}}">
-              {{extra.name}} - {{extra.price}}{{course?.currency}} / {{'date' |
-              translate }}
-            </label>
-          </div>
-        </ng-container>
+        <div
+          style="display: flex;gap: 16px;padding: 20px 0;flex-direction: column;">
+          <mat-checkbox *ngFor="let extra of settingsExtras"
+            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
+            <div style="display: flex;gap: 8px;padding: 4px 0;
+            padding-right: 10px;
+            justify-content: space-between;
+            align-items: center;">
+              <div>
+                <span style="
+              color: #222222;
+               font-size: 14px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 18px;
+               word-wrap: break-word">
+                  {{extra.product}}
+                </span>
+                <br>
+                <span style="
+              color: #8B9099;
+               font-size: 12px;
+               font-family: DM Sans;
+               font-weight: 400;
+               line-height: 16px;
+               word-wrap: break-word">
+                  {{extra.name}}
+                </span>
+              </div>
+
+              <span style="
+            color: #222222;
+             font-size: 14px;
+             font-family: DM Sans;
+             font-weight: 400;
+             line-height: 18px;
+             word-wrap: break-word">
+                {{extra.price}}{{course?.currency}} / {{'date' | translate }}
+              </span>
+            </div>
+          </mat-checkbox>
+        </div>
       </ng-container>
     </div>
   </div>
@@ -249,7 +276,8 @@
             word-wrap: break-word"
             [style.color]="courseFlux===2?'#E91E63':'#8B9099'"> FECHA </span>
           <img src="assets/icons/arrow-right.png" class="icon20">
-          <span style="
+          <span
+            style="
               font-size: 12px;
               font-family: DM Sans;
               font-weight: 400;
@@ -278,7 +306,7 @@
           <mat-checkbox
             (click)="selectUser(userLogged.clients[0],course?.course_type)"
             style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
-            <div style="display: flex;gap: 8px;padding: 12px;">
+            <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length"
                 [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
                 [userImage]="userLogged?.clients[0].image"></app-level-user>
@@ -287,9 +315,9 @@
                 <img src="assets/images/gold-crown.png">
                 {{userLogged?.clients[0].last_name}}
               </div>
-              <div
+              <!--<div
                 *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])"
-                class="reservation-user-bullet"></div>
+                class="reservation-user-bullet"></div>-->
             </div>
           </mat-checkbox>
 
@@ -327,13 +355,13 @@
            word-wrap: break-word">
             {{'text_select_level' | translate }}
           </div>
-          <div *ngIf="!selectedLevel"
+          <div
             style="
             background-color: rgba(210, 239, 255, 1);
           color: #222222;
            font-size: 14px;
            font-family: DM Sans;
-           font-weight: 400;border-radius: 8px;margin-top: 12px; margin-bottom: 20px;
+           font-weight: 400;border-radius: 8px;margin-top: 12px;
            line-height: 18px; padding: 10px;display: flex;gap: 8px; align-items: center;
            word-wrap: break-word">
             <img src="assets/icons/info.png" alt class="icon24">
@@ -370,7 +398,7 @@
 
             <div
               *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length > 0"
-              class="levels-section">
+              class="levels-section" style="margin-top: 20px;">
               <ng-container
                 *ngFor="let level of course?.availableDegrees;let i = index">
                 <div
@@ -386,11 +414,12 @@
                 </div>
 
                 <mat-checkbox
+                  (click)="selectLevel(level)"
                   *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
                        hasMatchingSportLevel(level)"
                   style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);"
                   [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}">
-                  <div style="display: flex;gap: 8px;">
+                  <div style="display: flex;gap: 8px;padding: 12px 0;">
                     <div
                       [ngStyle]="{'color': level.color}"
                       style="
@@ -400,9 +429,6 @@
                        line-height: 16px;
                        word-wrap: break-word">
                       {{level.annotation}} {{level.name}}
-                    </div>
-                    <div *ngIf="level == selectedLevel" class="level-check">
-                      <img src="assets/icons/check.png" />
                     </div>
                   </div>
                 </mat-checkbox>
@@ -414,16 +440,13 @@
             </div>
           </div>
         </div>
-
         <!--PRIVATE-->
-        <ng-container *ngIf="course?.course_type==2">
-
+        <ng-container *ngIf="course?.course_type==2 && courseFlux===1">
           <ng-container
             *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat mt-12 margin-auto">
               {{'text_select_date_disponibility' | translate }}
             </div>
-
             <!--Calendar Private-->
             <div class="calendar-reservation-section margin-auto">
               <div class="calendar background-color-trans rounded-8">
@@ -537,32 +560,91 @@
               </div>
 
             </ng-container>
-
           </ng-container>
-
         </ng-container>
 
-        <ng-container *ngIf="course?.course_type ==1">
-          <div class="reservation-price-flex"
-            style="padding: 10px 20px; border-top: 1px solid rgba(222, 230, 234, 1); border-bottom: 1px solid rgba(222, 230, 234, 1);">
-            <div class="text-medium text-color uppercase">
-              {{'text_price' | translate }}
-            </div>
-            <div class="text-medium text-color" *ngIf="!course?.is_flexible">
-              <span class="text-color text-medium fw-bold">
-                {{course?.price}}</span> {{ course?.currency }}
-            </div>
-            <div class="text-medium text-color" *ngIf="course?.is_flexible">
-              <span class="text-color text-medium fw-bold">
-                {{collectivePrice}}</span> {{ course?.currency }} /{{'date' |
-              translate }}
-            </div>
+        <div *ngIf="courseFlux===3"
+          style="display: flex;padding: 20px;flex-direction: column;">
+          <div style="color: #222222;
+           font-size: 14px;
+           font-family: DM Sans;
+           font-weight: 400;
+           line-height: 18px;
+           word-wrap: break-word">
+            Si lo deseas, puedes agregar extras a tu reserva y/o observaciones
+            para la escuela.
           </div>
-          <div style="padding: 20px;">
-            <button
-              (click)="next()"
-              [disabled]="!selectedUser && !selectedLevel"
-              style="
+          <div
+            style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
+            <mat-checkbox *ngFor="let extra of settingsExtras"
+              style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
+              <div style="display: flex;gap: 8px ;
+              height: 64px;
+              justify-content: space-between;
+              align-items: center;">
+                <div>
+                  <span style="
+                  color: #222222;
+                   font-size: 14px;
+                   font-family: DM Sans;
+                   font-weight: 600;
+                   line-height: 18px;
+                   word-wrap: break-word">
+                    {{extra.product}}
+                  </span>
+                  <br>
+                  <span style="
+                  color: #8B9099;
+                   font-size: 12px;
+                   font-family: DM Sans;
+                   font-weight: 400;
+                   line-height: 16px;
+                   word-wrap: break-word">
+                    {{extra.name}}
+                  </span>
+                </div>
+
+                <span style="
+                color: #222222;
+                 font-size: 14px;
+                 font-family: DM Sans;
+                 font-weight: 400;
+                 line-height: 18px;width: 125px;padding: 10px;
+                 word-wrap: break-word">
+                  {{extra.price}}{{course?.currency}} / {{'date' | translate }}
+                </span>
+              </div>
+            </mat-checkbox>
+            <mat-form-field appearance="outline" class="flex-auto"
+              style="width: 100%">
+              <mat-label>{{'Observaciones' | translate}}</mat-label>
+              <input matInput type="text"
+                required>
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <div class="reservation-price-flex"
+          style="padding: 10px 20px; border-top: 1px solid rgba(222, 230, 234, 1); border-bottom: 1px solid rgba(222, 230, 234, 1);">
+          <div class="text-medium text-color uppercase">
+            {{'text_price' | translate }}
+          </div>
+          <div class="text-medium text-color" *ngIf="!course?.is_flexible">
+            <span class="text-color text-medium fw-bold">
+              {{course?.price}}</span> {{ course?.currency }}
+          </div>
+          <div class="text-medium text-color" *ngIf="course?.is_flexible">
+            <span class="text-color text-medium fw-bold">
+              {{collectivePrice}}</span> {{ course?.currency }} /{{'date' |
+            translate }}
+          </div>
+        </div>
+        <div style="padding: 20px;">
+          <button
+            (click)="next()"
+            [disabled]="!selectedUser&&courseFlux===0 || !selectedLevel&&courseFlux===1"
+            style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
@@ -572,20 +654,17 @@
                font-weight: 600;
                line-height: 18px;
                word-wrap: break-word"
-              type="button">
-              {{'Continuar' | translate }}
-            </button>
-          </div>
-        </ng-container>
+            type="button">
+            {{'Continuar' | translate }}
+          </button>
+        </div>
         <!--<div (click)="goTo(schoolData.slug )"
           class="text-color-light montserrat cursor-pointer reservation-return mt-12">
           <img [src]="themeService.arrowReturn">
           {{'text_delete_return_courses' | translate }}
         </div>-->
-
       </div>
       <!--/USER LOGGED-->
-
     </div>
   </div>
 </div>

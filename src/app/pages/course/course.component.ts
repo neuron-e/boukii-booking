@@ -221,6 +221,7 @@ export class CourseComponent implements OnInit {
 
   schoolData: any;
   settings: any;
+  settingsExtras: any
   selectedDates: any = [];
   collectivePrice: any = 0;
 
@@ -242,6 +243,7 @@ export class CourseComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
+          this.settingsExtras = [...this.settings.extras.forfait, ...this.settings.extras.food, ...this.settings.extras.transport,]
           console.log(this.settings);
           console.log(this.schoolData);
         }
@@ -298,22 +300,6 @@ export class CourseComponent implements OnInit {
       }
     });
   }
-
-  toggleForfaitSelection(extra: any) {
-    if (this.selectedForfait === extra) {
-      this.selectedForfait = null; // Deselect if already selected
-    } else {
-      this.selectedForfait = extra; // Select the clicked option
-    }
-  }
-
-  /*
-    getSports() {
-      this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
-        .subscribe((sport) => {
-          this.sports = sport.data;
-        })
-    }*/
 
   initializeMonthNames() {
     this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -652,7 +638,6 @@ export class CourseComponent implements OnInit {
 
   selectLevel(level: any) {
     this.selectedLevel = level;
-    this.showLevels = false;
   }
 
   showTooltipFilter(index: number) {

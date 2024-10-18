@@ -1505,13 +1505,11 @@ input[type="date"]::-webkit-clear-button {
   ~ .mdc-checkbox__background {
   border-radius: 1000px;
 }
-.mdc-checkbox
-  .mdc-checkbox__native-control:enabled
-  ~ .mdc-checkbox__background
-  .mdc-checkbox__checkmark {
-  display: none;
-}
+
 .mat-mdc-checkbox label,
 .mat-mdc-checkbox .mdc-form-field {
   width: 100%;
+}
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
