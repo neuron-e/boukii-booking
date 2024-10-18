@@ -34,24 +34,20 @@
     </div>
 
     <div class="course-content" *ngIf="course">
-      <span style="color: var(--Dark-01, #222);
-font-family: Dinamit;
-font-size: 18px;
-font-style: normal;
-font-weight: 500;
-line-height: 23px;">
-        {{course.price}} {{course.currency}} /Fecha
-      </span>
+      <div>
+        <span class="descripcion"> a partir de </span>
+        <span class="price"> {{course.price}} {{course.currency}} </span>
+      </div>
       <div class="dates"
         style="display: flex;gap: 8px;align-items: center;">
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
-          <span style="color: black;">Desde <strong>{{course.date_start |
-              date}}</strong>
-            hasta
-            <strong>{{course.date_end | date}}</strong></span>
+          <span class="descripcion"> Desde </span>
+          <span class="campo">{{course.date_start.split("T")[0] }}</span>
+          <span class="descripcion"> hasta </span>
+          <span class="campo">{{course.date_end.split("T")[0] }}</span>
           <br>
-          <span style="color: black;">
+          <span class="campo2">
             {{getWeekDay()}}
             {{findMinHourStart()}}–{{findMaxHourEnd()}}
           </span>
@@ -60,9 +56,8 @@ line-height: 23px;">
       <div class="max-group"
         style="display: flex;gap: 8px;align-items: center;">
         <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
-        <span style="color: black;">Max. {{course.max_participants}}</span>
-        <span style="color: black;"
-          *ngIf="course.age_max<99 && course.age_min>1">
+        <span class="campo2">Max. {{course.max_participants}}</span>
+        <span class="campo2" *ngIf="course.age_max<99 && course.age_min>1">
           ,{{course.age_min}}-{{course.age_max}}+ años
         </span>
       </div>
@@ -145,36 +140,21 @@ line-height: 23px;">
           </div>
         </div>
       </ng-container>-->
-      <span style="color: var(--Grey-01, #8B9099);
-      font-family: 'DM Sans';
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 16px;">
+      <span class="descripcion2">
         {{"RESUMEN" |translate}}
       </span>
       <div class="show-desktop text-color-light montserrat"
         [innerHTML]="getShotrDescription(course)">
       </div>
 
-      <span style="color: var(--Grey-01, #8B9099);
-      font-family: 'DM Sans';
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 16px;">
+      <span class="descripcion2">
         {{"DESCRIPCIÓN" |translate}}
       </span>
       <div class="show-desktop text-color-light montserrat"
         [innerHTML]="getDescription(course)">
       </div>
 
-      <span style="color: var(--Grey-01, #8B9099);
-      font-family: 'DM Sans';
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 16px;">
+      <span class="descripcion2">
         {{"NIVELES" |translate}}
       </span>
       <ng-container *ngFor="let item of course.availableDegrees">
@@ -186,7 +166,9 @@ line-height: 23px;">
       </ng-container>
 
       <ng-container *ngIf="course?.options">
-        <p>Forfait</p>
+        <span class="descripcion2">
+          {{"Forfait" |translate}}
+        </span>
         <ng-container *ngFor="let extra of settings.extras.forfait">
           <div class="checkbox-circle pl-32">
             <input
@@ -208,25 +190,11 @@ line-height: 23px;">
 
   <!--Reservation-->
   <div class="reservation-section">
-    <div class="rounded-8 padding-box reservation-box">
-
-      <!-- NOT LOGGED-->
-      <ng-container *ngIf="!userLogged">
-        <!--<div class="text-color text-medium fw-semibold">
-          {{'text_booking' | translate }}
-        </div>-->
+    <div class="rounded-8 reservation-box">
+      <div *ngIf="!userLogged" class="reservation-box" style="padding: 20px;">
         <div style="width: 100%;" class="text-color montserrat">
           {{'text_booking1' | translate }}
         </div>
-        <!--<div class="reservation-price-flex">
-          <div class="text-medium text-color uppercase">
-            {{'text_price' | translate }}
-          </div>
-          <div class="text-medium text-color">
-            <span class="text-medium fw-bold">{{ getCoursePrice(course)
-              }}</span> {{ course?.currency }} /{{'date' | translate }}
-          </div>
-        </div>-->
         <button
           style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;font-family: 'DM Sans'"
           class="rounded-8 button-style cursor-pointer width-100"
@@ -241,43 +209,77 @@ line-height: 23px;">
           (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
           {{'text_new_client' | translate }}
         </button>
-        <!--<div (click)="goTo(schoolData.slug )"
-          class="text-color-light montserrat cursor-pointer reservation-return">
-          <img [src]="themeService.arrowReturn">
-          {{'text_return_courses' | translate }}
-        </div>-->
-      </ng-container>
-      <ng-container *ngIf="userLogged">
-        <div class="text-color text-medium fw-semibold">
+      </div>
+
+      <div *ngIf="userLogged">
+        <div style="
+        color: white;font-size: 16px;font-family: Dinamit;
+         font-weight: 500;line-height: 20px;
+         word-wrap: break-word; background-color: rgba(47, 56, 68, 1);
+         height: 60px;padding: 20px; border-radius: 8px 8px 0 0;">
           {{'text_new_booking' | translate }}
         </div>
-
-        <div class="text-color montserrat">
-          <ng-container *ngIf="course?.course_type === 2">
-            {{'text_select_user_or_more' | translate }}
-            {{course?.max_participants}}
-          </ng-container>
-          <ng-container *ngIf="!(course?.course_type === 2)">
-            {{'text_select_user' | translate }}
-          </ng-container>
+        <div
+          style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
+          <span style="
+          color: #E91E63;
+          font-size: 12px;
+          font-family: DM Sans;
+          font-weight: 400;
+          line-height: 16px;
+          word-wrap: break-word"> PARTICIPANTE </span>
+          <img src="assets/icons/arrow-right.png" class="icon20">
+          <span style="
+          color: #8B9099;
+          font-size: 12px;
+          font-family: DM Sans;
+          font-weight: 400;
+          line-height: 16px;
+          word-wrap: break-word"> NIVEL </span>
+          <img src="assets/icons/arrow-right.png" class="icon20">
+          <span style="
+          color: #8B9099;
+          font-size: 12px;
+          font-family: DM Sans;
+          font-weight: 400;
+          line-height: 16px;
+          word-wrap: break-word"> EXTRAS </span>
         </div>
-
-        <div class="reservation-users">
-          <div class="reservation-user-box cursor-pointer"
-            (click)="selectUser(userLogged.clients[0],course?.course_type)"
-            [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])}">
-            <app-level-user *ngIf="dataLevels && dataLevels.length"
-              [allLevels]="dataLevels" [selectLevel]="185" [size]="70"
-              [userImage]="userLogged?.clients[0].image"></app-level-user>
-            <div
-              class="text-color text-small montserrat reservation-user-title">
-              <img src="assets/images/gold-crown.png">
-              {{userLogged?.clients[0].last_name}}
-            </div>
-            <div
-              *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])"
-              class="reservation-user-bullet"></div>
+        <div class="reservation-users" style="padding: 20px;">
+          <div style="
+          color: #222222;
+           font-size: 14px;
+           font-family: DM Sans;
+           font-weight: 400;
+           line-height: 18px;
+           word-wrap: break-word">
+            <ng-container *ngIf="course?.course_type === 2">
+              {{'text_select_user_or_more' | translate }}
+              {{course?.max_participants}}
+            </ng-container>
+            <ng-container *ngIf="!(course?.course_type === 2)">
+              {{'text_select_user' | translate }}
+            </ng-container>
           </div>
+
+          <mat-checkbox
+            (click)="selectUser(userLogged.clients[0],course?.course_type)"
+            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+            <div style="display: flex;gap: 8px;padding: 12px;">
+              <app-level-user *ngIf="dataLevels && dataLevels.length"
+                [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+                [userImage]="userLogged?.clients[0].image"></app-level-user>
+              <div
+                class="text-color text-small montserrat reservation-user-title">
+                <img src="assets/images/gold-crown.png">
+                {{userLogged?.clients[0].last_name}}
+              </div>
+              <div
+                *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])"
+                class="reservation-user-bullet"></div>
+            </div>
+          </mat-checkbox>
+
           <div class="reservation-user-box cursor-pointer"
             *ngFor="let utilizer of userLogged?.clients[0].utilizers"
             (click)="selectUser(utilizer,course?.course_type)"
@@ -293,21 +295,15 @@ line-height: 23px;">
               *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)"
               class="reservation-user-bullet"></div>
           </div>
-          <div class="reservation-user-box cursor-pointer opacity-full"
-            (click)="openModalAddUser()">
-            <div class="reservation-user-add">
-              <img src="/assets/icons/icons-outline-add.svg">
-            </div>
-            <div
-              class="text-color text-small montserrat reservation-user-title">
-              {{'text_add' | translate }} {{'text_user' | translate }}
-            </div>
-          </div>
+
+          <button (click)="openModalAddUser()"
+            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 40px;padding: 10px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+            {{'text_add' | translate }} {{'text_user' | translate }}
+          </button>
         </div>
 
         <!--COLLECTIVE-->
         <ng-container *ngIf="course?.course_type==1">
-
           <ng-container *ngIf="selectedUser">
             <div class="text-color montserrat mt-12">
               {{'text_select_level' | translate }}
@@ -502,7 +498,8 @@ line-height: 23px;">
         </ng-container>
 
         <ng-container *ngIf="course?.course_type ==1">
-          <div class="reservation-price-flex mt-12">
+          <div class="reservation-price-flex"
+            style="padding: 10px 20px; border-top: 1px solid rgba(222, 230, 234, 1); border-bottom: 1px solid rgba(222, 230, 234, 1);">
             <div class="text-medium text-color uppercase">
               {{'text_price' | translate }}
             </div>
@@ -516,23 +513,31 @@ line-height: 23px;">
               translate }}
             </div>
           </div>
-          <div>
+          <div style="padding: 20px;">
             <button (click)="addBookingToCart()"
               [disabled]="!selectedUser || !selectedLevel"
-              class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12"
+              style="
+              background-color: rgba(233, 30, 99, 1);
+              width: 100%;border-radius: 3px;
+              height: 50px;padding: 10px 12px;
+              color: white;
+               font-size: 14px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 18px;
+               word-wrap: break-word"
               type="button">
-              <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' |
-              translate }}
+              {{'Continuar' | translate }}
             </button>
           </div>
         </ng-container>
-        <div (click)="goTo(schoolData.slug )"
+        <!--<div (click)="goTo(schoolData.slug )"
           class="text-color-light montserrat cursor-pointer reservation-return mt-12">
           <img [src]="themeService.arrowReturn">
           {{'text_delete_return_courses' | translate }}
-        </div>
+        </div>-->
 
-      </ng-container>
+      </div>
       <!--/USER LOGGED-->
 
     </div>

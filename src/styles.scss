@@ -1452,6 +1452,12 @@ input[type="date"]::-webkit-clear-button {
   font-size: 16px;
   min-width: 16px;
 }
+.icon14 {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  min-width: 14px;
+}
 .icon20 {
   width: 20px;
   height: 20px;
@@ -1481,4 +1487,31 @@ input[type="date"]::-webkit-clear-button {
   height: 48px;
   font-size: 48px;
   min-width: 48px;
+}
+
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not(
+    [data-indeterminate="true"]
+  )
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:checked
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:indeterminate
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control[data-indeterminate="true"]:enabled
+  ~ .mdc-checkbox__background {
+  border-radius: 1000px;
+}
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled
+  ~ .mdc-checkbox__background
+  .mdc-checkbox__checkmark {
+  display: none;
+}
+.mat-mdc-checkbox label,
+.mat-mdc-checkbox .mdc-form-field {
+  width: 100%;
 }
