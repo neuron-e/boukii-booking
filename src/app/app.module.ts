@@ -48,6 +48,7 @@ import { FooterComponent } from './layout/footer/app.component';
 import { HeaderComponent } from './layout/header/app.component';
 import { CourseCardComponent } from './components/course-card/app.component';
 import { MobileModalComponent } from './components/mobile-modal/app.component';
+import { CourseModalConfirmComponent } from './pages/course/modal-confirm/app.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -66,6 +67,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     FooterComponent,
     MobileModalComponent,
+    CourseModalConfirmComponent
   ],
   imports: [
     BrowserModule,

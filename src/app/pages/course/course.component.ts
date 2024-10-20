@@ -11,7 +11,6 @@ import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HeaderComponent } from 'src/app/layout/header/app.component';
 
 @Component({
   selector: 'app-course',
@@ -33,6 +32,7 @@ export class CourseComponent implements OnInit {
   course: any;
   courseType: number = 1;
   courseFlux: number = 0
+  confirmModal: boolean = false
   dataLevels = [
     {
       'id': 181,
@@ -196,7 +196,6 @@ export class CourseComponent implements OnInit {
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
   selectedForfait: any
-
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -1053,8 +1052,9 @@ export class CourseComponent implements OnInit {
 
     } else if (this.courseFlux === 2) {
 
-    } else {
-
+    } else if (this.courseFlux === 3) {
+      this.confirmModal = true
+      this.courseFlux--
     }
     this.courseFlux++
   }

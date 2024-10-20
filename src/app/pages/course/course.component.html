@@ -289,11 +289,11 @@
           *ngIf="courseFlux===0">
           <div style="
           color: #222222;
-           font-size: 14px;
-           font-family: DM Sans;
-           font-weight: 400;
-           line-height: 18px;
-           word-wrap: break-word">
+          font-size: 14px;
+          font-family: DM Sans;
+          font-weight: 400;
+          line-height: 18px;
+          word-wrap: break-word">
             <ng-container *ngIf="course?.course_type === 2">
               {{'text_select_user_or_more' | translate }}
               {{course?.max_participants}}
@@ -618,8 +618,8 @@
             <mat-form-field appearance="outline" class="flex-auto"
               style="width: 100%">
               <mat-label>{{'Observaciones' | translate}}</mat-label>
-              <input matInput type="text"
-                required>
+              <textarea matInput cols="3">
+                </textarea>
             </mat-form-field>
           </div>
 
@@ -658,7 +658,7 @@
             {{'Continuar' | translate }}
           </button>
         </div>
-        <!--<div (click)="goTo(schoolData.slug )"
+        <!--<div (click)="goTo(schoolData.slug)"
           class="text-color-light montserrat cursor-pointer reservation-return mt-12">
           <img [src]="themeService.arrowReturn">
           {{'text_delete_return_courses' | translate }}
@@ -671,3 +671,12 @@
 
 <app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser"
   (onClose)="closeModalAddUser()"></app-modal-add-user>
+<app-course-modal-confirm [course]="course"
+  [selectedUser]="selectedUser"
+  [selectedForfait]="selectedForfait"
+  *ngIf="confirmModal"
+  (onClose)="confirmModal=false"
+  (goCart)="goTo(schoolData.slug+'/cart/')"
+  (next)="addBookingToCart()"
+  [collectivePrice]="collectivePrice">
+</app-course-modal-confirm>
