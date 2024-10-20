@@ -711,7 +711,7 @@
 <app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser"
   (onClose)="closeModalAddUser()"></app-modal-add-user>
 <app-course-modal-confirm [course]="course"
-  [selectedUser]="selectedUser"
+  [selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple"
   [selectedForfait]="selectedForfait"
   *ngIf="confirmModal"
   (onClose)="confirmModal=false"

@@ -31,7 +31,7 @@
                         class="icon24">
                     {{'PARTICIPANTE' | translate }}
                 </div>
-                <div style="display: flex;gap: 8px;padding: 12px 0;">
+                <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
                     <app-level-user
                         [allLevels]="courseC.dataLevels" [selectLevel]="185"
                         [size]="40"

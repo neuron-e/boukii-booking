@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class CourseModalConfirmComponent {
   @Input() course: any
-  @Input() selectedUser: any
+  @Input() selectedUsers: any
   @Input() selectedForfait: any
   @Input() collectivePrice: number = 0
 
