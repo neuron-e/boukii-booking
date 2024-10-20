@@ -2,50 +2,48 @@
   <div class="modal-content background-color-full rounded-8"
     (click)="$event.stopPropagation()">
     <div
-      class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+      class="text-color fw-semibold text-semibig modal-flex-title pb-12">
       {{'text_add_user' | translate }}
       <img [src]="themeService.close" class="cursor-pointer"
         (click)="closeModal()" />
     </div>
-
-    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()" class="modal-form">
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{'text_first_name' | translate }}
-        </div>
-        <input type="text" class="form-control width-100"
-          formControlName="first_name" />
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{'text_last_name' | translate }}
-        </div>
-        <input type="text" class="form-control width-100"
-          formControlName="last_name" />
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{'text_birth_date' | translate }}
-        </div>
-        <input type="date" class="form-control width-100"
-          formControlName="birth_date" />
-      </div>
-      <div class="modal-form-block-half">
-        <div class="text-color-light text-small uppercase">
-          {{'text_language' | translate }}
-        </div>
-        <select class="form-control width-100" formControlName="language1_id">
-          <option value="1">{{ 'france' | translate }}</option>
-          <option value="2">{{ 'english' | translate }}</option>
-          <option value="3">{{ 'spanish' | translate }}</option>
-        </select>
+    <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
+      <div class="modal-form">
+        <mat-form-field appearance="outline" class="flex-auto widthInput">
+          <mat-label>{{'text_first_name' | translate}}</mat-label>
+          <input matInput type="text" formControlName="first_name"
+            required>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-auto widthInput">
+          <mat-label>{{'text_last_name' | translate}}</mat-label>
+          <input matInput type="text" formControlName="last_name"
+            required>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-auto widthInput">
+          <mat-label>{{'text_birth_date' | translate}}</mat-label>
+          <input matInput type="date" formControlName="birth_date"
+            required>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="widthInput">
+          <mat-label>{{'text_language' | translate}} 1</mat-label>
+          <input type="text" matInput
+            formControlName="language1_id" [matAutocomplete]="autoStation">
+          <mat-autocomplete #autoStation="matAutocomplete"
+            [displayWith]="displayFn">
+            <mat-option *ngFor="let item of langs" [value]="item">
+              {{ item.lang | translate }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
       </div>
     </form>
-
-    <button type="submit" [disabled]="addUserForm.invalid"
-      class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100"
-      type="button">
-      {{'text_confirm' | translate }}
-    </button>
+    <div style="padding-top: 20px;">
+      <button (click)="onSubmit()"
+        [disabled]="addUserForm.invalid"
+        class="button-primary"
+        type="button">
+        {{'text_confirm' | translate }}
+      </button>
+    </div>
   </div>
 </div>

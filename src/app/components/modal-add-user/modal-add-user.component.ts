@@ -28,7 +28,11 @@ export class ModalAddUserComponent implements OnInit {
   @Input() isOpen: boolean = false;
   @Input() slug: string;
   @Output() onClose = new EventEmitter<void>();
-
+  langs: any[] = [
+    { id: 1, lang: "france" },
+    { id: 2, lang: "english" },
+    { id: 3, lang: "spanish" },
+  ]
   firstName: string = '';
   lastName: string = '';
   birthDate: string = '';
@@ -83,5 +87,7 @@ export class ModalAddUserComponent implements OnInit {
   closeModal() {
     this.onClose.emit();
   }
-
+  displayFn(d: any): string {
+    return d.lang
+  }
 }

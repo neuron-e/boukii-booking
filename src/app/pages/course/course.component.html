@@ -265,9 +265,9 @@
           word-wrap: break-word"
             [style.color]="courseFlux===1?'#E91E63':'#8B9099'"> NIVEL </span>
           <img src="assets/icons/arrow-right.png" class="icon20"
-            *ngIf="course.is_flexible">
+            *ngIf="course.is_flexible || course.course_type===2">
           <span
-            *ngIf="course.is_flexible"
+            *ngIf="course.is_flexible || course.course_type===2"
             style="
             font-size: 12px;
             font-family: DM Sans;
@@ -343,8 +343,7 @@
           </button>
         </div>
 
-        <!--COLLECTIVE-->
-        <div *ngIf="course?.course_type==1 && courseFlux===1"
+        <div *ngIf="courseFlux===1"
           style="padding: 20px;">
           <div style="
           color: #222222;
@@ -395,12 +394,12 @@
               <img [src]="themeService.edit">
               {{'text_change_level' | translate }}
             </div>-->
-
+            <!--showLevels && -->
             <div
-              *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length > 0"
+              *ngIf="course?.availableDegrees && course?.availableDegrees.length > 0"
               class="levels-section" style="margin-top: 20px;">
               <ng-container
-                *ngFor="let level of course?.availableDegrees;let i = index">
+                *ngFor="let level of course.availableDegrees;let i = index">
                 <div
                   *ngIf="i===0 || course?.availableDegrees[i].level !== course?.availableDegrees[i-1].level"
                   style="
@@ -412,11 +411,10 @@
                  word-wrap: break-word">
                   {{level.level }}
                 </div>
-
+                <!--*ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
+                       hasMatchingSportLevel(level)"-->
                 <mat-checkbox
                   (click)="selectLevel(level)"
-                  *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
-                       hasMatchingSportLevel(level)"
                   style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);"
                   [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}">
                   <div style="display: flex;gap: 8px;padding: 12px 0;">
@@ -440,14 +438,56 @@
             </div>
           </div>
         </div>
-        <!--PRIVATE-->
-        <ng-container *ngIf="course?.course_type==2 && courseFlux===1">
+        <div style="padding: 20px;"
+          *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2">
+          <div>
+            {{"Selecciona las fechas que quieres reservar." | translate}}
+          </div>
+          <div>
+            <mat-checkbox
+              *ngFor="let date of getDaysBetweenDates(course.date_start,course.date_end)"
+              style="
+              color: #222222;
+               font-size: 14px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 18px;
+               word-wrap: break-word">
+              {{date}}
+            </mat-checkbox>
+          </div>
+        </div>
+        <div *ngIf="course?.course_type==2 && courseFlux===2"
+          style="padding: 20px;">
           <ng-container
             *ngIf="selectedUserMultiple && selectedUserMultiple.length">
-            <div class="text-color montserrat mt-12 margin-auto">
+            <div class="text-color montserrat margin-auto">
               {{'text_select_date_disponibility' | translate }}
             </div>
-            <!--Calendar Private-->
+            <div
+              style="display: flex;flex-wrap: wrap;gap: 16px; margin-top: 20px;">
+              <mat-form-field appearance="outline" class="flex-auto"
+                style="width: 100%">
+                <mat-label>{{'text_birth_date' | translate}}</mat-label>
+                <input matInput type="date"
+                  required>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="flex-auto"
+                style="width: calc(50% - 8px);">
+                <mat-label>{{'Hora' | translate}}</mat-label>
+                <input matInput type="text"
+                  required>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="flex-auto"
+                style="width: calc(50% - 8px);">
+                <mat-label>{{'Duracion' | translate}}</mat-label>
+                <input matInput type="text"
+                  required>
+              </mat-form-field>
+            </div>
+            <!--Calendar Private
             <div class="calendar-reservation-section margin-auto">
               <div class="calendar background-color-trans rounded-8">
                 <div class="header-calendar">
@@ -484,32 +524,31 @@
                   </ng-container>
                 </div>
               </div>
-            </div>
+            </div>-->
 
-            <ng-container *ngIf="selectedDateReservation">
-              <div class="calendar-reservation-form">
-                <div
-                  class="text-color text-medium montserrat cursor-pointer reservation-return mt-12 mb-24 margin-auto">
-                  <img [src]="themeService.calendar">
-                  {{selectedDateReservation}}
-                </div>
+            <!--<div class="calendar-reservation-form">
+              <div
+                class="text-color text-medium montserrat cursor-pointer reservation-return mt-12 mb-24 margin-auto">
+                <img [src]="themeService.calendar">
+                {{selectedDateReservation}}
+              </div>
 
-                <div class="text-color montserrat margin-auto">
-                  {{'text_select_hour_date' | translate }}
-                </div>
+              <div class="text-color montserrat margin-auto">
+                {{'text_select_hour_date' | translate }}
+              </div>
 
-                <div class="text-color-light montserrat mt-12 margin-auto">
-                  {{'text_hour' | translate }}
-                </div>
-                <select
-                  class="form-control margin-auto calendar-reservation-form-input"
-                  [(ngModel)]="selectedHour"
-                  (change)="course?.is_flexible && updateAvailableDurations(selectedHour)">
-                  <option *ngFor="let hour of availableHours" [value]="hour">{{
-                    hour }}</option>
-                </select>
+              <div class="text-color-light montserrat mt-12 margin-auto">
+                {{'text_hour' | translate }}
+              </div>
+              <select
+                class="form-control margin-auto calendar-reservation-form-input"
+                [(ngModel)]="selectedHour"
+                (change)="course?.is_flexible && updateAvailableDurations(selectedHour)">
+                <option *ngFor="let hour of availableHours" [value]="hour">{{
+                  hour }}</option>
+              </select>-->
 
-                <!--
+            <!--
                 <div class="text-color-light montserrat mt-12 margin-auto">
                   {{'text_people' | translate }}
                 </div>
@@ -519,50 +558,47 @@
                 </select>
                 -->
 
-                <div class="text-color-light montserrat mt-12 margin-auto">
-                  {{'text_duration' | translate }}
-                </div>
-                <ng-container *ngIf="course?.is_flexible">
-                  <select
-                    class="form-control margin-auto calendar-reservation-form-input"
-                    [(ngModel)]="selectedDuration"
-                    (change)="updatePrice()">
-                    <option *ngFor="let range of availableDurations"
-                      [value]="convertToHoursAndMinutes(range)">{{convertToHoursAndMinutes(range)}}</option>
-                  </select>
-                </ng-container>
-                <ng-container *ngIf="!course?.is_flexible">
-                  <select
-                    class="form-control margin-auto calendar-reservation-form-input"
-                    [(ngModel)]="selectedDuration">
-                    <option
-                      [value]="course?.duration">{{course?.duration}}</option>
-                  </select>
-                </ng-container>
+            <!--<div class="text-color-light montserrat mt-12 margin-auto">
+                {{'text_duration' | translate }}
               </div>
+              <ng-container *ngIf="course?.is_flexible">
+                <select
+                  class="form-control margin-auto calendar-reservation-form-input"
+                  [(ngModel)]="selectedDuration"
+                  (change)="updatePrice()">
+                  <option *ngFor="let range of availableDurations"
+                    [value]="convertToHoursAndMinutes(range)">{{convertToHoursAndMinutes(range)}}</option>
+                </select>
+              </ng-container>
+              <ng-container *ngIf="!course?.is_flexible">
+                <select
+                  class="form-control margin-auto calendar-reservation-form-input"
+                  [(ngModel)]="selectedDuration">
+                  <option
+                    [value]="course?.duration">{{course?.duration}}</option>
+                </select>
+              </ng-container>
+            </div>-->
 
-              <div class="reservation-price-flex mt-12">
-                <div class="text-medium text-color uppercase">
-                  {{'text_price' | translate }}
-                </div>
-                <div class="text-medium text-color">
-                  <span class="text-color text-medium fw-bold">
-                    {{course?.price}}</span> {{ course?.currency }}
-                </div>
+            <!--<div class="reservation-price-flex mt-12">
+              <div class="text-medium text-color uppercase">
+                {{'text_price' | translate }}
               </div>
-              <div>
-                <button (click)="addBookingToCart()"
-                  class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12"
-                  type="button">
-                  <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' |
-                  translate }}
-                </button>
+              <div class="text-medium text-color">
+                <span class="text-color text-medium fw-bold">
+                  {{course?.price}}</span> {{ course?.currency }}
               </div>
-
-            </ng-container>
+            </div>
+            <div>
+              <button (click)="addBookingToCart()"
+                class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12"
+                type="button">
+                <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' |
+                translate }}
+              </button>
+            </div>-->
           </ng-container>
-        </ng-container>
-
+        </div>
         <div *ngIf="courseFlux===3"
           style="display: flex;padding: 20px;flex-direction: column;">
           <div style="color: #222222;
@@ -575,7 +611,9 @@
             para la escuela.
           </div>
           <div
+            *ngFor="let date of course.is_flexible?getDaysBetweenDates(course.date_start,course.date_end):['1']"
             style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
+            {{course.is_flexible?date:''}}
             <mat-checkbox *ngFor="let extra of settingsExtras"
               style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
               <div style="display: flex;gap: 8px ;
@@ -603,7 +641,6 @@
                     {{extra.name}}
                   </span>
                 </div>
-
                 <span style="
                 color: #222222;
                  font-size: 14px;
@@ -611,18 +648,20 @@
                  font-weight: 400;
                  line-height: 18px;width: 125px;padding: 10px;
                  word-wrap: break-word">
-                  {{extra.price}}{{course?.currency}} / {{'date' | translate }}
+                  {{extra.price}}{{course?.currency}} / {{'date' | translate
+                  }}
                 </span>
               </div>
             </mat-checkbox>
+          </div>
+          <div style="margin-top: 20px;">
             <mat-form-field appearance="outline" class="flex-auto"
               style="width: 100%">
               <mat-label>{{'Observaciones' | translate}}</mat-label>
               <textarea matInput cols="3">
-                </textarea>
+            </textarea>
             </mat-form-field>
           </div>
-
         </div>
 
         <div class="reservation-price-flex"
@@ -643,7 +682,7 @@
         <div style="padding: 20px;">
           <button
             (click)="next()"
-            [disabled]="!selectedUser&&courseFlux===0 || !selectedLevel&&courseFlux===1"
+            [disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1"
             style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;

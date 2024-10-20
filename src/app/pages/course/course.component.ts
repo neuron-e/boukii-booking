@@ -254,6 +254,7 @@ export class CourseComponent implements OnInit {
     });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.course.course_type = 2
       console.log(this.course);
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
@@ -359,12 +360,10 @@ export class CourseComponent implements OnInit {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
       const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
-
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
       if (this.course.is_flexible) {
         this.updateAvailableDurations(this.selectedHour);
       }
-
     }
   }
 
@@ -633,6 +632,7 @@ export class CourseComponent implements OnInit {
       this.showLevels = false;
       this.calculateAvailableLevels(user);
     }
+    console.log(this.selectedUserMultiple)
   }
 
   selectLevel(level: any) {
@@ -1046,10 +1046,9 @@ export class CourseComponent implements OnInit {
 
     } else if (this.courseFlux === 1) {
       this.selectLevel(this.selectedLevel)
-      if (!this.course.is_flexible) {
+      if (!this.course.is_flexible && this.course.course_type !== 2) {
         this.courseFlux++
       }
-
     } else if (this.courseFlux === 2) {
 
     } else if (this.courseFlux === 3) {
@@ -1058,4 +1057,17 @@ export class CourseComponent implements OnInit {
     }
     this.courseFlux++
   }
+
+  getDaysBetweenDates(startDateString: string, endDateString: string): string[] {
+    const dates: string[] = [];
+    let currentDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate).toISOString().split("T")[0]);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+
+    return dates;
+  }
+
 }
