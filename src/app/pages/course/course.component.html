@@ -153,16 +153,18 @@
       <div class="show-desktop text-color-light montserrat"
         [innerHTML]="getDescription(course)">
       </div>
-
-      <span class="descripcion2">
-        {{"NIVELES" |translate}}
-      </span>
-      <ng-container *ngFor="let item of course.availableDegrees">
-        <span
-          style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;"
-          [style.backgroundColor]="item.color">
-          {{item.name}}
+      <ng-container *ngIf="course.availableDegrees.length>0">
+        <span class="descripcion2">
+          {{"NIVELES" |translate}}
         </span>
+        <div style="display: flex;flex-wrap: wrap;gap: 5px;">
+          <span
+            *ngFor="let item of course.availableDegrees"
+            style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;"
+            [style.backgroundColor]="item.color">
+            {{item.name}}
+          </span>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="course?.options">
@@ -396,7 +398,7 @@
            word-wrap: break-word">
             {{'text_select_level' | translate }}
           </div>
-          <div
+          <div *ngIf="course.availableDegrees.length>0"
             style="
             background-color: rgba(210, 239, 255, 1);
           color: #222222;
@@ -408,9 +410,7 @@
             <img src="assets/icons/info.png" alt class="icon24">
             {{ 'text_no_level' | translate }}
           </div>
-
           <div>
-
             <!--<div *ngIf="selectedLevel" class="rounded-8 level-wrapper"
               (mouseenter)="showTooltipFilter(0)"
               (mouseleave)="hideTooltipFilter(0)">
@@ -438,12 +438,11 @@
             </div>-->
             <!--showLevels && -->
             <div
-              *ngIf="course?.availableDegrees && course?.availableDegrees.length > 0"
               class="levels-section" style="margin-top: 20px;">
               <ng-container
-                *ngFor="let level of course.availableDegrees;let i = index">
+                *ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
                 <div
-                  *ngIf="i===0 || course?.availableDegrees[i].level !== course?.availableDegrees[i-1].level"
+                  *ngIf="i===0 || level.level !== (course.availableDegrees.length>0?course.availableDegrees:dataLevels)[i-1].level"
                   style="
                 color: #8B9099;
                  font-size: 12px;
@@ -512,6 +511,7 @@
                 style="width: 100%">
                 <mat-label>{{'text_birth_date' | translate}}</mat-label>
                 <input matInput type="date"
+                  [(ngModel)]="selectedDateReservation"
                   required>
               </mat-form-field>
 
@@ -642,6 +642,7 @@
 
 <app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser"
   (onClose)="closeModalAddUser()"></app-modal-add-user>
+
 <app-course-modal-confirm [course]="course"
   [selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple"
   [selectedForfait]="selectedForfait"

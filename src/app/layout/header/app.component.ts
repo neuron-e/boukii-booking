@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from 'src/app/services/auth.service';
@@ -77,7 +77,7 @@ export class HeaderComponent implements OnInit {
     this.authService.user.next(null);
     this.userLogged = null;
     localStorage.clear();
-    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug']]);
+    this.router.navigate(['/' + this.schoolData.data.slug]);
   }
 
   calculateCartLength() {
@@ -96,6 +96,6 @@ export class HeaderComponent implements OnInit {
   }
 
   goBack(url: string) {
-    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug'] + url]);
+    this.router.navigate(['/' + this.schoolData.data.slug + "/" + url]);
   }
 }

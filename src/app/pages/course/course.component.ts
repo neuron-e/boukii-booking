@@ -253,8 +253,6 @@ export class CourseComponent implements OnInit {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
           this.settingsExtras = [...this.settings.extras.forfait, ...this.settings.extras.food, ...this.settings.extras.transport,]
-          console.log(this.settings);
-          console.log(this.schoolData);
         }
       }
     );
@@ -264,8 +262,6 @@ export class CourseComponent implements OnInit {
     });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
-      this.course.course_type = 2
-      console.log(this.course);
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
@@ -424,7 +420,6 @@ export class CourseComponent implements OnInit {
     } else {
       if (this.course.is_flexible) {
         this.course.course_dates.forEach((date: any) => {
-
           if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
@@ -448,7 +443,6 @@ export class CourseComponent implements OnInit {
               'extra': this.selectedForfait
             })
           }
-
         })
       } else {
         this.course.course_dates.forEach((date: any) => {
@@ -476,22 +470,17 @@ export class CourseComponent implements OnInit {
         })
       }
     }
-
     this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
       let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
       let cart: any = {};
-
       if (cartStorage) {
         cart = JSON.parse(cartStorage);
       }
-
       if (!cart[this.course.id]) {
         cart[this.course.id] = {};
       }
-
       if (this.course.course_type === 2) {
         const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
-
         const isAnyUserReserved = selectedUserIds.split('-').some(id => {
           const idArray = id.split('-');
           return idArray.some(singleId => {
@@ -499,13 +488,11 @@ export class CourseComponent implements OnInit {
             return keys.some(key => {
               const userCourseIds = key.split('-');
               const hasUserOverlap = userCourseIds.includes(singleId);
-
               if (hasUserOverlap) {
                 let course_date = this.findMatchingCourseDate();
                 const userBookings = cart[this.course.id][key];
                 return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
               }
-
               return false;
             });
           });
@@ -519,7 +506,6 @@ export class CourseComponent implements OnInit {
 
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
-          // TODO: mostrar mensaje de curso guardado correctamente.
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
         } else {
           this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
@@ -539,10 +525,8 @@ export class CourseComponent implements OnInit {
           this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
         }
       }
-
     }, error => {
       this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-
     })
   }
 
@@ -583,7 +567,6 @@ export class CourseComponent implements OnInit {
   }
 
   findMatchingCourseDate(): any {
-    // Convertir selectedDateReservation a un objeto Date
     const [day, month, year] = this.selectedDateReservation.split('/').map(Number);
     const selectedDate = new Date(year, month - 1, day);
 
@@ -642,7 +625,6 @@ export class CourseComponent implements OnInit {
       this.showLevels = false;
       this.calculateAvailableLevels(user);
     }
-    console.log(this.selectedUserMultiple)
   }
 
   selectLevel(level: any) {
@@ -1052,14 +1034,12 @@ export class CourseComponent implements OnInit {
   }
   next() {
     if (this.courseFlux === 0) {
-
     } else if (this.courseFlux === 1) {
       this.selectLevel(this.selectedLevel)
       if (!this.course.is_flexible && this.course.course_type !== 2) {
         this.courseFlux++
       }
     } else if (this.courseFlux === 2) {
-
     } else if (this.courseFlux === 3) {
       this.confirmModal = true
       this.courseFlux--

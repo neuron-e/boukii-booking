@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import { ClientService } from '../../services/client.service';
@@ -23,7 +23,7 @@ import { TranslateService } from '@ngx-translate/core';
     ]),
   ]
 })
-export class ModalAddUserComponent implements OnInit {
+export class ModalAddUserComponent {
 
   @Input() isOpen: boolean = false;
   @Input() slug: string;
@@ -33,11 +33,6 @@ export class ModalAddUserComponent implements OnInit {
     { id: 2, lang: "english" },
     { id: 3, lang: "spanish" },
   ]
-  firstName: string = '';
-  lastName: string = '';
-  birthDate: string = '';
-  language: string = '1';
-
   addUserForm: FormGroup;
 
   constructor(public themeService: ThemeService, private clientService: ClientService,
@@ -51,8 +46,6 @@ export class ModalAddUserComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
-  }
 
   onSubmit() {
     if (!this.addUserForm || this.addUserForm.invalid) {

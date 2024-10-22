@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
-import {SchoolService} from '../../services/school.service';
-import {BookingService} from '../../services/booking.service';
-import {CartService} from '../../services/cart.service';
+import { SchoolService } from '../../services/school.service';
+import { BookingService } from '../../services/booking.service';
+import { CartService } from '../../services/cart.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiCrudService } from 'src/app/services/crud.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-cart',
@@ -15,8 +15,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class CartComponent implements OnInit {
 
-  isModalVoucher:boolean=false;
-  isModalConditions:boolean=false;
+  isModalVoucher: boolean = false;
+  isModalConditions: boolean = false;
   voucher: any;
   hasInsurance = false;
   hasBoukiiCare = false;
@@ -34,12 +34,12 @@ export class CartComponent implements OnInit {
   loading = true;
   conditionsAccepted = false;
 
-  conditionsHTML:string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
+  conditionsHTML: string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
-              private bookingService: BookingService, private activatedRoute: ActivatedRoute,
-              private cartService: CartService, private translateService: TranslateService,
-              private crudService: ApiCrudService, private snackBar: MatSnackBar) { }
+    private bookingService: BookingService, private activatedRoute: ActivatedRoute,
+    private cartService: CartService, private translateService: TranslateService,
+    private crudService: ApiCrudService, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -72,14 +72,11 @@ export class CartComponent implements OnInit {
               });
             }
           });
-
-
-          let storageSlug = localStorage.getItem(this.schoolData.slug+ '-boukiiUser');
-          if(storageSlug) {
+          let storageSlug = localStorage.getItem(this.schoolData.slug + '-boukiiUser');
+          if (storageSlug) {
             this.user = JSON.parse(storageSlug);
-            this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug+'-cart') ?? '{}'));
+            this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}'));
           }
-
           this.loading = false;
           this.updateTotal();
         }
@@ -150,7 +147,7 @@ export class CartComponent implements OnInit {
     console.log(basket);
 
     this.bookingService.createBooking(bookingData).subscribe(
-      (response: any)  => {
+      (response: any) => {
         console.log('Reserva creada con éxito', response);
         this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
 
@@ -171,7 +168,7 @@ export class CartComponent implements OnInit {
     // Clonar y limpiar cada ítem del carrito
     return this.cart.map(cartItem => {
       // Clonar cada detalle y eliminar propiedades no deseadas
-      const cleanedDetails = cartItem.details.map((detail:any) => {
+      const cleanedDetails = cartItem.details.map((detail: any) => {
         // Crea una copia del objeto detail
         const cleanedDetail = { ...detail };
 
@@ -200,7 +197,7 @@ export class CartComponent implements OnInit {
   }
 
   closeModalVoucher(voucher: any) {
-    if(voucher) {
+    if (voucher) {
       this.voucher = voucher.data;
     }
     this.isModalVoucher = false;
@@ -329,15 +326,15 @@ export class CartComponent implements OnInit {
     let total = 0;
     this.cart?.forEach(cartItem => {
 
-      if(cartItem.details[0].course.course_type ==1) {
-        if(!cartItem.details[0].course.is_flexible) {
+      if (cartItem.details[0].course.course_type == 1) {
+        if (!cartItem.details[0].course.is_flexible) {
           total += parseFloat(cartItem.details[0].course.price);
         } else {
           //TODO: Revisar con flexible
           total += this.getTotalBasePrice(cartItem.details);
         }
       } else {
-        if(cartItem.details[0].course.is_flexible) {
+        if (cartItem.details[0].course.is_flexible) {
           total += this.getTotalBasePrice(cartItem.details);
         } else {
           //TODO: Revisar sin flexible
@@ -352,15 +349,15 @@ export class CartComponent implements OnInit {
     let total = 0;
     this.cart?.forEach(cartItem => {
 
-      if(cartItem.details[0].course.course_type ==1) {
-        if(!cartItem.details[0].course.is_flexible) {
+      if (cartItem.details[0].course.course_type == 1) {
+        if (!cartItem.details[0].course.is_flexible) {
           total += parseFloat(cartItem.details[0].course.price) + this.getTotalItemExtraPrice(cartItem.details);
         } else {
           //TODO: Revisar con flexible
           total += this.getTotalItemPrice(cartItem.details);
         }
       } else {
-        if(cartItem.details[0].course.is_flexible) {
+        if (cartItem.details[0].course.is_flexible) {
           total += this.getTotalItemPrice(cartItem.details);
         } else {
           //TODO: Revisar sin flexible
@@ -417,7 +414,7 @@ export class CartComponent implements OnInit {
   }
 
   goBack(url: string) {
-    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
+    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug']]);
   }
 
   deleteCartItem(cartItem: any) {
@@ -448,7 +445,7 @@ export class CartComponent implements OnInit {
   }
 
   getSportName(sportId: number): string | null {
-    const sport = this.schoolData.sports.find((s:any) => s.id === sportId);
+    const sport = this.schoolData.sports.find((s: any) => s.id === sportId);
     return sport ? sport.name : null;
   }
 

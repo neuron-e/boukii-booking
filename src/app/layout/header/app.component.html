@@ -1,6 +1,6 @@
 <div class="header">
     <div style="display: flex;"
-        (click)="router.navigate([schoolData.slug])">
+        (click)="goBack('')">
         <img src="assets/images/school-logo.png" class="icon36" alt>
         <p style="line-height: 14px; margin: 0 12px;">
             <span class="title1">
@@ -55,9 +55,11 @@
             <img src="assets/icons/login.png"
                 class="icon24">
         </div>
-        <div style="display: flex;align-items: center;padding: 10px;"
-            *ngIf="userLogged">
-            <img src="assets/icons/cart-black.svg"
+        <div
+            style="display: flex;align-items: center;padding: 10px;position: relative"
+            *ngIf="userLogged"
+            (click)="goBack('cart')">
+            <img src="assets/icons/cart-black.png"
                 class="icon24">
             <div class="header-cart-number"
                 *ngIf="cart">{{calculateCartLength()}}</div>
@@ -70,7 +72,7 @@
                 [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
             <div class="dropdown"
                 *ngIf="isOpenDropdownUser">
-                <div (click)="goBack('/user')"
+                <div (click)="goBack('user')"
                     class="text-color-light cursor-pointer">
                     {{"Perfil" | translate}}
                 </div>
