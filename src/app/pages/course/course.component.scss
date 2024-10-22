@@ -373,3 +373,36 @@
   line-height: 18px;
   word-wrap: break-word;
 }
+
+.titlexxxx {
+  color: white;
+  font-size: 16px;
+  font-family: Dinamit;
+  font-weight: 500;
+  line-height: 20px;
+  word-wrap: break-word;
+  background-color: rgba(47, 56, 68, 1);
+  height: 60px;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  gap: 20px;
+}
+
+.reservation-view {
+  @media (max-width: 800px) {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    margin: auto;
+    .titlexxxx {
+      height: 64px;
+      background: white;
+      color: black;
+    }
+    .reservation-view2 {
+      margin-top: auto;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
@@ -230,7 +230,17 @@ export class CourseComponent implements OnInit {
     private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
     private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar,
   ) {
+    this.checkScreenWidth();
+  }
 
+  SmallScreenModal: boolean = false
+  isSmallScreen: boolean = false;
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenWidth();
+  }
+  checkScreenWidth() {
+    this.isSmallScreen = window.innerWidth < 800;
   }
 
   ngOnInit(): void {
@@ -1041,7 +1051,6 @@ export class CourseComponent implements OnInit {
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
   next() {
-
     if (this.courseFlux === 0) {
 
     } else if (this.courseFlux === 1) {
