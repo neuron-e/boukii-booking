@@ -240,4 +240,5 @@
 </div>
 
 <app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug" (onClose)="closeModalVoucher($event)"></app-modal-voucher>
-<app-modal-conditions [isOpen]="isModalConditions" [data]="'conditions_html' | translate " (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'" [isOpen]="isModalConditions" [data]="'conditions_html' | translate" (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'" [isOpen]="isModalConditions" [data]="conditionsHTML" (onClose)="closeModalConditions()"></app-modal-conditions>
