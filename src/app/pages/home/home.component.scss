@@ -85,6 +85,7 @@ option:not(:first-of-type) {
   justify-content: flex-start;
   margin: 0 auto;
   padding: 20px;
+  padding-left: 0;
 }
 
 @media (max-width: 768px) {

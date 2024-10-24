@@ -44,6 +44,12 @@
           required>
       </mat-form-field>
 
+      <mat-form-field appearance="outline" class="flex-auto widthInput">
+        <mat-label>{{'text_phone' | translate}}</mat-label>
+        <input matInput type="text" formControlName="phone"
+          required>
+      </mat-form-field>
+
       <mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 1</mat-label>
         <input type="text" matInput
@@ -68,7 +74,7 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="widthInput">
+      <!--<mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 3</mat-label>
         <input type="text" matInput
           formControlName="language3_id" [matAutocomplete]="autoStation">
@@ -78,7 +84,7 @@
             {{ item.lang | translate }}
           </mat-option>
         </mat-autocomplete>
-      </mat-form-field>
+      </mat-form-field>-->
 
       <mat-form-field appearance="outline" class="flex-auto"
         style="width: 100%">
@@ -97,12 +103,6 @@
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_repeat_password' | translate}}</mat-label>
         <input matInput type="password" formControlName="confirmPassword"
-          required>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="flex-auto widthInput">
-        <mat-label>{{'text_phone' | translate}}</mat-label>
-        <input matInput type="text" formControlName="phone"
           required>
       </mat-form-field>
 
