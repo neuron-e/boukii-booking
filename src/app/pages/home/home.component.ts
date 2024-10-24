@@ -7,9 +7,10 @@ import {SchoolService} from '../../services/school.service';
 import {DatePipe} from '@angular/common';
 import {AuthService} from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
-import {Observable, of, tap} from 'rxjs';
+import {map, Observable, of, tap} from 'rxjs';
 import {ApiCrudService} from '../../services/crud.service';
 import * as moment from 'moment';
+import {catchError} from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -107,23 +108,34 @@ export class HomeComponent implements OnInit {
           this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
           this.selectedDegreeType =  parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
           this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
-          this.getSeason(this.schoolData.id);
-          this.setAgeRange();
-          if (this.schoolData?.sports?.length > 0) {
-            // Establecer el ID del primer deporte como seleccionado por defecto
-            this.selectedSportId =
-              parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ??  this.schoolData.sports[0].id);
+          this.crudService
+            .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' +
+              this.schoolData.id + '&is_active=1').subscribe({
+            next: (res) => {
+                if (res.data.length > 0) {
+                  this.season = res.data[0]; // Guardamos la temporada en caché
+                  this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+                  this.holidays.forEach((element: any) => {
+                    this.myHolidayDates.push(moment(element).toDate());
+                  });
+                }
+                this.setAgeRange();
+                if (this.schoolData?.sports?.length > 0) {
+                  this.selectedSportId = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
+                  this.initializeMonthNames();
+                  const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+                  this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
 
-       /*     this.selectedSportId = this.schoolData.sports[0].id;*/
-            //this.degreesSports = this.schoolData.degrees.filter((r: any) => r.sport_id == this.selectedSportId);
-            this.initializeMonthNames();
-            const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
-            this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+                  const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+                  this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
+                  this.getCourses();
+                }
+            },
+            error: (err) => {
+              console.error('Error al obtener la temporada:', err);
+            }
+          });
 
-            const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
-            this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
-            this.getCourses();
-          }
         }
       }
     );
@@ -271,14 +283,21 @@ export class HomeComponent implements OnInit {
       .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' + schoolId + '&is_active=1')
       .pipe(
         tap((response) => {
-          this.season = response.data[0]; // Guardamos la temporada en caché
-          this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
-          this.holidays.forEach((element: any) => {
-            this.myHolidayDates.push(moment(element).toDate());
-          });
+          if (response.data.length > 0) {
+            this.season = response.data[0]; // Guardamos la temporada en caché
+            this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+            this.holidays.forEach((element: any) => {
+              this.myHolidayDates.push(moment(element).toDate());
+            });
+          }
+        }),
+        catchError((error) => {
+          console.error('Error fetching season:', error);
+          return of(null); // Manejar error y devolver un valor vacío
         })
       );
   }
+
 
   inUseDatesFilter = (d: Date): boolean => {
     if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.

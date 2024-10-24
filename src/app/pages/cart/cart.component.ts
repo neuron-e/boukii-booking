@@ -388,7 +388,7 @@ export class CartComponent implements OnInit {
     if (this.cart) {
       this.cart.forEach((cart: any) => {
         cart.details.forEach((detail: any) => {
-          if (detail.extra && detail.extra.price && detail.extra.tva) {
+          if (detail.extra && detail.extra.price) {
             ret = ret + parseFloat(detail.extra.price) + (parseFloat(detail.extra.price) * (parseFloat(detail.extra.tva) / 100))
           }
         });
