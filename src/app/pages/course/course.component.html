@@ -122,10 +122,13 @@
           </div>
         </div>
       </ng-container>
-
-      <div class="show-desktop text-color-light mt-24 montserrat"
+      <div class="text-color text-medium fw-medium">{{'text_short_description' |
+        translate}}</div>
+      <div class="text-color-light mt-24 montserrat"
         [innerHTML]="getShotrDescription(course)">
       </div>
+      <div class="show-desktop text-color text-medium fw-medium"
+        style="margin-top: 10px">{{'text_description' | translate}}</div>
       <div class="show-desktop text-color-light mt-24 montserrat"
         [innerHTML]="getDescription(course)">
       </div>
@@ -137,6 +140,8 @@
       </button>
 
       <ng-container *ngIf="showMoreFilters">
+        <div class="show-mobile text-color text-medium fw-medium"
+          style="margin-top: 10px">{{'text_description' | translate}}</div>
         <div class="show-mobile text-color-light mt-24 montserrat"
           [innerHTML]="getDescription(course)">
         </div>
