@@ -77,16 +77,17 @@ export class ModalLoginComponent implements OnInit {
                 if (res) {
                   this.closeModal();
                 } else {
-                  //TODO: cambiar el texto
-                  let errorMessage = this.translateService.instant('error.client.register');
+                  let errorMessage = this.translateService.instant('error.send_mail');
                   this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+                  this.closeModal();
                 }
               })
               .catch(error => {
-                let errorMessage = this.translateService.instant(error.error.message);
+                let errorMessage = this.translateService.instant('error.send_mail');
                 this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
+                this.closeModal();
               });
-            console.log(this.loginForm.value);
+
           }
         }
       });
