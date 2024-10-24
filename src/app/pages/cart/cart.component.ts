@@ -34,7 +34,114 @@ export class CartComponent implements OnInit {
   loading = true;
   conditionsAccepted = false;
 
-  conditionsHTML:string = "Inscriptions / Réservations / Responsabilités<br><br>• Les inscriptions aux cours s’effectuent soit par le site internet, par téléphone ou directement sur place auprès de nos bureaux.<br><br>• Si votre séjour se déroule durant les périodes de vacances scolaires, nous vous conseillons de réserver vos cours au minimum un mois à l’avance.<br><br>• En cas de manque de neige, les cours collectifs de Noël, Nouvel-An, Jeunesse et Lève-tôt, seront déplacés aux Diablerets ou dans une station Magic Pass la plus proche.<br><br>• Le paiement total de nos prestations en cours collectifs/privés est dû au moment de votre réservation, il valide votre inscription.";
+  conditionsHTML:string = "<h1>Conditions générales École Suisse de ski</h1>\n" +
+    "\n" +
+    "<h2>1. Intervenants</h2>\n" +
+    "L’ESS Charmey s’engage à certifier que tous ses moniteurs sont aptes et compétents pour exercer l’enseignement du ski ou autres disciplines assimilées. Tous les moniteurs de l’ESS Charmey ont suivi une formation validée par Swiss Snowsports, Jeunesse et Sport et/ou par l’École Suisse de Ski de Charmey.&nbsp;Toute autre formation équivalente peut être prise en compte lors de l’admission d’un nouveau collaborateur.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>2. Tarifs</h2>\n" +
+    "Les tarifs de l’ESS Charmey sont affichés sur notre site internet, sur les confirmations de réservation ainsi que sur les divers documents de communication de l’école de ski.<br>\n" +
+    "Les tarifs indiqués comprennent la prestation d’enseignement dispensée par les moniteurs de l’ESS Charmey et excluent toute autre prestation (assurance, forfait remontées mécaniques, matériel, transport et repas sauf prestations mentionnées).<br>\n" +
+    "&nbsp;\n" +
+    "<h2>3. Paiement</h2>\n" +
+    "Les leçons sont encaissées à la réservation.<br>\n" +
+    "Vous avez la possibilité d’effectuer le paiement grâce aux différents moyens cités ci-dessous :\n" +
+    "<ul>\n" +
+    "\t<li>Sur notre site internet : Postcard, Visa, Twint, Mastercard, American Express,</li>\n" +
+    "\t<li>Sur place :&nbsp;Cartes bancaires (Maestro, Postcard, Visa Mastercard),&nbsp;Espèces,&nbsp;Bon cadeau,&nbsp;Twint</li>\n" +
+    "</ul>\n" +
+    "&nbsp;\n" +
+    "\n" +
+    "<h2>4. Conditions spécifiques aux cours</h2>\n" +
+    "\n" +
+    "<ul>\n" +
+    "\t<li>Les cours collectifs ont lieu à partir de 4 participants excepté pour certains cours collectifs spéciaux durant lesquels le nombre de participants minimal peut être abaissé.</li>\n" +
+    "\t<li>Si le nombre d’élèves est jugé insuffisant pour organiser un cours collectif, celui-ci&nbsp;peut être annulé. Dans ce cas, les participants seront avertis individuellement.</li>\n" +
+    "\t<li>La durée du cours comprend les déplacements et attentes aux remontées mécaniques. Le moniteur n’est pas tenu d’attendre les retardataires au départ des cours collectifs.</li>\n" +
+    "\t<li>Les cours collectifs sont dispensés en français.</li>\n" +
+    "\t<li>En cours particulier, le moniteur parlera la langue souhaitée par l’élève dans la mesure de nos disponibilités.</li>\n" +
+    "</ul>\n" +
+    "&nbsp;\n" +
+    "\n" +
+    "<h2>5. Annulation ou interruption du fait de l’ESS Charmey</h2>\n" +
+    "L’ESS Charmey se réserve le droit de reporter ou d’annuler un ou plusieurs cours aux conditions suivantes :\n" +
+    "\n" +
+    "<ul>\n" +
+    "\t<li>Conditions météorologiques exceptionnelles</li>\n" +
+    "\t<li>Fermeture du domaine skiable</li>\n" +
+    "\t<li>Impossibilité d’accéder à la station par la route</li>\n" +
+    "\t<li>Nombre de participants insuffisant pour organiser un cours collectif</li>\n" +
+    "\t<li>Dans le cas où l’ESS Charmey n’est plus en mesure de fournir les prestations réservées par le client.</li>\n" +
+    "</ul>\n" +
+    "Si les conditions ne permettent pas de réaliser les cours à Charmey, ils peuvent être déplacés dans une autre station. Dans ce cas, les clients seront avertis au plus vite et le déplacement est de leur responsabilité.<br>\n" +
+    "Si les cours sont annulés, l’ESS Charmey s’engage à reporter les cours annulés, à fournir un bon cadeau ou rembourser les clients.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>6. Annulation ou interruption du fait du client</h2>\n" +
+    "L’inscription au cours n’est valable que pour les dates, horaires et prestations indiquées sur la confirmation de réservation.<br>\n" +
+    "En cas d’absence de l’élève au début du cours, le prix de celui-ci ne sera pas remboursé et le cours ne sera pas échangé contre un autre.<br>\n" +
+    "Toute demande d’annulation de cours sera prise en considération et remboursée selon conditions ci-dessous. Il est recommandé de souscrire à l'option remboursement lors de l’achat de vos cours (détail ci-dessous).\n" +
+    "<ul>\n" +
+    "\t<li>Plus de 48 heures avant le cours : déplacement ou annulation sans frais</li>\n" +
+    "\t<li>Moins de 48 heures avant le cours : déplacement ou annulation seulement avec l'option remboursement.</li>\n" +
+    "</ul>\n" +
+    "En cas de maladie ou accident, le client s’engage à avertir de l’absence dès que possible, au plus tard 1 heure avant le début du cours.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>7. Responsabilité</h2>\n" +
+    "L’ESS Charmey décline toute responsabilité en cas d’accident. Chaque participant doit être au bénéfice de sa propre assurance accident. Le port du casque est fortement recommandé durant tous nos cours.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>8. Droit à l’image</h2>\n" +
+    "Le client donne à TéléCharmey SA l’autorisation de publier, d’exposer ou de diffuser la ou les photographies et vidéos prises durant les cours. Cette autorisation vaut pour tout usage (publications, site internet, …).<br>\n" +
+    "Si vous ne souhaitez pas donner votre autorisation, prière de nous en avertir.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>9. Conflits</h2>\n" +
+    "Les parties s’efforceront de résoudre à l’amiable les difficultés éventuelles pouvant survenir dans l’exécution du contrat. Si un accord à l’amiable ne pouvait être trouvé, seul le droit suisse serait applicable.<br>\n" +
+    "&nbsp;\n" +
+    "<h1>Conditions générales de vente</h1>\n" +
+    "\n" +
+    "<h2>1. Services vendus</h2>\n" +
+    "Les présentes conditions générales de vente s’appliquent de plein droit à tout achat de services (cours de ski, snowboard, etc.) par l’intermédiaire de notre site internet et définissent les modalités de notre intervention ainsi que les obligations respectives des parties.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>2. Commande</h2>\n" +
+    "Toute validation de la commande sur notre site et du paiement effectué implique l’adhésion, sans réserve, aux présentes conditions générales.<br>\n" +
+    "Toute commande s’effectue au moyen de notre bon de commande en ligne, dûment rempli dans toutes les zones obligatoires (indiquées avec un astérisque). Le défaut de renseignement entraîne la non-validation de la commande.<br>\n" +
+    "Les services commandés demeurent la propriété de l’ESS Charmey jusqu’au complet paiement du prix.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>3. Prix</h2>\n" +
+    "Les prix de nos produits sont libellés en CHF. Toutes les commandes sont payables en CHF. La TVA est incluse dans le prix et l’avis de débit de votre organisme payeur attestera votre règlement.<br>\n" +
+    "L’ESS Charmey se réserve le droit de modifier ses prix à tout moment sans préavis. Cependant, les prestations seront facturées sur la base des tarifs en vigueur au jour de l’enregistrement des commandes, sous réserve des places disponibles.<br>\n" +
+    "En cas de commande depuis un pays autre que la Suisse, si des droits ou taxes locales sont exigibles, le paiement de ces droits et taxes est à la charge du client. À aucun moment l’ESS Charmey ne sera redevable de ces sommes. Toute démarche administrative qui y serait relative est exclusivement effectuée par vos soins.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>4. Paiement</h2>\n" +
+    "Le prix est payable en totalité au moment de la commande, par les moyens de paiement mis en place sur notre site internet (carte bancaire Visa, Mastercard, Postcard, Twint). Les paiements en ligne sont sécurisés par le système de paiement Boukii Pay.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>5. Disponibilité</h2>\n" +
+    "Nos offres de prestations et de prix sont valables tant qu’elles sont visibles sur le site, dans la limite des places disponibles.<br>\n" +
+    "En cas d’indisponibilité de prestation après avoir passé votre commande, nous vous en informerons par email ou par téléphone dans les meilleurs délais. Vous pourrez alors demander l’annulation ou le remboursement de votre commande.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>6. Livraison</h2>\n" +
+    "Les prestations commandées (inscriptions) seront prises en compte dès le paiement reçu. L’acheteur sera informé immédiatement en cas de modification majeure.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>7. Droit de rétractation</h2>\n" +
+    "Conformément au droit suisse, toute personne ayant passé une commande sur un site suisse dispose d’un délai de 7 jours [calendaires] pour faire valoir son droit de rétractation. Le délai démarre à compter de la date de validation de votre paiement.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>8. Protection des données</h2>\n" +
+    "Les informations communiquées par le client sont indispensables au traitement de sa commande et seront transmises à l’éditeur pour la mise en service de son abonnement. Le client dispose d’un droit d’accès et de rectification de ces informations en s’adressant à l’éditeur : École Suisse de Ski de Charmey.<br>\n" +
+    "Votre adresse mail peut être utilisée à des fins de marketing, ce à quoi vous pouvez à tout moment faire opposition.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>9. Propriété intellectuelle</h2>\n" +
+    "Tous les textes, commentaires et images reproduits sur le site https://www.charmey.ch/ sont réservés au titre des droits d’auteur ainsi qu’au titre de la propriété intellectuelle et pour le monde entier. Toute reproduction totale ou partielle des contenus indiqués est strictement interdite.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>10. Responsabilité</h2>\n" +
+    "Les services proposés sont conformes à la législation suisse en vigueur.<br>\n" +
+    "L’ESS Charmey ne saurait être tenue pour responsable de l’inexécution du contrat conclu en cas d’événement de force majeure, de perturbation ou grève totale ou partielle notamment des moyens de transport et/ou moyens de communication, inondation, incendie. L’ESS Charmey pourra rembourser le paiement dans le cas d’annulation par sa faute de prestations tout ou parties qui ne pourraient être reportés à une date ultérieure dans le cas où il n’y a plus de possibilités d’exécution des prestations payées.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>11. Droit applicable et litiges</h2>\n" +
+    "Le présent contrat est soumis à la loi suisse. La langue du présent contrat est la langue française. En cas de litige, les tribunaux suisses seront seuls compétents.<br>\n" +
+    "&nbsp;\n" +
+    "<h2>12. Modification des conditions générales de vente</h2>\n" +
+    "L’École Suisse de Ski de Charmey se réserve la faculté de modifier à tout moment les présentes conditions générales de vente.<br>\n" +
+    "Les conditions générales de vente applicables sont celles figurant en ligne au jour de la commande.\n" +
+    "<h2>&nbsp;</h2>";
 
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
               private bookingService: BookingService, private activatedRoute: ActivatedRoute,
