@@ -165,6 +165,7 @@
 @media (max-width:870px) {
     .show-mobile {
         display:flex !important;
+        flex-direction: column;
     }
     .show-desktop {
         display:none !important;
