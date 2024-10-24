@@ -1,227 +1,394 @@
 .course-reservation-section {
-    width:100%;display:flex;justify-content:space-between;gap:32px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
 }
 .course-section {
-    width:100%;display:flex;flex-direction:column;gap:32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 800px;
 }
 .course-image-wrapper {
-    width:100%;height:260px;position:relative;box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
+  width: 100%;
+  position: relative;
+  box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
+  aspect-ratio: 16 / 9;
+  max-width: 800px;
 }
 .wrapper-back {
-    position: absolute;bottom: 0;left: 0;width: 100%;height: 100%;background:linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 40%, transparent 100%);z-index:0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 40%,
+    transparent 100%
+  );
+  z-index: 0;
 }
 .course-image-img {
-    object-fit:cover;width:100%;height:100%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 .course-image-text {
-    position:absolute;bottom:0px;left:0px;display:flex;width:100%;flex-direction:column;gap:8px;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
 }
 .course-image-icon {
-    display:flex;align-items:center;gap:6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .course-image-icon img {
-    width:34px;
+  width: 34px;
 }
 .course-content {
-    width:100%;display:flex;flex-direction:column;gap:8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .course-content-flex {
-    display:flex;align-items:flex-start;gap:28px;justify-content:space-between;flex-direction:row
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  justify-content: space-between;
+  flex-direction: row;
 }
 .course-content-title {
-    display:flex;align-items:center;gap:6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .course-content-title img {
-    width:26px;
+  width: 26px;
 }
 .course-content-list {
-    display:flex;align-items:flex-start;gap:8px;flex-direction:column;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-direction: column;
 }
 
 .reservation-section {
-    width:400px;min-width:400px;
+  width: 400px;
+  min-width: 400px;
 }
 .reservation-box {
-    display:flex;width:100%;flex-direction:column;gap:24px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 24px;
 }
 .reservation-price-flex {
-    display:flex;width:100%;align-items:center;justify-content:space-between;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
 }
 .reservation-return {
-    display:flex;align-items:center;gap:4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .reservation-return img {
-    width:20px;
+  width: 20px;
 }
 .reservation-users {
-    display:flex;width:100%;gap:12px;flex-wrap:wrap;align-items:flex-start;
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 .reservation-user-box {
-    display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;width:110px;min-width:110px;max-width:110px;opacity:0.6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  min-width: 110px;
+  max-width: 110px;
+  opacity: 0.6;
 }
 .reservation-user-title {
-    display:flex;align-items:center;gap:3px;width: min-content;justify-content: center;text-align:center;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: min-content;
+  justify-content: center;
+  text-align: center;
 }
 .reservation-user-title img {
-    width:16px;
+  width: 16px;
 }
 .reservation-user-bullet {
-    width:8px;height:8px;border-radius:12px;background-color:var(--primary-bs);
+  width: 8px;
+  height: 8px;
+  border-radius: 12px;
+  background-color: var(--primary-bs);
 }
 .reservation-user-add {
-    background:var(--text-color-medium);width:70px;height:70px;border-radius:70px;display: flex;justify-content: center;align-items: center;
+  background: var(--text-color-medium);
+  width: 70px;
+  height: 70px;
+  border-radius: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .reservation-user-add img {
-    width:34px;
+  width: 34px;
 }
 .levels-section {
-    display:flex;width:100%;gap:12px;flex-wrap:wrap;justify-content:space-between;
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 .level-wrapper {
-    background-color:var(--level-background);height:70px;width:calc(50% - 6px);padding:8px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;position:relative;
+  background-color: var(--level-background);
+  height: 70px;
+  width: calc(50% - 6px);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
 }
 .level-check {
-    position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:18px;background-color:var(--primary-bs);display: flex;justify-content: center;align-items: center;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 18px;
+  background-color: var(--primary-bs);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .level-check img {
-    width:10px;
+  width: 10px;
 }
 
 .calendar-reservation-section {
-    width:100%;max-width:370px;
+  width: 100%;
+  max-width: 370px;
 }
 .calendar {
-    color: white;width: 100%;box-sizing: border-box;padding: 16px;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
 }
 .header-calendar {
-    display: flex;align-items:center;justify-content: space-between;margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 .header-calendar-arrows {
-    display:flex;align-items:center;gap:16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 .header-calendar-arrows img {
-    cursor:pointer;width:26px;
-}  
-.weekdays, .days {
-    display: flex;flex-wrap: wrap;justify-content: space-between;
-} 
+  cursor: pointer;
+  width: 26px;
+}
+.weekdays,
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 .weekdays span {
-    flex: 1 0 calc(14.28% - 6px);height: 32px;line-height: 32px;text-align: center;margin: 3px;box-sizing: border-box;
+  flex: 1 0 calc(14.28% - 6px);
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  margin: 3px;
+  box-sizing: border-box;
 }
 .days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);height: 32px;line-height: 32px;text-align: center;margin: 3px;font-weight:500;box-sizing: border-box;
+  flex: 1 0 calc(14.28% - 6px);
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  margin: 3px;
+  font-weight: 500;
+  box-sizing: border-box;
 }
 .days .day-span-b {
-    display: flex;justify-content: center;width:32px;height:32px;align-items:center;
+  display: flex;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  align-items: center;
 }
 .light-opacity {
-    opacity:0.6;
+  opacity: 0.6;
 }
 .very-light-opacity {
-    opacity:0.4;
+  opacity: 0.4;
 }
 .active-collective {
-    opacity: 1;background-color:rgba(217,177,32,0.6);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(217, 177, 32, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .active-collective-selected {
-    opacity: 1;background-color:rgba(217,177,32,1);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(217, 177, 32, 1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .active-private {
-    opacity: 1;background-color:rgba(194,217,69,0.6);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(194, 217, 69, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .active-private-selected {
-    opacity: 1;background-color:rgba(194,217,69,1);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(194, 217, 69, 1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .calendar-reservation-form {
-    display:flex;gap:4px;flex-direction:column;
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
 }
 .calendar-reservation-form-input {
-    width:150px;display:flex;
+  width: 150px;
+  display: flex;
 }
 
 .opacity-full {
-    opacity:1 !important;
+  opacity: 1 !important;
 }
 .tooltip-container-level {
-    padding: 10px;border-radius: 4px;position: absolute;z-index: 1000;bottom: 70px;left: 0;width:200px;max-width:200px;
+  padding: 10px;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 70px;
+  left: 0;
+  width: 200px;
+  max-width: 200px;
 }
 .tooltip-container-level div {
-    padding: 2px 0;
+  padding: 2px 0;
 }
 
 .show-mobile {
-    display:none !important;
+  display: none !important;
 }
 .show-desktop {
-    display:block !important;
+  display: block !important;
 }
 
-@media (max-width:1000px) {
-    .course-content-flex {
-        display:flex;align-items:flex-start;gap:28px;justify-content:flex-start;flex-direction:column;
-    }
-}
+@media (max-width: 1024px) {
+  .show-mobile {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .show-desktop {
+    display: none !important;
+  }
 
-@media (max-width:870px) {
-    .show-mobile {
-        display:flex !important;
-        flex-direction: column;
-    }
-    .show-desktop {
-        display:none !important;
-    }
-
-    .course-reservation-section {
-        width:100%;display:flex;justify-content:center;gap:44px;flex-wrap:wrap;
-    }
-    .reservation-section {
-        width:100%;min-width:auto;
-    }
-    .course-image-wrapper {
-        height:200px;
-    }
-    .course-content-flex {
-        display:flex;align-items:flex-start;gap:28px;justify-content:space-between;flex-direction:row;
-    }
+  .course-reservation-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 44px;
+    flex-wrap: wrap;
+  }
+  .reservation-section {
+    width: 100%;
+    min-width: auto;
+  }
+  .course-content-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    justify-content: space-between;
+    flex-direction: row;
+  }
 }
-@media (max-width:500px) {
-    .course-image-wrapper {
-        height:160px;
-    }
-    .reservation-user-box {
-        width:88px;min-width:88px;max-width:88px;
-    }
+@media (max-width: 500px) {
+  .reservation-user-box {
+    width: 88px;
+    min-width: 88px;
+    max-width: 88px;
+  }
 }
-@media (max-width:470px) {
-    .course-content-flex {
-        display:flex;align-items:flex-start;gap:28px;justify-content:flex-start;flex-direction:column;
-    }
+@media (max-width: 470px) {
+  .course-content-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    justify-content: flex-start;
+    flex-direction: column;
+  }
 }
-@media (max-width:360px) {
-    .calendar {
-        padding:12px 8px;
-    }
-    .header-calendar-arrows {
-        gap:8px;
-    }
-    .weekdays span {
-        flex: 1 0 calc(14.28% - 6px);height: 28px;line-height: 28px;
-    }
-    .days .day-span-a {
-        flex: 1 0 calc(14.28% - 6px);height: 28px;line-height: 28px;
-    }
-    .days .day-span-b {
-        width:28px;height:28px;
-    }
+@media (max-width: 360px) {
+  .calendar {
+    padding: 12px 8px;
+  }
+  .header-calendar-arrows {
+    gap: 8px;
+  }
+  .weekdays span {
+    flex: 1 0 calc(14.28% - 6px);
+    height: 28px;
+    line-height: 28px;
+  }
+  .days .day-span-a {
+    flex: 1 0 calc(14.28% - 6px);
+    height: 28px;
+    line-height: 28px;
+  }
+  .days .day-span-b {
+    width: 28px;
+    height: 28px;
+  }
 }
-@media (max-width:340px) {
-    .weekdays span {
-        flex: 1 0 calc(14.28% - 6px);height: 26px;line-height: 26px;
-    }
-    .days .day-span-a {
-        flex: 1 0 calc(14.28% - 6px);height: 26px;line-height: 26px;
-    }
-    .days .day-span-b {
-        width:26px;height:26px;
-    }
+@media (max-width: 340px) {
+  .weekdays span {
+    flex: 1 0 calc(14.28% - 6px);
+    height: 26px;
+    line-height: 26px;
+  }
+  .days .day-span-a {
+    flex: 1 0 calc(14.28% - 6px);
+    height: 26px;
+    line-height: 26px;
+  }
+  .days .day-span-b {
+    width: 26px;
+    height: 26px;
+  }
 }
