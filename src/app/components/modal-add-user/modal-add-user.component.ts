@@ -106,7 +106,7 @@ export class ModalAddUserComponent implements OnInit {
       let userLogged = JSON.parse(storageSlug);
       this.clientService.createUtilizer(formData, userLogged.clients[0].id).subscribe(
         (res) => {
-          userLogged.clients[0].utilizers.push(formData);
+          userLogged.clients[0].utilizers.push(res.data);
 
           this.authService.user.next(userLogged);
 
