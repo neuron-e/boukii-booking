@@ -551,7 +551,7 @@ export class CourseComponent implements OnInit {
       }
 
     }, error => {
-      this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', {duration: 3000});
+      this.snackbar.open(this.translateService.instant(error.error.message), 'OK', {duration: 3000});
 
     })
   }

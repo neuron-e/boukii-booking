@@ -688,5 +688,8 @@
   "monitor_comments": "Comentarios del monitor",
   "multimedia": "Multimedia",
   "no_data": "No hay datos que mostrar",
-  "email_send": "Email enviado correctamente."
+  "email_send": "Email enviado correctamente.",
+  "No monitor available on that date": "No hay disponibilidad para esta hora.",
+  "Client has booking on that date": "El cliente ya tiene una reserva en esa fecha."
+
 }
