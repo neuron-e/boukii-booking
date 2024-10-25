@@ -681,5 +681,6 @@
   "no_paid": "Non pagato",
   "monitor_comments": "Monitorare i commenti",
   "multimedia": "Multimedia",
-  "no_data": "Non ci sono dati da mostrare"
+  "no_data": "Non ci sono dati da mostrare",
+  "email_send": "E-mail inviata con successo."
 }

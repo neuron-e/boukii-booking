@@ -65,32 +65,38 @@ export class ModalLoginComponent implements OnInit {
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
-          let schoolData = data.data;
+          let schoolData = data;
           if (this.mailRecover) {
-            let data = {
+            let requestData = {
               email: this.mailRecover,
               type: 2,
               school_id: schoolData.id
-            }
-            this.authService.sendMailPassword(data)
+            };
+            this.authService.sendMailPassword(requestData)
               .then((res: any) => {
                 if (res) {
                   this.closeModal();
+                  this.snackbar.open(this.translateService.instant('email_send'), 'OK', { duration: 3000 });
                 } else {
-                  let errorMessage = this.translateService.instant('error.send_mail');
-                  this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
-                  this.closeModal();
+                  this.showErrorSnackbar();
                 }
               })
               .catch(error => {
-                let errorMessage = this.translateService.instant('error.send_mail');
-                this.snackbar.open(this.translateService.instant(errorMessage), 'OK', {duration: 3000});
-                this.closeModal();
+                this.showErrorSnackbar();
               });
-
           }
         }
-      });
+      },
+      error => {
+        this.showErrorSnackbar();
+      }
+    );
+  }
+
+  private showErrorSnackbar() {
+    const errorMessage = this.translateService.instant('error.send_mail');
+    this.snackbar.open(errorMessage, 'OK', { duration: 3000 });
+    this.closeModal();
   }
 
 

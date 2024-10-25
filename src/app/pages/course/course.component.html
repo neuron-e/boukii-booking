@@ -238,7 +238,7 @@
             [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])}">
             <app-level-user *ngIf="dataLevels && dataLevels.length"
               [allLevels]="dataLevels" [selectLevel]="185" [size]="70"
-              [userImage]="userLogged?.clients[0].image"></app-level-user>
+              [userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
             <div
               class="text-color text-small montserrat reservation-user-title">
               <img src="assets/images/gold-crown.png">

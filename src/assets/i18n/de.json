@@ -682,5 +682,6 @@
   "no_paid": "Nicht bezahlt",
   "monitor_comments": "Überwachen Sie Kommentare",
   "multimedia": "Multimedia",
-  "no_data": "Es sind keine Daten zum Anzeigen vorhanden"
+  "no_data": "Es sind keine Daten zum Anzeigen vorhanden",
+  "email_send": "E-Mail erfolgreich gesendet."
 }

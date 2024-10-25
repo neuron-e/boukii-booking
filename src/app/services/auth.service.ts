@@ -44,7 +44,7 @@ export class AuthService extends ApiService {
       const response: any = await lastValueFrom(this.http.post(this.baseUrl + '/forgot-password', data,
         { headers: this.getHeaders() }
       ));
-      return response.data;
+      return response.message;
     } catch (error) {
       console.error('Error during sen mailing:', error);
       throw error;
