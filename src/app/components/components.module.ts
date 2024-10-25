@@ -15,14 +15,17 @@ import { ConfirmModalComponent } from './confirm-dialog/confirm-dialog.component
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatOptionModule} from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
 
 
 
 @NgModule({
   declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent],
-  imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule
-  ],
+    imports: [
+        CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule, MatOptionModule, MatSelectModule
+    ],
   exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent]
 })
 export class ComponentsModule { }
