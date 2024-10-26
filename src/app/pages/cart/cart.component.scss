@@ -4,10 +4,10 @@
   gap: 4px;
   font-size: 14px;
   font-family: DM Sans;
-  font-weight: 400;
   line-height: 18px;
   word-wrap: break-word;
   cursor: pointer;
+  color: #222222;
 }
 .reservation-return2 {
   margin-top: 42px;
@@ -113,8 +113,9 @@
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  min-height: 24px;
+  gap: 4px;
+  margin-top: 12px;
 }
 .payment-conditions {
   display: flex;
@@ -224,4 +225,8 @@
   font-weight: 400;
   line-height: 18px;
   word-wrap: break-word;
+}
+input[type="checkbox"] {
+  transform: scale(1.5);
+  min-width: 40px;
 }

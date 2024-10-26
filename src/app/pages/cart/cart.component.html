@@ -3,7 +3,9 @@
 <div (click)="goBack('home')"
   class="reservation-return">
   <span style="color: #61656d;"> {{'Home' | translate }} </span> /
-  <b>{{'Carrito' | translate }}</b>
+  <span style="font-weight: 600;color: #222222;">
+    {{'Carrito' | translate }}
+  </span>
 </div>
 
 <div class="reservation-return2">
@@ -149,9 +151,9 @@
     <div class="cardcabecera">
       {{"Resumen de compra" | translate}}
     </div>
-    <div style="padding: 20px;">
+    <div style="padding: 20px; background-color: white;border-radius: 8px;">
       <div *ngFor="let cartItem of cart;index as i"
-        style="display: flex;align-items: center;">
+        style="display: flex;align-items: center;min-height: 28px;">
         <span class="priceTotal">
           {{("00"+i+1).slice(-2)}}.
         </span>
@@ -222,22 +224,22 @@
 
       <div class="payment-refund-check"
         *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0">
-        <mat-checkbox [(ngModel)]="hasInsurance"
-          (change)="updateTotal()">
-          <span class="extra_add">
-            {{'text_refund_option' | translate }}
-          </span>
-        </mat-checkbox>
+        <input type="checkbox" [(ngModel)]="hasInsurance"
+          (change)="updateTotal()"
+          id="text_refund_option">
+        <label class="extra_add" for="text_refund_option">
+          {{'text_refund_option' | translate }}
+        </label>
       </div>
 
       <div class="payment-refund-check"
         *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0">
-        <mat-checkbox [(ngModel)]="hasBoukiiCare"
-          (change)="updateTotal()">
-          <span class="extra_add">
-            Boukii Care
-          </span>
-        </mat-checkbox>
+        <input type="checkbox" [(ngModel)]="hasBoukiiCare"
+          (change)="updateTotal()"
+          id="BoukiiCare">
+        <label class="extra_add" for="BoukiiCare">
+          Boukii Care
+        </label>
       </div>
 
       <div (click)="openModalVoucher()"
@@ -296,6 +298,7 @@
            background-color: #E91E63;
            font-family: DM Sans;
            font-weight: 600;
+           border-radius: 3px;
            line-height: 20px;
            word-wrap: break-word">
           {{'text_end_and_pay' | translate }}
@@ -318,7 +321,10 @@
 
 <app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
   (onClose)="closeModalVoucher($event)"></app-modal-voucher>
-<app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'" [isOpen]="isModalConditions"
-  [data]="'conditions_html' | translate" (onClose)="closeModalConditions()"></app-modal-conditions>
-<app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'" [isOpen]="isModalConditions" [data]="conditionsHTML"
+<app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'"
+  [isOpen]="isModalConditions"
+  [data]="'conditions_html' | translate"
+  (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'"
+  [isOpen]="isModalConditions" [data]="conditionsHTML"
   (onClose)="closeModalConditions()"></app-modal-conditions>
