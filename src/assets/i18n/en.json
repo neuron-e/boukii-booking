@@ -665,6 +665,7 @@
   "User cannot be created without a password": "User cannot be created without a password",
   "Client already exists": "Client already exists",
   "error.client.register": "An unknown error has ocurred creating the client, try again late",
+  "error.send_mail": "An unknown error occurred while trying to recover the password, please try again later.",
   "title_not_found": "404 Page Not Found",
   "text_not_found": "The page you are looking for doesn't exist or has been moved.",
   "pending_payment": "Outstanding",
@@ -683,5 +684,9 @@
   "no_paid": "Not payed",
   "monitor_comments": "Monitor Comments",
   "multimedia": "Multimedia",
-  "no_data": "There is no data to show"
+  "no_data": "There is no data to show",
+  "email_send": "Email sent successfully.",
+  "No monitor available on that date": "No monitor available on that date.",
+  "Client has booking on that date": "Client has booking on that date"
+
   }

@@ -4,12 +4,19 @@
   style="display: flex;align-items: center;gap: 12px;">
   <img [src]="themeService.arrowReturn">
   {{'text_continue' | translate }}
+<div (click)="goBack('home')"
+  class="text-color-light montserrat cursor-pointer reservation-return"
+  style="display: flex;align-items: center;gap: 12px;">
+  <img [src]="themeService.arrowReturn">
+  {{'text_continue' | translate }}
 </div>
 
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
 
 <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading">
   <mat-tab label="{{'data' | translate}}">
+    <app-user-detail #userDetail [idParent]="id"
+      (idChange)="handleIdChange($event)"></app-user-detail>
     <app-user-detail #userDetail [idParent]="id"
       (idChange)="handleIdChange($event)"></app-user-detail>
   </mat-tab>
@@ -27,8 +34,19 @@
 
         <div class="z-10 relative -mt-16 px-6 flex items-center"
           style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;">
+        <div class="z-10 relative -mt-16 px-6 flex items-center"
+          style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;">
           <img
             class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
+            [src]="defaults.image"
+            style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
+          <div class="h-16"
+            style="display: flex;flex-direction: column;gap: 12px;">
+            <div class="headline text-white montserrat"
+              style="font-size: 12px;color:#fff !important;line-height: 1.2;">{{getLanguage(defaults.language1_id)}}
+              · {{getCountry(defaults.country)}} ·
+              {{calculateAge(defaults.birth_date)}} &ensp;{{'years' | translate
+              }}</div>
             [src]="defaults.image"
             style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
           <div class="h-16"

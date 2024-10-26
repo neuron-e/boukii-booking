@@ -1,7 +1,9 @@
 
 <div class="text-color mb-24 montserrat">
   <span class="text-color-light underline cursor-pointer montserrat"
-    (click)="goTo(schoolData.slug)">{{'Home' | translate}}</span>
+   
+    (click)="goTo(schoolData.slug)">{{'Home' | translate
+   }}</span>
   / {{getCourseName(course)}}
 </div>
 
@@ -67,7 +69,8 @@
           <img [src]="themeService.calendar">
           {{'text_choose_dates' | translate }}
         </div>
-        <div class="text-color text-medium montserrat course-content-title" *ngIf="!course.is_flexible">
+        <div class="text-color text-medium montserrat course-content-title"
+          *ngIf="!course.is_flexible">
           <img [src]="themeService.calendar">
           {{'text_availability' | translate }}
         </div>
@@ -79,11 +82,17 @@
                 {{date.date | date: 'dd-MM-yyyy'}}
                 {{date.hour_start.substring(0,5) }} -
                 {{date.hour_end.substring(0,5)}}</div>
+                *ngIf="date.active || date.active === 1">·
+                {{date.date | date: 'dd-MM-yyyy'}}
+                {{date.hour_start.substring(0,5) }} -
+                {{date.hour_end.substring(0,5)}}</div>
             </ng-container>
           </div>
           <div *ngIf="course.is_flexible">
             <ng-container *ngFor="let date of course?.course_dates">
 
+              <div class="checkbox-circle pl-32"
+                *ngIf="(date.active || date.active === 1) && isDateValid(date.date, date.hour_start, date.hour_end)">
               <div class="checkbox-circle pl-32"
                 *ngIf="(date.active || date.active === 1) && isDateValid(date.date, date.hour_start, date.hour_end)">
                 <input
@@ -93,7 +102,12 @@
                   (change)="selectDate(date.date)" />
                 <label class="text-color-light montserrat"
                   for="checkbox-course-{{date.id}}">
+                  (change)="selectDate(date.date)" />
+                <label class="text-color-light montserrat"
+                  for="checkbox-course-{{date.id}}">
                   {{ date.date | date: 'dd-MM-yyyy' }}
+                  {{ date.hour_start.substring(0, 5) }} - {{
+                  date.hour_end.substring(0, 5) }}
                   {{ date.hour_start.substring(0, 5) }} - {{
                   date.hour_end.substring(0, 5) }}
                 </label>
@@ -120,6 +134,15 @@
               <div
                 class="text-color-light pl-32 montserrat">{{'text_max_participants'
                 | translate }}: {{course?.max_participants}}</div>
+              <div
+                class="text-color-light pl-32 montserrat">{{course?.date_start |
+                date: 'dd/MM/yyyy'}} - {{course?.date_end | date:
+                'dd/MM/yyyy'}}</div>
+              <div class="text-color-light pl-32 montserrat">{{
+                getWeekdays(course?.settings) }}</div>
+              <div
+                class="text-color-light pl-32 montserrat">{{'text_max_participants'
+                | translate }}: {{course?.max_participants}}</div>
             </div>
           </div>
           <div>
@@ -128,6 +151,14 @@
               {{'text_course_duration' | translate }}
             </div>
             <div class="mt-8 course-content-list">
+              <div class="text-color-light pl-32 montserrat"
+                *ngIf="!course?.is_flexible">{{course?.duration}}</div>
+              <div class="text-color-light pl-32 montserrat"
+                *ngIf="course?.is_flexible">{{'text_from_price' | translate }}
+                {{course?.duration}}</div>
+              <div
+                class="text-color-light pl-32 montserrat">{{course?.hour_min}}h
+                - {{course?.hour_max}}h</div>
               <div class="text-color-light pl-32 montserrat"
                 *ngIf="!course?.is_flexible">{{course?.duration}}</div>
               <div class="text-color-light pl-32 montserrat"
@@ -340,6 +371,7 @@
           word-wrap: break-word">
             <ng-container *ngIf="course?.course_type === 2">
               {{'text_select_user_or_more' | translate }}
+           
               {{course?.max_participants}}
             </ng-container>
             <ng-container *ngIf="!(course?.course_type === 2)">
@@ -348,36 +380,49 @@
           </div>
 
           <mat-checkbox
+           
             (click)="selectUser(userLogged.clients[0],course?.course_type)"
-            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+              style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length"
-                [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
-                [userImage]="userLogged?.clients[0].image"></app-level-user>
+               
+              [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+               
+              [userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
               <div
-                class="text-color text-small montserrat reservation-user-title">
+               
+              class="text-color text-small montserrat reservation-user-title">
                 <img src="assets/images/gold-crown.png">
                 {{userLogged?.clients[0].last_name}}
               </div>
               <!--<div
-                *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])"
-                class="reservation-user-bullet"></div>-->
+               
+              *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(userLogged?.clients[0])) || (!(course?.course_type === 2) && selectedUser === userLogged?.clients[0])"
+               
+              class="reservation-user-bullet"></div>-->
             </div>
           </mat-checkbox>
 
           <div class="reservation-user-box cursor-pointer"
+           
             *ngFor="let utilizer of userLogged?.clients[0].utilizers"
+           
             (click)="selectUser(utilizer,course?.course_type)"
-            [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}">
+              [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}">
             <app-level-user *ngIf="dataLevels && dataLevels.length"
+             
               [allLevels]="dataLevels" [selectLevel]="182" [size]="70"
+             
               [userImage]="themeService.avatarEmpty"></app-level-user>
             <div
+             
               class="text-color text-small montserrat reservation-user-title">
               {{utilizer.last_name}}
             </div>
             <div
+             
               *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)"
+             
               class="reservation-user-bullet"></div>
           </div>
 
@@ -422,9 +467,11 @@
               </div>
 
               <div class="tooltip-container-level background-color-trans"
-                *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+               
+                  *ngIf="tooltipsFilter[0]" [@fadeInOut]>
                 <div class="text-small montserrat text-color-light"
-                  *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
+                 
+                    *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
                   {{goal.name}}
                 </div>
               </div>
@@ -474,7 +521,8 @@
               </ng-container>
             </div>
             <div
-              *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
+             
+                *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
               <p> {{'text_no_degrees' | translate }}</p>
             </div>
           </div>
@@ -501,6 +549,7 @@
         <div *ngIf="course?.course_type==2 && courseFlux===2"
           style="padding: 20px;">
           <ng-container
+           
             *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat margin-auto">
               {{'text_select_date_disponibility' | translate }}

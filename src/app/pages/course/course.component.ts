@@ -563,7 +563,7 @@ export class CourseComponent implements OnInit {
           this.cartService.carData.next(cart);
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
         } else {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
         }
       } else {
         if (!cart[this.course.id][this.selectedUser.id]) {

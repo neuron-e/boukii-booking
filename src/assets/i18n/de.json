@@ -667,6 +667,7 @@
   "User cannot be created without a password": "Benutzer kann ohne Passwort nicht erstellt werden",
   "Client already exists": "Kunde existiert bereits",
   "error.client.register": "Bei der Erstellung des Kunden ist ein unbekannter Fehler aufgetreten. Versuchen Sie es später erneut.",
+  "error.send_mail": "Beim Versuch, das Passwort wiederherzustellen, ist ein unbekannter Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
   "pending_payment": "Hervorragend",
   "old_booking_price": "Vorheriger Mindestpreis",
   "current_booking_price": "Reservepreis in Bearbeitung",
@@ -681,5 +682,9 @@
   "no_paid": "Nicht bezahlt",
   "monitor_comments": "Überwachen Sie Kommentare",
   "multimedia": "Multimedia",
-  "no_data": "Es sind keine Daten zum Anzeigen vorhanden"
+  "no_data": "Es sind keine Daten zum Anzeigen vorhanden",
+  "email_send": "E-Mail erfolgreich gesendet.",
+  "No monitor available on that date": "Kein Monitor für diese Uhrzeit verfügbar.",
+  "Client has booking on that date": "Der Kunde hat bereits eine Buchung an diesem Datum."
+
 }

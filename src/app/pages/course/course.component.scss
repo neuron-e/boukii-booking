@@ -3,6 +3,10 @@
   display: flex;
   justify-content: space-between;
   gap: 32px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
 }
 .course-section {
   width: 100%;
@@ -45,6 +49,7 @@
 }
 .course-image-icon img {
   width: 34px;
+  width: 34px;
 }
 .course-content {
   width: 100%;
@@ -60,13 +65,22 @@
   gap: 28px;
   justify-content: space-between;
   flex-direction: row;
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  justify-content: space-between;
+  flex-direction: row;
 }
 .course-content-title {
   display: flex;
   align-items: center;
   gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .course-content-title img {
+  width: 26px;
   width: 26px;
 }
 .course-content-list {
@@ -77,6 +91,8 @@
 }
 
 .reservation-section {
+  width: 400px;
+  min-width: 400px;
   width: 400px;
   min-width: 400px;
 }
@@ -148,6 +164,7 @@
 }
 .reservation-user-add img {
   width: 34px;
+  width: 34px;
 }
 .levels-section {
   display: flex;
@@ -158,6 +175,15 @@
   flex-direction: column;
 }
 .level-wrapper {
+  background-color: var(--level-background);
+  height: 70px;
+  width: calc(50% - 6px);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
   background-color: var(--level-background);
   height: 70px;
   width: calc(50% - 6px);
@@ -272,8 +298,16 @@
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(194, 217, 69, 1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .calendar-reservation-form {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
   display: flex;
   gap: 4px;
   flex-direction: column;
@@ -281,9 +315,12 @@
 .calendar-reservation-form-input {
   width: 150px;
   display: flex;
+  width: 150px;
+  display: flex;
 }
 
 .opacity-full {
+  opacity: 1 !important;
   opacity: 1 !important;
 }
 .tooltip-container-level {
@@ -295,15 +332,26 @@
   left: 0;
   width: 200px;
   max-width: 200px;
+  padding: 10px;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 70px;
+  left: 0;
+  width: 200px;
+  max-width: 200px;
 }
 .tooltip-container-level div {
+  padding: 2px 0;
   padding: 2px 0;
 }
 
 .show-mobile {
   display: none !important;
+  display: none !important;
 }
 .show-desktop {
+  display: block !important;
   display: block !important;
 }
 

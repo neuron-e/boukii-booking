@@ -85,6 +85,7 @@ $boukii-booking-theme: mat.define-light-theme(
   --blue-transparent-bs: #0055ff7c;
 
   --background-image-screen: url("./assets/images/bg-dark.jpg");
+  --background-image-screen: url("./assets/images/bg-dark.jpg");
   --background-color-screen: rgba(22, 28, 40, 0.8);
   --text-color: #000;
   --text-color-light: #c8c8c8;
@@ -204,36 +205,48 @@ $boukii-booking-theme: mat.define-light-theme(
 .btn-back-primary {
   background: var(--primary-bs) !important;
   color: var(--white) !important;
+  background: var(--primary-bs) !important;
+  color: var(--white) !important;
 }
 .btn-back-grey {
+  background: var(--button-grey) !important;
+  color: var(--white);
   background: var(--button-grey) !important;
   color: var(--white);
 }
 .border-primary {
   border: 1px solid var(--primary-bs) !important;
+  border: 1px solid var(--primary-bs) !important;
 }
 
 .cursor-pointer {
+  cursor: pointer !important;
   cursor: pointer !important;
 }
 
 .text-small {
   font-size: 12px;
+  font-size: 12px;
 }
 .text-normal {
+  font-size: 14px;
   font-size: 14px;
 }
 .text-medium {
   font-size: 16px;
+  font-size: 16px;
 }
 .text-semibig {
+  font-size: 18px;
   font-size: 18px;
 }
 .text-vbig {
   font-size: 26px;
+  font-size: 26px;
 }
 
 .text-align-left {
+  text-align: left;
   text-align: left;
 }
 .text-align-center {
@@ -407,6 +420,18 @@ html {
   .padding-box {
     padding: 10px 12px;
   }
+}
+
+
+
+p,
+span {
+  color: var(--light-gray);
+}
+/* Excluye los elementos p y span que están dentro de un contenedor con la clase rich-text */
+.rich-text p,
+.rich-text span {
+  color: inherit; /* o cualquier otro color que desees para estos casos */
 }
 
 .montserrat {
@@ -1058,7 +1083,7 @@ a {
   .content-main {
     max-width: 100%;
     margin-left: unset;
-    padding: 1rem !important;
+    padding: 0;
   }
   .content-main.collapsed {
     margin-left: unset;

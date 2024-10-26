@@ -662,6 +662,7 @@
   "User cannot be created without a password": "L'utilisateur ne peut pas être créé sans mot de passe",
   "Client already exists": "Le client existe déjà",
   "error.client.register": "Une erreur inconnue s'est produite lors de la création du client, veuillez réessayer plus tard",
+  "error.send_mail": "Une erreur inconnue s'est produite lors de la tentative de récupération du mot de passe, veuillez réessayer plus tard.",
   "title_not_found": "404 Page Non Trouvée",
   "text_not_found": "La page que vous recherchez n'existe pas ou a été déplacée.",
   "pending_payment": "Remarquable",
@@ -678,5 +679,8 @@
   "no_paid": "Pas payé",
   "monitor_comments": "Surveiller les commentaires",
   "multimedia": "Multimédia",
-  "no_data": "Il n'y a aucune donnée à afficher"
+  "no_data": "Il n'y a aucune donnée à afficher",
+  "email_send": "E-mail envoyé avec succès.",
+  "No monitor available on that date": "Aucun moniteur disponible à cette heure.",
+  "Client has booking on that date": "Le client a déjà une réservation à cette date."
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import {Component, OnInit, EventEmitter, Input, Output, OnDestroy} from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { SchoolService } from '../../services/school.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-modal-login',
@@ -23,13 +24,14 @@ import { SchoolService } from '../../services/school.service';
     ]),
   ]
 })
-export class ModalLoginComponent implements OnInit {
+export class ModalLoginComponent implements OnInit, OnDestroy  {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
   loginForm: FormGroup;
   mailRecover = '';
   isForgotPass: boolean = false;
+  private schoolDataSubscription: Subscription | undefined;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
     private snackbar: MatSnackBar, private translateService: TranslateService, private schoolService: SchoolService) {
@@ -61,20 +63,21 @@ export class ModalLoginComponent implements OnInit {
   }
 
   sendMail() {
-    this.schoolService.getSchoolData().subscribe(
+    this.schoolDataSubscription = this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
-          let schoolData = data.data;
+          let schoolData = data;
           if (this.mailRecover) {
-            let data = {
+            let requestData = {
               email: this.mailRecover,
               type: 2,
               school_id: schoolData.id
-            }
-            this.authService.sendMailPassword(data)
+            };
+            this.authService.sendMailPassword(requestData)
               .then((res: any) => {
                 if (res) {
                   this.closeModal();
+                  this.snackbar.open(this.translateService.instant('email_send'), 'OK', { duration: 3000 });
                 } else {
                   //TODO: cambiar el texto
                   let errorMessage = this.translateService.instant('error.client.register');
@@ -82,19 +85,36 @@ export class ModalLoginComponent implements OnInit {
                 }
               })
               .catch(error => {
-                let errorMessage = this.translateService.instant(error.error.message);
-                this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+                this.showErrorSnackbar();
               });
-            console.log(this.loginForm.value);
           }
         }
-      });
+      },
+      error => {
+        this.showErrorSnackbar();
+      }
+    );
+  }
+
+  private showErrorSnackbar() {
+    const errorMessage = this.translateService.instant('error.send_mail');
+    this.snackbar.open(errorMessage, 'OK', {  duration: 3000  });
+    this.closeModal();
   }
 
 
   closeModal() {
+    if (this.schoolDataSubscription) {
+      this.schoolDataSubscription.unsubscribe(); // Desuscribirse al cerrar el modal
+    }
     this.isForgotPass = false;
     this.onClose.emit();
+  }
+
+  ngOnDestroy(): void {
+    if (this.schoolDataSubscription) {
+      this.schoolDataSubscription.unsubscribe(); // Desuscribirse cuando el componente se destruye
+    }
   }
 
 }
