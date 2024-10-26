@@ -20,22 +20,25 @@
   </button></div>
 
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
-
-<div class="cart-payment-section" *ngIf="!loading">
-  <!--Cart-->
-  <div class="background-color-trans rounded-8 width-100">
-    <ng-container *ngFor="let cartItem of cart">
+<div class="cart-payment">
+  <div class="cart-payment-section1" *ngIf="!loading">
+    <div
+      style="background-color: white;border: 1px solid #DEE6EA;border-radius: 8px;"
+      *ngFor="let cartItem of cart; index as i">
       <div class="course-box">
         <div class="course-box-header">
           <div class="course-box-icon">
+            <span style="color: black;font-size: 14px;font-weight: 600;">
+              {{("00"+(i+1)).slice(-2)}}.
+            </span>
             <img src="assets/icons/collectif_ski2x.png"
               *ngIf="cartItem.details[0].course.course_type == 1" />
             <img src="assets/icons/prive_ski2x.png"
               *ngIf="cartItem.details[0].course.course_type == 2" />
             <div class="course-box-title">
               <div
-                class="text-color text-medium fw-medium">{{getCourseName(cartItem.details[0].course)}}</div>
-              <span class="text-color-light text-small">
+                style="color: black;font-size: 14px;font-weight: 600;">{{getCourseName(cartItem.details[0].course)}}</div>
+              <span style="color: #8B9099;font-size: 12px;">
                 <ng-container *ngIf="cartItem.details[0].course.course_type==1">
                   {{'colective' | translate }}
                 </ng-container>
@@ -60,35 +63,101 @@
         <div class="course-box-dates">
           <div class="course-content-list"
             *ngIf="cartItem.details[0].course.course_type == 1">
+            <div style="display: flex;align-items: center;gap: 8px;">
+              <img src="assets/icons/people.png" alt="Grupo máximo"
+                class="icon24">
+              <span style="
+              color: #8B9099;
+               font-size: 12px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 16px;
+               word-wrap: break-word">
+                {{"PARTICIPANTE" | translate}}
+              </span>
+            </div>
+            <div class="text-color-light montserrat list-flex">
+              <app-level-user
+                [allLevels]="dataLevels" [selectLevel]="185"
+                [size]="40"
+                [userImage]="cartItem.details[0].client.image || 'assets/avatar.png'"></app-level-user>
+              {{cartItem.details[0].client.first_name + ' ' +
+              cartItem.details[0].client.last_name}}
+            </div>
+            <div style="display: flex;align-items: center;gap: 8px;">
+              <img src="assets/icons/calendar.png" alt="Grupo máximo"
+                class="icon24">
+              <span style="
+              color: #8B9099;
+               font-size: 12px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 16px;
+               word-wrap: break-word">
+                {{"FECHA Y HORA" | translate}}
+              </span>
+            </div>
             <div class="text-color-light montserrat"
               *ngFor="let date of cartItem.details">
-              · {{date.date | date: 'dd-MM-yyyy'}}
-              {{date.hour_start.substring(0,5) }} -
-              {{date.hour_end.substring(0,5)}}</div>
+              · {{date.date | date: 'dd.MM.yyyy'}}
+              {{date.hour_start.substring(0,5)
+              }}-{{date.hour_end.substring(0,5)}}</div>
             <ng-container *ngIf="cartItem.details[0].extra">
               {{'text_forfait' | translate }}
               <div class="text-color">
                 {{cartItem.details[0].extra.name}}
               </div>
             </ng-container>
-            <div
-              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div>
-            <div class="text-color-light montserrat list-flex">
-              <img [src]="themeService.user" />
-              {{cartItem.details[0].client.first_name + ' ' +
-              cartItem.details[0].client.last_name}}
-            </div>
-
+            <!--<div
+              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div>-->
           </div>
           <div class="course-content-list"
             *ngIf="cartItem.details[0].course.course_type == 2">
+            <div style="display: flex;align-items: center;gap: 8px;">
+              <img src="assets/icons/people.png" alt="Grupo máximo"
+                class="icon24">
+              <span style="
+              color: #8B9099;
+               font-size: 12px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 16px;
+               word-wrap: break-word">
+                {{"PARTICIPANTE" | translate}}
+              </span>
+            </div>
+            <div class="text-color-light montserrat list-flex mt-12"
+              *ngFor="let client of getUniqueClients(cartItem.details)">
+              <app-level-user
+                [allLevels]="dataLevels" [selectLevel]="185"
+                [size]="40"
+                [userImage]="client.image || 'assets/avatar.png'"></app-level-user>
+              {{ client.first_name + ' ' + client.last_name }}
+            </div>
+            <div class="text-color-light montserrat pl-18">
+              {{ getUniqueClients(cartItem.details).length }} {{
+              'text_people_under' | translate }}
+            </div>
             <!-- Iterar sobre fechas únicas -->
+            <div style="display: flex;align-items: center;gap: 8px;">
+              <img src="assets/icons/calendar.png" alt="Grupo máximo"
+                class="icon24">
+              <span style="
+              color: #8B9099;
+               font-size: 12px;
+               font-family: DM Sans;
+               font-weight: 600;
+               line-height: 16px;
+               word-wrap: break-word">
+                {{"FECHA Y HORA" | translate}}
+              </span>
+            </div>
             <div class="text-color-light montserrat list-flex"
               *ngFor="let detail of getUniqueDates(cartItem.details)">
               <img [src]="themeService.calendar" />
-              {{ detail.date | date: 'dd-MM-yyyy' }}
+              {{ detail.date | date: 'dd.MM.yyyy' }}
               <img [src]="themeService.clock" />
-              <span>{{ detail.hour_start }} - {{ detail.hour_end }}</span>
+              <span>{{ detail.hour_start }}-{{ detail.hour_end }}</span>
             </div>
 
             <!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
@@ -96,12 +165,6 @@
               <img [src]="themeService.clock" />
               {{ cartItem.details[0].hour_start }} - {{ cartItem.details[0].hour_end }}
             </div>-->
-
-            <div class="text-color-light montserrat pl-18">
-              {{ getUniqueClients(cartItem.details).length }} {{
-              'text_people_under' | translate }}
-            </div>
-
             <!-- Iterar sobre clientes únicos -->
             <ng-container *ngIf="cartItem.details[0].extra">
               {{'text_forfait' | translate }}
@@ -109,53 +172,56 @@
                 {{cartItem.details[0].extra.name}}
               </div>
             </ng-container>
-            <div class="text-color-light montserrat list-flex mt-12"
-              *ngFor="let client of getUniqueClients(cartItem.details)">
-              <img [src]="themeService.user" />
-              {{ client.first_name + ' ' + client.last_name }}
-            </div>
 
           </div>
+        </div>
+        <div class="course-box-dates" style="  border-top: 1px solid #dee6ea;">
+          <span style="color: black;">
+            {{"Total"}}
+          </span>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
             <div class="text-color">
               <span class="text-color fw-semibold text-medium">{{
-                getTotalBasePrice(cartItem.details) }}</span> {{
+                getTotalBasePrice(cartItem.details).toFixed(2) }}</span> {{
               cartItem.details[0].course.currency }}
             </div>
           </ng-container>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
             <div class="text-color">
               <span class="text-color fw-semibold text-medium">
-                {{cartItem.details[0].course.is_flexible ?
+                {{(cartItem.details[0].course.is_flexible ?
                 (cartItem.details.length * cartItem.details[0].price) :
-                cartItem.details[0].course.price * 1 }}</span> {{
+                cartItem.details[0].course.price * 1).toFixed(2) }}</span> {{
               cartItem.details[0].course.currency }}
             </div>
           </ng-container>
-
         </div>
-        <div class="width-100">
+
+        <!--<div class="width-100">
           <div class="text-color mb-8">
             {{'text_notes' | translate }}
           </div>
           <textarea rows="2" class="form-control width-100"></textarea>
-        </div>
+        </div>-->
       </div>
-      <div class="separator-line mb-32 mt-32"></div>
-    </ng-container>
-    <div class="separator-line mb-32 mt-32"></div>
+    </div>
   </div>
-
-  <div class="background-color-trans rounded-8 payment-section"
+  <div class="background-color-trans rounded-8 payment-section2"
+    style="background-color: white; height: fit-content;"
     *ngIf="cart?.length">
     <div class="cardcabecera">
       {{"Resumen de compra" | translate}}
     </div>
-    <div style="padding: 20px; background-color: white;border-radius: 8px;">
+    <div class="cardcabecera2" (click)="mobileHidden=!mobileHidden">
+      <img *ngIf="!mobileHidden" src="assets/icons/down.png" alt>
+      <img *ngIf="mobileHidden" src="assets/icons/up.png" alt>
+    </div>
+    <div style="padding: 20px 20px 0;"
+      [ngClass]="mobileHidden?'mobile':''">
       <div *ngFor="let cartItem of cart;index as i"
         style="display: flex;align-items: center;min-height: 28px;">
         <span class="priceTotal">
-          {{("00"+i+1).slice(-2)}}.
+          {{("00"+(i+1)).slice(-2)}}.
         </span>
         <span class="detail" style="margin-left: 5px;">
           {{getSportName(cartItem.details[0].course.sport_id)}}
@@ -241,7 +307,6 @@
           Boukii Care
         </label>
       </div>
-
       <div (click)="openModalVoucher()"
         style="display: flex;align-items: center;height: 40px;cursor: pointer;">
         <img src="assets/icons/add_red.png" class="icon24"
@@ -261,8 +326,11 @@
             CHF</span>
         </div>
       </div>
+
+    </div>
+    <div style="padding-bottom: 20px;">
       <div class="payment-price-flex mt-8"
-        style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
+        style="margin: 16px 0; padding: 16px 20px;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
         <div class="bdetail">
           {{'text_total' | translate }}
         </div>
@@ -271,8 +339,8 @@
         </div>
       </div>
 
-      <div>
-        <div class="payment-conditions">
+      <div style="padding: 0 20px;">
+        <div class="payment-conditions" [ngClass]="mobileHidden?'mobile':''">
           <div class="checkbox-custom">
             <input type="checkbox" id="conditions"
               [(ngModel)]="conditionsAccepted">
@@ -287,7 +355,7 @@
               | translate }}</span>
           </div>
         </div>
-        <div class="text-color-light montserrat mt-12">
+        <div class="text-color-light montserrat mt-12"  [ngClass]="mobileHidden?'mobile':''">
           {{'text_payment2' | translate }}
         </div>
         <button (click)="sendBooking()"
@@ -305,15 +373,15 @@
         </button>
 
         <div
-          class="payment-title-icon mt-12 pt-12 text-color fw-semibold text-medium">
+          class="payment-title-icon mt-12 pt-12 text-color fw-semibold text-medium paymenthide">
           <img src="/assets/icons/payment_landing_pink.svg">
           {{'text_payment1' | translate }}
         </div>
-        <div class="text-color mt-12 montserrat text-align-center">
+        <div class="text-color mt-12 montserrat text-align-center paymenthide">
           {{'text_cart1' | translate }}
         </div>
         <img [src]="themeService.logoPay"
-          class="payment-logo-pay mt-12" />
+          class="payment-logo-pay mt-12 paymenthide" />
       </div>
     </div>
   </div>

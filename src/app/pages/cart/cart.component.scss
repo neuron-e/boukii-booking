@@ -24,7 +24,7 @@
   }
   > button {
     margin-left: auto;
-    height: 38px;
+    min-height: 38px;
     border-radius: 3px;
     padding: 10px;
     border: 1px solid black;
@@ -36,26 +36,60 @@
     word-wrap: break-word;
   }
 }
-
-.cart-payment-section {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 32px;
+* {
+  font-family: DM Sans;
 }
-.course-box {
+
+.cart-payment {
   display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
+  max-width: 100%;
   gap: 24px;
 }
+.cart-payment-section1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.payment-section2 {
+  min-width: 450px;
+}
+@media (max-width: 900px) {
+  .payment-section2 {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 999999999;
+    left: 0;
+    min-width: 250px;
+
+    .cardcabecera,
+    .paymenthide,
+    .mobile {
+      display: none;
+    }
+    .cardcabecera2 {
+      display: flex;
+    }
+  }
+}
+
+.course-box {
+  display: flex;
+  width: 350px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .course-box-header {
   width: 100%;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border-bottom: 1px solid #dee6ea;
 }
 .course-box-icon {
   display: flex;
@@ -73,8 +107,8 @@
 .course-box-icons {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 74px;
+  gap: 5px;
+  min-width: 60px;
 }
 .course-box-add {
   width: 36px;
@@ -88,6 +122,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  padding: 20px;
 }
 .course-content-list {
   display: flex;
@@ -154,24 +189,6 @@
   margin: 0 auto;
 }
 
-@media (max-width: 850px) {
-  .cart-payment-section {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
-  }
-  .payment-section {
-    width: 100%;
-    max-width: none;
-  }
-}
-@media (max-width: 500px) {
-  .cart-payment-section {
-    gap: 34px;
-  }
-}
 .cardcabecera {
   background-color: #2f3844;
   height: 60px;
@@ -184,6 +201,15 @@
   font-weight: 500;
   line-height: 20px;
   word-wrap: break-word;
+}
+.cardcabecera2 {
+  background-color: white;
+  justify-content: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding-top: 20px;
+  height: 35px;
+  display: none;
 }
 .extra_add {
   color: #e91e63;
