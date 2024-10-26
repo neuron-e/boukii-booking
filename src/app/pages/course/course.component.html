@@ -1,9 +1,8 @@
 
 <div class="text-color mb-24 montserrat">
   <span class="text-color-light underline cursor-pointer montserrat"
-   
     (click)="goTo(schoolData.slug)">{{'Home' | translate
-   }}</span>
+    }}</span>
   / {{getCourseName(course)}}
 </div>
 
@@ -13,35 +12,45 @@
       <div class="course-image-text" style="padding: 16px 0;">
         <div
           class="fw-semibold course-image-icon montserrat">
-          <img src="assets/icons/prive_ski2x.png"
-            *ngIf="course?.course_type==2" />
-          <img src="assets/icons/collectif_ski2x.png"
-            *ngIf="course?.course_type==1" />
-          <!--<ng-container *ngIf="course?.course_type==1">
-            {{'colective' | translate }}
-          </ng-container>
-          <ng-container *ngIf="course?.course_type==2">
-            {{'private' | translate }}
-          </ng-container>
-          <ng-container *ngIf="schoolData && schoolData.sports">
-            {{ getSportName(course?.sport_id) }}
-          </ng-container>-->
+          <img
+            [src]="course.icon"
+            alt="Icono">
           <div class="text-white fw-semibold text-semibig">
             {{getCourseName(course)}}
           </div>
+
         </div>
       </div>
-      <img [src]="course?.image !== null ? course?.image : defaultImage"
-        class="course-image-img" style="border-radius: 10px;" />
+      <div style="position: relative;">
+        <img [src]="course?.image !== null ? course?.image : defaultImage"
+          class="course-image-img" style="border-radius: 10px;" />
+        <span class="last-plaza">
+          {{"Solo 1 plaza disponible!" | translate}}
+        </span>
+      </div>
     </div>
-
     <div class="course-content" *ngIf="course">
-      <div>
-        <span class="descripcion"> a partir de </span>
-        <span class="price"> {{course.price}} {{course.currency}} </span>
+      <div
+        style="display: flex;justify-content: space-between;flex-wrap: wrap;gap: 8px;">
+        <div style="min-width: 150px;">
+          <span class="price"> {{course.price}} {{course.currency}} /Fecha </span>
+        </div>
+        <div style="display: flex;align-items: center;">
+          <img src="assets/icons/start_empty.png" alt class="icon24">
+          <span style="
+          color: #E91E63;
+           font-size: 14px;
+           font-family: DM Sans;
+           font-weight: 400;
+           line-height: 18px;
+           word-wrap: break-word">
+            {{"Reserva 2 fechas y obten el 10% de descuento!" | translate}}
+          </span>
+        </div>
+
       </div>
       <div class="dates"
-        style="display: flex;gap: 8px;align-items: center;">
+        style="display: flex;gap: 8px;align-items: self-start;">
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
           <span class="descripcion"> Desde </span>
@@ -50,8 +59,29 @@
           <span class="campo">{{course.date_end.split("T")[0] }}</span>
           <br>
           <span class="campo2">
-            {{getWeekDay()}}
-            {{findMinHourStart()}}–{{findMaxHourEnd()}}
+            <!--{{getWeekDay()}}
+            {{findMinHourStart()}}–{{findMaxHourEnd()}}-->
+            <ng-container *ngIf="course.course_type == 1">
+              <div
+                *ngFor="let date of course.course_dates">
+                {{date.date | date: 'dd.MM.yyyy'}}
+                {{date.hour_start}}-{{date.hour_end}}
+              </div>
+            </ng-container>
+            <ng-container *ngIf="course.course_type == 2">
+              <div class="mt-8 course-box-content-list">
+                <div>{{course.course_dates[0].date | date:
+                  'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
+                  | date: 'dd.MM.yyyy'}}</div>
+                <div>{{
+                  getWeekdays(course.settings) }}</div>
+              </div>
+              <div class="mt-8 course-box-content-list">
+                <div>{{'text_from_price'
+                  | translate }} {{course.duration}}</div>
+                <div>{{course.hour_min}}h-{{course.hour_max}}h</div>
+              </div>
+            </ng-container>
           </span>
         </div>
       </div>
@@ -371,7 +401,7 @@
           word-wrap: break-word">
             <ng-container *ngIf="course?.course_type === 2">
               {{'text_select_user_or_more' | translate }}
-           
+
               {{course?.max_participants}}
             </ng-container>
             <ng-container *ngIf="!(course?.course_type === 2)">
@@ -380,18 +410,14 @@
           </div>
 
           <mat-checkbox
-           
             (click)="selectUser(userLogged.clients[0],course?.course_type)"
-              style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length"
-               
-              [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
-               
-              [userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
+                [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+                [userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
               <div
-               
-              class="text-color text-small montserrat reservation-user-title">
+                class="text-color text-small montserrat reservation-user-title">
                 <img src="assets/images/gold-crown.png">
                 {{userLogged?.clients[0].last_name}}
               </div>
@@ -404,25 +430,18 @@
           </mat-checkbox>
 
           <div class="reservation-user-box cursor-pointer"
-           
             *ngFor="let utilizer of userLogged?.clients[0].utilizers"
-           
             (click)="selectUser(utilizer,course?.course_type)"
-              [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}">
+            [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}">
             <app-level-user *ngIf="dataLevels && dataLevels.length"
-             
               [allLevels]="dataLevels" [selectLevel]="182" [size]="70"
-             
               [userImage]="themeService.avatarEmpty"></app-level-user>
             <div
-             
               class="text-color text-small montserrat reservation-user-title">
               {{utilizer.last_name}}
             </div>
             <div
-             
               *ngIf="(course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)"
-             
               class="reservation-user-bullet"></div>
           </div>
 
@@ -521,8 +540,7 @@
               </ng-container>
             </div>
             <div
-             
-                *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
+              *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
               <p> {{'text_no_degrees' | translate }}</p>
             </div>
           </div>
@@ -549,7 +567,6 @@
         <div *ngIf="course?.course_type==2 && courseFlux===2"
           style="padding: 20px;">
           <ng-container
-           
             *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat margin-auto">
               {{'text_select_date_disponibility' | translate }}
