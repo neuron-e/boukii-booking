@@ -33,7 +33,8 @@
       <div
         style="display: flex;justify-content: space-between;flex-wrap: wrap;gap: 8px;">
         <div style="min-width: 150px;">
-          <span class="price"> {{course.price}} {{course.currency}} /Fecha </span>
+          <span class="price"> {{course.price}} {{course.currency}} /Fecha
+          </span>
         </div>
         <div style="display: flex;align-items: center;">
           <img src="assets/icons/start_empty.png" alt class="icon24">
@@ -54,9 +55,9 @@
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
           <span class="descripcion"> Desde </span>
-          <span class="campo">{{course.date_start.split("T")[0] }}</span>
+          <span class="campo">{{course.date_start | date: 'dd.MM.yyyy' }}</span>
           <span class="descripcion"> hasta </span>
-          <span class="campo">{{course.date_end.split("T")[0] }}</span>
+          <span class="campo">{{course.date_end | date: 'dd.MM.yyyy'}}</span>
           <br>
           <span class="campo2">
             <!--{{getWeekDay()}}
