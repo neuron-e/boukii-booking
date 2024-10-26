@@ -2,8 +2,17 @@
     <div class="modal-content background-color-full rounded-8"
         (click)="$event.stopPropagation()">
         <div
-            class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
-            {{'text_use_voucher' | translate }}
+            class="text-color fw-semibold text-semibig modal-flex-title mb-32">
+            <span style="
+            color: #222222;
+             font-size: 14px;
+             font-family: Dinamit;
+             font-weight: 500;
+             line-height: 18px;
+             word-wrap: break-word">
+                {{'text_use_voucher' | translate }}
+
+            </span>
             <img [src]="themeService.close" class="cursor-pointer"
                 (click)="closeModal()" />
         </div>
