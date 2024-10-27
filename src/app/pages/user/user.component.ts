@@ -759,7 +759,6 @@ export class UserComponent implements OnInit {
     } else {
       this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
     }
-
   }
 
   setLanguagesUtilizateur(langs: any, dataToModify: any) {

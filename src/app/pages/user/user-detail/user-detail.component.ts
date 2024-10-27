@@ -6,8 +6,8 @@ import { MatTable, _MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import {Observable, map, startWith, Subject, forkJoin, retry, of, switchMap, tap} from 'rxjs';
-import {catchError, takeUntil} from 'rxjs/operators';
+import { Observable, map, startWith, Subject, forkJoin, retry, of, switchMap, tap } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import { ApiCrudService } from 'src/app/services/crud.service';
@@ -100,12 +100,12 @@ export class UserDetailComponent {
     province: null,
     country: null,
     image: null,
-    language1_id:null,
-    language2_id:null,
-    language3_id:null,
-    language4_id:null,
-    language5_id:null,
-    language6_id:null,
+    language1_id: null,
+    language2_id: null,
+    language3_id: null,
+    language4_id: null,
+    language5_id: null,
+    language6_id: null,
     user_id: null,
     station_id: null,
     active_station: null
@@ -143,7 +143,7 @@ export class UserDetailComponent {
   clientSport: any = [];
   clients: any = [];
   clientSchool: any = [];
-  goals:any = [];
+  goals: any = [];
   mainId: any;
   showDetail: boolean = false;
   detailData: any;
@@ -151,8 +151,8 @@ export class UserDetailComponent {
   schoolData: any;
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
-              private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
-              private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService) {
+    private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
+    private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService) {
 
     this.today = new Date();
     this.minDate = new Date(this.today);
@@ -170,12 +170,12 @@ export class UserDetailComponent {
           ).subscribe(() => {
             // Aquí puedes realizar cualquier lógica adicional después de obtener los datos iniciales y los datos principales.
           });
-/*          if (this.idParent) {
-            this.getData(this.idParent);
-          }
-          else{
-            this.getData();
-          }*/
+          /*          if (this.idParent) {
+                      this.getData(this.idParent);
+                    }
+                    else{
+                      this.getData();
+                    }*/
         }
       }
     );
@@ -253,7 +253,7 @@ export class UserDetailComponent {
 
   getData(id = null, onChangeUser = false) {
 
-    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data:any) => {
+    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
 
       if (data !== null) {
         this.mainId = data.clients[0].id;
@@ -261,12 +261,13 @@ export class UserDetailComponent {
         const getId = id === null ? this.mainId : id;
         this.id = getId;
 
-        return this.crudService.get('/clients/'+ getId, ['user', 'clientSports.degree', 'clientSports.sport',
+        return this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
           'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
           .pipe(takeUntil(this.destroy$), switchMap((data) => {
 
             this.defaultsUser = data.data.user;
             this.defaults = data.data;
+            console.log(this.defaults)
 
             if (data.data.observations.length > 0) {
               this.defaultsObservations = data.data[0];
@@ -330,7 +331,7 @@ export class UserDetailComponent {
                 hitorical: ['']
               });
 
-              if(!onChangeUser) {
+              if (!onChangeUser) {
 
                 this.filteredCountries = this.myControlCountries.valueChanges.pipe(
                   startWith(''),
@@ -379,12 +380,12 @@ export class UserDetailComponent {
   }
 
   getSchoolSportDegreesOld() {
-    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((sport) => {
         this.schoolSports = sport.data;
         sport.data.forEach((element: any, idx: any) => {
-          this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id='+element.sport_id)
+          this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id=' + element.sport_id)
             .pipe(takeUntil(this.destroy$))
             .subscribe((data) => {
               this.schoolSports[idx].degrees = data.data;
@@ -399,17 +400,17 @@ export class UserDetailComponent {
       .pipe(
         map((sport) => {
           this.schoolSports = sport.data;
-          this.schoolSports.forEach((sport:any) => {
+          this.schoolSports.forEach((sport: any) => {
             sport.name = sport.sport.name;
             sport.icon_selected = sport.sport.icon_selected;
             sport.icon_unselected = sport.sport.icon_unselected;
-            sport.degrees.forEach((degree:any) => {
-              degree.degrees_school_sport_goals.forEach((goal:any) => {
+            sport.degrees.forEach((degree: any) => {
+              degree.degrees_school_sport_goals.forEach((goal: any) => {
                 this.goals.push(goal);
               });
             });
 
-            this.clientSport.forEach((element:any) => {
+            this.clientSport.forEach((element: any) => {
               if (element.sport_id === sport.sport_id) {
                 element.name = sport.name;
                 element.icon_selected = sport.icon_selected;
@@ -419,9 +420,9 @@ export class UserDetailComponent {
             });
           });
           this.sportsCurrentData.data = this.clientSport;
-          const availableSports:any = [];
-          this.schoolSports.forEach((element:any) => {
-            if (!this.sportsCurrentData.data.find((s:any) => s.sport_id === element.sport_id)) {
+          const availableSports: any = [];
+          this.schoolSports.forEach((element: any) => {
+            if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
               availableSports.push(element);
             }
           });
@@ -439,12 +440,12 @@ export class UserDetailComponent {
 
 
   getSports() {
-    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         data.data.forEach((element: any) => {
           this.schoolSports.forEach((sport: any) => {
-            if(element.id === sport.sport_id) {
+            if (element.id === sport.sport_id) {
               sport.name = element.name;
               sport.icon_selected = element.icon_selected;
               sport.icon_unselected = element.icon_unselected;
@@ -455,7 +456,7 @@ export class UserDetailComponent {
         this.schoolSports.forEach((element: any) => {
 
           this.clientSport.forEach((sport: any) => {
-            if(element.sport_id === sport.sport_id) {
+            if (element.sport_id === sport.sport_id) {
               sport.name = element.name;
               sport.icon_selected = element.icon_selected;
               sport.icon_unselected = element.icon_unselected;
@@ -469,7 +470,7 @@ export class UserDetailComponent {
 
         const availableSports: any = [];
         this.schoolSports.forEach((element: any) => {
-          if(!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
+          if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
             availableSports.push(element);
           }
         });
@@ -482,7 +483,7 @@ export class UserDetailComponent {
 
   getDegrees() {
     this.clientSport.forEach((element: any) => {
-      this.crudService.get('/degrees/'+element.degree_id)
+      this.crudService.get('/degrees/' + element.degree_id)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data) => {
           element.level = data.data;
@@ -491,10 +492,10 @@ export class UserDetailComponent {
   }
 
   getClientObservations() {
-    this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    this.crudService.list('/client-observations', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        if(data.data.length > 0) {
+        if (data.data.length > 0) {
 
           this.defaultsObservations = data.data[0];
         } else {
@@ -511,7 +512,7 @@ export class UserDetailComponent {
   }
 
   getClientSchoolOld() {
-    this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientSchool = data.data;
@@ -533,12 +534,12 @@ export class UserDetailComponent {
     return this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='
       + this.id + "&school_id=" + this.schoolData.id, '', null, '', ['degree.degreesSchoolSportGoals'])
       .pipe(takeUntil(this.destroy$),
-        switchMap((data:any) => {
+        switchMap((data: any) => {
           this.clientSport = data.data;
           this.selectedSport = this.clientSport[0];
           this.goals = [];
 
-          this.clientSport.forEach((element:any) => {
+          this.clientSport.forEach((element: any) => {
             element.level = element.degree;
 
           });
@@ -548,7 +549,7 @@ export class UserDetailComponent {
   }
 
   getClientSportOld() {
-    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+this.id)
+    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientSport = data.data;
@@ -588,11 +589,11 @@ export class UserDetailComponent {
   }
 
   getStationsOld() {
-    this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+    this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((station) => {
-        station.data.forEach((element:any) => {
-          this.crudService.get('/stations/'+element.station_id)
+        station.data.forEach((element: any) => {
+          this.crudService.get('/stations/' + element.station_id)
             .pipe(takeUntil(this.destroy$))
             .subscribe((data) => {
               this.stations.push(data.data);
@@ -606,7 +607,7 @@ export class UserDetailComponent {
     return this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(
         switchMap((station) => {
-          const stationRequests = station.data.map((element:any) =>
+          const stationRequests = station.data.map((element: any) =>
             this.crudService.get('/stations/' + element.station_id).pipe(
               map(data => data.data)
             )
@@ -719,11 +720,11 @@ export class UserDetailComponent {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/slug/clients/' + this.mainId +'/utilizers', 1, 10000, 'desc', 'id','&client_id='+this.mainId)
+    this.crudService.list('/slug/clients/' + this.mainId + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' + this.mainId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientUsers = data.data;
-        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id','&main_id='+this.mainId)
+        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.mainId)
           .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
             data.data.forEach((element: any) => {
@@ -767,7 +768,7 @@ export class UserDetailComponent {
   setInitLanguages() {
 
     this.languages.forEach((element: any) => {
-      if(element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
+      if (element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
         || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
         this.selectedLanguages.push(element);
       }
@@ -779,7 +780,7 @@ export class UserDetailComponent {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       maxWidth: '100vw',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-      data: {message: 'Do you want to remove this item? This action will be permanetly', title: 'Delete monitor course'}
+      data: { message: 'Do you want to remove this item? This action will be permanetly', title: 'Delete monitor course' }
     });
 
     dialogRef.afterClosed().subscribe((data: any) => {
@@ -797,10 +798,10 @@ export class UserDetailComponent {
   }
 
   updateLevel(clientSport: any, level: any) {
-    this.crudService.update('/client-sports', {client_id: clientSport.id, sport_id: clientSport.sport_id, degree_id: level.id, school_id: this.schoolData.id}, clientSport.id)
+    this.crudService.update('/client-sports', { client_id: clientSport.id, sport_id: clientSport.sport_id, degree_id: level.id, school_id: this.schoolData.id }, clientSport.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.snackbar.open(this.translateService.instant('snackbar.client.level_updated'), 'OK', {duration: 3000});
+        this.snackbar.open(this.translateService.instant('snackbar.client.level_updated'), 'OK', { duration: 3000 });
       })
   }
 
@@ -824,7 +825,7 @@ export class UserDetailComponent {
         this.crudService.update('/clients', this.defaults, this.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((client) => {
-            this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', {duration: 3000});
+            this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
 
             this.defaultsObservations.client_id = client.data.id;
             this.defaultsObservations.school_id = this.schoolData.id;
@@ -839,7 +840,7 @@ export class UserDetailComponent {
 
             this.sportsData.data.forEach((element: any) => {
 
-              this.crudService.create('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id})
+              this.crudService.create('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id })
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(() => {
                   console.log('client sport created');
@@ -848,7 +849,7 @@ export class UserDetailComponent {
 
             this.sportsCurrentData.data.forEach((element: any) => {
 
-              this.crudService.update('/client-sports', {client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id}, element.id)
+              this.crudService.update('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id }, element.id)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(() => {
                   console.log('client sport updated');
@@ -868,7 +869,7 @@ export class UserDetailComponent {
   }
 
   onTabChange(event: any) {
-    if(event.index === 1) {
+    if (event.index === 1) {
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
       this.selectedTabIndex = 0;
@@ -905,11 +906,11 @@ export class UserDetailComponent {
     this.coloring = false;
   }
 
-  lightenColor(hexColor:any, percent:any) {
+  lightenColor(hexColor: any, percent: any) {
 
-    let r:any = parseInt(hexColor.substring(1, 3), 16);
-    let g:any = parseInt(hexColor.substring(3, 5), 16);
-    let b:any = parseInt(hexColor.substring(5, 7), 16);
+    let r: any = parseInt(hexColor.substring(1, 3), 16);
+    let g: any = parseInt(hexColor.substring(3, 5), 16);
+    let b: any = parseInt(hexColor.substring(5, 7), 16);
 
     // Increase the lightness
     r = Math.round(r + (255 - r) * percent / 100);
@@ -938,14 +939,14 @@ export class UserDetailComponent {
       const dialogRef = this.dialog.open(AddClientUserModalComponent, {
         width: '600px',  // Asegurarse de que no haya un ancho máximo
         panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-        data: {id: this.schoolData.id}
+        data: { id: this.schoolData.id }
       });
 
       dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         if (data) {
 
-          if(data.action === 'add') {
-            this.crudService.create('/clients-utilizers', {client_id: data.ret, main_id: parseInt(this.id)})
+          if (data.action === 'add') {
+            this.crudService.create('/clients-utilizers', { client_id: data.ret, main_id: parseInt(this.id) })
               .pipe(takeUntil(this.destroy$))
               .subscribe((res) => {
                 this.getClientUtilisateurs();
@@ -973,12 +974,12 @@ export class UserDetailComponent {
               province: this.defaults.province,
               country: this.defaults.country,
               image: null,
-              language1_id:null,
-              language2_id:null,
-              language3_id:null,
-              language4_id:null,
-              language5_id:null,
-              language6_id:null,
+              language1_id: null,
+              language2_id: null,
+              language3_id: null,
+              language4_id: null,
+              language5_id: null,
+              language6_id: null,
               user_id: null,
               station_id: this.defaults.station_id
             }
@@ -993,18 +994,19 @@ export class UserDetailComponent {
                 this.crudService.create('/clients', client)
                   .pipe(takeUntil(this.destroy$))
                   .subscribe((clientCreated) => {
-                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', {duration: 3000});
+                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
 
-                    this.crudService.create('/clients-schools', {client_id: clientCreated.data.id, school_id: this.schoolData.id})
+                    this.crudService.create('/clients-schools', { client_id: clientCreated.data.id, school_id: this.schoolData.id })
                       .pipe(takeUntil(this.destroy$))
                       .subscribe((clientSchool) => {
 
                         setTimeout(() => {
-                          this.crudService.create('/clients-utilizers', {client_id: clientCreated.data.id, main_id: this.id})
+                          this.crudService.create('/clients-utilizers', { client_id: clientCreated.data.id, main_id: this.id })
                             .pipe(takeUntil(this.destroy$))
                             .subscribe((res) => {
                               this.getClientUtilisateurs();
-                            })}, 1000);
+                            })
+                        }, 1000);
                       });
                   })
               })
@@ -1012,7 +1014,7 @@ export class UserDetailComponent {
         }
       });
     } else {
-      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', {duration: 3000});
+      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
     }
 
   }
@@ -1095,7 +1097,7 @@ export class UserDetailComponent {
   }
 
   calculateAge(birthDateString: any) {
-    if(birthDateString && birthDateString !== null) {
+    if (birthDateString && birthDateString !== null) {
       const today = new Date();
       const birthDate = new Date(birthDateString);
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -1117,18 +1119,18 @@ export class UserDetailComponent {
     if (event.showDetail || (!event.showDetail && this.detailData !== null && this.detailData.id !== event.item.id)) {
       this.detailData = event.item;
 
-      this.crudService.get('/slug/courses/'+this.detailData.course_id)
+      this.crudService.get('/slug/courses/' + this.detailData.course_id)
         .pipe(takeUntil(this.destroy$))
         .subscribe((course) => {
           this.detailData.course = course.data;
-          this.crudService.get('/sports/'+this.detailData.course.sport_id)
+          this.crudService.get('/sports/' + this.detailData.course.sport_id)
             .pipe(takeUntil(this.destroy$))
             .subscribe((sport) => {
               this.detailData.sport = sport.data;
             });
 
           if (this.detailData.degree_id !== null) {
-            this.crudService.get('/degrees/'+this.detailData.degree_id)
+            this.crudService.get('/degrees/' + this.detailData.degree_id)
               .pipe(takeUntil(this.destroy$))
               .subscribe((degree) => {
                 this.detailData.degree = degree.data;
@@ -1137,7 +1139,7 @@ export class UserDetailComponent {
 
         })
 
-      this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id='+this.detailData.booking.id)
+      this.crudService.list('/booking-users', 1, 10000, 'desc', 'id', '&booking_id=' + this.detailData.booking.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe((booking) => {
           this.detailData.users = [];
@@ -1146,12 +1148,12 @@ export class UserDetailComponent {
             if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
               this.detailData.users.push(element);
 
-              this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='+element.client_id)
+              this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id=' + element.client_id)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe((cd) => {
 
                   if (cd.data.length > 0) {
-                    element.sports= [];
+                    element.sports = [];
 
                     cd.data.forEach((c: any) => {
                       element.sports.push(c);
@@ -1201,7 +1203,7 @@ export class UserDetailComponent {
 
   getClients() {
     return this.crudService.list('/slug/clients/mains',
-      1, 10000, 'desc', 'id', '&school_id='+this.schoolData.id)
+      1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
       .pipe(takeUntil(this.destroy$), tap((client) => {
         this.clients = client.data;
       }))
@@ -1212,7 +1214,7 @@ export class UserDetailComponent {
     if (this.detailData.course && this.detailData.course.course_dates) {
       this.detailData.course.course_dates.forEach((element: any, idx: any) => {
         if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
-          ret = idx +1;
+          ret = idx + 1;
         }
       });
     }
@@ -1241,7 +1243,7 @@ export class UserDetailComponent {
       this.detailData.course.course_dates.forEach((element: any) => {
         const group = element.groups.find((g: any) => g.id === this.detailData.course_group_id);
 
-        if (group){
+        if (group) {
           group.subgroups.forEach((s: any, sindex: any) => {
             if (s.id === this.detailData.course_subgroup_id) {
               ret = sindex + 1;
@@ -1253,12 +1255,12 @@ export class UserDetailComponent {
     return ret;
   }
 
-  getDateFormatLong(date:string) {
+  getDateFormatLong(date: string) {
     return moment(date).format('dddd, D MMMM YYYY');
   }
 
-  getHoursMinutes(hour_start:string, hour_end:string) {
-    const parseTime = (time:string) => {
+  getHoursMinutes(hour_start: string, hour_end: string) {
+    const parseTime = (time: string) => {
       const [hours, minutes] = time.split(':').map(Number);
       return { hours, minutes };
     };
@@ -1277,21 +1279,21 @@ export class UserDetailComponent {
     return `${durationHours}h${durationMinutes}m`;
   }
 
-  getHourRangeFormat(hour_start:string,hour_end:string) {
-    return hour_start.substring(0, 5)+' - '+hour_end.substring(0, 5);
+  getHourRangeFormat(hour_start: string, hour_end: string) {
+    return hour_start.substring(0, 5) + ' - ' + hour_end.substring(0, 5);
   }
 
-  getClientDegree(sport_id:any,sports:any) {
+  getClientDegree(sport_id: any, sports: any) {
     const sportObject = sports.find((sport: any) => sport.sport_id === sport_id);
     if (sportObject) {
       return sportObject.degree_id;
     }
-    else{
+    else {
       return 0;
     }
   }
 
-  getBirthYears(date:string) {
+  getBirthYears(date: string) {
     const birthDate = moment(date);
     return moment().diff(birthDate, 'years');
   }
@@ -1307,12 +1309,12 @@ export class UserDetailComponent {
   }
 
   calculateHourEnd(hour: any, duration: any) {
-    if(duration.includes('h') && duration.includes('min')) {
+    if (duration.includes('h') && duration.includes('min')) {
       const hours = duration.split(' ')[0].replace('h', '');
       const minutes = duration.split(' ')[1].replace('min', '');
 
       return moment(hour, 'HH:mm').add(hours, 'h').add(minutes, 'm').format('HH:mm');
-    } else if(duration.includes('h')) {
+    } else if (duration.includes('h')) {
       const hours = duration.split(' ')[0].replace('h', '');
 
       return moment(hour, 'HH:mm').add(hours, 'h').format('HH:mm');
@@ -1333,7 +1335,7 @@ export class UserDetailComponent {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
       maxWidth: '100vw',  // Asegurarse de que no haya un ancho máximo
       panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-      data: {message: 'Do you want to remove this item? This action will be permanetly', title: 'Delete monitor course'}
+      data: { message: 'Do you want to remove this item? This action will be permanetly', title: 'Delete monitor course' }
     });
 
 
@@ -1344,7 +1346,7 @@ export class UserDetailComponent {
           .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
             this.getClientUtilisateurs();
-            this.snackbar.open(this.translateService.instant('snackbar.client.removed_user'), 'OK', {duration: 3000});
+            this.snackbar.open(this.translateService.instant('snackbar.client.removed_user'), 'OK', { duration: 3000 });
           })
       }
     });

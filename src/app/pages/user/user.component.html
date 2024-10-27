@@ -19,6 +19,7 @@
           style="cursor:pointer;">
           <div style="height: 64px;padding: 10px;">
             <button
+              (click)="addUtilisateur()"
               style="background-color: white; border: 1px solid black; border-radius: 3px;height: 40px;padding: 10px 12px;width: 100%;
               color: #222222;
               font-size: 14px;
@@ -53,8 +54,9 @@
           <div
             *ngFor="let user of clientUsers"
             class="flex items-center"
+            [style.background]="id===user.id?'#DEE6EA':''"
             (click)="changeClientData(user.id)"
-            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #8B9099;">
+            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <img
               [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
               alt="Profile Picture"
@@ -65,6 +67,10 @@
               style="font-size:13px;color:black">{{ user?.first_name
               }} {{
               user?.last_name }}</div>
+            <img src="assets/icons/arrow-right2.png" alt
+              *ngIf="id===user.id"
+              class="icon24"
+              style="margin-left: auto;">
           </div>
         </div>
       </div>

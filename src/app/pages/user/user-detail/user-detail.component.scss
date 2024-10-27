@@ -83,6 +83,20 @@
         word-wrap: break-word;
       }
     }
+    > .delete {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-left: auto;
+      span {
+        color: #e70f0f;
+        font-size: 12px;
+        font-family: DM Sans;
+        font-weight: 400;
+        line-height: 16px;
+        word-wrap: break-word;
+      }
+    }
     > img.icon24 {
       cursor: pointer;
       position: absolute;
