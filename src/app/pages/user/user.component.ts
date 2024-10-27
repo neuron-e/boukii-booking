@@ -57,7 +57,7 @@ export class UserComponent implements OnInit {
   dataSource: any = [];
 
   displayedColumns: string[] = ['icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
-    'has_boukii_care', 'payment_method', 'payment_status', 'cancellation_status', 'price_total'];
+    'has_boukii_care', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
   mainId: any;
 
   defaults: any;
@@ -471,7 +471,6 @@ export class UserComponent implements OnInit {
 
   calculateGoalsScore() {
     let ret = 0;
-
     const goals = this.goals.filter((g: any) => g.degree_id == this.selectedSport.level.id);
 
     if (goals.length > 0) {

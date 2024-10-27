@@ -1,22 +1,79 @@
-
 <div (click)="goBack('home')"
-  class="text-color-light montserrat cursor-pointer reservation-return"
-  style="display: flex;align-items: center;gap: 12px;">
-  <img [src]="themeService.arrowReturn">
-  {{'text_continue' | translate }}
-  <div (click)="goBack('home')"
-    class="text-color-light montserrat cursor-pointer reservation-return"
-    style="display: flex;align-items: center;gap: 12px;">
-    <img [src]="themeService.arrowReturn">
-    {{'text_continue' | translate }}
+  class="reservation-return">
+  <span style="color: #61656d;"> {{'Home' | translate }} </span> /
+  <span style="font-weight: 600;color: #222222;">
+    {{'Usuarios' | translate }}
+  </span>
+</div>
+
+<mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
+
+<div class="dimension">
+  <div class="userd">
+    <div
+      class="flex flex-col md:flex-row md:items-start flex-sections-user-left">
+      <div
+        style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
+        class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
+        <div class="flex flex-col"
+          style="cursor:pointer;">
+          <div style="height: 64px;padding: 10px;">
+            <button
+              style="background-color: white; border: 1px solid black; border-radius: 3px;height: 40px;padding: 10px 12px;width: 100%;
+              color: #222222;
+              font-size: 14px;
+              font-family: DM Sans;
+              font-weight: 600;
+              line-height: 18px;
+              word-wrap: break-word">
+              {{"Añadir usuario" | translate}}
+            </button>
+          </div>
+          <div
+            class="flex items-center"
+            (click)="changeClientData(userLogged.clients[0].id)"
+            [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
+            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
+            <img
+              [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
+              [ngStyle]="{    'border': mainId == id ? '#FF3085 1px solid' : 'none'  }"
+              alt="Profile Picture"
+              class="avatar ltr:mr-3 rtl:ml-3 flex-none"
+              style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+
+            <div class="body-2 m-0 leading-snug montserrat"
+              style="font-size:13px;color:black">{{
+              userLogged.clients[0]?.first_name }} {{
+              userLogged.clients[0]?.last_name }}</div>
+            <img src="assets/icons/arrow-right2.png" alt
+              *ngIf="id===userLogged.clients[0].id"
+              class="icon24"
+              style="margin-left: auto;">
+          </div>
+          <div
+            *ngFor="let user of clientUsers"
+            class="flex items-center"
+            (click)="changeClientData(user.id)"
+            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #8B9099;">
+            <img
+              [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
+              alt="Profile Picture"
+              class="avatar ltr:mr-3 rtl:ml-3 flex-none"
+              [ngStyle]="{    'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'  }"
+              style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
+            <div class="body-2 m-0 leading-snug montserrat"
+              style="font-size:13px;color:black">{{ user?.first_name
+              }} {{
+              user?.last_name }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
-
-  <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading">
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading"
+    class="tabsWrapper">
     <mat-tab label="{{'data' | translate}}">
-      <app-user-detail #userDetail [idParent]="id"
-        (idChange)="handleIdChange($event)"></app-user-detail>
       <app-user-detail #userDetail [idParent]="id"
         (idChange)="handleIdChange($event)"></app-user-detail>
     </mat-tab>
@@ -74,67 +131,8 @@
             <div class="flex-sections-user">
 
               <div
-                class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left"
-                *ngIf="!loading">
-
-                <div
-                  style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
-                  class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-                  <div class="px-6 py-4 border-b">
-                    <h2 class="title m-0">{{'users' | translate }}</h2>
-                  </div>
-
-                  <div class="px-6 py-4 flex flex-col gap-4"
-                    style="cursor:pointer;">
-                    <div
-                      class="flex items-center"
-                      (click)="changeClientData(userLogged.clients[0].id)"
-                      style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-                      <img
-                        [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
-                        [ngStyle]="{
-                    'border': mainId == id ? '#FF3085 1px solid' : 'none'
-                  }"
-                        alt="Profile Picture"
-                        class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-                        style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
-
-                      <div class="body-2 m-0 leading-snug montserrat"
-                        style="font-size:13px;color:black">{{
-                        userLogged.clients[0]?.first_name }} {{
-                        userLogged.clients[0]?.last_name }}</div>
-                    </div>
-                    <div
-                      *ngFor="let user of clientUsers"
-                      class="flex items-center" style="cursor:pointer;"
-                      (click)="changeClientData(user.id)"
-                      style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-                      <img
-                        [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
-                        alt="Profile Picture"
-                        class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-                        [ngStyle]="{
-                    'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
-                  }"
-                        style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
-                      <div class="body-2 m-0 leading-snug montserrat"
-                        style="font-size:13px;color:black">{{ user?.first_name
-                        }} {{
-                        user?.last_name }}</div>
-                    </div>
-
-                    <div style="cursor:pointer"
-                      class="flex items-center">
-
-                    </div>
-
-                  </div>
-                </div>
-
-              </div>
-              <div
                 class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right"
-                *ngIf="!loading">
+                *ngIf="!loading && selectedSport">
                 <div class="flex-auto">
                   <div class="card">
                     <div class="px-6 py-4 border-b">
@@ -549,3 +547,4 @@
       </div>
     </mat-tab>
   </mat-tab-group>
+</div>

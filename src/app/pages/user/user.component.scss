@@ -1,3 +1,24 @@
+.dimension {
+  display: flex;
+}
+
+.userd {
+  min-width: 300px;
+}
+
+.reservation-return {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-family: DM Sans;
+  line-height: 18px;
+  word-wrap: break-word;
+  cursor: pointer;
+  color: #222222;
+  margin-bottom: 20px;
+}
+
 .title {
   font-weight: bold;
   font-size: 1.5rem;
@@ -5,48 +26,51 @@
   padding: 0.5rem 1rem;
   background: #fff;
   margin: 0; /* elimina los márgenes por defecto de h2 */
-  }
-
-  ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
-    color: #999 !important;
-  }
-  ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-    color: var(--text-color) !important;
-  }
-  ::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
-    border-bottom: 1px solid var(--text-color) !important;
-  }
-
-  ::ng-deep .mat-mdc-tab-labels {
-    flex-wrap:wrap;
-  }
+}
 
 .flex-sections-user {
-  display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;flex-direction:row;gap:40px;
-}
-.flex-sections-user-left {
-  width:calc(22% - 20px);min-width:calc(22% - 20px);
-}
-.flex-sections-user-right {
-  width:calc(78% - 20px);min-width:calc(78% - 20px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 24px;
+  flex-direction: row;
+  gap: 40px;
 }
 
-@media (max-width:1500px) {
-  .flex-sections-user-left {
-    width:calc(30% - 20px);min-width:calc(30% - 20px);
-  }
-  .flex-sections-user-right {
-    width:calc(70% - 20px);min-width:calc(70% - 20px);
-  }
-}
-@media (max-width:1000px) {
-  .flex-sections-user {
-    display:flex;justify-content:center;align-items:center;margin-top:24px;flex-direction:column;gap:initial;
-  }
-  .flex-sections-user-left {
-    width:100%;margin-bottom:20px;
-  }
-  .flex-sections-user-right {
-    width:100%;
+.tabsWrapper {
+  width: 100%;
+  ::ng-deep {
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+      color: #222222;
+      font-size: 14px;
+      font-family: DM Sans;
+      font-weight: 600;
+      line-height: 18px;
+      word-wrap: break-word;
+    }
+    .mat-mdc-tab {
+      background-color: white;
+      border: 1px solid #dee6ea;
+      height: 64px;
+      font-size: 0.85rem;
+      font-weight: 400;
+      line-height: 1.15rem;
+    }
+
+    .mdc-tab-indicator--active {
+      background-color: white;
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.15rem;
+    }
+
+    .mat-mdc-tab .mdc-tab-indicator__content--underline {
+      border-top-width: 3px;
+      align-self: flex-start;
+      border-color: #e91e63;
+    }
+    .mat-mdc-tab-body.mat-mdc-tab-body-active {
+      background-color: white;
+    }
   }
 }
