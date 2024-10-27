@@ -1,9 +1,15 @@
 .dimension {
   display: flex;
+  @media only screen and (max-width: 900px) {
+    flex-direction: column;
+  }
 }
 
 .userd {
   min-width: 300px;
+  @media only screen and (max-width: 900px) {
+    margin-bottom: 20px;
+  }
 }
 
 .reservation-return {

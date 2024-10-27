@@ -19,7 +19,7 @@
             style="display: flex; padding: 10px; gap: 5px;">
             <img src="assets/icons/lang.png"
                 class="icon24">
-            <img [src]="themeService.arrowUp" class="icon24"
+            <img [src]="themeService.arrowUp" class="icon24 arrow"
                 [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
             <div class="dropdown"
                 *ngIf="isOpenDropdownLang">
@@ -67,8 +67,12 @@
         <div *ngIf="userLogged" class="title2"
             (click)="isOpenDropdownUser=!isOpenDropdownUser"
             style="display: flex;align-items: center;padding: 10px;">
-            {{userLogged.username || "User"}}
-            <img [src]="themeService.arrowUp" class="icon24"
+            <img src="assets/icons/login.png"
+                class="usericon icon24">
+            <span class="username">
+                {{userLogged.username || "User"}}
+            </span>
+            <img [src]="themeService.arrowUp" class="icon24 arrow"
                 [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
             <div class="dropdown"
                 *ngIf="isOpenDropdownUser">

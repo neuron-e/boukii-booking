@@ -1,5 +1,6 @@
-<div style="max-width: none;display: flex;" *ngIf="!loading">
-  <div class="flex-sections-user" *ngIf="!loading && !editing">
+<div  class="flex-sections" *ngIf="!loading">
+  <div class="flex-sections-user" *ngIf="!editing"
+    [style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'">
     <div>
       <div>
         <p>{{'NOMBRE' | translate }}</p>
@@ -93,7 +94,8 @@
     </div>
 
   </div>
-  <div class="flex-sections-user" *ngIf="!loading && !editing">
+  <div class="flex-sections-user"
+    *ngIf="!editing && defaults.client_sports && defaults.client_sports.length>0">
     <div>
       <div style="width: 100%;flex: none;">
         <p style="margin-bottom: 20px;">{{"DEPORTES" | translate}}</p>
@@ -169,7 +171,6 @@
             style="margin: 30px 0;">
           </mat-divider>
         </div>
-
       </div>
       <img src="assets/icons/edit.png" class="icon24"
         (click)="showPersonalInfoEditEvent(true)">
@@ -177,7 +178,7 @@
   </div>
 
   <div class="mt-6 flex flex-col md:flex-row md:items-start"
-    *ngIf="!loading && editing">
+    *ngIf="editing">
     <div style="margin-left:0; margin-right: 1.5rem"
       class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
       <div class="px-6 py-4 border-b">

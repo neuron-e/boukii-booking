@@ -45,7 +45,13 @@
     }
   }
 }
-
+.flex-sections {
+  max-width: none;
+  display: flex;
+  @media only screen and (max-width: 900px) {
+    flex-direction: column;
+  }
+}
 .flex-sections-user {
   display: flex;
   justify-content: space-between;
@@ -53,6 +59,9 @@
   flex-direction: column;
   flex-wrap: nowrap;
   width: 50%;
+  @media only screen and (max-width: 900px) {
+    width: 100%;
+  }
   > div {
     display: flex;
     border: 1px solid #8b9099;
