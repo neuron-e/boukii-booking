@@ -1,4 +1,4 @@
-import {Component, OnInit, EventEmitter, Input, Output, OnDestroy} from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { SchoolService } from '../../services/school.service';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-modal-login',
@@ -24,7 +24,7 @@ import {Subscription} from 'rxjs';
     ]),
   ]
 })
-export class ModalLoginComponent implements OnInit, OnDestroy  {
+export class ModalLoginComponent implements OnInit, OnDestroy {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
@@ -56,7 +56,7 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
           }
         })
         .catch(error => {
-          let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
+          let errorMessage = this.translateService.instant(error.error?.message) || 'error.client.register';
           this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
         });
     }
@@ -98,7 +98,7 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
 
   private showErrorSnackbar() {
     const errorMessage = this.translateService.instant('error.send_mail');
-    this.snackbar.open(errorMessage, 'OK', {  duration: 3000  });
+    this.snackbar.open(errorMessage, 'OK', { duration: 3000 });
     this.closeModal();
   }
 

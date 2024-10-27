@@ -224,7 +224,6 @@ export class UserComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.clientUsers = data.data;
-        console.log(this.clientUsers);
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
@@ -355,7 +354,6 @@ export class UserComponent implements OnInit {
       '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))
       .subscribe((bookings) => {
-        console.log(bookings.data);
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
 

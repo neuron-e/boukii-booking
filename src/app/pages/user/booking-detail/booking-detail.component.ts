@@ -546,7 +546,6 @@ export class BookingDetailComponent implements OnInit {
           this.crudService.post('/slug/bookings/payments/' + this.id, basket)
 
             .subscribe((result: any) => {
-              console.log((result));
               window.open(result.data, "_self");
             })
         } else {

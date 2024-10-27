@@ -267,7 +267,6 @@ export class UserDetailComponent {
 
             this.defaultsUser = data.data.user;
             this.defaults = data.data;
-            console.log(this.defaults)
 
             if (data.data.observations.length > 0) {
               this.defaultsObservations = data.data[0];
@@ -712,7 +711,6 @@ export class UserDetailComponent {
     } else {
       this.selectedLanguages.push({ name: language.name, code: language.code, id: language.id });
     }
-    console.log(this.selectedLanguages);
   }
 
   getSelectedLanguageNames(): string {

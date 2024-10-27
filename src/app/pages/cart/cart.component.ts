@@ -407,17 +407,12 @@ export class CartComponent implements OnInit {
       basket: JSON.stringify(basket),
       status: 3
     };
-
-    console.log(bookingData);
-    console.log(basket);
-
     this.bookingService.createBooking(bookingData).subscribe(
       (response: any) => {
         console.log('Reserva creada con éxito', response);
         this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
 
           .subscribe((result: any) => {
-            console.log((result));
             window.open(result.data, "_self");
           })
       },
@@ -683,9 +678,6 @@ export class CartComponent implements OnInit {
   }
 
   deleteCartItem(cartItem: any) {
-    console.log(cartItem);
-    console.log(this.cart);
-
     const indexToRemove = this.cart.findIndex(item =>
       item.courseId === cartItem.courseId && item.userId === cartItem.userId
     );
@@ -693,7 +685,6 @@ export class CartComponent implements OnInit {
     if (indexToRemove !== -1) {
       this.cart.splice(indexToRemove, 1);
       let cartArray = this.transformArrayToCart(this.cart);
-      console.log(cartArray);
       localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
 
       this.cartService.carData.next(cartArray);

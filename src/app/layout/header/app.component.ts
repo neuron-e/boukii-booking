@@ -53,7 +53,6 @@ export class HeaderComponent implements OnInit {
       data => {
         if (data) {
           this.userLogged = data;
-          console.log(data)
         }
       }
     );
