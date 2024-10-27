@@ -1,12 +1,15 @@
-<form >
+<form>
   <div class="flex items-center" mat-dialog-title>
-    <h2 class="headline m-0 flex-auto">{{defaults.title}}</h2>
+    <h2 class="headline m-0 flex-auto" style="
+    color: #222222;
+     font-size: 14px;
+     font-family: Dinamit;
+     font-weight: 500;
+     line-height: 18px;
+     word-wrap: break-word">{{defaults.title}}</h2>
 
-    <!--<button [matMenuTriggerFor]="settingsMenu" class="text-secondary" mat-icon-button type="button">
-      <mat-icon svgIcon="mat:more_vert"></mat-icon>
-    </button>-->
-
-    <button class="text-secondary" mat-dialog-close mat-icon-button type="button">
+    <button class="text-secondary" mat-dialog-close mat-icon-button
+      type="button">
       <i class="fa fa-close"></i>
     </button>
   </div>
@@ -14,11 +17,36 @@
   <mat-divider class="text-border"></mat-divider>
 
   <mat-dialog-content class="flex flex-col">
-    <h1 [innerHTML]="defaults.message"></h1>
+    <span [innerHTML]="defaults.message"
+      style="
+    color: black;
+     font-size: 14px;
+     font-family: DM Sans;
+     font-weight: 400;
+     line-height: 18px;
+     word-wrap: break-word"></span>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button color="accent" mat-flat-button [mat-dialog-close]="true"><span style="color: white"> {{'confirm' | translate}}</span></button>
-    <button color="accent" mat-flat-button [mat-dialog-close]="false"><span style="color: white"> {{'no' | translate}}</span></button>
+    <button mat-flat-button [mat-dialog-close]="false"
+      style="background-color: white;border: 1px solid black;border-radius: 3px;"><span
+        style="color: black;
+        font-size: 14px;
+        font-family: DM Sans;
+        font-weight: 600;
+        line-height: 18px;
+        word-wrap: break-word">
+        {{'Cancelar' |
+        translate}}</span></button>
+
+    <button color="accent" mat-flat-button [mat-dialog-close]="true"><span
+        style="
+        color: white;
+         font-size: 14px;
+         font-family: DM Sans;
+         font-weight: 600;
+         line-height: 18px;
+         word-wrap: break-word"> {{'Confirm' | translate}}</span></button>
+
   </mat-dialog-actions>
 </form>
