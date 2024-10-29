@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ApiCrudService } from 'src/app/services/crud.service';
 import { SchoolService } from 'src/app/services/school.service';
 import { _MatTableDataSource } from '@angular/material/table';
-import { Observable, map, startWith, Subject, retry, of, tap, forkJoin, switchMap } from 'rxjs';
+import { Observable, map, startWith, Subject, retry, of, tap, forkJoin, switchMap, Subscription } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddClientUserModalComponent } from './add-client-user/add-client-user.component';
 import { CartService } from '../../services/cart.service';
+import { ScreenSizeService } from 'src/app/services/screen.service';
 
 @Component({
   selector: 'app-user',
@@ -67,12 +68,14 @@ export class UserComponent implements OnInit {
   clientUsers: any[] = [];
 
   firstLoad: boolean = true;
+  screenWidth!: number;
+  private screenWidthSubscription!: Subscription;
 
   constructor(private router: Router, public themeService: ThemeService, private authService: AuthService, private crudService: ApiCrudService, private dialog: MatDialog,
-    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute, private cartService: CartService) { }
+    private schoolService: SchoolService, private passwordGen: PasswordService, private snackbar: MatSnackBar, private translateService: TranslateService, private activatedRoute: ActivatedRoute, private cartService: CartService, public screenSizeService: ScreenSizeService) { }
 
   ngOnInit(): void {
-
+    this.screenWidthSubscription = this.screenSizeService.getScreenWidth().subscribe(width => this.screenWidth = width);
     this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(
       data => {
         if (data) {
@@ -785,6 +788,9 @@ export class UserComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    if (this.screenWidthSubscription) {
+      this.screenWidthSubscription.unsubscribe();
+    }
   }
 
   getCourseName(course: any) {

@@ -5,27 +5,27 @@ import { Injectable } from '@angular/core';
 })
 export class ThemeService {
   private isDarkMode: boolean = false;
-  modeIcon:string;
-  arrowLeft:string;
-  arrowRight:string;
-  arrowUp:string;
-  cart:string;
-  calendar:string;
-  clock:string;
-  arrowReturn:string;
-  edit:string;
-  logoPay:string;
-  add:string;
-  trash:string;
-  user:string;
-  avatarEmpty:string;
-  close:string;
+  modeIcon: string;
+  arrowLeft: string;
+  arrowRight: string;
+  arrowUp: string;
+  cart: string;
+  calendar: string;
+  clock: string;
+  arrowReturn: string;
+  edit: string;
+  logoPay: string;
+  add: string;
+  trash: string;
+  user: string;
+  avatarEmpty: string;
+  close: string;
 
   constructor() {
-/*    const savedTheme = localStorage.getItem('isDarkMode');
-    if (savedTheme) {
-      this.isDarkMode = JSON.parse(savedTheme);
-    }*/
+    /*    const savedTheme = localStorage.getItem('isDarkMode');
+        if (savedTheme) {
+          this.isDarkMode = JSON.parse(savedTheme);
+        }*/
     this.setThemeConstants();
   }
 
