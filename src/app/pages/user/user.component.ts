@@ -113,6 +113,8 @@ export class UserComponent implements OnInit {
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
     }
+    console.log(this.selectedSport)
+
   }
 
   getData(id = null, onChangeUser = false) {
@@ -440,7 +442,6 @@ export class UserComponent implements OnInit {
 
       this.goals?.forEach((element: any) => {
         if (element.degree_id === sport.degree_id) {
-
           this.selectedGoal.push(element);
         }
       });
@@ -850,7 +851,6 @@ export class UserComponent implements OnInit {
 
   getGoalImage(): string {
     let ret = '';
-
     if (this.selectedGoal.length > 0) {
       this.allLevels.forEach((element: any) => {
         if (element.id === this.selectedGoal[0].degree_id) {
@@ -858,8 +858,6 @@ export class UserComponent implements OnInit {
         }
       });
     }
-
-
     return ret;
   }
 }
