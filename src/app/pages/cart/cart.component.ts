@@ -551,7 +551,7 @@ export class CartComponent implements OnInit {
     let ret: any = [];
     this.cart.forEach((cart: any) => {
       cart.details.forEach((detail: any) => {
-        if (detail.extra && detail.extra.price && detail.extra.tva) {
+        if (detail.extra && detail.extra.price) {
           ret.push(detail.extra);
         }
       });
