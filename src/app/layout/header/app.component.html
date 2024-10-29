@@ -16,7 +16,7 @@
         class="icon24" style="margin-left: auto;" />-->
     <div style="display: flex;margin-left: auto;position: relative;">
         <div (click)="isOpenDropdownLang=!isOpenDropdownLang"
-            style="display: flex; padding: 10px; gap: 5px;">
+            style="display: flex; padding: 10px; gap: 5px;position: relative;">
             <img src="assets/icons/lang.png"
                 class="icon24">
             <img [src]="themeService.arrowUp" class="icon24 arrow"
@@ -66,7 +66,7 @@
         </div>
         <div *ngIf="userLogged" class="title2"
             (click)="isOpenDropdownUser=!isOpenDropdownUser"
-            style="display: flex;align-items: center;padding: 10px;">
+            style="display: flex;align-items: center;padding: 10px;position: relative;">
             <img src="assets/icons/login.png"
                 class="usericon icon24">
             <span class="username">

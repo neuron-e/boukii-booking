@@ -1,4 +1,4 @@
-<div  class="flex-sections" *ngIf="!loading">
+<div class="flex-sections" *ngIf="!loading">
   <div class="flex-sections-user" *ngIf="!editing"
     [style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'">
     <div>
@@ -117,7 +117,7 @@
             style="display: flex; align-items: center;gap: 20px;">
             <img
               [src]="'../../../../assets/images/avatar.png'"
-              [ngStyle]="{    'border': mainId == id ? '#FF3085 1px solid' : 'none'  }"
+              [ngStyle]="{'border': mainId == id ? '#FF3085 1px solid' : 'none'  }"
               alt="Profile Picture"
               class="avatar ltr:mr-3 rtl:ml-3 flex-none"
               style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;" />
