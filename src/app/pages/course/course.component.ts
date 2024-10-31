@@ -867,6 +867,7 @@ export class CourseComponent implements OnInit {
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
       this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0]);
     }
+    this.updatePrice();
   }
 
   updatePrice(): void {
