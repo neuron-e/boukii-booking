@@ -262,6 +262,7 @@ export class CourseComponent implements OnInit {
     });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.course.is_flexible = true
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
@@ -1114,4 +1115,13 @@ export class CourseComponent implements OnInit {
     return dates;
   }
 
+  flexDateGroup: string[]
+  flexDateGet(str: string) {
+    this.flexDateGroup = this.flexDateGroup || [];
+    const index = this.flexDateGroup.indexOf(str);
+    if (index !== -1)
+      this.flexDateGroup.splice(index, 1);
+    else this.flexDateGroup.push(str);
+
+  }
 }
