@@ -93,31 +93,28 @@
               {{'text_when_course' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div
-                class="text-color-light pl-32 montserrat">{{course?.start_date |
-                date: 'dd/MM/yyyy'}} - {{course?.end_date | date:
-                'dd/MM/yyyy'}}</div>
-              <div class="text-color-light pl-32 montserrat">{{
-                getWeekdays(course?.settings) }}</div>
-              <div
-                class="text-color-light pl-32 montserrat">{{'text_max_participants'
-                | translate }}: {{course?.max_participants}}</div>
+              <div class="text-color-light pl-32 montserrat">{{ getStartDate() }} - {{ getEndDate() }}</div>
+              <div class="text-color-light pl-32 montserrat">{{ getWeekdays(course?.settings) }}</div>
+              <div class="text-color-light pl-32 montserrat">
+                {{ 'text_max_participants' | translate }}: {{ course?.max_participants }}
+              </div>
             </div>
           </div>
           <div>
             <div class="text-color text-medium montserrat course-content-title">
               <img [src]="themeService.clock">
-              {{'text_course_duration' | translate }}
+              {{ 'text_course_duration' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat"
-                *ngIf="!course?.is_flexible">{{course?.duration}}</div>
-              <div class="text-color-light pl-32 montserrat"
-                *ngIf="course?.is_flexible">{{'text_from_price' | translate }}
-                {{course?.duration}}</div>
-              <div
-                class="text-color-light pl-32 montserrat">{{course?.hour_min}}h
-                - {{course?.hour_max}}h</div>
+              <div class="text-color-light pl-32 montserrat" *ngIf="!course?.is_flexible">
+                {{ course?.duration }}
+              </div>
+              <div class="text-color-light pl-32 montserrat" *ngIf="course?.is_flexible">
+                {{ 'text_from_price' | translate }} {{ course?.duration }}
+              </div>
+              <div class="text-color-light pl-32 montserrat">
+                {{ course?.hour_min }}h - {{ course?.hour_max }}h
+              </div>
             </div>
           </div>
         </div>

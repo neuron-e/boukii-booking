@@ -844,6 +844,24 @@ export class CourseComponent implements OnInit {
     return hours;
   }
 
+  // Método para obtener la fecha de inicio
+  getStartDate(): string {
+    const startDate = this.course?.course_dates
+      .filter((date: any) => date.active)
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]?.date;
+
+    return startDate ? moment(startDate).format('DD/MM/YYYY') : '';
+  }
+
+  // Método para obtener la fecha de fin
+  getEndDate(): string {
+    const endDate = this.course?.course_dates
+      .filter((date: any) => date.active)
+      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date;
+
+    return endDate ? moment(endDate).format('DD/MM/YYYY') : '';
+  }
+
   updateAvailableDurations(selectedHour: string): void {
     const selectedHourInt = parseInt(selectedHour.split(':')[0]);
     const selectedMinutesInt = parseInt(selectedHour.split(':')[1]);
