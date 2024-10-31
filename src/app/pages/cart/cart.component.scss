@@ -2,12 +2,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
-  font-family: DM Sans;
-  line-height: 18px;
-  word-wrap: break-word;
+  
   cursor: pointer;
-  color: #222222;
+  
 }
 .reservation-return2 {
   margin-top: 42px;
@@ -15,12 +12,12 @@
   align-items: center;
   display: flex;
   > span {
-    color: #222222;
+    
     font-size: 24px;
     font-family: Dinamit;
     font-weight: 500;
     line-height: 26px;
-    word-wrap: break-word;
+    
   }
   > button {
     margin-left: auto;
@@ -28,16 +25,10 @@
     border-radius: 3px;
     padding: 10px;
     border: 1px solid black;
-    color: #222222;
-    font-size: 14px;
-    font-family: DM Sans;
+    
     font-weight: 600;
-    line-height: 18px;
-    word-wrap: break-word;
+    
   }
-}
-* {
-  font-family: DM Sans;
 }
 
 .cart-payment {
@@ -200,7 +191,7 @@
   font-family: Dinamit;
   font-weight: 500;
   line-height: 20px;
-  word-wrap: break-word;
+  
 }
 .cardcabecera2 {
   background-color: white;
@@ -213,44 +204,24 @@
 }
 .extra_add {
   color: #e91e63;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 400;
-  line-height: 18px;
-  word-wrap: break-word;
+  
 }
 .detail {
   color: #8b9099;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 400;
-  line-height: 18px;
-  word-wrap: break-word;
+  
 }
 .detailPrice {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 300;
-  line-height: 18px;
-  word-wrap: break-word;
+  
+  
   margin-left: auto;
 }
 .priceTotal {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
+  
   font-weight: 700;
-  line-height: 20px;
-  word-wrap: break-word;
+  
 }
 .bdetail {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 400;
-  line-height: 18px;
-  word-wrap: break-word;
+  
 }
 input[type="checkbox"] {
   transform: scale(1.5);

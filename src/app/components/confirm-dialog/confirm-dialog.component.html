@@ -2,10 +2,10 @@
   <div class="flex items-center" mat-dialog-title>
     <h2 class="headline m-0 flex-auto" style="
     color: #222222;
-     font-size: 14px;
+     
      font-family: Dinamit;
      font-weight: 500;
-     line-height: 18px;
+     
      word-wrap: break-word">{{defaults.title}}</h2>
 
     <button class="text-secondary" mat-dialog-close mat-icon-button
@@ -19,22 +19,20 @@
   <mat-dialog-content class="flex flex-col">
     <span [innerHTML]="defaults.message"
       style="
-    color: black;
-     font-size: 14px;
-     font-family: DM Sans;
-     font-weight: 400;
-     line-height: 18px;
+    
+     
+     
+     
      word-wrap: break-word"></span>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
     <button mat-flat-button [mat-dialog-close]="false"
       style="background-color: white;border: 1px solid black;border-radius: 3px;"><span
-        style="color: black;
-        font-size: 14px;
-        font-family: DM Sans;
+        style="
+        
         font-weight: 600;
-        line-height: 18px;
+        
         word-wrap: break-word">
         {{'Cancelar' |
         translate}}</span></button>
@@ -42,10 +40,9 @@
     <button color="accent" mat-flat-button [mat-dialog-close]="true"><span
         style="
         color: white;
-         font-size: 14px;
-         font-family: DM Sans;
+         
          font-weight: 600;
-         line-height: 18px;
+         
          word-wrap: break-word"> {{'Confirm' | translate}}</span></button>
 
   </mat-dialog-actions>

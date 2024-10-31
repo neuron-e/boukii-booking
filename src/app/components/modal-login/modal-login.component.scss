@@ -36,10 +36,10 @@
   padding: 20px;
   color: var(--Dark-01, #222);
   font-family: Dinamit;
-  font-size: 14px;
+  
   font-style: normal;
   font-weight: 500;
-  line-height: 18px;
+  
   height: 60px;
   @media (max-width: 800px) {
     border-bottom: none;
@@ -92,16 +92,8 @@ form {
   background: var(--Primary, #e91e63);
   color: var(--White, #fff);
   text-align: center;
-  font-family: "DM Sans";
-  font-size: 14px;
+  
   font-style: normal;
   font-weight: 600;
-  line-height: 18px;
-}
-* {
-  font-family: "DM Sans";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 18px;
+  
 }

@@ -43,11 +43,11 @@ body {
   font-family: "Dinamit", sans-serif;
   font-size: 18px;
   font-weight: 500;
-  color: black;
+  
 }
 
 option:not(:first-of-type) {
-  color: black;
+  
 }
 
 .search-button {
@@ -132,7 +132,7 @@ option:not(:first-of-type) {
     background-color: #e91e63;
     color: white;
     font-size: 16px;
-    font-weight: 400;
+    
     border-radius: 8px;
   }
 }

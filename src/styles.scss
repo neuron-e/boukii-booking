@@ -1499,7 +1499,8 @@ input[type="date"]::-webkit-clear-button {
   width: 8px;
   font-size: 8px;
   min-width: 8px;
-}.icon10 {
+}
+.icon10 {
   height: 10px;
   width: 10px;
   font-size: 10px;
@@ -1580,4 +1581,17 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+p,
+span,
+div,
+button {
+  color: black;
+  font-family: DM Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  word-wrap: break-word;
 }

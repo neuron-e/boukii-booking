@@ -340,7 +340,7 @@ export class CartComponent implements OnInit {
           let storageSlug = localStorage.getItem(this.schoolData.slug + '-boukiiUser');
           if (storageSlug) {
             this.user = JSON.parse(storageSlug);
-            this.cart = [...this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}')), ...this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}')), ...this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}'))];
+            this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}'));
           }
           this.loading = false;
           this.updateTotal();

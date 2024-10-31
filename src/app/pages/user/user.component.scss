@@ -16,12 +16,12 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
-  font-family: DM Sans;
-  line-height: 18px;
-  word-wrap: break-word;
+  
+  
+  
+  
   cursor: pointer;
-  color: #222222;
+  
   margin-bottom: 20px;
 }
 
@@ -55,12 +55,12 @@
       display: flex;
       gap: 8px;
       .descripcion {
-        color: #222222;
+        
         font-size: 12px;
-        font-family: DM Sans;
-        font-weight: 400;
+        
+        
         line-height: 16px;
-        word-wrap: break-word;
+        
       }
     }
   }
@@ -83,12 +83,12 @@
       display: flex;
       gap: 8px;
       .descripcion {
-        color: #222222;
+        
         font-size: 12px;
-        font-family: DM Sans;
-        font-weight: 400;
+        
+        
         line-height: 16px;
-        word-wrap: break-word;
+        
       }
     }
   }
@@ -97,19 +97,19 @@
   width: 100%;
   ::ng-deep {
     .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-      color: #222222;
-      font-size: 14px;
-      font-family: DM Sans;
+      
+      
+      
       font-weight: 600;
-      line-height: 18px;
-      word-wrap: break-word;
+      
+      
     }
     .mat-mdc-tab {
       background-color: white;
       border: 1px solid #dee6ea;
       height: 64px;
       font-size: 0.85rem;
-      font-weight: 400;
+      
       line-height: 1.15rem;
     }
 

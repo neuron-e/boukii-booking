@@ -103,13 +103,13 @@
           <div
             style="display: flex; align-items: center;margin-bottom: 20px;">
             <img [src]="sport.sport.icon_selected" alt="icono" class="icon40">
-            <span style="color: black;"> {{sport.sport.name}} </span>
+            <span style=""> {{sport.sport.name}} </span>
             <span style="margin-left: auto;cursor: pointer;
             color: #E91E63;
-             font-size: 14px;
-             font-family: DM Sans;
-             font-weight: 400;
-             line-height: 18px;
+             
+             
+             
+             
              word-wrap: break-word">
               Ver evolución deportiva</span>
           </div>
@@ -126,18 +126,18 @@
                 <span
                   style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
                    font-size: 12px;
-                   font-family: DM Sans;
-                   font-weight: 400;
+                   
+                   
                    line-height: 16px;
                    word-wrap: break-word"
                   [style.background]="sport.degree.color">
                   {{sport.degree.name}}
                 </span>
-                <span style="color: #222222;
-                 font-size: 14px;
-                 font-family: DM Sans;
+                <span style="
+                 
+                 
                  font-weight: 600;
-                 line-height: 18px;margin-left: 8px;
+                 margin-left: 8px;
                  word-wrap: break-word">
                   {{sport.degree.progress}}%
                 </span>
@@ -145,19 +145,19 @@
               <div style="margin-top: 8px;">
                 <span *ngIf="sport.degree.progress>=33"
                   style="
-                  color: #222222;
+                  
                    font-size: 12px;
-                   font-family: DM Sans;
-                   font-weight: 400;
+                   
+                   
                    line-height: 16px;
                    word-wrap: break-word">
                   Sigue así! Estás progresando bien!
                 </span>
                 <span *ngIf="sport.degree.progress<33" style="
-                color: #222222;
+                
                  font-size: 12px;
-                 font-family: DM Sans;
-                 font-weight: 400;
+                 
+                 
                  line-height: 16px;
                  word-wrap: break-word">
                   Todavía no has logrado ningún objectivo de tu nivel. Sigue

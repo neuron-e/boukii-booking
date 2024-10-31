@@ -164,7 +164,7 @@
     border-collapse: collapse;width: 100%;overflow: auto;height: 350px;display: inline-block;
   }
   .table-bordered th, .table-bordered td {
-    border: 1px solid #ddd;color: #fff;font-weight: 400;width: fit-content;max-width: 100px;font-size: 12px;line-height: 1.2;text-align: center;padding: 7px 5px;position: relative;
+    border: 1px solid #ddd;color: #fff;x;font-size: 12px;line-height: 1.2;text-align: center;padding: 7px 5px;position: relative;
   }
   .table-bordered th:not(:first-child) {
     position: sticky;top: -1px;background: #161c28;z-index: 1;

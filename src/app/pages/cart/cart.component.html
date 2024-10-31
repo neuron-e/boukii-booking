@@ -3,7 +3,7 @@
 <div (click)="goBack('home')"
   class="reservation-return">
   <span style="color: #61656d;"> {{'Home' | translate }} </span> /
-  <span style="font-weight: 600;color: #222222;">
+  <span style="font-weight: 600;">
     {{'Carrito' | translate }}
   </span>
 </div>
@@ -28,7 +28,7 @@
       <div class="course-box">
         <div class="course-box-header">
           <div class="course-box-icon">
-            <span style="color: black;font-size: 14px;font-weight: 600;">
+            <span style=";">
               {{("00"+(i+1)).slice(-2)}}.
             </span>
             <img src="assets/icons/collectif_ski2x.png"
@@ -37,7 +37,7 @@
               *ngIf="cartItem.details[0].course.course_type == 2" />
             <div class="course-box-title">
               <div
-                style="color: black;font-size: 14px;font-weight: 600;">{{getCourseName(cartItem.details[0].course)}}</div>
+                style="font-weight: 600;">{{getCourseName(cartItem.details[0].course)}}</div>
               <span style="color: #8B9099;font-size: 12px;">
                 <ng-container *ngIf="cartItem.details[0].course.course_type==1">
                   {{'colective' | translate }}
@@ -69,7 +69,6 @@
               <span style="
               color: #8B9099;
                font-size: 12px;
-               font-family: DM Sans;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
@@ -90,7 +89,6 @@
               <span style="
               color: #8B9099;
                font-size: 12px;
-               font-family: DM Sans;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
@@ -119,7 +117,6 @@
               <span style="
               color: #8B9099;
                font-size: 12px;
-               font-family: DM Sans;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
@@ -145,7 +142,6 @@
               <span style="
               color: #8B9099;
                font-size: 12px;
-               font-family: DM Sans;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
@@ -176,7 +172,7 @@
           </div>
         </div>
         <div class="course-box-dates" style="  border-top: 1px solid #dee6ea;">
-          <span style="color: black;">
+          <span style="">
             {{"Total"}}
           </span>
           <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
@@ -365,7 +361,6 @@
           type="button" style="margin-top: 10px;height: 48px;color: white;
            font-size: 16px;
            background-color: #E91E63;
-           font-family: DM Sans;
            font-weight: 600;
            border-radius: 3px;
            line-height: 20px;

@@ -102,13 +102,13 @@
                 [style.background-image]="'url(' + (getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 ? collectifIcon : privateIcon) + ')'"
                 style="border-radius: 5px"></div>
               <mat-card-title class="mat-mdc-card-title">
-                <div style="float: left;width: 70%;font-size: 14px;"
+                <div style="float: left;width: 70%;"
                   class="color-dark-always montserrat"> <strong
                     class="montserrat">
                     {{getCourseName(getCourse(item?.courseDates[0]?.course_id))}}
                   </strong></div>
                 <div class="ng-tns-c545279033-6"
-                  style="float: left;font-size: 14px;width: 30%;text-align: right;color: #EA0C60;">
+                  style="float: left;width: 30%;text-align: right;color: #EA0C60;">
                   {{item?.courseDates[0]?.course_id?.price}}
                   {{item?.courseDates[0]?.course_id?.currency}} </div>
               </mat-card-title>
@@ -138,7 +138,7 @@
             <mat-card-content>
               <ul style="font-size: 12px;">
                 <li *ngFor="let date of item?.courseDates"
-                  class="color-dark-always montserrat" style="font-size: 14px;">
+                  class="color-dark-always montserrat" style="">
                   <mat-icon style="height: 15px;width: 20px;"
                     svgIcon="mat:calendar_today"></mat-icon>{{ date.date |
                   date:'fullDate' }}
@@ -281,7 +281,7 @@
             <span style="
             color: #8B9099;
              font-size: 12px;
-             font-family: DM Sans;
+             
              font-weight: 600;
              padding: 8px 0;
              line-height: 16px;

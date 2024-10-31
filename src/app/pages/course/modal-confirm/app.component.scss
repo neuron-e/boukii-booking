@@ -36,10 +36,10 @@
   padding: 20px;
   color: var(--Dark-01, #222);
   font-family: Dinamit;
-  font-size: 14px;
+  
   font-style: normal;
   font-weight: 500;
-  line-height: 18px;
+  
   height: 60px;
   @media (max-width: 800px) {
     border-bottom: none;
@@ -92,43 +92,25 @@ form {
   background: var(--Primary, #e91e63);
   color: var(--White, #fff);
   text-align: center;
-  font-family: "DM Sans";
-  font-size: 14px;
+  
   font-style: normal;
   font-weight: 600;
-  line-height: 18px;
-}
-* {
-  font-family: "DM Sans";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 18px;
+  
 }
 
 .blackL {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
   font-weight: 600;
-  line-height: 18px;
-  word-wrap: break-word;
 }
 .greyS {
   color: #8b9099;
   font-size: 12px;
-  font-family: DM Sans;
-  font-weight: 400;
   line-height: 16px;
-  word-wrap: break-word;
 }
 .greyL {
   color: #8b9099;
   font-size: 12px;
-  font-family: DM Sans;
   font-weight: 600;
   line-height: 16px;
-  word-wrap: break-word;
 }
 
 .modal-content {
@@ -146,42 +128,20 @@ form {
 
 .descripcion {
   color: #61656d;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 400;
-  line-height: 18px;
-  word-wrap: break-word;
 }
 
 .descripcion2 {
   color: #8b9099;
   font-size: 12px;
-  font-family: DM Sans;
   font-weight: 600;
   line-height: 16px;
-  word-wrap: break-word;
 }
 .price {
-  color: #222222;
   font-size: 18px;
   font-family: Dinamit;
   font-weight: 500;
   line-height: 23px;
-  word-wrap: break-word;
 }
 .campo {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
   font-weight: 600;
-  line-height: 18px;
-  word-wrap: break-word;
-}
-.campo2 {
-  color: #222222;
-  font-size: 14px;
-  font-family: DM Sans;
-  font-weight: 400;
-  line-height: 18px;
-  word-wrap: break-word;
 }

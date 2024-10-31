@@ -40,11 +40,7 @@
           <img src="assets/icons/start_empty.png" alt class="icon24">
           <span style="
           color: #E91E63;
-           font-size: 14px;
-           font-family: DM Sans;
-           font-weight: 400;
-           line-height: 18px;
-           word-wrap: break-word">
+          word-wrap: break-word">
             {{"Reserva 2 fechas y obten el 10% de descuento!" | translate}}
           </span>
         </div>
@@ -236,39 +232,25 @@
         <div
           style="display: flex;gap: 16px;padding: 20px 0;flex-direction: column;">
           <mat-checkbox *ngFor="let extra of settingsExtras"
-            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
+            style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
             <div style="display: flex;gap: 8px;padding: 4px 0;
             padding-right: 10px;
             justify-content: space-between;
             align-items: center;">
               <div>
                 <span style="
-              color: #222222;
-               font-size: 14px;
-               font-family: DM Sans;
                font-weight: 600;
-               line-height: 18px;
                word-wrap: break-word">
                   {{extra.product}}
                 </span>
                 <br>
                 <span style="
               color: #8B9099;
-               font-size: 12px;
-               font-family: DM Sans;
-               font-weight: 400;
-               line-height: 16px;
                word-wrap: break-word">
                   {{extra.name}}
                 </span>
               </div>
-              <span style="
-            color: #222222;
-             font-size: 14px;
-             font-family: DM Sans;
-             font-weight: 400;
-             line-height: 18px;
-             word-wrap: break-word">
+              <span style="word-wrap: break-word">
                 {{extra.price}}{{course?.currency}} / {{'date' | translate }}
               </span>
             </div>
@@ -286,14 +268,14 @@
           {{'text_booking1' | translate }}
         </div>
         <button
-          style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;font-family: 'DM Sans'"
+          style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;"
           class="rounded-8 button-style cursor-pointer width-100"
           type="button"
           (click)="schoolService.isModalLogin=true">
           {{'text_already_client' | translate }}
         </button>
         <button
-          style="height: 40px;border-radius: 3px;color: black;background-color: white;font-family: 'DM Sans';border:1px solid black;"
+          style="height: 40px;border-radius: 3px;background-color: white;border:1px solid black;"
           class="rounded-8 button-style cursor-pointer width-100"
           type="button"
           (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser">
@@ -327,10 +309,7 @@
             width: 100%;border-radius: 3px;
             height: 38px;padding: 10px 12px;
             color: white;
-             font-size: 14px;
-             font-family: DM Sans;
              font-weight: 600;
-             line-height: 18px;
              word-wrap: break-word"
           type="button">
           {{'Continuar' | translate }}
@@ -355,8 +334,6 @@
           style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
           <span style="
           font-size: 12px;
-          font-family: DM Sans;
-          font-weight: 400;
           line-height: 16px;
           word-wrap: break-word"
             [style.color]="courseFlux===0?'#E91E63':'#8B9099'"> PARTICIPANTE
@@ -364,8 +341,6 @@
           <img src="assets/icons/arrow-right.png" class="icon20">
           <span style="
           font-size: 12px;
-          font-family: DM Sans;
-          font-weight: 400;
           line-height: 16px;
           word-wrap: break-word"
             [style.color]="courseFlux===1?'#E91E63':'#8B9099'"> NIVEL </span>
@@ -375,8 +350,6 @@
             *ngIf="course.is_flexible || course.course_type===2"
             style="
             font-size: 12px;
-            font-family: DM Sans;
-            font-weight: 400;
             line-height: 16px;
             word-wrap: break-word"
             [style.color]="courseFlux===2?'#E91E63':'#8B9099'"> FECHA </span>
@@ -384,21 +357,13 @@
           <span
             style="
               font-size: 12px;
-              font-family: DM Sans;
-              font-weight: 400;
               line-height: 16px;
               word-wrap: break-word"
             [style.color]="courseFlux===3?'#E91E63':'#8B9099'"> EXTRAS </span>
         </div>
         <div class="reservation-users" style="padding: 20px;"
           *ngIf="courseFlux===0">
-          <div style="
-          color: #222222;
-          font-size: 14px;
-          font-family: DM Sans;
-          font-weight: 400;
-          line-height: 18px;
-          word-wrap: break-word">
+          <div style="  word-wrap: break-word">
             <ng-container *ngIf="course?.course_type === 2">
               {{'text_select_user_or_more' | translate }}
 
@@ -411,7 +376,7 @@
 
           <mat-checkbox
             (click)="selectUser(userLogged.clients[0],course?.course_type)"
-            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+            style="height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length"
                 [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
@@ -446,30 +411,21 @@
           </div>
 
           <button (click)="openModalAddUser()"
-            style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;height: 40px;padding: 10px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+            style="height: 40px;padding: 10px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             {{'text_add' | translate }} {{'text_user' | translate }}
           </button>
         </div>
 
         <div *ngIf="courseFlux===1"
           style="padding: 20px;">
-          <div style="
-          color: #222222;
-           font-size: 14px;
-           font-family: DM Sans;
-           font-weight: 400;
-           line-height: 18px;
-           word-wrap: break-word">
+          <div>
             {{'text_select_level' | translate }}
           </div>
           <div *ngIf="course.availableDegrees.length>0"
             style="
             background-color: rgba(210, 239, 255, 1);
-          color: #222222;
-           font-size: 14px;
-           font-family: DM Sans;
-           font-weight: 400;border-radius: 8px;margin-top: 12px;
-           line-height: 18px; padding: 10px;display: flex;gap: 8px; align-items: center;
+        border-radius: 8px;margin-top: 12px;
+            padding: 10px;display: flex;gap: 8px; align-items: center;
            word-wrap: break-word">
             <img src="assets/icons/info.png" alt class="icon24">
             {{ 'text_no_level' | translate }}
@@ -511,28 +467,20 @@
                   *ngIf="i===0 || level.level !== (course.availableDegrees.length>0?course.availableDegrees:dataLevels)[i-1].level"
                   style="
                 color: #8B9099;
-                 font-size: 12px;
-                 font-family: DM Sans;
                  font-weight: 600;
-                 line-height: 16px;
-                 word-wrap: break-word">
+                 line-height: 16px;">
                   {{level.level }}
                 </div>
                 <!--*ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
                        hasMatchingSportLevel(level)"-->
                 <mat-checkbox
                   (click)="selectLevel(level)"
-                  style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);"
+                  style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);"
                   [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}">
                   <div style="display: flex;gap: 8px;padding: 12px 0;">
                     <div
                       [ngStyle]="{'color': level.color}"
-                      style="
-                       font-size: 12px;
-                       font-family: DM Sans;
-                       font-weight: 400;
-                       line-height: 16px;
-                       word-wrap: break-word">
+                      style="font-size: 12px;line-height: 16px;">
                       {{level.annotation}} {{level.name}}
                     </div>
                   </div>
@@ -553,13 +501,7 @@
           <div>
             <mat-checkbox
               *ngFor="let date of getDaysBetweenDates(course.date_start,course.date_end)"
-              style="
-              color: #222222;
-               font-size: 14px;
-               font-family: DM Sans;
-               font-weight: 600;
-               line-height: 18px;
-               word-wrap: break-word">
+              style="font-weight: 600;">
               {{date}}
             </mat-checkbox>
           </div>
@@ -599,12 +541,7 @@
         </div>
         <div *ngIf="courseFlux===3"
           style="display: flex;padding: 20px;flex-direction: column;">
-          <div style="color: #222222;
-           font-size: 14px;
-           font-family: DM Sans;
-           font-weight: 400;
-           line-height: 18px;
-           word-wrap: break-word">
+          <div>
             Si lo deseas, puedes agregar extras a tu reserva y/o observaciones
             para la escuela.
           </div>
@@ -613,39 +550,21 @@
             style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
             {{course.is_flexible?date:''}}
             <mat-checkbox *ngFor="let extra of settingsExtras"
-              style="color: #222222;font-size: 14px;font-family: DM Sans;font-weight: 600;line-height: 18px;word-wrap: break-word;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
+              style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
               <div style="display: flex;gap: 8px ;
               height: 64px;
               justify-content: space-between;
               align-items: center;">
                 <div>
-                  <span style="
-                  color: #222222;
-                   font-size: 14px;
-                   font-family: DM Sans;
-                   font-weight: 600;
-                   line-height: 18px;
-                   word-wrap: break-word">
+                  <span>
                     {{extra.product}}
                   </span>
                   <br>
-                  <span style="
-                  color: #8B9099;
-                   font-size: 12px;
-                   font-family: DM Sans;
-                   font-weight: 400;
-                   line-height: 16px;
-                   word-wrap: break-word">
+                  <span>
                     {{extra.name}}
                   </span>
                 </div>
-                <span style="
-                color: #222222;
-                 font-size: 14px;
-                 font-family: DM Sans;
-                 font-weight: 400;
-                 line-height: 18px;width: 125px;padding: 10px;
-                 word-wrap: break-word">
+                <span style="width: 125px;padding: 10px;">
                   {{extra.price}}{{course?.currency}} / {{'date' | translate
                   }}
                 </span>
@@ -686,11 +605,7 @@
               width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
               color: white;
-               font-size: 14px;
-               font-family: DM Sans;
-               font-weight: 600;
-               line-height: 18px;
-               word-wrap: break-word"
+              font-weight: 600;"
             type="button">
             {{'Continuar' | translate }}
           </button>
