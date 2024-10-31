@@ -705,6 +705,7 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
+    console.log(urls)
     this.router.navigate(urls);
   }
 

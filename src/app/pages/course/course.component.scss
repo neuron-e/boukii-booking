@@ -140,7 +140,6 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  width: min-content;
   justify-content: center;
   text-align: center;
 }
@@ -210,16 +209,13 @@
   width: 10px;
 }
 
-.calendar-reservation-section {
-  width: 100%;
-  max-width: 370px;
-}
+
 .calendar {
-  color: white;
   width: 100%;
   box-sizing: border-box;
   padding: 16px;
 }
+
 .header-calendar {
   display: flex;
   align-items: center;
@@ -390,17 +386,14 @@
   line-height: 16px;
 }
 .price {
-  
   font-size: 18px;
   font-family: Dinamit;
   font-weight: 500;
   line-height: 23px;
-  
 }
 .campo {
   font-weight: 600;
 }
-
 
 .titlexxxx {
   color: white;
@@ -426,7 +419,6 @@
     .titlexxxx {
       height: 64px;
       background: white;
-      
     }
     .reservation-view2 {
       margin-top: auto;

@@ -81,7 +81,6 @@ export class HeaderComponent implements OnInit {
 
   calculateCartLength() {
     let uniqueCourses = new Set();
-
     for (let courseId in this.cart) {
       if (this.cart.hasOwnProperty(courseId)) {
         uniqueCourses.add(courseId);
