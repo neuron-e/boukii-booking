@@ -16,6 +16,7 @@ import { MOCK_PROVINCES } from 'src/app/services/province-data';
 import { SchoolService } from 'src/app/services/school.service';
 import { AddClientUserModalComponent } from '../add-client-user/add-client-user.component';
 import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
+import { UserComponent } from '../user.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -152,7 +153,7 @@ export class UserDetailComponent {
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
     private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
-    private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService) {
+    private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService, public userC: UserComponent) {
 
     this.today = new Date();
     this.minDate = new Date(this.today);

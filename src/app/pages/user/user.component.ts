@@ -834,15 +834,13 @@ export class UserComponent implements OnInit {
 
     return ret;
   }
-
   changeLevel(nextLevel: any) {
     this.selectedGoal = [];
     this.sportIdx = this.sportIdx + nextLevel;
-
     if (this.sportIdx < 0) {
-      this.sportIdx = 0;
-    } else if (this.sportIdx >= this.allLevels.length) {
       this.sportIdx = this.allLevels.length - 1;
+    } else if (this.sportIdx >= this.allLevels.length) {
+      this.sportIdx = 0;
     }
     this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
     this.selectedSport.level = this.allLevels[this.sportIdx];
@@ -866,4 +864,162 @@ export class UserComponent implements OnInit {
     }
     return ret;
   }
+  dataLevels = [
+    {
+      'id': 181,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'Ptit Loup',
+      'annotation': 'PT',
+      'degree_order': 0,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 182,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'JN',
+      'annotation': 'JN',
+      'degree_order': 1,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 183,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'Débutant Kid Village',
+      'annotation': 'DKV',
+      'degree_order': 2,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 184,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Prince / Pricesse Bleu',
+      'annotation': 'PB',
+      'degree_order': 3,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 185,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Roi / Reine Bleu',
+      'annotation': 'RB',
+      'degree_order': 4,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 186,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Star Bleu',
+      'annotation': 'SB',
+      'degree_order': 5,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 187,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R1',
+      'annotation': 'R1',
+      'degree_order': 6,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 188,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R2',
+      'annotation': 'R2',
+      'degree_order': 7,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 189,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R3',
+      'annotation': 'R3',
+      'degree_order': 8,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 190,
+      'league': 'NOIR',
+      'level': 'test',
+      'name': 'Prince / Pricesse Noir',
+      'annotation': 'PN',
+      'degree_order': 9,
+      'color': '#000000',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 191,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Race',
+      'annotation': 'ACA',
+      'degree_order': 10,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 192,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Freestyle',
+      'annotation': 'ACA',
+      'degree_order': 11,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 193,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Freeride',
+      'annotation': 'ACA',
+      'degree_order': 12,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    }
+  ];
 }

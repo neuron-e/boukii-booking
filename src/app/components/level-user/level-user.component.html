@@ -2,7 +2,8 @@
   <div class="circle-container" [style.width.px]="size"
     [style.height.px]="size">
     <!--User image-->
-    <img [src]="userImage" class="level-image" [style.width.px]="imageSize"
+    <img [src]="userImage || 'assets/images/avatar.png'" class="level-image"
+      [style.width.px]="imageSize"
       [style.height.px]="imageSize" />
     <!--Levels-->
     <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="viewBox"

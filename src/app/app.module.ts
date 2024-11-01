@@ -53,6 +53,7 @@ import { CourseModalConfirmComponent } from './pages/course/modal-confirm/app.co
 import { UserDetailDialogComponent } from './pages/user/user-detail/dialog/dialog.component';
 import { ConfirmModalModule } from './components/confirm-dialog/confirm-dialog.component.module';
 import { FluxUploadImgModule } from './pages/user/user-detail/upload-img/app.module';
+import { SportCardComponent } from './pages/user/sport-card/app.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -66,7 +67,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CartComponent,
     UserComponent,
     BookingDetailComponent,
-    UserDetailComponent,
+    UserDetailComponent, SportCardComponent,
     PageNotFoundComponent,
     HeaderComponent,
     FooterComponent,

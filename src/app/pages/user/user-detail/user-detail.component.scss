@@ -48,8 +48,16 @@
 .flex-sections {
   max-width: none;
   display: flex;
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
     flex-direction: column;
+  }
+}
+.flex-sections-user.level {
+  transform: translateX(-0.5px);
+}
+@media only screen and (max-width: 1000px) {
+  .flex-sections-user.level {
+    transform: translateY(-1.5px);
   }
 }
 .flex-sections-user {
@@ -59,12 +67,12 @@
   flex-direction: column;
   flex-wrap: nowrap;
   width: 50%;
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 1000px) {
     width: 100%;
   }
   > div {
     display: flex;
-    border: 1px solid #8b9099;
+    border: 1px solid #dee6ea;
     gap: 20px;
     width: 100%;
     padding: 20px;
@@ -109,9 +117,16 @@
     }
   }
 }
+
+::ng-deep
+  .mat-mdc-tab-header-pagination-controls-enabled
+  .mat-mdc-tab-header-pagination {
+  z-index: 0;
+}
 ::ng-deep .mat-vertical-content-container {
   overflow-y: auto;
   max-height: calc(100vh - 300px);
+  margin: 0 !important;
 }
 ::ng-deep .mat-step-header {
   border-top: 1px solid #dee6ea;
@@ -129,8 +144,22 @@
 ::ng-deep .mat-vertical-stepper-header .mat-step-icon {
   display: none !important;
 }
+::ng-deep .mat-vertical-content {
+  padding: 20px !important;
+}
 vex-user-detail-dialog {
   mat-form-field {
     min-height: 56px;
+  }
+}
+.modalInputD {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.inputWidth {
+  width: calc(50% - 10px);
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
   }
 }

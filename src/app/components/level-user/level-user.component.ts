@@ -10,7 +10,7 @@ export class LevelUserComponent implements OnInit {
   @Input() allLevels: any[] = [];
   @Input() selectLevel: number = 0;
   @Input() size: number;
-  @Input() userImage: string;
+  @Input() userImage: string ;
   applyAngle: number = 0;
 
   constructor() { }
