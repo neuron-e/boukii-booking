@@ -114,3 +114,14 @@
     }
   }
 }
+
+@media only screen and (max-width: 1400px) {
+  .card1400 {
+    display: none;
+  }
+}
+@media only screen and (max-width: 700px) {
+  .card700 {
+    display: none;
+  }
+}

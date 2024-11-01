@@ -24,7 +24,7 @@
   @media (max-width: 800px) {
     height: 100vh;
     width: 100vw;
-    padding-top: 15vh;
+    overflow-y: auto;
   }
 }
 .modal-flex-title {
@@ -36,10 +36,10 @@
   padding: 20px;
   color: var(--Dark-01, #222);
   font-family: Dinamit;
-  
+
   font-style: normal;
   font-weight: 500;
-  
+
   height: 60px;
   @media (max-width: 800px) {
     border-bottom: none;
@@ -92,10 +92,9 @@ form {
   background: var(--Primary, #e91e63);
   color: var(--White, #fff);
   text-align: center;
-  
+
   font-style: normal;
   font-weight: 600;
-  
 }
 
 .blackL {

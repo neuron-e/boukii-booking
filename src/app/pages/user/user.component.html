@@ -8,7 +8,7 @@
 
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
 
-<div class="dimension">
+<div class="dimension" *ngIf="!loading">
   <div class="userd">
     <div
       class="flex flex-col md:flex-row md:items-start flex-sections-user-left">
@@ -30,7 +30,9 @@
             [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user
-              [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+              [allLevels]="allLevels"
+              [selectLevel]="allLevels[0].id"
+              [size]="40"
               [userImage]="userLogged.clients[0]?.image"></app-level-user>
             <div class="body-2 m-0 leading-snug montserrat"
               style="font-size:13px;color:black">{{
@@ -48,7 +50,9 @@
             (click)="changeClientData(user.id)"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user
-              [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+              [allLevels]="allLevels"
+              [selectLevel]="allLevels[0].id"
+              [size]="40"
               [userImage]="user?.image"></app-level-user>
             <div class="body-2 m-0 leading-snug montserrat"
               style="font-size:13px;color:black">{{ user?.first_name
@@ -64,16 +68,21 @@
     </div>
   </div>
 
-  <mat-tab-group (selectedIndexChange)="onTabChange($event)" *ngIf="!loading"
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)"
     class="tabsWrapper">
     <mat-tab label="{{'data' | translate}}">
       <app-user-detail #userDetail [idParent]="id"
         (idChange)="handleIdChange($event)"></app-user-detail>
     </mat-tab>
     <mat-tab label="{{'sports' | translate}}">
-      <div *ngIf="!loading">
+      <div>
         <div
-          style="display: flex;gap: 20px;margin: 30px 5px;flex-wrap: wrap;justify-content: center;">
+          style="display: flex;
+          gap: 20px;
+          margin: 30px 5px;
+          flex-wrap: nowrap;
+          justify-content: space-evenly;
+          overflow-x: auto;">
           <button *ngFor="let sport of clientSport"
             style="border: 1px solid black;border-radius: 3px;height: 40px;min-width: 150px;word-wrap: break-word"
             [style.color]="selectedSport.sport_id==sport.sport_id?'white':'black'"
@@ -91,16 +100,41 @@
             {{'sport_evolution' | translate }}
           </span>
           <div>
-            <div class="flex-sections-user" *ngIf="!loading && selectedSport">
-              <img src="assets/icons/arrow-right3.png"
-                (click)="changeLevel(-1)"
-                style="position: absolute;top: 0;right: 0;cursor: pointer;"
-                class="icon40">
-              <img src="assets/icons/arrow-left3.png"
-                (click)="changeLevel(1)"
-                style="position: absolute;top: 0;left: 0;cursor: pointer;"
-                class="icon40">
-              
+            <div class="flex-sections-user" *ngIf="!loading && selectedSport"
+              style="align-items: flex-start;flex-wrap: wrap;">
+              <div style="width: 100%;
+              box-shadow: none;
+              padding: 0;
+    flex-direction: row;
+    justify-content: space-evenly;">
+                <img src="assets/icons/arrow-left-1.png"
+                  (click)="changeLevel(1)"
+                  style="cursor: pointer;"
+                  class="icon60 flecha">
+                <img src="assets/icons/arrow-right-1.png"
+                  (click)="changeLevel(-1)"
+                  style="cursor: pointer;"
+                  class="icon60 flecha">
+              </div>
+              <app-user-detail-sport-card
+                [selectedSport]="selectedSport"
+                [level]="selectedSport.level1"
+                [goals]="selectedGoal1"
+                [border]="false"
+                class="card700">
+              </app-user-detail-sport-card>
+              <app-user-detail-sport-card
+                [selectedSport]="selectedSport"
+                [level]="selectedSport.level"
+                [goals]="selectedGoal">
+              </app-user-detail-sport-card>
+              <app-user-detail-sport-card
+                [selectedSport]="selectedSport"
+                [level]="selectedSport.level2"
+                [goals]="selectedGoal2"
+                [border]="false"
+                class="card1400">
+              </app-user-detail-sport-card>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-<div *ngFor="let item of [1,2,3]">
+<div class="card"
+    [style.boxShadow]="border?'':'none'">
     <div style="align-items: center">
         <span
             style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
@@ -6,34 +7,30 @@
       line-height: 16px;
       word-wrap: break-word"
             [style.background]="selectedSport.degree.color">
-            {{selectedSport?.level?.annotation}} /
-            {{selectedSport?.level?.name}}
+            {{level?.annotation}} /
+            {{level?.name}}
         </span>
         <span style="margin-left: auto;
-      
-      
-      
-      font-weight: 600;
-      
+                      font-weight: 600;
       word-wrap: break-word">
             {{calculateGoalsScore()}}%
         </span>
     </div>
     <div style="align-items: center">
         <div style="width: 100px;">
-            <app-level-user *ngIf="!coloring"
-                [allLevels]="allLevels"
-                [selectLevel]="selectedSport?.level?.id"
+            <app-level-user *ngIf="!user.coloring"
+                [allLevels]="user.allLevels"
+                [selectLevel]="level?.id"
                 [size]="100"
-                [userImage]="getGoalImage()">
+                [userImage]="user.getGoalImage()">
             </app-level-user>
         </div>
-        <span *ngIf="getGoalImage()" class="descripcion">
+        <span *ngIf="user.getGoalImage()" class="descripcion">
             Enhorabuena! Has obtenido la medalla por este nivel. Es
             hora
             de pasar al próximo!
         </span>
-        <span *ngIf="!getGoalImage()" class="descripcion">
+        <span *ngIf="!user.getGoalImage()" class="descripcion">
             Logra todos los objectivos de este curso para obtener la
             medalla.
         </span>
@@ -48,12 +45,19 @@
       word-wrap: break-word">
             {{"OBJECTIVOS" | translate}}
         </span>
-        <div *ngFor="let goal of selectedGoal"
-            style="display: flex;justify-content: space-between;">
+        <div *ngFor="let goal of goals"
+            style="display: flex;justify-content: space-between;align-items: center;">
             <span style="
         word-wrap: break-word"> {{goal.name}} </span>
+
             <img src="assets/icons/check_green.png" class="icon24"
+                *ngIf="getDegreeScore(goal.id)>0"
                 alt>
+            <div
+                [style.backgroundColor]="getDegreeScore(goal.id)>0?getDegreeScore(goal.id)>5?'green':'yellow':'#E6E6E6'"
+                class="icon24"
+                style="border-radius: 100%;">
+            </div>
         </div>
     </div>
     <div style="flex-direction: column;">
@@ -67,19 +71,16 @@
             {{'multimedia' | translate }}
         </span>
         <span
-            *ngIf="getEvaluationsData().length === 0"
+            *ngIf="user.getEvaluationsData().length === 0"
             style="
-                
-                font-size: 12px;
-                
-                
-                line-height: 16px;
+                                font-size: 12px;
+                                               line-height: 16px;
                 word-wrap: break-word">
             {{'no_data' | translate }}
         </span>
         <div
             style="float: left; width: 100%; border-radius: 10px;"
-            *ngFor="let item of getEvaluationsData()">
+            *ngFor="let item of user.getEvaluationsData()">
             <ng-container
                 style="float: left; width: 25%; border-radius: 10px;"
                 *ngFor="let file of item.files">
@@ -105,7 +106,7 @@
             {{'monitor_comments' | translate }}
         </span>
         <span
-            *ngIf="getEvaluationsData().length === 0"
+            *ngIf="user.getEvaluationsData().length === 0"
             style="
               
               font-size: 12px;
@@ -117,7 +118,7 @@
         </span>
         <mat-form-field class="flex-auto"
             style="width: 100%"
-            *ngFor="let item of getEvaluationsData()">
+            *ngFor="let item of user.getEvaluationsData()">
             <input matInput [readonly]=true type="text"
                 [value]="item.observations">
         </mat-form-field>

@@ -535,6 +535,7 @@ export class UserDetailComponent {
         switchMap((data: any) => {
           this.clientSport = data.data;
           this.selectedSport = this.clientSport[0];
+          
           this.goals = [];
 
           this.clientSport.forEach((element: any) => {

@@ -111,7 +111,8 @@
           <div
             style="display: flex; align-items: center;gap: 20px;">
             <app-level-user
-              [allLevels]="userC.dataLevels" [selectLevel]="185" [size]="40"
+              [allLevels]="userC.allLevels"
+              [selectLevel]="userC.allLevels[0].id" [size]="40"
               [userImage]="user?.image"></app-level-user>
             <div>
               <div>
