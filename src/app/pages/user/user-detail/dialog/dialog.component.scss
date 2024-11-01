@@ -1,0 +1,36 @@
+.modal {
+  position: fixed;
+  width: max-content;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  top: 50%;
+  left: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  padding: 0;
+}
+.backg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo gris semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.title {
+  display: flex;
+  font-family: Dinamit;
+  font-weight: 500;
+  padding: 18px 24px;
+  height: 60px;
+  justify-content: space-between;
+  align-items: center;
+}
+.body {
+  max-height: calc(100vh - 100px);
+  overflow-y: scroll;
+}

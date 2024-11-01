@@ -160,7 +160,6 @@ export class UserDetailComponent {
   }
 
   ngOnInit(): void {
-
     this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(
       data => {
         if (data) {
@@ -267,7 +266,6 @@ export class UserDetailComponent {
 
             this.defaultsUser = data.data.user;
             this.defaults = data.data;
-
             if (data.data.observations.length > 0) {
               this.defaultsObservations = data.data[0];
             } else {

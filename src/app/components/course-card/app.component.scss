@@ -1,5 +1,6 @@
 .card {
   width: 320px;
+  max-width: calc(100vw - 40px);
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
@@ -52,11 +53,9 @@
 .price {
   color: #666;
   margin: 10px 0;
-  
 }
 
 .description {
-  
   color: #555;
   margin: 10px 0;
   line-height: 1.4;
@@ -68,7 +67,7 @@
 
 .dates {
   display: flex;
-  
+
   color: #333;
   margin: 5px 0;
   align-items: self-start;
@@ -76,7 +75,7 @@
 
 .max-group {
   display: flex;
-  
+
   color: #333;
   margin: 5px 0;
   align-items: center;
@@ -109,7 +108,6 @@
 }
 
 .max-group span {
-  
   color: #333;
 }
 
@@ -120,10 +118,9 @@
   color: white;
   background-color: #e91e63;
   border-radius: 3px;
-  
+
   font-weight: 600;
-  
-  
+
   padding: 4px 10px;
 }
 .favorite-icon {

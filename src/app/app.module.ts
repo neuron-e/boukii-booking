@@ -50,6 +50,9 @@ import { HeaderComponent } from './layout/header/app.component';
 import { CourseCardComponent } from './components/course-card/app.component';
 import { MobileModalComponent } from './components/mobile-modal/app.component';
 import { CourseModalConfirmComponent } from './pages/course/modal-confirm/app.component';
+import { UserDetailDialogComponent } from './pages/user/user-detail/dialog/dialog.component';
+import { ConfirmModalModule } from './components/confirm-dialog/confirm-dialog.component.module';
+import { FluxUploadImgModule } from './pages/user/user-detail/upload-img/app.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -68,12 +71,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     FooterComponent,
     MobileModalComponent,
-    CourseModalConfirmComponent
+    CourseModalConfirmComponent,
+    UserDetailDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ComponentsModule,
+    ConfirmModalModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatIconModule,
@@ -86,7 +91,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
-    FormsModule,
+    FormsModule, FluxUploadImgModule,
     MatExpansionModule,
     MatBadgeModule,
     MatTableModule,

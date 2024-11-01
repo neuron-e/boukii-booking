@@ -1,0 +1,15 @@
+<div class="backg" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="title" mat-dialog-title>
+      {{title}}
+      <img src="assets/icons/x_b.png" alt (click)="close.emit()" class="icon24"
+        style="cursor: pointer;">
+    </div>
+
+    <mat-divider class="text-border"></mat-divider>
+
+    <mat-dialog-content class="body">
+      <ng-content></ng-content>
+    </mat-dialog-content>
+  </div>
+</div>

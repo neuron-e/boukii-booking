@@ -16,12 +16,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  
-  
-  
-  
+
   cursor: pointer;
-  
+
   margin-bottom: 20px;
 }
 
@@ -55,12 +52,8 @@
       display: flex;
       gap: 8px;
       .descripcion {
-        
         font-size: 12px;
-        
-        
         line-height: 16px;
-        
       }
     }
   }
@@ -83,12 +76,8 @@
       display: flex;
       gap: 8px;
       .descripcion {
-        
         font-size: 12px;
-        
-        
         line-height: 16px;
-        
       }
     }
   }
@@ -97,19 +86,14 @@
   width: 100%;
   ::ng-deep {
     .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-      
-      
-      
       font-weight: 600;
-      
-      
     }
     .mat-mdc-tab {
       background-color: white;
       border: 1px solid #dee6ea;
       height: 64px;
       font-size: 0.85rem;
-      
+
       line-height: 1.15rem;
     }
 
