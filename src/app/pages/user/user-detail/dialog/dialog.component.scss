@@ -1,9 +1,10 @@
 .modal {
   position: fixed;
-  width: max-content;
-  max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
   top: 50%;
+  max-width: 700px;
+  width: 90%;
+  min-width: 320px;
   left: 50%;
   background-color: white;
   transform: translate(-50%, -50%);

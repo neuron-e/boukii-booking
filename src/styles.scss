@@ -422,10 +422,6 @@ html {
   }
 }
 
-p,
-span {
-  color: var(--light-gray);
-}
 /* Excluye los elementos p y span que están dentro de un contenedor con la clase rich-text */
 .rich-text p,
 .rich-text span {
@@ -1589,9 +1585,7 @@ body {
 }
 
 p,
-span,
-div,
-button {
+div {
   color: black;
   font-family: DM Sans;
   font-size: 14px;
@@ -1600,7 +1594,15 @@ button {
   line-height: 18px;
   word-wrap: break-word;
 }
-
+span,
+button {
+  font-family: DM Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  word-wrap: break-word;
+}
 .modal-content {
   background-color: white;
 }

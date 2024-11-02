@@ -136,28 +136,22 @@
                 </span>
               </div>
               <div style="margin-top: 8px;">
-                <span *ngIf="sport.degree.progress>=33"
-                  style="
-                  
-                   font-size: 12px;
-                   
-                   
-                   line-height: 16px;
-                   word-wrap: break-word">
-                  Sigue así! Estás progresando bien!
-                </span>
-                <span *ngIf="sport.degree.progress<33" style="
-                
-                 font-size: 12px;
-                 
-                 
-                 line-height: 16px;
-                 word-wrap: break-word">
+                <span
+                  *ngIf="sport.degree.progress<33"
+                  style="font-size: 12px;line-height: 16px;">
                   Todavía no has logrado ningún objectivo de tu nivel. Sigue
                   entrenando!
                 </span>
+                <span
+                  *ngIf="sport.degree.progress>=33 && sport.degree.progress<100"
+                  style="font-size: 12px;line-height: 16px;">
+                  Sigue así! Estás progresando bien!
+                </span>
+                <span *ngIf="sport.degree.progress===100"
+                  style="font-size: 12px;line-height: 16px;">
+                  Enhorabuena, has completado el nivel!
+                </span>
               </div>
-
             </div>
           </div>
           <mat-divider *ngIf="i<defaults.client_sports.length-1"
@@ -217,7 +211,8 @@
           </mat-form-field>
         </div>
 
-        <div style="margin: 20px 0;float: right;">
+        <div
+          style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
           <button mat-button type="button"
             style="border: 1px solid black; color: black; border-radius: 3px;"
             (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
@@ -324,7 +319,8 @@
           </mat-form-field>
         </div>
 
-        <div style="margin: 20px 0;float: right;">
+        <div
+          style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
           <button mat-button type="button"
             style="border: 1px solid black; color: black; border-radius: 3px;"
             (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
@@ -505,9 +501,9 @@
               [(ngModel)]="defaultsObservations.historical"></textarea>
           </mat-form-field>
         </div>
-
       </form>
-      <div style="margin: 20px 0;float: right;">
+      <div
+        style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
         <button mat-button type="button"
           style="border: 1px solid black; color: black; border-radius: 3px;"
           (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |

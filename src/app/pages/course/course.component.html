@@ -47,40 +47,45 @@
 
       </div>
       <div class="dates"
-        style="display: flex;gap: 8px;align-items: self-start;">
+        style="display: flex;gap: 8px;align-items: center;">
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
           <span class="descripcion"> Desde </span>
           <span class="campo">{{course.date_start | date: 'dd.MM.yyyy' }}</span>
           <span class="descripcion"> hasta </span>
           <span class="campo">{{course.date_end | date: 'dd.MM.yyyy'}}</span>
-          <br>
-          <span class="campo2">
-            <!--{{getWeekDay()}}
-            {{findMinHourStart()}}–{{findMaxHourEnd()}}-->
-            <ng-container *ngIf="course.course_type == 1">
-              <div
-                *ngFor="let date of course.course_dates">
-                {{date.date | date: 'dd.MM.yyyy'}}
-                {{date.hour_start}}-{{date.hour_end}}
-              </div>
-            </ng-container>
-            <ng-container *ngIf="course.course_type == 2">
-              <div class="mt-8 course-box-content-list">
-                <div>{{course.course_dates[0].date | date:
-                  'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
-                  | date: 'dd.MM.yyyy'}}</div>
-                <div>{{
-                  getWeekdays(course.settings) }}</div>
-              </div>
-              <div class="mt-8 course-box-content-list">
-                <div>{{'text_from_price'
-                  | translate }} {{course.duration}}</div>
-                <div>{{course.hour_min}}h-{{course.hour_max}}h</div>
-              </div>
-            </ng-container>
-          </span>
         </div>
+      </div>
+      <div class="dates"
+        style="display: flex;gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;">
+        <ng-container *ngIf="course.course_type == 1">
+          <div class="campo2"
+            *ngFor="let date of course.course_dates">
+            <span style="font-weight: 600;">
+              {{date.date | date: 'dd.MM.yyyy'}}
+            </span>
+            <span style="color: #8B9099;">
+              {{date.hour_start}}-{{date.hour_end}}
+            </span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="course.course_type == 2">
+          <div class="campo2" class="mt-8 course-box-content-list">
+            <span style="font-weight: 600;">
+              {{course.course_dates[0].date | date:
+              'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
+              | date: 'dd.MM.yyyy'}}
+            </span>
+            <div>{{ getWeekdays(course.settings) }}
+            </div>
+          </div>
+          <div class="mt-8 course-box-content-list">
+            <div>{{'text_from_price' | translate }} {{course.duration}}</div>
+            <span style="color: #8B9099;">
+              {{course.hour_min}}h-{{course.hour_max}}h
+            </span>
+          </div>
+        </ng-container>
       </div>
       <div class="max-group"
         style="display: flex;gap: 8px;align-items: center;">

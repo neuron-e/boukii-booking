@@ -30,6 +30,7 @@
             [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user
+              style="z-index: 0;"
               [allLevels]="allLevels"
               [selectLevel]="allLevels[0].id"
               [size]="40"
@@ -50,6 +51,7 @@
             (click)="changeClientData(user.id)"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user
+              style="z-index: 0;"
               [allLevels]="allLevels"
               [selectLevel]="allLevels[0].id"
               [size]="40"
