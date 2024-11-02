@@ -31,40 +31,83 @@
                         class="icon24">
                     {{'PARTICIPANTE' | translate }}
                 </div>
-                <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
+                <div style="display: flex;gap: 8px;padding: 12px 0;"
+                    *ngFor="let selectedUser of selectedUsers">
                     <app-level-user
                         [allLevels]="courseC.dataLevels" [selectLevel]="185"
                         [size]="40"
                         [userImage]="selectedUser.image"></app-level-user>
                     <div
                         class="text-color text-small montserrat reservation-user-title">
-                        <img src="assets/images/gold-crown.png">
-                        {{selectedUser.last_name}}
+                        <div style="text-align: -webkit-left;">
+                            <span style="font-weight: 600;">
+                                {{selectedUser.first_name}}
+                                {{selectedUser.last_name}}
+                            </span>
+                            <img src="assets/images/gold-crown.png"
+                                *ngIf="courseC.userLogged.id===selectedUser.user_id"
+                                style="display: inline;vertical-align: baseline;">
+                            <br>
+                            <span style="color: #8B9099;font-size: 12px;">
+                                FR · Switzerland · 47 Años
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div style="flex-direction: column;align-items: flex-start;">
+            <div class="dates"
+                style="display: flex;gap: 8px;align-items: center;">
                 <div style="display: flex;align-items: center; gap: 8px;"
                     class="greyL">
                     <img src="assets/icons/calendar.png" alt="Calendario"
                         class="icon24">
                     {{'FECHA Y HORA' | translate }}
                 </div>
+            </div>
+            <div class="dates"
+                style="display: flex;gap: 8px;align-items: center;">
                 <div>
                     <span class="descripcion"> Desde </span>
-                    <span class="campo">{{course.date_start.split("T")[0]
+                    <span class="campo">{{course.date_start | date: 'dd.MM.yyyy'
                         }}</span>
                     <span class="descripcion"> hasta </span>
-                    <span class="campo">{{course.date_end.split("T")[0]
-                        }}</span>
-                    <br>
-                    <span class="campo2">
-                        {{getWeekDay()}}
-                        {{findMinHourStart()}}–{{findMaxHourEnd()}}
-                    </span>
+                    <span class="campo">{{course.date_end | date:
+                        'dd.MM.yyyy'}}</span>
                 </div>
             </div>
-            <div>
+            <div class="dates"
+                style="display: flex;gap: 4px;align-items: self-start;flex-direction: column;">
+                <ng-container *ngIf="course.course_type == 1">
+                    <div class="campo2"
+                        *ngFor="let date of course.course_dates">
+                        <span style="font-weight: 600;">
+                            {{date.date | date: 'dd.MM.yyyy'}}
+                        </span>
+                        <span style="color: #8B9099;">
+                            {{date.hour_start}}-{{date.hour_end}}
+                        </span>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="course.course_type == 2">
+                    <div class="campo2" class="mt-8 course-box-content-list">
+                        <span style="font-weight: 600;">
+                            {{course.course_dates[0].date | date:
+                            'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
+                            | date: 'dd.MM.yyyy'}}
+                        </span>
+                        <div>{{ courseC.getWeekdays(course.settings) }}
+                        </div>
+                    </div>
+                    <div class="mt-8 course-box-content-list">
+                        <div>{{'text_from_price' | translate }}
+                            {{course.duration}}</div>
+                        <span style="color: #8B9099;">
+                            {{course.hour_min}}h-{{course.hour_max}}h
+                        </span>
+                    </div>
+                </ng-container>
+            </div>
+            <div *ngIf="false">
                 <div class="greyL">
                     {{'EXTRAS' | translate }}
                 </div>
@@ -76,7 +119,7 @@
         border-bottom: 2px solid rgba(222, 230, 234, 1);
         display: flex;
         justify-content: space-between;">
-            <div >
+            <div>
                 {{'text_price' | translate }}
             </div>
             <div class="blackL" *ngIf="!course?.is_flexible">

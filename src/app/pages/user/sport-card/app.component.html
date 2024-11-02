@@ -2,10 +2,7 @@
     [style.boxShadow]="border?'':'none'">
     <div style="align-items: center">
         <span
-            style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
-      font-size: 12px;
-      line-height: 16px;
-      "
+            style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;font-size: 12px;line-height: 16px;"
             [style.background]="selectedSport.degree.color">
             {{level?.annotation}} /
             {{level?.name}}
@@ -34,22 +31,14 @@
         </span>
     </div>
     <div style="flex-direction: column;">
-        <span style="
-      color: #8B9099;
-      font-size: 12px;
-      
-      font-weight: 600;
-      line-height: 16px;
-      ">
+        <span
+            style="color: #8B9099;font-size: 12px;font-weight: 600;line-height: 16px;">
             {{"OBJETIVOS" | translate}}
         </span>
         <div *ngFor="let goal of goals"
             style="display: flex;justify-content: space-between;align-items: center;">
-            <span style="
-            font-size: 12px;
-    line-height: 16px;
-"> · {{goal.name}} </span>
-
+            <span style="font-size: 12px;line-height: 16px;"> <b>•</b>
+                {{goal.name}} </span>
             <img src="assets/icons/check_green.png" class="icon24"
                 *ngIf="getDegreeScore(goal.id)>0"
                 alt>
@@ -61,29 +50,27 @@
         </div>
         <span
             *ngIf="goals.length === 0"
-            style="
-                            font-size: 12px;
-                                           line-height: 16px;
-            ">
+            style="font-size: 12px; line-height: 16px;">
             {{'no_data' | translate }}
         </span>
     </div>
     <div style="flex-direction: column;">
-        <span style="
-      color: #8B9099;
-      font-size: 12px;
-      
-      font-weight: 600;
-      line-height: 16px;
-      ">
+        <span
+            style="color: #8B9099;font-size: 12px;font-weight: 600;line-height: 16px;">
             {{'multimedia' | translate }}
         </span>
+        <div *ngIf="user.getEvaluationsData().length===0"
+            style="display: flex;justify-content: space-between;">
+            <div *ngFor="let item of [1,2,3]" style="width: 72px;">
+                <img src="assets/icons/blank.png" class="icon72" alt>
+                <span style="font-size: 12px;line-height: 16px;">
+                    Comment prev...
+                </span>
+            </div>
+        </div>
         <span
             *ngIf="user.getEvaluationsData().length === 0"
-            style="
-                                font-size: 12px;
-                                               line-height: 16px;
-                ">
+            style="font-size: 12px; line-height: 16px;">
             {{'no_data' | translate }}
         </span>
         <div
@@ -104,24 +91,13 @@
         </div>
     </div>
     <div style="flex-direction: column;">
-        <span style="
-      color: #8B9099;
-      font-size: 12px;
-      
-      font-weight: 600;
-      line-height: 16px;
-      ">
+        <span
+            style="color: #8B9099;font-size: 12px;font-weight: 600;line-height: 16px;">
             {{'monitor_comments' | translate }}
         </span>
         <span
             *ngIf="user.getEvaluationsData().length === 0"
-            style="
-              
-              font-size: 12px;
-              
-              
-              line-height: 16px;
-              ">
+            style="font-size: 12px;line-height: 16px;">
             {{'no_data' | translate }}
         </span>
         <mat-form-field class="flex-auto"

@@ -246,6 +246,7 @@ export class CourseComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getUserData().subscribe(data => {
       this.userLogged = data;
+      console.log(this.userLogged)
     });
     this.schoolService.getSchoolData().subscribe(
       data => {

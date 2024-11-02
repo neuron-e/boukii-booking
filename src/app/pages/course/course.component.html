@@ -44,7 +44,6 @@
             {{"Reserva 2 fechas y obten el 10% de descuento!" | translate}}
           </span>
         </div>
-
       </div>
       <div class="dates"
         style="display: flex;gap: 8px;align-items: center;">
@@ -95,7 +94,6 @@
           ,{{course.age_min}}-{{course.age_max}}+ años
         </span>
       </div>
-
       <!--<ng-container *ngIf="course?.course_type==1">
         <div class="text-color text-medium montserrat course-content-title" *ngIf="course.is_flexible">
           <img [src]="themeService.calendar">
@@ -387,8 +385,18 @@
                 [userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
               <div
                 class="text-color text-small montserrat reservation-user-title">
-                <img src="assets/images/gold-crown.png">
-                {{userLogged?.clients[0].last_name}}
+                <div style="text-align: -webkit-left;">
+                  <span style="font-weight: 600;">
+                    {{userLogged?.clients[0].first_name}}
+                    {{userLogged?.clients[0].last_name}}
+                  </span>
+                  <img src="assets/images/gold-crown.png"
+                    style="display: inline;vertical-align: baseline;">
+                  <br>
+                  <span style="color: #8B9099;font-size: 12px;">
+                    FR · Switzerland · 47 Años
+                  </span>
+                </div>
               </div>
             </div>
           </mat-checkbox>
@@ -403,8 +411,15 @@
                 [userImage]="themeService.avatarEmpty || 'assets/avatar.png'"></app-level-user>
               <div
                 class="text-color text-small montserrat reservation-user-title">
-                <img src="assets/images/gold-crown.png">
-                {{utilizer.last_name}}
+                <div style="text-align: -webkit-left;">
+                  <span style="font-weight: 600;">
+                    {{utilizer.first_name}} {{utilizer.last_name}}
+                  </span>
+                  <br>
+                  <span style="color: #8B9099;font-size: 12px;">
+                    FR · Switzerland · 47 Años
+                  </span>
+                </div>
               </div>
             </div>
           </mat-checkbox>
@@ -499,7 +514,7 @@
           </div>
           <div style="display: flex;
           flex-wrap: wrap;
-          justify-content: space-around;">
+          justify-content: space-between;;">
             <mat-checkbox (click)="flexDateGet(date)"
               *ngFor="let date of getDaysBetweenDates(course.date_start,course.date_end)"
               style="font-weight: 600;">
