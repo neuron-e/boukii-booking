@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -826,6 +826,10 @@ export class UserComponent implements OnInit {
       });
     }
     return ret;
+  }
+  @ViewChild('sliderContainer') sliderContainer!: ElementRef;
+  scrollLeft(num: number) {
+    this.sliderContainer.nativeElement.scrollBy({ left: num * 300, behavior: 'smooth' });
   }
 }
 

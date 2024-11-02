@@ -115,3 +115,24 @@
   }
 }
 
+.flowcard {
+  width: calc(95vw - 356px);
+  overflow-x: auto;
+  @media only screen and (max-width: 900px) {
+    width: 100%;
+  }
+}
+.arrowflowcard {
+  width: calc(95vw - 356px);
+  position: absolute;
+  box-shadow: none;
+  padding: 0;
+  top: calc(50% - 30px);
+  flex-direction: row;
+  justify-content: space-between;
+  display: flex;
+  z-index: 999;
+  @media only screen and (max-width: 900px) {
+    width: 85vw;
+  }
+}
