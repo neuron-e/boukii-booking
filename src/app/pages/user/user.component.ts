@@ -27,15 +27,11 @@ export class UserComponent implements OnInit {
 
   @ViewChild('userDetail') userDetailComponent: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
-
+  sportCard: any[] = [];
   selectedSport: any;
   selectedSports: any[] = [];
   clientSport: any = [];
-  coloring = true;
   allLevels: any = [];
-  selectedGoal: any = [];
-  selectedGoal1: any = [];
-  selectedGoal2: any = [];
   schoolSports: any = [];
   goals: any = [];
   evaluationFullfiled: any = [];
@@ -43,7 +39,6 @@ export class UserComponent implements OnInit {
   countries = MOCK_COUNTRIES;
   languages: any = [];
   selectedLanguages: any = [];
-  sportIdx: any = -1;
   userLogged: any;
   schoolData: any;
   sportsCurrentData = new _MatTableDataSource([]);
@@ -118,8 +113,6 @@ export class UserComponent implements OnInit {
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
     }
-    console.log(this.selectedSport)
-
   }
 
   getData(id = null, onChangeUser = false) {
@@ -427,34 +420,26 @@ export class UserComponent implements OnInit {
 
 
   selectSportEvo(sport: any) {
-    this.coloring = true;
     this.allLevels = [];
-    this.selectedGoal = [];
     this.selectedSport = sport;
-
     this.schoolSports?.forEach((element: any) => {
-      if (this.selectedSport && this.selectedSport.sport_id === element.sport_id) {
-        this.selectedSport.degrees = element.degrees;
-      }
+      if (this.selectedSport && this.selectedSport.sport_id === element.sport_id) this.selectedSport.degrees = element.degrees;
     });
-
     this.selectedSport?.degrees.forEach((element: any) => {
       element.inactive_color = this.lightenColor(element.color, 30);
       this.allLevels.push(element);
     });
-
     this.allLevels?.sort((a: any, b: any) => a.degree_order - b.degree_order);
-    this.sportIdx = this.allLevels.findIndex((al: any) => al.id === sport.degree_id);
     if (sport && sport?.level) {
-
-      this.goals?.forEach((element: any) => {
-        if (element.degree_id === sport.degree_id) {
-          this.selectedGoal.push(element);
-        }
-      });
+      for (const i in this.allLevels) {
+        this.sportCard[+i] = []
+        this.goals.forEach((element: any) => {
+          if (element.degree_id === this.allLevels[i].id) {
+            this.sportCard[+i].push(element);
+          }
+        });
+      }
     }
-    this.changeLevel(1)
-    this.coloring = false;
   }
 
   lightenColor(hexColor: any, percent: any) {
@@ -814,46 +799,33 @@ export class UserComponent implements OnInit {
 
     return ret;
   }
-  changeLevel(nextLevel: any) {
-    this.selectedGoal = [];
-    this.selectedGoal1 = [];
-    this.selectedGoal2 = [];
-    this.selectedSport.level1 = this.allLevels[this.sportIdx];
-    this.goals.forEach((element: any) => {
-      if (element.degree_id === this.allLevels[this.sportIdx].id) {
-        this.selectedGoal1.push(element);
-      }
-    });
-    this.sportIdx = this.sportIdx + nextLevel;
-    if (this.sportIdx < 0) {
-      this.sportIdx = this.allLevels.length - 1;
-    } else if (this.sportIdx >= this.allLevels.length) {
-      this.sportIdx = 0;
-    }
-    this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
-    this.selectedSport.level2 = this.allLevels[this.sportIdx + 1 >= this.allLevels.length ? 0 : this.sportIdx + 1];
-    this.selectedSport.level = this.allLevels[this.sportIdx];
-    this.goals.forEach((element: any) => {
-      if (element.degree_id === this.allLevels[this.sportIdx].id) {
-        this.selectedGoal.push(element);
-      }
-      if (element.degree_id === this.allLevels[this.sportIdx + 1 >= this.allLevels.length ? 0 : this.sportIdx + 1].id) {
-        this.selectedGoal2.push(element);
-      }
-    });
-    this.coloring = false;
-  }
+  //changeLevel(nextLevel: any) {
+  //  this.selectedGoal = [];
+  //  this.sportIdx = this.sportIdx + nextLevel;
+  //  if (this.sportIdx < 0) {
+  //    this.sportIdx = this.allLevels.length - 1;
+  //  } else if (this.sportIdx >= this.allLevels.length) {
+  //    this.sportIdx = 0;
+  //  }
+  //  this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
+  //  this.selectedSport.level = this.allLevels[this.sportIdx];
+  //  this.goals.forEach((element: any) => {
+  //    if (element.degree_id === this.allLevels[this.sportIdx].id) {
+  //      this.selectedGoal.push(element);
+  //    }
+  //  });
+  //}
 
-  getGoalImage(): string {
+  getGoalImage(goal: any): string {
     let ret = '';
-    if (this.selectedGoal.length > 0) {
+    if (goal.length > 0) {
       this.allLevels.forEach((element: any) => {
-        if (element.id === this.selectedGoal[0].degree_id) {
+        if (element.id === goal[0].degree_id) {
           ret = element.image;
         }
       });
     }
     return ret;
   }
-
 }
+

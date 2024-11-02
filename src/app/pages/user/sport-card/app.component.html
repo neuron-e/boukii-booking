@@ -13,19 +13,19 @@
     </div>
     <div style="align-items: center">
         <div style="width: 100px;">
-            <app-level-user *ngIf="!user.coloring"
+            <app-level-user
                 [allLevels]="user.allLevels"
                 [selectLevel]="level?.id"
                 [size]="100"
-                [userImage]="user.getGoalImage()">
+                [userImage]="user.getGoalImage(goals)">
             </app-level-user>
         </div>
-        <span *ngIf="user.getGoalImage()" class="descripcion">
+        <span *ngIf="user.getGoalImage(goals)" class="descripcion">
             Enhorabuena! Has obtenido la medalla por este nivel. Es
             hora
             de pasar al próximo!
         </span>
-        <span *ngIf="!user.getGoalImage()" class="descripcion">
+        <span *ngIf="!user.getGoalImage(goals)" class="descripcion">
             Logra todos los objectivos de este curso para obtener la
             medalla.
         </span>
@@ -37,7 +37,9 @@
         </span>
         <div *ngFor="let goal of goals"
             style="display: flex;justify-content: space-between;align-items: center;">
-            <span style="font-size: 12px;line-height: 16px;"> <b>•</b>
+            <span
+                style="font-size: 12px;line-height: 16px;padding-right: 10px;">
+                <b>•</b>
                 {{goal.name}} </span>
             <img src="assets/icons/check_green.png" class="icon24"
                 *ngIf="getDegreeScore(goal.id)>0"

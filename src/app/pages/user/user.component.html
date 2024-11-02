@@ -102,40 +102,23 @@
             {{'sport_evolution' | translate }}
           </span>
           <div>
-            <div class="flex-sections-user" *ngIf="!loading && selectedSport"
-              style="align-items: flex-start;flex-wrap: wrap;">
-              <div style="width: 100%;
-              box-shadow: none;
-              padding: 0;
-    flex-direction: row;
-    justify-content: space-evenly;">
+            <div class="flex-sections-user"
+              *ngIf="!loading && selectedSport && sportCard.length>0"
+              style="align-items: flex-start;flex-wrap: nowrap;justify-content: space-between;position: relative;">
+              <div
+                style="width: 100%;position: absolute;box-shadow: none;padding: 0;top: calc(50% - 30px);flex-direction: row;justify-content: space-between;">
                 <img src="assets/icons/arrow-left-1.png"
-                  (click)="changeLevel(1)"
                   style="cursor: pointer;"
                   class="icon60 flecha">
                 <img src="assets/icons/arrow-right-1.png"
-                  (click)="changeLevel(-1)"
                   style="cursor: pointer;"
                   class="icon60 flecha">
               </div>
               <app-user-detail-sport-card
+                *ngFor="let item of sportCard; index as i"
                 [selectedSport]="selectedSport"
-                [level]="selectedSport.level1"
-                [goals]="selectedGoal1"
-                [border]="false"
-                class="card700">
-              </app-user-detail-sport-card>
-              <app-user-detail-sport-card
-                [selectedSport]="selectedSport"
-                [level]="selectedSport.level"
-                [goals]="selectedGoal">
-              </app-user-detail-sport-card>
-              <app-user-detail-sport-card
-                [selectedSport]="selectedSport"
-                [level]="selectedSport.level2"
-                [goals]="selectedGoal2"
-                [border]="false"
-                class="card1400">
+                [level]="allLevels[i]"
+                [goals]="item">
               </app-user-detail-sport-card>
             </div>
           </div>
