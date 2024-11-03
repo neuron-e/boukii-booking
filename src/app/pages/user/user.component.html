@@ -93,7 +93,7 @@
             {{sport.name}}
           </button>
         </div>
-        <div style="border-top: 1px solid #8B9099;padding: 20px;">
+        <div  class="sportCard">
           <span style="color: #8B9099;
            font-size: 12px;
            font-weight: 600;
@@ -102,6 +102,7 @@
             {{'sport_evolution' | translate }}
           </span>
           <div #sliderContainer
+            (scroll)="onScroll()"
             class="flowcard">
             <div class="arrowflowcard">
               <img src="assets/icons/arrow-left-1.png"
@@ -113,15 +114,15 @@
                 class="icon60 flecha"
                 (click)="scrollLeft(1)">
             </div>
-            <div class="flex-sections-user"
+            <div class="flex-sections-user flowcardGroup"
               *ngIf="!loading && selectedSport && sportCard.length>0"
-              style="align-items: flex-start;flex-wrap: nowrap;justify-content: space-between;position: relative;
-              width: max-content;">
+             >
               <app-user-detail-sport-card
                 *ngFor="let item of sportCard; index as i"
                 [selectedSport]="selectedSport"
                 [level]="allLevels[i]"
-                [goals]="item">
+                [goals]="item"
+                [center]="i === centeredCardIndex">
               </app-user-detail-sport-card>
             </div>
           </div>

@@ -116,14 +116,20 @@
 }
 
 .flowcard {
-  width: calc(95vw - 356px);
+  width: calc(95vw - 360px);
+  max-width: 950px;
   overflow-x: auto;
+  scroll-snap-type: x mandatory; /* Activa el scroll snap en el eje X */
+  scroll-padding: 0; /* Asegura que el desplazamiento no tenga padding adicional */
+
+  height: 1000px;
   @media only screen and (max-width: 900px) {
     width: 100%;
   }
 }
 .arrowflowcard {
-  width: calc(95vw - 356px);
+  width: calc(95vw - 360px);
+  max-width: 950px;
   position: absolute;
   box-shadow: none;
   padding: 0;
@@ -135,4 +141,27 @@
   @media only screen and (max-width: 900px) {
     width: 85vw;
   }
+}
+
+.sportCard {
+  border-top: 1px solid #8b9099;
+  padding: 20px;
+  @media only screen and (max-width: 900px) {
+    padding: 0;
+  }
+}
+.flowcardGroup {
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  position: relative;
+  width: max-content;
+  padding: 0 300px;
+  gap: 40px;
+  @media only screen and (max-width: 900px) {
+    padding: 0 10px;
+  }
+}
+.flex-sections-user > app-user-detail-sport-card {
+  scroll-snap-align: center;
 }

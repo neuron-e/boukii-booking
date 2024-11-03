@@ -12,6 +12,7 @@ export class SportCardComponent {
   @Input() level: any
   @Input() goals: any
   @Input() border: boolean = true
+  @Input() center: boolean = false
 
   calculateGoalsScore() {
     let ret = 0;

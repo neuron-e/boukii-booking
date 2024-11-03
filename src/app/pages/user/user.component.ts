@@ -827,9 +827,35 @@ export class UserComponent implements OnInit {
     }
     return ret;
   }
-  @ViewChild('sliderContainer') sliderContainer!: ElementRef;
+  @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef;
+  centeredCardIndex: number = 0;
+
   scrollLeft(num: number) {
     this.sliderContainer.nativeElement.scrollBy({ left: num * 300, behavior: 'smooth' });
   }
+  onScroll() {
+    this.updateCenteredCardIndex();
+  }
+
+  private updateCenteredCardIndex() {
+    const container = this.sliderContainer.nativeElement;
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    const cards = container.querySelectorAll('app-user-detail-sport-card');
+    cards.forEach((card: HTMLElement, index: number) => {
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    this.centeredCardIndex = closestIndex;
+  }
+
 }
 
