@@ -121,8 +121,8 @@
     <div class="calendar background-color-trans rounded-8">
       <div class="header-calendar">
         <div class="header-calendar-arrows">
-          <img [src]="themeService.arrowLeft" (click)="prevMonth()" />
-          <img [src]="themeService.arrowRight" (click)="nextMonth()" />
+          <img [src]="themeService.arrowLeft" (click)="prevMonth()" *ngIf="!loading"/>
+          <img [src]="themeService.arrowRight" (click)="nextMonth()" *ngIf="!loading"/>
         </div>
         <div class="text-color text-semibig fw-medium">{{
           monthNames[currentMonth] }}</div>

@@ -39,6 +39,7 @@ export class HomeComponent implements OnInit {
   firstDayOfMonth: any;
   lastDayOfMonth: any;
   days: any[] = [];
+  loading = false;
 
   schoolData: any = null;
   sports: any[];
@@ -165,6 +166,7 @@ export class HomeComponent implements OnInit {
   }
 
   getCourses() {
+    this.loading = true;
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     const firstDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, 1);
     const lastDayOfMonth = this.formatDate(this.currentYear, this.currentMonth + 1, daysInMonth);
@@ -189,6 +191,7 @@ export class HomeComponent implements OnInit {
         return acc.concat(formattedDates);
       }, []);
       if (!this.daySelected) {
+        this.loading = false;
         this.renderCalendar();
       }
     });
