@@ -190,8 +190,8 @@ export class HomeComponent implements OnInit {
         );
         return acc.concat(formattedDates);
       }, []);
+      this.loading = false;
       if (!this.daySelected) {
-        this.loading = false;
         this.renderCalendar();
       }
     });
