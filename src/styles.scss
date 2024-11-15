@@ -298,10 +298,10 @@ html {
   }
 }
 
-p,
+/*p,
 span {
   color: var(--light-gray);
-}
+}*/
 /* Excluye los elementos p y span que están dentro de un contenedor con la clase rich-text */
 .rich-text p,
 .rich-text span {
