@@ -117,6 +117,107 @@ export class UserComponent implements OnInit {
     }
   }
 
+  getData1(id = null, onChangeUser = false) {
+    const getId = id === null ? this.mainId : id;
+
+
+    return this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
+      'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
+      .pipe(
+        tap((data) => {
+
+          this.defaults = data.data;
+          this.evaluations = data.data.evaluations;
+          this.evaluationFullfiled = [];
+          this.evaluations.forEach((ev:any) => {
+            ev.evaluation_fulfilled_goals.forEach((element:any) => {
+              ;
+              this.evaluationFullfiled.push(element);
+            });
+          });
+          if (data.data.observations.length > 0) {
+            this.defaultsObservations = data.data[0];
+          } else {
+            this.defaultsObservations = {
+              id: null,
+              general: '',
+              notes: '',
+              historical: '',
+              client_id: null,
+              school_id: null
+            };
+          }
+/*          this.currentImage = data.data.image;
+          if (!onChangeUser) {
+            this.mainClient = data.data;
+          }*/
+
+          const requestsClient = {
+            clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
+              console.error('Error fetching client school:', error);
+              return of([]); // Devuelve un array vacío en caso de error
+            })),
+            clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
+              console.error('Error fetching client sport:', error);
+              return of([]); // Devuelve un array vacío en caso de error
+            }))
+          };
+
+          forkJoin(requestsClient).subscribe((results) => {
+            console.log('All data loaded', results);
+            if (!onChangeUser) {
+              this.getClientUtilisateurs();
+            }
+
+            if(data.data.user) {
+              this.defaultsUser = data.data.user;
+            }
+
+            const langs = [];
+            this.languages.forEach((element:any) => {
+              if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
+                element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
+                langs.push(element);
+              }
+            });
+
+           /* this.languagesControl.setValue(langs);
+
+            if (!onChangeUser) {
+
+              this.filteredCountries = this.myControlCountries.valueChanges.pipe(
+                startWith(''),
+                map(value => typeof value === 'string' ? value : value.name),
+                map(name => name ? this._filterCountries(name) : this.countries.slice())
+              );
+
+              this.myControlCountries.valueChanges.subscribe(country => {
+                this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
+                this.filteredProvinces = this._filterProvinces(country?.id);
+              });
+
+              this.filteredLevel = this.levelForm.valueChanges.pipe(
+                startWith(''),
+                map((value: any) => typeof value === 'string' ? value : value?.annotation),
+                map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
+              );
+
+              this.filteredLanguages = this.languagesControl.valueChanges.pipe(
+                startWith(''),
+                map(language => (language ? this._filterLanguages(language) : this.languages.slice()))
+              );
+
+            }
+
+            this.myControlStations.setValue(this.stations.find((s) => s.id === this.defaults.active_station)?.name);
+            this.myControlCountries.setValue(this.countries.find((c) => c.id === +this.defaults.country));
+            this.myControlProvinces.setValue(this.provinces.find((c) => c.id === +this.defaults.province));*/
+
+            this.loading = false;
+          });
+        }))
+  }
+
   getData(id = null, onChangeUser = false) {
     this.loading = true;
     this.firstLoad = false;
@@ -130,13 +231,13 @@ export class UserComponent implements OnInit {
           'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
           .pipe(takeUntil(this.destroy$))
           .subscribe(async (client) => {
-            this.defaults = client.data;
-            this.defaultsUser = client.data.user;
+
             this.defaults = client.data;
             this.evaluations = client.data.evaluations;
             this.evaluationFullfiled = [];
             this.evaluations.forEach((ev:any) => {
-              ev.evaluation_fulfilled_goals.forEach((element:any) => {;
+              ev.evaluation_fulfilled_goals.forEach((element:any) => {
+                ;
                 this.evaluationFullfiled.push(element);
               });
             });
@@ -152,9 +253,10 @@ export class UserComponent implements OnInit {
                 school_id: null
               };
             }
-            this.getBookings();
-
-
+            /*          this.currentImage = data.data.image;
+                      if (!onChangeUser) {
+                        this.mainClient = data.data;
+                      }*/
 
             const requestsClient = {
               clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
@@ -164,18 +266,17 @@ export class UserComponent implements OnInit {
               clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
                 console.error('Error fetching client sport:', error);
                 return of([]); // Devuelve un array vacío en caso de error
-              })),
-              languages: this.getLanguages().pipe(retry(3), catchError(error => {
-                console.error('Error fetching languages:', error);
-                return of([]); // Devuelve un array vacío en caso de error
               }))
             };
 
-            return forkJoin(requestsClient).subscribe((results) => {
+            forkJoin(requestsClient).subscribe((results) => {
               console.log('All data loaded', results);
-              if (!onChangeUser) {
-                this.getClientUtilisateurs();
+               this.getClientUtilisateurs();
+
+              if(client.data.user) {
+                this.defaultsUser = client.data.user;
               }
+
               const langs = [];
               this.languages.forEach((element:any) => {
                 if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
@@ -183,6 +284,7 @@ export class UserComponent implements OnInit {
                   langs.push(element);
                 }
               });
+
               this.loading = false;
             });
 
@@ -486,7 +588,7 @@ export class UserComponent implements OnInit {
   calculateGoalsScore() {
     let ret = 0;
 
-    const goals = this.goals.filter((g: any) => g.degree_id == this.selectedSport.level.id);
+    const goals = this.goals.filter((g: any) => g.degree_id == this.selectedSport?.level.id);
 
     if (goals.length > 0) {
       const maxPoints = goals.length * 10;
@@ -678,7 +780,7 @@ export class UserComponent implements OnInit {
   }
 
   changeClientData(id: any) {
-    //this.loading = true;
+    this.loading = true;
     this.id = id;
     this.getData(id, true);
   }
