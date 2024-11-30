@@ -59,7 +59,6 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
           let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
           this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
         });
-      console.log(this.loginForm.value);
     }
   }
 

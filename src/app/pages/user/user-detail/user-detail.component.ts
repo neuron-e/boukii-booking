@@ -711,7 +711,6 @@ export class UserDetailComponent {
     } else {
       this.selectedLanguages.push({ name: language.name, code: language.code, id: language.id });
     }
-    console.log(this.selectedLanguages);
   }
 
   getSelectedLanguageNames(): string {

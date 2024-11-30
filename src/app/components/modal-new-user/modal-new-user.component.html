@@ -1,8 +1,11 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
-    <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
+  <div class="modal-content background-color-full rounded-8"
+    (click)="$event.stopPropagation()">
+    <div
+      class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
       {{ 'text_new_client' | translate }}
-      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+      <img [src]="themeService.close" class="cursor-pointer"
+        (click)="closeModal()" />
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="modal-form">
@@ -10,23 +13,24 @@
         <div class="text-color-light text-small uppercase">
           {{ 'text_email' | translate }}
         </div>
-        <input type="email" class="form-control width-100" formControlName="email" />
-
+        <input type="email" class="form-control width-100"
+          formControlName="email" />
 
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{ 'text_password' | translate }}
         </div>
-        <input type="password" class="form-control width-100" formControlName="password" />
+        <input type="password" class="form-control width-100"
+          formControlName="password" />
 
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{ 'text_repeat_password' | translate }}
         </div>
-        <input type="password" class="form-control width-100" formControlName="confirmPassword" />
-
+        <input type="password" class="form-control width-100"
+          formControlName="confirmPassword" />
 
       </div>
 
@@ -34,28 +38,32 @@
         <div class="text-color-light text-small uppercase">
           {{ 'text_first_name' | translate }}
         </div>
-        <input type="text" class="form-control width-100" formControlName="first_name" />
+        <input type="text" class="form-control width-100"
+          formControlName="first_name" />
 
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{ 'text_last_name' | translate }}
         </div>
-        <input type="text" class="form-control width-100" formControlName="last_name" />
+        <input type="text" class="form-control width-100"
+          formControlName="last_name" />
 
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{ 'text_birth_date' | translate }}
         </div>
-        <input type="date" class="form-control width-100" formControlName="birth_date" />
+        <input type="date" class="form-control width-100"
+          formControlName="birth_date" />
 
       </div>
       <div class="modal-form-block-half">
         <div class="text-color-light text-small uppercase">
           {{ 'text_phone' | translate }}
         </div>
-        <input type="text" class="form-control width-100" formControlName="phone" />
+        <input type="text" class="form-control width-100"
+          formControlName="phone" />
 
       </div>
       <div class="modal-form-block-third">
@@ -92,7 +100,8 @@
 
       </div>
 
-      <button type="submit" [disabled]="loginForm?.invalid" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100">
+      <button type="submit" [disabled]="loginForm.invalid"
+        class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100">
         {{ 'text_confirm' | translate }}
       </button>
     </form>
