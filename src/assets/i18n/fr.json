@@ -422,7 +422,7 @@
   "bookings_page.bonus.title": "Appliquer le bonus",
   "courses.title": "cours",
   "courses.levels_and_groups": "Niveaux / Groupes",
-  "courses.new": "Nouveau cours",
+  "courses.new": "Ajouter un sous-groupe",
   "courses.coursename": "Nom du cours",
   "courses.min_age": "Âge minimum",
   "courses.max_age": "Âge maximum",
