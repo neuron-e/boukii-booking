@@ -1017,10 +1017,10 @@ export class CourseComponent implements OnInit {
   getCourseName(course: any) {
     if (course) {
       if (!course.translations || course.translations === null) {
-        return this.sanitizeHTML(course.name);
+        return course.name;
       } else {
         const translations = JSON.parse(course.translations);
-        return this.sanitizeHTML(translations[this.translateService.currentLang].name);
+        return translations[this.translateService.currentLang].name;
       }
     }
   }
