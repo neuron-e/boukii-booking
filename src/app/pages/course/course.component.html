@@ -121,12 +121,12 @@
       </ng-container>
       <div class="text-color text-medium fw-medium">{{'text_short_description' |
         translate}}</div>
-      <div class="editor-content"
+      <div class="ql-editor"
         [innerHTML]="getShotrDescription(course)" style="all: initial;">
       </div>
       <div class="show-desktop text-color text-medium fw-medium"
         style="margin-top: 10px">{{'text_description' | translate}}</div>
-      <div class="editor-content"
+      <div class="ql-editor"
         [innerHTML]="getDescription(course)" style="all: initial;">
       </div>
 
@@ -139,7 +139,7 @@
       <ng-container *ngIf="showMoreFilters">
         <div class="show-mobile text-color text-medium fw-medium"
           style="margin-top: 10px">{{'text_description' | translate}}</div>
-        <div class="show-mobile editor-content"
+        <div class="show-mobile ql-editor"
           [innerHTML]="getDescription(course)" style="all: initial;">
         </div>
 
