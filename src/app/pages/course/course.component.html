@@ -18,29 +18,29 @@
       <div class="wrapper-back rounded-8"></div>
       <img [src]="course?.image !== null ? course?.image : defaultImage"
         class="rounded-8 course-image-img" />
-      <div class="padding-box course-image-text">
-        <div
-          class="text-light-gray-bs fw-semibold course-image-icon montserrat">
-          <img src="assets/icons/prive_ski2x.png"
-            *ngIf="course?.course_type==2" />
-          <img src="assets/icons/collectif_ski2x.png"
-            *ngIf="course?.course_type==1" />
-          <ng-container *ngIf="course?.course_type==1">
-            {{'colective' | translate }}
-          </ng-container>
-          <ng-container *ngIf="course?.course_type==2">
-            {{'private' | translate }}
-          </ng-container>
-          <ng-container *ngIf="schoolData && schoolData.sports">
-            {{ getSportName(course?.sport_id) }}
-          </ng-container>
-        </div>
-        <div class="text-white fw-semibold text-semibig">
-          {{getCourseName(course)}}
-        </div>
+
+    </div>
+    <div class="">
+      <div
+        class="text-light-gray-bs fw-semibold course-image-icon montserrat">
+        <img src="assets/icons/prive_ski2x.png"
+             *ngIf="course?.course_type==2" />
+        <img src="assets/icons/collectif_ski2x.png"
+             *ngIf="course?.course_type==1" />
+        <ng-container *ngIf="course?.course_type==1">
+          {{'colective' | translate }}
+        </ng-container>
+        <ng-container *ngIf="course?.course_type==2">
+          {{'private' | translate }}
+        </ng-container>
+        <ng-container *ngIf="schoolData && schoolData.sports">
+          {{ getSportName(course?.sport_id) }}
+        </ng-container>
+      </div>
+      <div class="text-white fw-semibold text-semibig">
+        {{getCourseName(course)}}
       </div>
     </div>
-
     <div class="course-content">
       <ng-container *ngIf="course?.course_type==1">
         <div class="text-color text-medium montserrat course-content-title"
@@ -290,7 +290,7 @@
                 (mouseenter)="showTooltipFilter(0)"
                 (mouseleave)="hideTooltipFilter(0)">
                 <div
-                  [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.league}}</div>
+                  [ngStyle]="{'color': selectedLevel.color}">{{selectedLevel.annotation}}</div>
                 <div class="text-color">{{selectedLevel.name}}</div>
                 <div class="level-check">
                   <img src="assets/icons/check.png" />
