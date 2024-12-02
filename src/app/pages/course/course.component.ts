@@ -11,6 +11,7 @@ import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-course',
@@ -229,7 +230,8 @@ export class CourseComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
     private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar) {
+    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService,
+              private translateService: TranslateService, private snackbar: MatSnackBar, private sanitizer: DomSanitizer) {
 
   }
 
@@ -982,14 +984,19 @@ export class CourseComponent implements OnInit {
     return isStartTimeValid && isEndTimeValid;
   }
 
+  sanitizeHTML(html: string): any {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+
   getDescription(course: any) {
 
     if (course) {
       if (!course.translations || course.translations === null) {
-        return course.description;
+        return this.sanitizeHTML(course.description);
       } else {
         const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].description;
+        return this.sanitizeHTML(translations[this.translateService.currentLang].description);
       }
     }
 
@@ -998,10 +1005,10 @@ export class CourseComponent implements OnInit {
   getShotrDescription(course: any) {
     if (course) {
       if (!course.translations || course.translations === null) {
-        return course.short_description;
+        return this.sanitizeHTML(course.short_description);
       } else {
         const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].short_description;
+        return this.sanitizeHTML(translations[this.translateService.currentLang].short_description);
       }
     }
   }
@@ -1010,10 +1017,10 @@ export class CourseComponent implements OnInit {
   getCourseName(course: any) {
     if (course) {
       if (!course.translations || course.translations === null) {
-        return course.name;
+        return this.sanitizeHTML(course.name);
       } else {
         const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].name;
+        return this.sanitizeHTML(translations[this.translateService.currentLang].name);
       }
     }
   }

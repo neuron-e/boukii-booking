@@ -151,6 +151,7 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "node_modules/tinymce/skins/content/default/content.min.css",
               "src/styles.scss"
             ],
             "scripts": []

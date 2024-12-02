@@ -37,7 +37,7 @@
           {{ getSportName(course?.sport_id) }}
         </ng-container>
       </div>
-      <div class="text-white fw-semibold text-semibig">
+      <div class="text-white fw-semibold text-semibig" style="margin-top:20px">
         {{getCourseName(course)}}
       </div>
     </div>
@@ -121,12 +121,12 @@
       </ng-container>
       <div class="text-color text-medium fw-medium">{{'text_short_description' |
         translate}}</div>
-      <div
+      <div class="editor-content"
         [innerHTML]="getShotrDescription(course)" style="all: initial;">
       </div>
       <div class="show-desktop text-color text-medium fw-medium"
         style="margin-top: 10px">{{'text_description' | translate}}</div>
-      <div
+      <div class="editor-content"
         [innerHTML]="getDescription(course)" style="all: initial;">
       </div>
 
@@ -139,7 +139,7 @@
       <ng-container *ngIf="showMoreFilters">
         <div class="show-mobile text-color text-medium fw-medium"
           style="margin-top: 10px">{{'text_description' | translate}}</div>
-        <div class="show-mobile"
+        <div class="show-mobile editor-content"
           [innerHTML]="getDescription(course)" style="all: initial;">
         </div>
 
