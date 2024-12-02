@@ -49,9 +49,10 @@
   @include mat.typography-level($config, body-2);
 }
 
-.body-1, p {
+.body-1, p:not(.ql-editor p) {
   @include mat.typography-level($config, body-1);
 }
+
 
 /* Excluye los elementos .body-1 y p dentro de .rich-text */
 .rich-text .body-1,
