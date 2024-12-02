@@ -601,7 +601,8 @@
               <input matInput [matDatepicker]="pickerFrom"
                 placeholder="{{'birth_date' | translate }}"
                 formControlName="fromDate" [max]="minDate"
-                [(ngModel)]="defaults.birth_date">
+                [(ngModel)]="defaults.birth_date"
+                required>
               <mat-datepicker-toggle matSuffix
                 [for]="pickerFrom"></mat-datepicker-toggle>
               <mat-datepicker #pickerFrom [startAt]="minDate"></mat-datepicker>
