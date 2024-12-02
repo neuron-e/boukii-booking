@@ -1220,7 +1220,7 @@
               <div class="form-group normal">
                 <label class="mb-1 gray-label text-uppercase">{{'text_language' | translate }} *</label>
                 <select class="form-control" formControlName="language1_id">
-                  <option *ngFor="let language of languageList" value="{{language.id}}">{{language.name}}</option>
+                  <option *ngFor="let language of languageList" value="{{language.id}}">{{language.name | translate}}</option>
                 </select>
               </div>
             </div>

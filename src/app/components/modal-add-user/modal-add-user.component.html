@@ -34,7 +34,7 @@
             <ng-template #placeholderLangs>{{'choose_langs' | translate }}</ng-template>
           </mat-select-trigger>
           <mat-option *ngFor="let language of filteredLanguages | async" [value]="language" (onSelectionChange)="toggleSelectionLanguages(language)">
-            {{language.name}}
+            {{language.name | translate}}
           </mat-option>
         </mat-select>
       </mat-form-field>
