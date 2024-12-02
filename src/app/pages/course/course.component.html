@@ -321,8 +321,7 @@
 
                   <div (click)="selectLevel(level)"
                     class="rounded-8 level-wrapper cursor-pointer"
-                    *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
-                       hasMatchingSportLevel(level)">
+                    *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max)">
                     <div
                       [ngStyle]="{'color': level.color}">{{level.annotation}}</div>
                     <div class="text-color">{{level.name}}</div>
