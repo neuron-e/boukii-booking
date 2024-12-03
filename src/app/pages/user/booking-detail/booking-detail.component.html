@@ -170,7 +170,8 @@
                 *ngIf="getCourseExtraForfaitPrice(item.courseDates[0])>0">
                 <div *ngFor="let forfait of settings?.extras?.forfait">
                   <span class="color-dark-always"
-                    *ngIf="getCourseExtraForfait(forfait, item.courseDates[0])">{{forfait.product}} - {{ forfait.name }}</span>
+                    *ngIf="getCourseExtraForfait(forfait, item.courseDates[0])">{{forfait.product}}
+                    - {{ forfait.name }}</span>
                 </div>
                 <div>
                   <span class="color-dark-always">
@@ -232,17 +233,17 @@
               float: left;
               margin: 20px 0 0 0;
               flex-direction: column;">
-                <span style="font-size: 12px;"
+                <span style="font-size: 12px;color:#868686"
                   class="color-dark-always"><strong>{{'register'
                     |translate}}</strong>:{{
                   bookingsToCreate[0].courseDates[0].created_at | date:
                   'dd/MM/YYYY'}} {{
                   bookingsToCreate[0].courseDates[0].created_at | date:
                   'HH:mm'}}</span>
-                <span style="font-size: 12px;"
+                <span style="font-size: 12px;color:#868686"
                   class="color-dark-always"><strong>{{'from'
                     |translate}}:</strong>: Admin</span>
-                <span style="font-size: 12px;"
+                <span style="font-size: 12px;color:white"
                   class="color-dark-always"><strong>{{'by'
                     |translate}}</strong>: {{user.first_name}}
                   {{user.last_name}}</span>
