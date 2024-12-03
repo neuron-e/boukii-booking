@@ -37,7 +37,7 @@ export class ModalNewUserComponent implements OnInit {
       confirmPassword: ['', Validators.required], // Nueva confirmación de contraseña
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
-      birth_date: ['', Validators.required],
+      birth_date: ['', [Validators.required, this.ageValidator]], // Validador de edad personalizada
       phone: ['', Validators.required],
       language1_id: ['', Validators.required],
       language2_id: [''],
@@ -76,6 +76,24 @@ export class ModalNewUserComponent implements OnInit {
 
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       return { passwordMismatch: true };
+    }
+
+    return null;
+  }
+
+  // Validador personalizado para la edad mínima
+  private ageValidator(control: AbstractControl): { [key: string]: any } | null {
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    const dayDifference = today.getDate() - birthDate.getDate();
+
+    if (
+      age < 18 ||
+      (age === 18 && (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)))
+    ) {
+      return { ageInvalid: true }; // Retorna un error si la edad es menor a 18
     }
 
     return null;

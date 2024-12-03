@@ -11,6 +11,7 @@ import {map, Observable, of, tap} from 'rxjs';
 import {ApiCrudService} from '../../services/crud.service';
 import * as moment from 'moment';
 import {catchError} from 'rxjs/operators';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -96,7 +97,7 @@ export class HomeComponent implements OnInit {
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
               private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
-              private crudService: ApiCrudService) {
+              private crudService: ApiCrudService, private sanitizer: DomSanitizer) {
   }
 
   ngOnInit(): void {
@@ -398,28 +399,33 @@ export class HomeComponent implements OnInit {
     }
     localStorage.setItem(this.schoolData.slug + '-selectedDegreeType', this.selectedDegreeType.toString())
   }
-
-  getShotrDescription(course: any) {
-
-    if (!course.translations || course.translations === null) {
-      return course.short_description;
-    } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].short_description;
-    }
+  sanitizeHTML(html: string): any {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
+
 
   getDescription(course: any) {
 
     if (course) {
       if (!course.translations || course.translations === null) {
-        return course.description;
+        return this.sanitizeHTML(course.description);
       } else {
         const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].description;
+        return this.sanitizeHTML(translations[this.translateService.currentLang].description);
       }
     }
 
+  }
+
+  getShotrDescription(course: any) {
+    if (course) {
+      if (!course.translations || course.translations === null) {
+        return this.sanitizeHTML(course.short_description);
+      } else {
+        const translations = JSON.parse(course.translations);
+        return this.sanitizeHTML(translations[this.translateService.currentLang].short_description);
+      }
+    }
   }
 
   getCourseName(course: any) {

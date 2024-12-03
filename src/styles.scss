@@ -40,7 +40,59 @@
   --border-separator: rgba(255, 255, 255, 0.2);
   --level-background: #08090e;
 }
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 100; /* Thin */
+  src: url("./assets/fonts/DM_Sans/DMSans-Thin.ttf") format("opentype");
+}
 
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 200; /* ExtraLight */
+  src: url("./assets/fonts/DM_Sans/DMSans-ExtraLight.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 300; /* Light */
+  src: url("./assets/fonts/DM_Sans/DMSans-Light.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 400; /* Regular */
+  src: url("./assets/fonts/DM_Sans/DMSans-Regular.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 500; /* Medium */
+  src: url("./assets/fonts/DM_Sans/DMSans-Medium.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 600; /* SemiBold */
+  src: url("./assets/fonts/DM_Sans/DMSans-SemiBold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 700; /* Bold */
+  src: url("./assets/fonts/DM_Sans/DMSans-Bold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 800; /* ExtraBold */
+  src: url("./assets/fonts/DM_Sans/DMSans-Bold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-weight: 900; /* Black */
+  src: url("./assets/fonts/DM_Sans/DMSans-Black.ttf") format("opentype");
+}
 /* Fonts */
 @font-face {
   font-family: "Dinamit";
