@@ -56,6 +56,9 @@
         </div>
         <input type="date" class="form-control width-100"
           formControlName="birth_date" />
+        <div *ngIf="loginForm.get('birth_date')?.hasError('ageInvalid')" class="error">
+          {{ 'text_birth_date_error' | translate }}
+        </div>
 
       </div>
       <div class="modal-form-block-half">

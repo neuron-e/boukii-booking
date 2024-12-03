@@ -266,11 +266,11 @@
     </div>
     <div class="text-color text-medium fw-medium">{{'text_short_description' |
       translate}}</div>
-    <div class="text-small text-color-light montserrat"
+    <div class="text-small text-color-light montserrat quill-editor"
       [innerHTML]="getShotrDescription(course)"></div>
-    <div class="text-color text-medium fw-medium" *ngIf="course.showSeeLess"
+    <div class="text-color text-medium fw-medium quill-editor" *ngIf="course.showSeeLess"
       style="margin-top: 10px">{{'text_description' | translate}}</div>
-    <div class="text-small text-color-light montserrat"
+    <div class="text-small text-color-light montserrat quill-editor"
       [ngClass]="{'hidden':!course.showSeeLess }"
       [innerHTML]="getDescription(course)"></div>
     <div *ngIf="!course.showSeeLess"
