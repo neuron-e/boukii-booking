@@ -645,7 +645,7 @@
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
             <mat-form-field class="vex-flex-form-field flex-auto">
               <mat-label>{{'country' | translate }}</mat-label>
-              <input type="text" placeholder="Selecciona una opción" matInput
+              <input type="text" placeholder="{{'Selecciona una opción' | translate}}" matInput
                 [formControl]="myControlCountries"
                 [matAutocomplete]="autoCountry">
               <mat-autocomplete #autoCountry="matAutocomplete"
@@ -660,7 +660,7 @@
 
             <mat-form-field class="vex-flex-form-field flex-auto">
               <mat-label>{{'province' | translate }}</mat-label>
-              <input type="text" placeholder="Selecciona una opción" matInput
+              <input type="text" placeholder="{{'Selecciona una opción' | translate}}" matInput
                 [formControl]="myControlProvinces"
                 [matAutocomplete]="autoProvince">
               <mat-autocomplete #autoProvince="matAutocomplete"
