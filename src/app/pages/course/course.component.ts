@@ -195,7 +195,7 @@ export class CourseComponent implements OnInit {
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
   selectedForfait: any
-
+  isForfaitRequired: boolean = false;
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -243,6 +243,7 @@ export class CourseComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
+          this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey';
           this.settings = JSON.parse(data.data.settings);
         }
       }
@@ -387,54 +388,83 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    let bookingUsers: any = [];
-    if (this.course.course_type == 2) {
-      if (this.course.is_flexible) {
-        let course_date = this.findMatchingCourseDate();
-        this.selectedUserMultiple.forEach((selectedUser, index) => {
-          bookingUsers.push({
-            'course': this.course,
-            'client': selectedUser,
-            'school_id': this.schoolData.id,
-            'client_id': selectedUser.id,
-            'price': index === 0 ? this.course.price : 0,
-            'currency': 'CHF',
-            'course_id': this.course.id,
-            'course_date_id': course_date.id,
-            'course_group_id': null,
-            'course_subgroup_id': null,
-            'date': course_date.date,
-            'hour_start': this.selectedHour,
-            'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
-            'extra': this.selectedForfait
-          });
-        });
-      } else {
-        let course_date = this.findMatchingCourseDate();
-        this.selectedUserMultiple.forEach((selectedUser, index) => {
-          bookingUsers.push({
-            'course': this.course,
-            'client': selectedUser,
-            'school_id': this.schoolData.id,
-            'client_id': selectedUser.id,
-            'price': this.course.price,
-            'currency': 'CHF',
-            'course_id': this.course.id,
-            'course_date_id': course_date.id,
-            'course_group_id': null,
-            'course_subgroup_id': null,
-            'date': course_date.date,
-            'hour_start': this.selectedHour,
-            'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
-            'extra': this.selectedForfait
-          });
-        });
-      }
+    if (this.isForfaitRequired && !this.selectedForfait) {
+      this.snackbar.open(this.translateService.instant('forfait_error'), 'OK', { duration: 3000 });
     } else {
-      if (this.course.is_flexible) {
-        this.course.course_dates.forEach((date: any) => {
+      let bookingUsers: any = [];
+      if (this.course.course_type == 2) {
+        if (this.course.is_flexible) {
+          let course_date = this.findMatchingCourseDate();
+          this.selectedUserMultiple.forEach((selectedUser, index) => {
+            bookingUsers.push({
+              'course': this.course,
+              'client': selectedUser,
+              'school_id': this.schoolData.id,
+              'client_id': selectedUser.id,
+              'price': index === 0 ? this.course.price : 0,
+              'currency': 'CHF',
+              'course_id': this.course.id,
+              'course_date_id': course_date.id,
+              'course_group_id': null,
+              'course_subgroup_id': null,
+              'date': course_date.date,
+              'hour_start': this.selectedHour,
+              'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+              'extra': this.selectedForfait
+            });
+          });
+        } else {
+          let course_date = this.findMatchingCourseDate();
+          this.selectedUserMultiple.forEach((selectedUser, index) => {
+            bookingUsers.push({
+              'course': this.course,
+              'client': selectedUser,
+              'school_id': this.schoolData.id,
+              'client_id': selectedUser.id,
+              'price': this.course.price,
+              'currency': 'CHF',
+              'course_id': this.course.id,
+              'course_date_id': course_date.id,
+              'course_group_id': null,
+              'course_subgroup_id': null,
+              'date': course_date.date,
+              'hour_start': this.selectedHour,
+              'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
+              'extra': this.selectedForfait
+            });
+          });
+        }
+      } else {
+        if (this.course.is_flexible) {
+          this.course.course_dates.forEach((date: any) => {
 
-          if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
+            if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
+              let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
+              let courseSubgroup = courseGroup.course_subgroups[0];
+              bookingUsers.push({
+                'course': this.course,
+                'client': this.selectedUser,
+                'course_date': date,
+                'group': courseGroup,
+                'subGroup': courseSubgroup,
+                'school_id': this.schoolData.id,
+                'client_id': this.selectedUser.id,
+                'price': this.collectivePrice,
+                'currency': 'CHF',
+                'course_id': this.course.id,
+                'course_date_id': date.id,
+                'course_group_id': courseGroup.id,
+                'course_subgroup_id': courseSubgroup.id,
+                'date': date.date,
+                'hour_start': date.hour_start,
+                'hour_end': date.hour_end,
+                'extra': this.selectedForfait
+              })
+            }
+
+          })
+        } else {
+          this.course.course_dates.forEach((date: any) => {
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
             bookingUsers.push({
@@ -445,7 +475,7 @@ export class CourseComponent implements OnInit {
               'subGroup': courseSubgroup,
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
-              'price': this.collectivePrice,
+              'price': this.course.price,
               'currency': 'CHF',
               'course_id': this.course.id,
               'course_date_id': date.id,
@@ -456,103 +486,79 @@ export class CourseComponent implements OnInit {
               'hour_end': date.hour_end,
               'extra': this.selectedForfait
             })
-          }
-
-        })
-      } else {
-        this.course.course_dates.forEach((date: any) => {
-          let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
-          let courseSubgroup = courseGroup.course_subgroups[0];
-          bookingUsers.push({
-            'course': this.course,
-            'client': this.selectedUser,
-            'course_date': date,
-            'group': courseGroup,
-            'subGroup': courseSubgroup,
-            'school_id': this.schoolData.id,
-            'client_id': this.selectedUser.id,
-            'price': this.course.price,
-            'currency': 'CHF',
-            'course_id': this.course.id,
-            'course_date_id': date.id,
-            'course_group_id': courseGroup.id,
-            'course_subgroup_id': courseSubgroup.id,
-            'date': date.date,
-            'hour_start': date.hour_start,
-            'hour_end': date.hour_end,
-            'extra': this.selectedForfait
           })
-        })
-      }
-    }
-
-    this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
-      let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-      let cart: any = {};
-
-      if (cartStorage) {
-        cart = JSON.parse(cartStorage);
+        }
       }
 
-      if (!cart[this.course.id]) {
-        cart[this.course.id] = {};
-      }
+      this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
+        let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+        let cart: any = {};
 
-      if (this.course.course_type === 2) {
-        const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
+        if (cartStorage) {
+          cart = JSON.parse(cartStorage);
+        }
 
-        const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-          const idArray = id.split('-');
-          return idArray.some(singleId => {
-            const keys = Object.keys(cart[this.course.id]);
-            return keys.some(key => {
-              const userCourseIds = key.split('-');
-              const hasUserOverlap = userCourseIds.includes(singleId);
+        if (!cart[this.course.id]) {
+          cart[this.course.id] = {};
+        }
 
-              if (hasUserOverlap) {
-                let course_date = this.findMatchingCourseDate();
-                const userBookings = cart[this.course.id][key];
-                return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-              }
+        if (this.course.course_type === 2) {
+          const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
 
-              return false;
+          const isAnyUserReserved = selectedUserIds.split('-').some(id => {
+            const idArray = id.split('-');
+            return idArray.some(singleId => {
+              const keys = Object.keys(cart[this.course.id]);
+              return keys.some(key => {
+                const userCourseIds = key.split('-');
+                const hasUserOverlap = userCourseIds.includes(singleId);
+
+                if (hasUserOverlap) {
+                  let course_date = this.findMatchingCourseDate();
+                  const userBookings = cart[this.course.id][key];
+                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
+                }
+
+                return false;
+              });
             });
           });
-        });
 
-        if (!isAnyUserReserved) {
-          if (!cart[this.course.id][selectedUserIds]) {
-            cart[this.course.id][selectedUserIds] = [];
+          if (!isAnyUserReserved) {
+            if (!cart[this.course.id][selectedUserIds]) {
+              cart[this.course.id][selectedUserIds] = [];
+            }
+            cart[this.course.id][selectedUserIds].push(...bookingUsers);
+
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            // TODO: mostrar mensaje de curso guardado correctamente.
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else {
+            this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
           }
-          cart[this.course.id][selectedUserIds].push(...bookingUsers);
-
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          // TODO: mostrar mensaje de curso guardado correctamente.
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
         } else {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          if (!cart[this.course.id][this.selectedUser.id]) {
+            cart[this.course.id][this.selectedUser.id] = [];
+            cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+
+            this.goTo(this.schoolData.slug);
+          } else {
+
+            this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          }
         }
-      } else {
-        if (!cart[this.course.id][this.selectedUser.id]) {
-          cart[this.course.id][this.selectedUser.id] = [];
-          cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
 
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+      }, error => {
+        this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
 
-          this.goTo(this.schoolData.slug);
-        } else {
+      })
+    }
 
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-        }
-      }
-
-    }, error => {
-      this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
-
-    })
   }
 
   calculateEndTime(startTime: string, duration: string): string {

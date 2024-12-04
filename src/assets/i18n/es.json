@@ -691,6 +691,7 @@
   "email_send": "Email enviado correctamente.",
   "No monitor available on that date": "No hay disponibilidad para esta hora.",
   "Client has booking on that date": "El cliente ya tiene una reserva en esa fecha.",
-  "text_birth_date_error": "Debe tener al menos 18 años para registrarse"
+  "text_birth_date_error": "Debe tener al menos 18 años para registrarse",
+  "forfait_error": "Por favor, selecciona al menos una opción de forfait."
 
 }
