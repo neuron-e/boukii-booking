@@ -37,7 +37,7 @@
         <mat-form-field class="flex-auto">
           <input matInput [matDatepicker]="pickerFrom"
             placeholder="{{'birth_date' | translate }}"
-            formControlName="fromDate" [max]="minDate"
+            formControlName="fromDate" [max]="minDate" readonly
             [(ngModel)]="defaults.birth_date"
             required>
           <mat-datepicker-toggle matSuffix
