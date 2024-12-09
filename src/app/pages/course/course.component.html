@@ -20,13 +20,13 @@
         class="rounded-8 course-image-img" />
 
     </div>
-    <div class="">
+    <div class>
       <div
         class="text-light-gray-bs fw-semibold course-image-icon montserrat">
         <img src="assets/icons/prive_ski2x.png"
-             *ngIf="course?.course_type==2" />
+          *ngIf="course?.course_type==2" />
         <img src="assets/icons/collectif_ski2x.png"
-             *ngIf="course?.course_type==1" />
+          *ngIf="course?.course_type==1" />
         <ng-container *ngIf="course?.course_type==1">
           {{'colective' | translate }}
         </ng-container>
@@ -93,10 +93,13 @@
               {{'text_when_course' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat">{{ getStartDate() }} - {{ getEndDate() }}</div>
-              <div class="text-color-light pl-32 montserrat">{{ getWeekdays(course?.settings) }}</div>
+              <div class="text-color-light pl-32 montserrat">{{ getStartDate()
+                }} - {{ getEndDate() }}</div>
+              <div class="text-color-light pl-32 montserrat">{{
+                getWeekdays(course?.settings) }}</div>
               <div class="text-color-light pl-32 montserrat">
-                {{ 'text_max_participants' | translate }}: {{ course?.max_participants }}
+                {{ 'text_max_participants' | translate }}: {{
+                course?.max_participants }}
               </div>
             </div>
           </div>
@@ -106,10 +109,12 @@
               {{ 'text_course_duration' | translate }}
             </div>
             <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat" *ngIf="!course?.is_flexible">
+              <div class="text-color-light pl-32 montserrat"
+                *ngIf="!course?.is_flexible">
                 {{ course?.duration }}
               </div>
-              <div class="text-color-light pl-32 montserrat" *ngIf="course?.is_flexible">
+              <div class="text-color-light pl-32 montserrat"
+                *ngIf="course?.is_flexible">
                 {{ 'text_from_price' | translate }} {{ course?.duration }}
               </div>
               <div class="text-color-light pl-32 montserrat">
@@ -148,24 +153,6 @@
           type="button">
           {{'text_less' | translate }}
         </button>
-      </ng-container>
-      <ng-container *ngIf="course?.options">
-        <p>Forfait</p>
-        <ng-container *ngFor="let extra of settings.extras.forfait">
-          <div class="checkbox-circle pl-32">
-            <input
-              id="radio-course-{{extra.id}}"
-              type="checkbox"
-              name="forfaitSelection"
-              [checked]="selectedForfait === extra"
-              (change)="toggleForfaitSelection(extra)" />
-            <label class="text-color-light montserrat" for="radio-course-{{extra.id}}">
-              {{ extra.name }} - {{ extra.price }}{{ course?.currency }} /
-              {{ 'date' | translate }}
-            </label>
-          </div>
-        </ng-container>
-        <!-- Mensaje de error si no hay selección y es obligatorio -->
       </ng-container>
     </div>
   </div>
@@ -281,7 +268,7 @@
             </div>
 
             <div>
-<!--              <div *ngIf="!selectedLevel"
+              <!--              <div *ngIf="!selectedLevel"
                 class="text-color fw-semibold montserrat mt-12">
                 {{ 'text_no_level' | translate }}
               </div>-->
@@ -453,17 +440,41 @@
                 </div>
               </div>
               <div>
+              </div>
+              <ng-container *ngIf="course?.options">
+                <div *ngIf="isForfaitRequired && !selectedForfait"
+                  class="error-message">
+                  {{ 'forfait_error' | translate }}
+                </div>
+                <p>Forfait</p>
+                <ng-container *ngFor="let extra of settings.extras.forfait">
+                  <div class="checkbox-circle pl-32">
+                    <input
+                      id="radio-course-{{extra.id}}"
+                      type="checkbox"
+                      name="forfaitSelection"
+                      [checked]="selectedForfait === extra"
+                      (change)="toggleForfaitSelection(extra)" />
+                    <label class="text-color-light montserrat"
+                      for="radio-course-{{extra.id}}">
+                      {{ extra.name }} - {{ extra.price }}{{ course?.currency }}
+                      /
+                      {{ 'date' | translate }}
+                    </label>
+                  </div>
+                </ng-container>
+                <!-- Mensaje de error si no hay selección y es obligatorio -->
+              </ng-container>
+              <div>
                 <button (click)="addBookingToCart()"
-                        [disabled]="isForfaitRequired && !selectedForfait"
+                  [disabled]="isForfaitRequired && !selectedForfait"
                   class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12"
                   type="button">
                   <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' |
                   translate }}
                 </button>
               </div>
-              <div *ngIf="isForfaitRequired && !selectedForfait" class="error-message">
-                {{ 'forfait_error' | translate }}
-              </div>
+
             </ng-container>
 
           </ng-container>
@@ -494,7 +505,8 @@
               translate }}
             </button>
           </div>
-          <div *ngIf="isForfaitRequired && !selectedForfait" class="error-message">
+          <div *ngIf="isForfaitRequired && !selectedForfait"
+            class="error-message">
             {{ 'forfait_error' | translate }}
           </div>
         </ng-container>
