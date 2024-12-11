@@ -283,9 +283,12 @@
 
 <app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
   (onClose)="closeModalVoucher($event)"></app-modal-voucher>
-<app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'"
+<app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey' && schoolData?.slug != 'ecole-suisse-de-ski'"
   [isOpen]="isModalConditions" [data]="'conditions_html' | translate"
   (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-conditions *ngIf="schoolData?.slug == 'ecole-suisse-de-ski'"
+                      [isOpen]="isModalConditions" [data]="conditionsHTMLVeveyse"
+                      (onClose)="closeModalConditions()"></app-modal-conditions>
 <app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'"
-  [isOpen]="isModalConditions" [data]="conditionsHTML"
+  [isOpen]="isModalConditions" [data]="conditionsHTMLCharmey"
   (onClose)="closeModalConditions()"></app-modal-conditions>
