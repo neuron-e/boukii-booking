@@ -243,7 +243,7 @@ export class CourseComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey';
+          this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
           this.settings = JSON.parse(data.data.settings);
         }
       }
