@@ -443,7 +443,7 @@
               </div>
               <ng-container *ngIf="course?.options">
                 <div *ngIf="isForfaitRequired && !selectedForfait"
-                  class="error-message">
+                     class="error-message">
                   {{ 'forfait_error' | translate }}
                 </div>
                 <p>Forfait</p>
@@ -456,7 +456,7 @@
                       [checked]="selectedForfait === extra"
                       (change)="toggleForfaitSelection(extra)" />
                     <label class="text-color-light montserrat"
-                      for="radio-course-{{extra.id}}">
+                           for="radio-course-{{extra.id}}">
                       {{ extra.name }} - {{ extra.price }}{{ course?.currency }}
                       /
                       {{ 'date' | translate }}
@@ -496,6 +496,30 @@
               translate }}
             </div>
           </div>
+          <ng-container *ngIf="course?.options">
+            <div *ngIf="isForfaitRequired && !selectedForfait"
+                 class="error-message">
+              {{ 'forfait_error' | translate }}
+            </div>
+            <p>Forfait</p>
+            <ng-container *ngFor="let extra of settings.extras.forfait">
+              <div class="checkbox-circle pl-32">
+                <input
+                  id="radio-course-{{extra.id}}"
+                  type="checkbox"
+                  name="forfaitSelection"
+                  [checked]="selectedForfait === extra"
+                  (change)="toggleForfaitSelection(extra)" />
+                <label class="text-color-light montserrat"
+                       for="radio-course-{{extra.id}}">
+                  {{ extra.name }} - {{ extra.price }}{{ course?.currency }}
+                  /
+                  {{ 'date' | translate }}
+                </label>
+              </div>
+            </ng-container>
+            <!-- Mensaje de error si no hay selección y es obligatorio -->
+          </ng-container>
           <div>
             <button (click)="addBookingToCart()"
               [disabled]="!selectedUser || !selectedLevel || (isForfaitRequired && !selectedForfait)"
@@ -505,11 +529,8 @@
               translate }}
             </button>
           </div>
-          <div *ngIf="isForfaitRequired && !selectedForfait"
-            class="error-message">
-            {{ 'forfait_error' | translate }}
-          </div>
         </ng-container>
+
         <div (click)="goTo(schoolData.slug )"
           class="text-color-light montserrat cursor-pointer reservation-return mt-12">
           <img [src]="themeService.arrowReturn">

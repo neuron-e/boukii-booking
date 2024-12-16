@@ -243,7 +243,6 @@ export class CourseComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
           this.settings = JSON.parse(data.data.settings);
         }
       }
@@ -254,6 +253,7 @@ export class CourseComponent implements OnInit {
     });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
