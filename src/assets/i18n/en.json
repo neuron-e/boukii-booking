@@ -684,5 +684,7 @@
   "No monitor available on that date": "No monitor available on that date.",
   "Client has booking on that date": "Client has booking on that date",
   "text_birth_date_error": "You must be at least 18 years old to register.",
-  "forfait_error": "Please select at least one forfait option."
+  "forfait_error": "Please select at least one forfait option.",
+  "text_age_not_appropriate": "The user does not meet the required age for this course: "
+
 }

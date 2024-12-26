@@ -641,7 +641,12 @@ export class CourseComponent implements OnInit {
         this.selectedUserMultiple.splice(index, 1);
       } else {
         if (this.selectedUserMultiple.length < this.course.max_participants) {
-          this.selectedUserMultiple.push(user);
+          if(this.isAgeAppropriate(this.transformAge(user.birth_date), this.course.age_min, this.course.age_max)) {
+            this.selectedUserMultiple.push(user);
+          } else {
+            this.snackbar.open(this.translateService.instant('text_age_not_appropriate'), 'OK', { duration: 3000 });
+          }
+
         }
         else {
           this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', { duration: 3000 });

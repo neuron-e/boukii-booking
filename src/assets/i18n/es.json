@@ -148,6 +148,7 @@
   "text_select_user": "Selecciona el usuario para la reserva",
   "text_select_user_or_more": "Selecciona usuarios para la reserva, máximo: ",
   "text_select_maximum_user": "El número máximo de usuarios que puedes seleccionar es: ",
+  "text_age_not_appropriate": "El usuario no tiene la edad permitida para este curso: ",
   "text_change_level": "Cambiar nivel de curso",
   "text_no_dates_month": "No hay fechas disponibles este mes",
   "text_select_date_disponibility": "Selecciona una fecha con disponibilidad:",

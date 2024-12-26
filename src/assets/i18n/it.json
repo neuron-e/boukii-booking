@@ -686,5 +686,7 @@
   "No monitor available on that date": "Nessun monitor disponibile per quest'ora.",
   "Client has booking on that date": "Il cliente ha già una prenotazione per quella data.",
   "text_birth_date_error": "Devi avere almeno 18 anni per registrarti",
-  "forfait_error": "Seleziona almeno un'opzione forfait."
+  "forfait_error": "Seleziona almeno un'opzione forfait.",
+  "text_age_not_appropriate": "L'utente non ha l'età richiesta per questo corso: "
+
 }
