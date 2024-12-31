@@ -12,6 +12,7 @@ import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {ApiCrudService} from '../../services/crud.service';
 
 @Component({
   selector: 'app-course',
@@ -207,6 +208,7 @@ export class CourseComponent implements OnInit {
   weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   currentMonth: number;
   currentYear: number;
+  myHolidayDates: any = [];
   days: any[] = [];
 
   activeDates: string[] = [];
@@ -220,6 +222,8 @@ export class CourseComponent implements OnInit {
   selectedDuration: any;
   availableDurations: any[] = [];
   availableHours: any[] = [];
+  season: any = [];
+  holidays: any = [];
 
   schoolData: any;
   settings: any;
@@ -229,6 +233,7 @@ export class CourseComponent implements OnInit {
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
+              private crudService: ApiCrudService,
     private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
     private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService,
               private translateService: TranslateService, private snackbar: MatSnackBar, private sanitizer: DomSanitizer) {
@@ -244,6 +249,22 @@ export class CourseComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings);
+          this.crudService
+            .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' +
+              this.schoolData.id + '&is_active=1').subscribe({
+            next: (res) => {
+              if (res.data.length > 0) {
+                this.season = res.data[0]; // Guardamos la temporada en caché
+                this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+                this.holidays.forEach((element: any) => {
+                  this.myHolidayDates.push(moment(element).toDate());
+                });
+              }
+            },
+            error: (err) => {
+              console.error('Error al obtener la temporada:', err);
+            }
+          });
         }
       }
     );
@@ -362,7 +383,7 @@ export class CourseComponent implements OnInit {
       const formattedMonth = (this.currentMonth + 1).toString().padStart(2, '0');
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
-      const isActive = !isPast && this.activeDates.includes(dateStr);
+      const isActive = !isPast && this.activeDates.includes(dateStr) && this.inUseDatesFilter(spanDate);
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
 
@@ -373,6 +394,19 @@ export class CourseComponent implements OnInit {
 
   }
 
+  inUseDatesFilter = (d: Date): boolean => {
+    if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
+
+    const formattedDate = moment(d).format('YYYY-MM-DD');
+    const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
+    const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
+    // Encuentra si la fecha actual está en myHolidayDates.
+    const isHoliday = this.myHolidayDates.some((x:any) => x.getTime() === time);
+
+    // La fecha debería ser seleccionable si no es un día festivo y está activa (o sea, active no es falso ni 0).
+    return !isHoliday;
+  }
+
   selectDay(day: any) {
     if (day.active) {
       this.days.forEach(d => d.selected = false);
@@ -380,11 +414,91 @@ export class CourseComponent implements OnInit {
       const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
 
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
-      if (this.course.is_flexible) {
-        this.updateAvailableDurations(this.selectedHour);
-      }
+
+      this.fetchAvailableDurations(this.selectedHour);
+
 
     }
+  }
+
+  onHourChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+
+    if (target && target.value) {
+      this.selectedHour = target.value;
+      this.fetchAvailableDurations(target.value);
+    } else {
+      console.warn('Invalid target or value in onHourChange event');
+    }
+  }
+
+  fetchAvailableDurations(hour: string): void {
+    let course_date = this.findMatchingCourseDate();
+    const courseDateId = course_date.id; // Ajustar según tu estructura de datos
+
+    this.coursesService.getAvailableDurations(courseDateId, hour).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          // Convertir la respuesta en un array de duraciones
+          const durationsArray = Object.values(response.data);
+
+          if (durationsArray.length > 0) {
+            // Actualizar las duraciones disponibles
+            this.availableDurations = [...new Set(durationsArray)];
+            this.handleDurationSelection();
+          } else {
+            // Manejar el caso de no disponibilidad
+            this.availableDurations = [];
+            this.showNoAvailabilityMessage(); // Lógica para manejar el error
+          }
+        } else {
+          // Manejar respuesta sin éxito
+          this.handleNoSuccessResponse();
+        }
+      },
+      error: (err: any) => {
+        console.error('Error fetching durations:', err);
+        this.showErrorMessage('Error fetching durations. Please try again.');
+      },
+    });
+  }
+
+  showNoAvailabilityMessage(): void {
+    console.warn('No availability for the selected hour.');
+    // Aquí puedes mostrar un mensaje de error en la interfaz de usuario, por ejemplo:
+    this.snackbar.open('No availability for the selected hour.', 'Close', {
+      duration: 3000,
+      panelClass: ['error-snackbar'],
+    });
+  }
+
+  handleNoSuccessResponse(): void {
+    console.warn('Failed to fetch durations. Please try again.');
+    this.snackbar.open('Failed to fetch durations. Please try again.', 'Close', {
+      duration: 3000,
+      panelClass: ['error-snackbar'],
+    });
+  }
+
+  showErrorMessage(message: string): void {
+    this.snackbar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: ['error-snackbar'],
+    });
+  }
+
+  handleDurationSelection(): void {
+    // Validar si la duración seleccionada está disponible
+    const isSelectedDurationAvailable = this.availableDurations.includes(
+      this.selectedDuration
+    );
+
+    // Si no está disponible, asignar la primera duración disponible
+    if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
+      this.selectedDuration = this.availableDurations[0];
+    }
+
+    this.updatePrice();
   }
 
   addBookingToCart() {

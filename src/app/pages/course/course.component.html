@@ -396,44 +396,31 @@
                 </div>
 
                 <div class="text-color-light montserrat mt-12 margin-auto">
-                  {{'text_hour' | translate }}
+                  {{ 'text_hour' | translate }}
                 </div>
                 <select
                   class="form-control margin-auto calendar-reservation-form-input"
                   [(ngModel)]="selectedHour"
-                  (change)="course?.is_flexible && updateAvailableDurations(selectedHour)">
-                  <option *ngFor="let hour of availableHours" [value]="hour">{{
-                    hour }}</option>
+                  (change)="onHourChange($event)">
+                  <option *ngFor="let hour of availableHours" [value]="hour">{{ hour }}</option>
                 </select>
 
-                <!--
                 <div class="text-color-light montserrat mt-12 margin-auto">
-                  {{'text_people' | translate }}
-                </div>
-                <select class="form-control margin-auto calendar-reservation-form-input" [(ngModel)]="selectedPaxes"
-                        (change)="updatePrice()">
-                  <option *ngFor="let number of generateNumberArray(course.max_participants)" [value]="number">{{ number }}</option>
-                </select>
-                -->
-
-                <div class="text-color-light montserrat mt-12 margin-auto">
-                  {{'text_duration' | translate }}
+                  {{ 'text_duration' | translate }}
                 </div>
                 <ng-container *ngIf="course?.is_flexible">
                   <select
                     class="form-control margin-auto calendar-reservation-form-input"
                     [(ngModel)]="selectedDuration"
                     (change)="updatePrice()">
-                    <option *ngFor="let range of availableDurations"
-                      [value]="convertToHoursAndMinutes(range)">{{convertToHoursAndMinutes(range)}}</option>
+                    <option *ngFor="let range of availableDurations" [value]="range">{{ range }}</option>
                   </select>
                 </ng-container>
                 <ng-container *ngIf="!course?.is_flexible">
                   <select
                     class="form-control margin-auto calendar-reservation-form-input"
                     [(ngModel)]="selectedDuration">
-                    <option
-                      [value]="course?.duration">{{course?.duration}}</option>
+                    <option *ngFor="let range of availableDurations" [value]="range">{{ range }}</option>
                   </select>
                 </ng-container>
               </div>
@@ -475,7 +462,7 @@
               </ng-container>
               <div>
                 <button (click)="addBookingToCart()"
-                  [disabled]="isForfaitRequired && !selectedForfait"
+                  [disabled]="(isForfaitRequired && !selectedForfait) || !availableDurations.length"
                   class="btn-back-primary rounded-8 button-style-icon cursor-pointer width-100 mb-12"
                   type="button">
                   <img src="/assets/icons/cart.svg"> {{'text_add_to_cart' |
