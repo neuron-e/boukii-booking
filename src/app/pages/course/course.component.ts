@@ -282,8 +282,7 @@ export class CourseComponent implements OnInit {
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
         if (this.course.is_flexible) {
-          this.availableDurations = this.getAvailableDurations(this.selectedHour);
-          this.updatePrice();
+          this.fetchAvailableDurations(this.selectedHour);
         } else {
           this.selectedDuration = this.course.duration;
         }
@@ -433,10 +432,27 @@ export class CourseComponent implements OnInit {
   }
 
   fetchAvailableDurations(hour: string): void {
-    let course_date = this.findMatchingCourseDate();
-    const courseDateId = course_date.id; // Ajustar según tu estructura de datos
+    const bookingUsers = this.selectedUserMultiple.map((selectedUser, index) => ({
+      course: this.course,
+      client: selectedUser,
+      school_id: this.schoolData.id,
+      client_id: selectedUser.id,
+      price: index === 0 ? this.course.price : 0,
+      currency: 'CHF',
+      course_id: this.course.id,
+      course_date_id: this.findMatchingCourseDate().id, // Obtener course_date
+      course_group_id: null,
+      course_subgroup_id: null,
+      date: this.findMatchingCourseDate().date, // Obtener la fecha del course_date
+      hour_start: hour,
+      hour_end: this.calculateEndTime(hour, this.selectedDuration?.duration ?? '00:00'),
+      extra: this.selectedForfait,
+    }));
 
-    this.coursesService.getAvailableDurations(courseDateId, hour).subscribe({
+    const courseDateId = this.findMatchingCourseDate().id; // ID del course_date
+
+    // Realizar la solicitud
+    this.coursesService.getAvailableDurations(courseDateId, hour, bookingUsers).subscribe({
       next: (response: any) => {
         if (response.success) {
           // Convertir la respuesta en un array de duraciones
@@ -462,6 +478,7 @@ export class CourseComponent implements OnInit {
       },
     });
   }
+
 
   showNoAvailabilityMessage(): void {
     console.warn('No availability for the selected hour.');
@@ -523,7 +540,8 @@ export class CourseComponent implements OnInit {
               'course_subgroup_id': null,
               'date': course_date.date,
               'hour_start': this.selectedHour,
-              'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+              'monitor_id': this.selectedDuration.monitors[0].id,
+              'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration.duration),
               'extra': this.selectedForfait
             });
           });
@@ -543,6 +561,7 @@ export class CourseComponent implements OnInit {
               'course_subgroup_id': null,
               'date': course_date.date,
               'hour_start': this.selectedHour,
+              'monitor_id': this.selectedDuration.monitors[0].id,
               'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
               'extra': this.selectedForfait
             });

@@ -57,10 +57,13 @@ export class CoursesService extends ApiService{
     return this.http.get<ApiResponse>(url, { headers: this.getHeaders()});
   }
 
-  getAvailableDurations(courseDateId: any, hour:any) {
-    const url = this.baseUrl + '/slug/courses/availability/'+courseDateId;
-    let data = {
-      hour_start: hour}
-    return this.http.post<ApiResponse>(url,data, { headers: this.getHeaders()});
+  getAvailableDurations(courseDateId: any, hour: any, bookingUsers: any) {
+    const url = `${this.baseUrl}/slug/courses/availability/${courseDateId}`;
+    const data = {
+      hour_start: hour,
+      bookingUsers: bookingUsers, // Incluye los usuarios de la reserva
+    };
+    return this.http.post<ApiResponse>(url, data, { headers: this.getHeaders() });
   }
+
 }

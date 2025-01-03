@@ -413,14 +413,14 @@
                     class="form-control margin-auto calendar-reservation-form-input"
                     [(ngModel)]="selectedDuration"
                     (change)="updatePrice()">
-                    <option *ngFor="let range of availableDurations" [value]="range">{{ range }}</option>
+                    <option *ngFor="let range of availableDurations" [value]="range">{{ range.duration }}</option>
                   </select>
                 </ng-container>
                 <ng-container *ngIf="!course?.is_flexible">
                   <select
                     class="form-control margin-auto calendar-reservation-form-input"
                     [(ngModel)]="selectedDuration">
-                    <option *ngFor="let range of availableDurations" [value]="range">{{ range }}</option>
+                    <option *ngFor="let range of availableDurations" [value]="range">{{ range.duration }}</option>
                   </select>
                 </ng-container>
               </div>
