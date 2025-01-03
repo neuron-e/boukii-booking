@@ -1,166 +1,217 @@
-<div
-  style="background-color: #D2EFFF;border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;">
-  <img src="assets/icons/info.png" class="icon24">
-  <div
-    style="display: flex;flex-direction: column;justify-content: space-between;">
-    <span style="
+<div style="background-color: #D2EFFF;border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;">
+	<img src="assets/icons/info.png"
+		class="icon24">
+	<div style="display: flex;flex-direction: column;justify-content: space-between;">
+		<span style="
      font-weight: 600;
-     line-height: 23px;">Información importante</span>
-    <span>
-      Riesgo de avalancha debido a inestabilidad meteo. Riesgo de avalancha
-      debido
-      a inestabilidad meteo.
-    </span>
-  </div>
+     line-height: 23px;">
+			{{"important_info" | translate}}
+		</span>
+		<span>
+			{{"avalanche_risk" | translate}}
+		</span>
+	</div>
 </div>
 <div style="margin-top: 45px;">
-  <p style="color: var(--Dark-01, #222);
+	<p style="color: var(--Dark-01, #222);
   font-family: Dinamit;
   font-size: 24px;
   font-style: normal;
   font-weight: 500;
   line-height: 26px;
   margin-bottom: 11px;">
-    Encuentra tu curso ideal
-  </p>
-  <p style="color: var(--Dark-01, #222);
-  
-  
-  font-style: normal;
-  
-  ">
-    Selecciona el tipo de curso que prefieras buscar y utiliza los filtros para
-    encontrar el deporte que más se adapte a ti.
-  </p>
+		{{"find_your_course" | translate}}
+	</p>
+	<p style="color: var(--Dark-01, #222);font-style: normal;">
+		{{"select_course_type" | translate}}
+	</p>
 </div>
 
-<div class="Selector" [formGroup]="FormGroup">
-  <select
-    [style.color]="FormGroup.controls['deporte'].value?'#222222':'#8B9099'"
-    formControlName="deporte">
-    <option disabled selected hidden value>
-      {{"Deporte" | translate}}
-    </option>
-    <option [value]="sport.id"
-      *ngFor="let sport of schoolData?.sports">{{sport.name}}</option>
-  </select>
-  <select formControlName="cursoType"
-    [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'">
-    <option disabled selected hidden value>
-      {{"Tipo de curso" | translate}}
-    </option>
-    <option [value]="1">{{'text_collectivescourses'| translate }}</option>
-    <option [value]="2">{{'text_privatecourses'| translate }}</option>
-  </select>
-  <select formControlName="edat"
-    [style.color]="FormGroup.controls['edat'].value?'#222222':'#8B9099'">
-    <option disabled selected hidden value>
-      {{"Edat" | translate}}
-    </option>
-    <option [value]="ageOption.id"
-      *ngFor="let ageOption of ageOptions">{{ageOption.label | translate
-      }}</option>
-  </select>
-  <select formControlName="nivel"
-    [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'">
-    <option disabled selected hidden value>
-      {{"Nivel" | translate}}
-    </option>
-    <option [value]="degreeOption.id"
-      *ngFor="let degreeOption of degreeOptions">
-      {{degreeOption.label | translate }}</option>
-  </select>
-  <img src="assets/icons/search.png" alt (click)="searchCourses()"
-    style="cursor: pointer;">
+<div [formGroup]="FormGroup"
+	class="Selector">
+	<select [style.color]="FormGroup.controls['deporte'].value?'#222222':'#8B9099'"
+		formControlName="deporte">
+		<option selected
+			value>
+			{{"text_sport" | translate}}
+		</option>
+		<option *ngFor="let sport of schoolData?.sports"
+			[value]="sport.id">
+			{{sport.name}}
+		</option>
+	</select>
+	<select [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'"
+		formControlName="cursoType">
+		<option selected
+			value>
+			{{"table.filter.course" | translate}}
+		</option>
+		<option [value]="1">
+			{{'text_collectivescourses'| translate }}
+		</option>
+		<option [value]="2">
+			{{'text_privatecourses'| translate }}
+		</option>
+	</select>
+	<select [style.color]="FormGroup.controls['edat'].value?'#222222':'#8B9099'"
+		formControlName="edat">
+		<option selected
+			value>
+			{{"age" | translate}}
+		</option>
+		<option *ngFor="let ageOption of ageOptions"
+			[value]="ageOption.id">
+			{{ageOption.label | translate
+      }}
+		</option>
+	</select>
+	<select [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'"
+		formControlName="nivel">
+		<option selected
+			value>
+			{{"text_level" | translate}}
+		</option>
+		<option *ngFor="let degreeOption of degreeOptions"
+			[value]="degreeOption.id">
+			{{degreeOption.label | translate }}
+		</option>
+	</select>
+	<img (click)="searchCourses()"
+		src="assets/icons/search.png"
+		alt
+		style="cursor: pointer;">
 </div>
-
-<button class="search-button" (click)="FilterModal=true">
-  <img src="assets/icons/search2.png" alt="Buscar" class="search-icon" />
-  Que curso te interesa?
+<button (click)="FilterModal=true"
+	class="search-button">
+	<img src="assets/icons/search2.png"
+		alt="Buscar"
+		class="search-icon">
+	{{"course_interest" | translate}}
 </button>
-
 <ng-container *ngIf="ResultCourse">
-  <div class="Section">
-    <span class="titleSection">{{ResultCourse.length}}
-      resultado{{ResultCourse.length>1?"s":""}}</span>
-    <span style="margin: 10px;cursor: pointer;"
-      (click)="ResultCourse=undefined">X</span>
-    <div class="card-container">
-      <app-home-course-card [data]="item"
-        *ngFor="let item of ResultCourse"
-        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
-      </app-home-course-card>
-    </div>
-  </div>
+	<div class="Section">
+		<span class="titleSection">
+			{{ResultCourse.length}} {{"results" | translate}}
+		</span>
+		<span (click)="ResultCourse=undefined"
+			style="margin: 10px;cursor: pointer;">
+			X
+		</span>
+		<div class="card-container">
+			<app-home-course-card *ngFor="let item of ResultCourse"
+				[data]="item"
+				(click)="router.navigate([schoolData.slug+'/course/'+item.id])">
+			</app-home-course-card>
+			<span *ngIf="ResultCourse.length===0">
+				{{"no_course_available" | translate}}
+			</span>
+		</div>
+	</div>
 </ng-container>
-<ng-container *ngIf="!ResultCourse">
-  <div class="Section">
-    <span class="titleSection">Cursos destacados</span>
-    <div class="card-container">
-      <app-home-course-card [data]="item"
-        *ngFor="let item of DestacadoCourse; index as i"
-        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
-      </app-home-course-card>
-    </div>
-  </div>
-  <div class="Section">
-    <img src="assets/images/banner.png" alt>
-  </div>
-  <div class="Section">
-    <span class="titleSection">Proximos cursos</span>
-    <div class="card-container">
-      <app-home-course-card [data]="item"
-        *ngFor="let item of ProximosCourse"
-        (click)="router.navigate([schoolData.slug+'/course/'+item.id])">
-      </app-home-course-card>
-    </div>
-  </div>
+<ng-container *ngIf="!ResultCourse && DestacadoCourse">
+	<div class="Section">
+		<span class="titleSection">
+			{{"featured_courses" | translate}}
+		</span>
+		<div class="card-container">
+			<app-home-course-card *ngFor="let item of DestacadoCourse; index as i"
+				[data]="item"
+				(click)="router.navigate([schoolData.slug+'/course/'+item.id])">
+			</app-home-course-card>
+			<span *ngIf="DestacadoCourse.length===0">
+				{{"no_course_available" | translate}}
+			</span>
+		</div>
+	</div>
+	<div class="Section">
+		<img src="assets/images/banner.png"
+			alt>
+	</div>
+	<div class="Section">
+		<span class="titleSection">
+			{{"upcoming_courses" | translate}}
+		</span>
+		<div class="card-container">
+			<app-home-course-card *ngFor="let item of ProximosCourse"
+				[data]="item"
+				(click)="router.navigate([schoolData.slug+'/course/'+item.id])">
+			</app-home-course-card>
+			<span *ngIf="ProximosCourse.length===0">
+				{{"no_course_available" | translate}}
+			</span>
+		</div>
+	</div>
 </ng-container>
-<div class="Section" style="text-align: -webkit-center;">
-  <span class="titleSection">
-    Patrocinadores
-  </span>
-  <img src="assets/images/patrocinio.png" alt style="margin: 30px 0;">
+<div class="Section"
+	style="text-align: -webkit-center;">
+	<span class="titleSection">{{"sponsors" | translate}}</span>
+	<img src="assets/images/patrocinio.png"
+		alt
+		style="margin: 30px 0;">
 </div>
-
-<app-mobile-modal *ngIf="FilterModal" title="Encuentra tu curso ideal"
-  (Close)="FilterModal=false">
-  <div body [formGroup]="FormGroup" class="filterMobile">
-    <select
-      [style.color]="FormGroup.controls['deporte'].value?'#222222':'#8B9099'"
-      formControlName="deporte">
-      <option disabled selected hidden value>
-        {{"Deporte" | translate}}
-      </option>
-      <option [value]="sport.id"
-        *ngFor="let sport of schoolData?.sports">{{sport.name}}</option>
-    </select>
-    <select formControlName="cursoType"
-      [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'">
-      <option disabled selected hidden value>
-        {{"Tipo de curso" | translate}}
-      </option>
-      <option [value]="1">{{'text_collectivescourses'| translate }}</option>
-      <option [value]="2">{{'text_privatecourses'| translate }}</option>
-    </select>
-    <select formControlName="edat"
-      [style.color]="FormGroup.controls['edat'].value?'#222222':'#8B9099'">
-      <option disabled selected hidden value>
-        {{"Edat" | translate}}
-      </option>
-      <option [value]="ageOption.id"
-        *ngFor="let ageOption of ageOptions">{{ageOption.label | translate
-        }}</option>
-    </select>
-    <select formControlName="nivel"
-      [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'">
-      <option disabled selected hidden value>
-        {{"Nivel" | translate}}
-      </option>
-      <option [value]="degreeOption.id"
-        *ngFor="let degreeOption of degreeOptions">
-        {{degreeOption.label | translate }}</option>
-    </select>
-    <button (click)="searchCourses();FilterModal=false"> Buscar </button>
-  </div>
+<app-mobile-modal *ngIf="FilterModal"
+	(Close)="FilterModal=false"
+	title="Encuentra tu curso ideal">
+	<div [formGroup]="FormGroup"
+		body
+		class="filterMobile">
+		<select [style.color]="FormGroup.controls['deporte'].value?'#222222':'#8B9099'"
+			formControlName="deporte">
+			<option disabled
+				selected
+				hidden
+				value>
+				{{"sport" | translate}}
+			</option>
+			<option *ngFor="let sport of schoolData?.sports"
+				[value]="sport.id">
+				{{sport.name}}
+			</option>
+		</select>
+		<select [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'"
+			formControlName="cursoType">
+			<option disabled
+				selected
+				hidden
+				value>
+				{{"table.filter.course" | translate}}
+			</option>
+			<option [value]="1">
+				{{'text_collectivescourses'| translate }}
+			</option>
+			<option [value]="2">
+				{{'text_privatecourses'| translate }}
+			</option>
+		</select>
+		<select [style.color]="FormGroup.controls['edat'].value?'#222222':'#8B9099'"
+			formControlName="edat">
+			<option disabled
+				selected
+				hidden
+				value>
+				{{"age" | translate}}
+			</option>
+			<option *ngFor="let ageOption of ageOptions"
+				[value]="ageOption.id">
+				{{ageOption.label | translate
+        }}
+			</option>
+		</select>
+		<select [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'"
+			formControlName="nivel">
+			<option disabled
+				selected
+				hidden
+				value>
+				{{"level" | translate}}
+			</option>
+			<option *ngFor="let degreeOption of degreeOptions"
+				[value]="degreeOption.id">
+				{{degreeOption.label | translate }}
+			</option>
+		</select>
+		<button (click)="searchCourses();FilterModal=false">
+			{{"search" | translate}}
+		</button>
+	</div>
 </app-mobile-modal>

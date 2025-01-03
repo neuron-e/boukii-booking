@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { CartService } from 'src/app/services/cart.service';
@@ -13,9 +13,9 @@ import { ThemeService } from 'src/app/services/theme.service';
 })
 
 export class HeaderComponent implements OnInit {
-  constructor(public themeService: ThemeService, public translate: TranslateService, public router: Router, public schoolService: SchoolService, private activatedRoute: ActivatedRoute
-    , private authService: AuthService, private cartService: CartService
-  ) { }
+  constructor(public themeService: ThemeService, public translate: TranslateService, public router: Router, public schoolService: SchoolService
+    , private authService: AuthService, private cartService: CartService) { }
+
   isOpenDropdownLang: boolean = false;
   isOpenDropdownUser: boolean = false;
   selectedLang = 'es';
@@ -69,7 +69,6 @@ export class HeaderComponent implements OnInit {
   switchLang(lang: any) {
     this.translate.use(lang);
     this.selectedLang = lang;
-    this.isOpenDropdownLang = !this.isOpenDropdownLang
   }
 
   logOut() {
