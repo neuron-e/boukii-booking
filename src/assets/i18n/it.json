@@ -693,5 +693,13 @@
   "faq": "Domande frequenti",
   "privacy_policy": "Informativa sulla privacy",
   "terms_conditions": "Termini e condizioni",
-  "contact": "Contatto"
+  "contact": "Contatto",
+  "cart": "Carrello",
+  "add_reservation": "Aggiungi prenotazione",
+  "date_time": "Date e ora",
+  "purchase_summary": "Riepilogo dell'acquisto",
+  "one_spot_available": "Solo 1 posto disponibile",
+  "book_two_dates_discount": "Prenota 2 date e ottieni il 10% di sconto",
+  "continue": "Continua",
+  "add_extras_or_notes": "Se lo desideri, puoi aggiungere extra alla tua prenotazione e/o osservazioni per la scuola."
 }

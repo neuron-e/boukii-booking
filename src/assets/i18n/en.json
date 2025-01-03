@@ -692,6 +692,13 @@
   "no_course_available": "No courses available!",
   "upcoming_courses": "Upcoming courses",
   "featured_courses": "Featured courses",
-  "sponsors": "Sponsors"
-
+  "sponsors": "Sponsors",
+  "cart": "Cart",
+  "add_reservation": "Add reservation",
+  "date_time": "Date and time",
+  "purchase_summary": "Purchase summary",
+  "one_spot_available": "Only 1 spot available",
+  "book_two_dates_discount": "Book 2 dates and get 10% off",
+  "continue": "Continue",
+  "add_extras_or_notes": "If you wish, you can add extras to your reservation and/or notes for the school."
 }

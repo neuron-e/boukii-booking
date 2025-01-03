@@ -11,6 +11,8 @@ import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
+import { ApiCrudService } from 'src/app/services/crud.service';
 
 @Component({
   selector: 'app-course',
@@ -33,164 +35,7 @@ export class CourseComponent implements OnInit {
   courseType: number = 1;
   courseFlux: number = 0
   confirmModal: boolean = false
-  dataLevels = [
-    {
-      'id': 181,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'Ptit Loup',
-      'annotation': 'PT',
-      'degree_order': 0,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 182,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'JN',
-      'annotation': 'JN',
-      'degree_order': 1,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 183,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'Débutant Kid Village',
-      'annotation': 'DKV',
-      'degree_order': 2,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 184,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Prince / Pricesse Bleu',
-      'annotation': 'PB',
-      'degree_order': 3,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 185,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Roi / Reine Bleu',
-      'annotation': 'RB',
-      'degree_order': 4,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 186,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Star Bleu',
-      'annotation': 'SB',
-      'degree_order': 5,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 187,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R1',
-      'annotation': 'R1',
-      'degree_order': 6,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 188,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R2',
-      'annotation': 'R2',
-      'degree_order': 7,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 189,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R3',
-      'annotation': 'R3',
-      'degree_order': 8,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 190,
-      'league': 'NOIR',
-      'level': 'test',
-      'name': 'Prince / Pricesse Noir',
-      'annotation': 'PN',
-      'degree_order': 9,
-      'color': '#000000',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 191,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Race',
-      'annotation': 'ACA',
-      'degree_order': 10,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 192,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Freestyle',
-      'annotation': 'ACA',
-      'degree_order': 11,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 193,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Freeride',
-      'annotation': 'ACA',
-      'degree_order': 12,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    }
-  ];
+  dataLevels: any
   selectedLevel: any;
   selectedUser: any;
   selectedUserMultiple: any[] = [];
@@ -229,6 +74,7 @@ export class CourseComponent implements OnInit {
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
     private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
     private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar,
+    private crudService: ApiCrudService
   ) {
     this.checkScreenWidth();
   }
@@ -244,10 +90,7 @@ export class CourseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.getUserData().subscribe(data => {
-      this.userLogged = data;
-      console.log(this.userLogged)
-    });
+    this.authService.getUserData().subscribe(data => this.userLogged = data);
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
@@ -258,31 +101,22 @@ export class CourseComponent implements OnInit {
       }
     );
     const id = this.route.snapshot.paramMap.get('id');
-    this.dataLevels.forEach((degree: any) => {
-      degree.inactive_color = this.lightenColor(degree.color, 30);
-    });
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
       this.course.is_flexible = true
-      this.activeDates = this.course.course_dates.map((dateObj: any) =>
-        this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
-      );
+      this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
         if (this.course.is_flexible) {
           this.availableDurations = this.getAvailableDurations(this.selectedHour);
           this.updatePrice();
-        } else {
-          this.selectedDuration = this.course.duration;
-        }
-
+        } else this.selectedDuration = this.course.duration;
         this.initializeMonthNames();
         if (this.course.date_start) {
           if (moment(this.course.date_start).isBefore(moment(), 'day')) {
             const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
             this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
             const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
             this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
           }
@@ -294,19 +128,18 @@ export class CourseComponent implements OnInit {
         else {
           const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
           this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
           const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
           this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
-
-
-
         }
         this.renderCalendar();
-
-      } else {
-        this.collectivePrice = this.course.price;
       }
+      this.collectivePrice = this.course.price_range.reduce((max: any, obj: any) => {
+        Object.values(obj).forEach((value: any) => {
+          if (value !== null && !isNaN(value)) max = Math.max(max, parseInt(value, 10));
+        }); return max;
+      }, -Infinity)
     });
+
   }
 
   initializeMonthNames() {
@@ -342,9 +175,7 @@ export class CourseComponent implements OnInit {
     let adjustedStartDay = startDay - 1;
     if (adjustedStartDay < 0) adjustedStartDay = 6;
 
-    for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({ number: '', active: false });
-    }
+    for (let j = 0; j < adjustedStartDay; j++) this.days.push({ number: '', active: false });
 
     for (let i = 1; i <= daysInMonth; i++) {
       const spanDate = new Date(this.currentYear, this.currentMonth, i);
@@ -355,23 +186,17 @@ export class CourseComponent implements OnInit {
       const isActive = !isPast && this.activeDates.includes(dateStr);
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
-
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
-    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({ number: '', active: false });
-    }
-
+    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++)       this.days.push({ number: '', active: false });
   }
 
   selectDay(day: any) {
     if (day.active) {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
-      const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
+      //const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
-      if (this.course.is_flexible) {
-        this.updateAvailableDurations(this.selectedHour);
-      }
+      if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
     }
   }
 
@@ -475,12 +300,8 @@ export class CourseComponent implements OnInit {
     this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
       let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
       let cart: any = {};
-      if (cartStorage) {
-        cart = JSON.parse(cartStorage);
-      }
-      if (!cart[this.course.id]) {
-        cart[this.course.id] = {};
-      }
+      if (cartStorage) cart = JSON.parse(cartStorage);
+      if (!cart[this.course.id]) cart[this.course.id] = {};
       if (this.course.course_type === 2) {
         const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
         const isAnyUserReserved = selectedUserIds.split('-').some(id => {
@@ -494,38 +315,27 @@ export class CourseComponent implements OnInit {
                 let course_date = this.findMatchingCourseDate();
                 const userBookings = cart[this.course.id][key];
                 return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-              }
-              return false;
+              } return false;
             });
           });
         });
 
         if (!isAnyUserReserved) {
-          if (!cart[this.course.id][selectedUserIds]) {
-            cart[this.course.id][selectedUserIds] = [];
-          }
+          if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
           cart[this.course.id][selectedUserIds].push(...bookingUsers);
-
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-        } else {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-        }
+        } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
       } else {
         if (!cart[this.course.id][this.selectedUser.id]) {
           cart[this.course.id][this.selectedUser.id] = [];
           cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-
           this.goTo(this.schoolData.slug);
-        } else {
-
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-        }
+        } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
       }
     }, error => {
       let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
@@ -589,17 +399,12 @@ export class CourseComponent implements OnInit {
   calculateEndTime(startTime: string, duration: string): string {
     let durationHours = 0;
     let durationMinutes = 0;
-    if (duration.includes(":")) {
-      [durationHours, durationMinutes] = duration.split(':').map(Number);
-    } else {
+    if (duration.includes(":")) [durationHours, durationMinutes] = duration.split(':').map(Number);
+    else {
       const hoursMatch = duration.match(/(\d+)h/);
       const minutesMatch = duration.match(/(\d+)min/);
-      if (hoursMatch) {
-        durationHours = parseInt(hoursMatch[1]);
-      }
-      if (minutesMatch) {
-        durationMinutes = parseInt(minutesMatch[1]);
-      }
+      if (hoursMatch) durationHours = parseInt(hoursMatch[1]);
+      if (minutesMatch) durationMinutes = parseInt(minutesMatch[1]);
     }
 
     // Convertir la hora de inicio y la duración a minutos
@@ -707,7 +512,6 @@ export class CourseComponent implements OnInit {
   }
 
   goTo(...urls: string[]) {
-    console.log(urls)
     this.router.navigate(urls);
   }
 
@@ -1110,6 +914,7 @@ export class CourseComponent implements OnInit {
   }
   next() {
     if (this.courseFlux === 0) {
+      this.getDegrees()
     } else if (this.courseFlux === 1) {
       this.selectLevel(this.selectedLevel)
       if (!this.course.is_flexible && this.course.course_type !== 2) {
@@ -1144,4 +949,31 @@ export class CourseComponent implements OnInit {
     else this.flexDateGroup.push(str);
 
   }
+
+  getLanguages = () => this.crudService.list('/languages', 1, 1000).subscribe((data) => this.languages = data.data.reverse())
+  getLanguage(id: any) {
+    const lang: any = this.languages.find((c: any) => c.id == +id);
+    return lang ? lang.code.toUpperCase() : 'NDF';
+  }
+  countries = MOCK_COUNTRIES;
+  languages = [];
+  getCountry(id: any) {
+    const country = this.countries.find((c) => c.id == +id);
+    return country ? country.name : 'NDF';
+  }
+  calculateAge(birthDateString: any) {
+    if (birthDateString && birthDateString !== null) {
+      const today = new Date();
+      const birthDate = new Date(birthDateString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+      return age;
+    } else return 0;
+  }
+
+  getDegrees = () => this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.course.school_id + '&sport_id=' + this.course.sport.id).subscribe((data) => {
+    this.dataLevels = []
+    data.data.forEach((element: any) => element.active ? this.dataLevels.push(element) : null);
+  });
 }

@@ -67,6 +67,7 @@ export class HeaderComponent implements OnInit {
   }
 
   switchLang(lang: any) {
+    localStorage.setItem(this.schoolData.data.slug + '-lang', lang);
     this.translate.use(lang);
     this.selectedLang = lang;
   }

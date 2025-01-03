@@ -1,394 +1,447 @@
-<!--<app-header></app-header>-->
+<!-- <app-header></app-header> -->
 
 <div (click)="goBack('home')"
-  class="reservation-return">
-  <span style="color: #61656d;"> {{'Home' | translate }} </span> /
-  <span style="font-weight: 600;">
-    {{'Carrito' | translate }}
-  </span>
+	class="reservation-return">
+	<span style="color: #61656d;">
+		{{'menu.home' | translate }}
+	</span>
+	/
+	<span style="font-weight: 600;">
+		{{'cart' | translate }}
+	</span>
 </div>
 
 <div class="reservation-return2">
-  <span>
-    {{cart.length}} {{'text_courses' | translate }} {{'text_your_cart' |
+	<span>
+		{{cart.length}} {{'text_courses' | translate }} {{'text_your_cart' |
     translate
     }}
-  </span>
+	</span>
 
-  <button (click)="goBack('home')">
-    {{'Añadir reserva'|translate}}
-  </button></div>
+	<button (click)="goBack('home')">
+		{{'add_reservation'|translate}}
+	</button>
+</div>
 
-<mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
+<mat-spinner *ngIf="loading"
+	style="margin: 0 auto"></mat-spinner>
 <div class="cart-payment">
-  <div class="cart-payment-section1" *ngIf="!loading">
-    <div
-      style="background-color: white;border: 1px solid #DEE6EA;border-radius: 8px;"
-      *ngFor="let cartItem of cart; index as i">
-      <div class="course-box">
-        <div class="course-box-header">
-          <div class="course-box-icon">
-            <span style=";">
-              {{("00"+(i+1)).slice(-2)}}.
-            </span>
-            <img src="assets/icons/collectif_ski2x.png"
-              *ngIf="cartItem.details[0].course.course_type == 1" />
-            <img src="assets/icons/prive_ski2x.png"
-              *ngIf="cartItem.details[0].course.course_type == 2" />
-            <div class="course-box-title">
-              <div
-                style="font-weight: 600;">{{getCourseName(cartItem.details[0].course)}}</div>
-              <span style="color: #8B9099;font-size: 12px;">
-                <ng-container *ngIf="cartItem.details[0].course.course_type==1">
-                  {{'colective' | translate }}
-                </ng-container>
-                <ng-container *ngIf="cartItem.details[0].course.course_type==2">
-                  {{'private' | translate }}
-                </ng-container>
-                <ng-container *ngIf="schoolData && schoolData.sports">
-                  {{ getSportName(cartItem.details[0].course.sport_id) }}
-                </ng-container>
-              </span>
-            </div>
-          </div>
-          <div class="course-box-icons">
-            <img [src]="themeService.add"
-              (click)="goTo(schoolData.slug + '/course',cartItem.courseId)"
-              class="course-box-add cursor-pointer">
-            <img [src]="themeService.trash"
-              class="course-box-delete cursor-pointer"
-              (click)="deleteCartItem(cartItem)">
-          </div>
-        </div>
-        <div class="course-box-dates">
-          <div class="course-content-list"
-            *ngIf="cartItem.details[0].course.course_type == 1">
-            <div style="display: flex;align-items: center;gap: 8px;">
-              <img src="assets/icons/people.png" alt="Grupo máximo"
-                class="icon24">
-              <span style="
+	<div *ngIf="!loading"
+		class="cart-payment-section1">
+		<div *ngFor="let cartItem of cart; index as i"
+			style="background-color: white;border: 1px solid #DEE6EA;border-radius: 8px;">
+			<div class="course-box">
+				<div class="course-box-header">
+					<div class="course-box-icon">
+						<span>
+							{{("00"+(i+1)).slice(-2)}}.
+						</span>
+						<img *ngIf="cartItem.details[0].course.course_type == 1"
+							src="assets/icons/collectif_ski2x.png">
+						<img *ngIf="cartItem.details[0].course.course_type == 2"
+							src="assets/icons/prive_ski2x.png">
+						<div class="course-box-title">
+							<div style="font-weight: 600;">
+								{{getCourseName(cartItem.details[0].course)}}
+							</div>
+							<span style="color: #8B9099;font-size: 12px;">
+								<ng-container *ngIf="cartItem.details[0].course.course_type==1">
+									{{'colective' | translate }}
+								</ng-container>
+								<ng-container *ngIf="cartItem.details[0].course.course_type==2">
+									{{'private' | translate }}
+								</ng-container>
+								<ng-container *ngIf="schoolData && schoolData.sports">
+									{{ getSportName(cartItem.details[0].course.sport_id) }}
+								</ng-container>
+							</span>
+						</div>
+					</div>
+					<div class="course-box-icons">
+						<img [src]="themeService.add"
+							(click)="goTo(schoolData.slug + '/course',cartItem.courseId)"
+							class="course-box-add cursor-pointer">
+						<img [src]="themeService.trash"
+							(click)="deleteCartItem(cartItem)"
+							class="course-box-delete cursor-pointer">
+					</div>
+				</div>
+				<div class="course-box-dates">
+					<div *ngIf="cartItem.details[0].course.course_type == 1"
+						class="course-content-list">
+						<div style="display: flex;align-items: center;gap: 8px;">
+							<img src="assets/icons/people.png"
+								class="icon24">
+							<span style="
               color: #8B9099;
                font-size: 12px;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
-                {{"PARTICIPANTE" | translate}}
-              </span>
-            </div>
-            <div class="text-color-light montserrat list-flex">
-              <app-level-user
-                [allLevels]="dataLevels" [selectLevel]="185"
-                [size]="40"
-                [userImage]="cartItem.details[0].client.image || 'assets/avatar.png'"></app-level-user>
-              {{cartItem.details[0].client.first_name + ' ' +
+								{{"participants" | translate}}
+							</span>
+						</div>
+						<div class="text-color-light montserrat list-flex">
+							<app-level-user [allLevels]="dataLevels"
+								[selectLevel]="185"
+								[size]="40"
+								[userImage]="cartItem.details[0].client.image || 'assets/avatar.png'"></app-level-user>
+							{{cartItem.details[0].client.first_name + ' ' +
               cartItem.details[0].client.last_name}}
-            </div>
-            <div style="display: flex;align-items: center;gap: 8px;">
-              <img src="assets/icons/calendar.png" alt="Grupo máximo"
-                class="icon24">
-              <span style="
+						</div>
+						<div style="display: flex;align-items: center;gap: 8px;">
+							<img src="assets/icons/calendar.png"
+								class="icon24">
+							<span style="
               color: #8B9099;
                font-size: 12px;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
-                {{"FECHA Y HORA" | translate}}
-              </span>
-            </div>
-            <div class="text-color-light montserrat"
-              *ngFor="let date of cartItem.details">
-              · {{date.date | date: 'dd.MM.yyyy'}}
+								{{"date_time" | translate}}
+							</span>
+						</div>
+						<div *ngFor="let date of cartItem.details"
+							class="text-color-light montserrat">
+							· {{date.date | date: 'dd.MM.yyyy'}}
               {{date.hour_start.substring(0,5)
-              }}-{{date.hour_end.substring(0,5)}}</div>
-            <ng-container *ngIf="cartItem.details[0].extra">
-              {{'text_forfait' | translate }}
-              <div class="text-color">
-                {{cartItem.details[0].extra.name}}
-              </div>
-            </ng-container>
-            <!--<div
-              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div>-->
-          </div>
-          <div class="course-content-list"
-            *ngIf="cartItem.details[0].course.course_type == 2">
-            <div style="display: flex;align-items: center;gap: 8px;">
-              <img src="assets/icons/people.png" alt="Grupo máximo"
-                class="icon24">
-              <span style="
+              }}-{{date.hour_end.substring(0,5)}}
+						</div>
+						<ng-container *ngIf="cartItem.details[0].extra">
+							{{'text_forfait' | translate }}
+							<div class="text-color">
+								{{cartItem.details[0].extra.name}}
+							</div>
+						</ng-container>
+						<!-- <div
+              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div> -->
+					</div>
+					<div *ngIf="cartItem.details[0].course.course_type == 2"
+						class="course-content-list">
+						<div style="display: flex;align-items: center;gap: 8px;">
+							<img src="assets/icons/people.png"
+								class="icon24">
+							<span style="
               color: #8B9099;
                font-size: 12px;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
-                {{"PARTICIPANTE" | translate}}
-              </span>
-            </div>
-            <div class="text-color-light montserrat list-flex mt-12"
-              *ngFor="let client of getUniqueClients(cartItem.details)">
-              <app-level-user
-                [allLevels]="dataLevels" [selectLevel]="185"
-                [size]="40"
-                [userImage]="client.image || 'assets/avatar.png'"></app-level-user>
-              {{ client.first_name + ' ' + client.last_name }}
-            </div>
-            <div class="text-color-light montserrat pl-18">
-              {{ getUniqueClients(cartItem.details).length }} {{
+								{{"participants" | translate}}
+							</span>
+						</div>
+						<div *ngFor="let client of getUniqueClients(cartItem.details)"
+							class="text-color-light montserrat list-flex mt-12">
+							<app-level-user [allLevels]="dataLevels"
+								[selectLevel]="185"
+								[size]="40"
+								[userImage]="client.image || 'assets/avatar.png'"></app-level-user>
+							{{ client.first_name + ' ' + client.last_name }}
+						</div>
+						<div class="text-color-light montserrat pl-18">
+							{{ getUniqueClients(cartItem.details).length }} {{
               'text_people_under' | translate }}
-            </div>
-            <!-- Iterar sobre fechas únicas -->
-            <div style="display: flex;align-items: center;gap: 8px;">
-              <img src="assets/icons/calendar.png" alt="Grupo máximo"
-                class="icon24">
-              <span style="
+						</div>
+						<!-- Iterar sobre fechas únicas -->
+						<div style="display: flex;align-items: center;gap: 8px;">
+							<img src="assets/icons/calendar.png"
+								alt="Grupo máximo"
+								class="icon24">
+							<span style="
               color: #8B9099;
                font-size: 12px;
                font-weight: 600;
                line-height: 16px;
                word-wrap: break-word">
-                {{"FECHA Y HORA" | translate}}
-              </span>
-            </div>
-            <div class="text-color-light montserrat list-flex"
-              *ngFor="let detail of getUniqueDates(cartItem.details)">
-              <img [src]="themeService.calendar" />
-              {{ detail.date | date: 'dd.MM.yyyy' }}
-              <img [src]="themeService.clock" />
-              <span>{{ detail.hour_start }}-{{ detail.hour_end }}</span>
-            </div>
+								{{"date_time" | translate}}
+							</span>
+						</div>
+						<div *ngFor="let detail of getUniqueDates(cartItem.details)"
+							class="text-color-light montserrat list-flex">
+							<img [src]="themeService.calendar">
+							{{ detail.date | date: 'dd.MM.yyyy' }}
+							<img [src]="themeService.clock">
+							<span>
+								{{ detail.hour_start }}-{{ detail.hour_end }}
+							</span>
+						</div>
 
-            <!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
-            <!--    <div class="text-color-light montserrat list-flex">
+						<!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
+						<!-- <div class="text-color-light montserrat list-flex">
               <img [src]="themeService.clock" />
               {{ cartItem.details[0].hour_start }} - {{ cartItem.details[0].hour_end }}
-            </div>-->
-            <!-- Iterar sobre clientes únicos -->
-            <ng-container *ngIf="cartItem.details[0].extra">
-              {{'text_forfait' | translate }}
-              <div class="text-color">
-                {{cartItem.details[0].extra.name}}
-              </div>
-            </ng-container>
+            </div> -->
+						<!-- Iterar sobre clientes únicos -->
+						<ng-container *ngIf="cartItem.details[0].extra">
+							{{'text_forfait' | translate }}
+							<div class="text-color">
+								{{cartItem.details[0].extra.name}}
+							</div>
+						</ng-container>
 
-          </div>
-        </div>
-        <div class="course-box-dates" style="  border-top: 1px solid #dee6ea;">
-          <span style="">
-            {{"Total"}}
-          </span>
-          <ng-container *ngIf="cartItem.details[0].course.course_type ==2">
-            <div class="text-color">
-              <span class="text-color fw-semibold text-medium">{{
-                getTotalBasePrice(cartItem.details).toFixed(2) }}</span> {{
+					</div>
+				</div>
+				<div class="course-box-dates"
+					style="  border-top: 1px solid #dee6ea;">
+					<span style>
+						{{"booking_total" | translate}}
+					</span>
+					<ng-container *ngIf="cartItem.details[0].course.course_type ==2">
+						<div class="text-color">
+							<span class="text-color fw-semibold text-medium">
+								{{
+                getTotalBasePrice(cartItem.details).toFixed(2) }}
+							</span>
+							{{
               cartItem.details[0].course.currency }}
-            </div>
-          </ng-container>
-          <ng-container *ngIf="cartItem.details[0].course.course_type ==1">
-            <div class="text-color">
-              <span class="text-color fw-semibold text-medium">
-                {{(cartItem.details[0].course.is_flexible ?
+						</div>
+					</ng-container>
+					<ng-container *ngIf="cartItem.details[0].course.course_type ==1">
+						<div class="text-color">
+							<span class="text-color fw-semibold text-medium">
+								{{(cartItem.details[0].course.is_flexible ?
                 (cartItem.details.length * cartItem.details[0].price) :
-                cartItem.details[0].course.price * 1).toFixed(2) }}</span> {{
+                cartItem.details[0].course.price * 1).toFixed(2) }}
+							</span>
+							{{
               cartItem.details[0].course.currency }}
-            </div>
-          </ng-container>
-        </div>
+						</div>
+					</ng-container>
+				</div>
 
-        <!--<div class="width-100">
+				<!-- <div class="width-100">
           <div class="text-color mb-8">
             {{'text_notes' | translate }}
           </div>
           <textarea rows="2" class="form-control width-100"></textarea>
-        </div>-->
-      </div>
-    </div>
-  </div>
-  <div class="background-color-trans rounded-8 payment-section2"
-    style="background-color: white; height: fit-content;"
-    *ngIf="cart?.length">
-    <div class="cardcabecera">
-      {{"Resumen de compra" | translate}}
-    </div>
-    <div class="cardcabecera2" (click)="mobileHidden=!mobileHidden">
-      <img *ngIf="!mobileHidden" src="assets/icons/down.png" alt>
-      <img *ngIf="mobileHidden" src="assets/icons/up.png" alt>
-    </div>
-    <div style="padding: 20px 20px 0;"
-      [ngClass]="mobileHidden?'mobile':''">
-      <div *ngFor="let cartItem of cart;index as i"
-        style="display: flex;align-items: center;min-height: 28px;">
-        <span class="priceTotal">
-          {{("00"+(i+1)).slice(-2)}}.
-        </span>
-        <span class="detail" style="margin-left: 5px;">
-          {{getSportName(cartItem.details[0].course.sport_id)}}
-        </span>
-        <span class="detailPrice"
-          *ngIf="cartItem.details[0].course.course_type ==2">
-          {{ getTotalBasePrice(cartItem.details).toFixed(2) }} {{
+        </div> -->
+			</div>
+		</div>
+	</div>
+	<div *ngIf="cart?.length"
+		class="background-color-trans rounded-8 payment-section2"
+		style="background-color: white; height: fit-content;">
+		<div class="cardcabecera">
+			{{"purchase_summary" | translate}}
+		</div>
+		<div (click)="mobileHidden=!mobileHidden"
+			class="cardcabecera2">
+			<img *ngIf="!mobileHidden"
+				src="assets/icons/down.png"
+				alt>
+			<img *ngIf="mobileHidden"
+				src="assets/icons/up.png"
+				alt>
+		</div>
+		<div [ngClass]="mobileHidden?'mobile':''"
+			style="padding: 20px 20px 0;">
+			<div *ngFor="let cartItem of cart;index as i"
+				style="display: flex;align-items: center;min-height: 28px;">
+				<span class="priceTotal">
+					{{("00"+(i+1)).slice(-2)}}.
+				</span>
+				<span class="detail"
+					style="margin-left: 5px;">
+					{{getSportName(cartItem.details[0].course.sport_id)}}
+				</span>
+				<span *ngIf="cartItem.details[0].course.course_type ==2"
+					class="detailPrice">
+					{{ getTotalBasePrice(cartItem.details).toFixed(2) }} {{
           cartItem.details[0].course.currency }}
-        </span>
-        <span class="detailPrice"
-          *ngIf="cartItem.details[0].course.course_type ==1">
-          {{cartItem.details[0].course.is_flexible ?
+				</span>
+				<span *ngIf="cartItem.details[0].course.course_type ==1"
+					class="detailPrice">
+					{{cartItem.details[0].course.is_flexible ?
           (cartItem.details.length * cartItem.details[0].price).toFixed(2) :
           (+cartItem.details[0].course.price).toFixed(2) }} {{
           cartItem.details[0].course.currency }}
-        </span>
-      </div>
-      <div class="payment-price-flex mt-8" *ngIf="hasInsurance">
-        <div class="detail">
-          {{'text_refund_option' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{getInsurancePrice().toFixed(2)}}
-            CHF</span>
-        </div>
-      </div>
-      <div class="payment-price-flex mt-8" *ngIf="getExtrasPrice()>0">
-        <div class="detail">
-          {{'FORFAIT' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{getExtrasPrice()}} CHF</span>
-        </div>
-      </div>
+				</span>
+			</div>
+			<div *ngIf="hasInsurance"
+				class="payment-price-flex mt-8">
+				<div class="detail">
+					{{'text_refund_option' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{getInsurancePrice().toFixed(2)}}
+            CHF
+					</span>
+				</div>
+			</div>
+			<div *ngIf="getExtrasPrice()>0"
+				class="payment-price-flex mt-8">
+				<div class="detail">
+					{{'text_forfait' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{getExtrasPrice()}} CHF
+					</span>
+				</div>
+			</div>
 
-      <div class="payment-price-flex mt-8" *ngIf="hasBoukiiCare">
-        <div class="detail">
-          Boukii Care
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{getBoukiiCarePrice().toFixed(2)}}
-            CHF</span>
-        </div>
-      </div>
+			<div *ngIf="hasBoukiiCare"
+				class="payment-price-flex mt-8">
+				<div class="detail">Boukii Care</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{getBoukiiCarePrice().toFixed(2)}}
+            CHF
+					</span>
+				</div>
+			</div>
 
-      <div class="payment-price-flex"
-        style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
-        <div class="bdetail">
-          {{'text_subtotal' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{getBasePrice().toFixed(2)}} CHF</span>
-        </div>
-      </div>
+			<div class="payment-price-flex"
+				style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
+				<div class="bdetail">
+					{{'text_subtotal' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{getBasePrice().toFixed(2)}} CHF
+					</span>
+				</div>
+			</div>
 
-      <div class="payment-price-flex mt-8" *ngIf="voucher">
-        <div class="text-color uppercase">
-          <img [src]="themeService.trash"
-            class="course-box-delete cursor-pointer"
-            (click)="voucher = null"> {{'text_voucher' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="text-color fw-bold">-{{usedVoucherAmount}}</span> CHF
-        </div>
-      </div>
+			<div *ngIf="voucher"
+				class="payment-price-flex mt-8">
+				<div class="text-color uppercase">
+					<img [src]="themeService.trash"
+						(click)="voucher = null"
+						class="course-box-delete cursor-pointer">
+					{{'text_voucher' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="text-color fw-bold">
+						-{{usedVoucherAmount}}
+					</span>
+					CHF
+				</div>
+			</div>
 
-      <div class="payment-refund-check"
-        *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0">
-        <input type="checkbox" [(ngModel)]="hasInsurance"
-          (change)="updateTotal()"
-          id="text_refund_option">
-        <label class="extra_add" for="text_refund_option">
-          {{'text_refund_option' | translate }}
-        </label>
-      </div>
+			<div *ngIf="!isNanValue(this.cancellationInsurance) && this.cancellationInsurance > 0"
+				class="payment-refund-check">
+				<input [(ngModel)]="hasInsurance"
+					(change)="updateTotal()"
+					type="checkbox"
+					id="text_refund_option">
+				<label class="extra_add"
+					for="text_refund_option">
+					{{'text_refund_option' | translate }}
+				</label>
+			</div>
 
-      <div class="payment-refund-check"
-        *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0">
-        <input type="checkbox" [(ngModel)]="hasBoukiiCare"
-          (change)="updateTotal()"
-          id="BoukiiCare">
-        <label class="extra_add" for="BoukiiCare">
-          Boukii Care
-        </label>
-      </div>
-      <div (click)="openModalVoucher()"
-        style="display: flex;align-items: center;height: 40px;cursor: pointer;">
-        <img src="assets/icons/add_red.png" class="icon24"
-          style="margin: 0 8px;">
-        <span class="extra_add" style="margin-left: 4px;">
-          {{'text_use_voucher' | translate }}
-        </span>
-      </div>
+			<div *ngIf="!isNanValue(this.boukiiCarePrice) && this.boukiiCarePrice > 0"
+				class="payment-refund-check">
+				<input [(ngModel)]="hasBoukiiCare"
+					(change)="updateTotal()"
+					type="checkbox"
+					id="BoukiiCare">
+				<label class="extra_add"
+					for="BoukiiCare">
+					Boukii Care
+				</label>
+			</div>
+			<div (click)="openModalVoucher()"
+				style="display: flex;align-items: center;height: 40px;cursor: pointer;">
+				<img src="assets/icons/add_red.png"
+					class="icon24"
+					style="margin: 0 8px;">
+				<span class="extra_add"
+					style="margin-left: 4px;">
+					{{'text_use_voucher' | translate }}
+				</span>
+			</div>
 
-      <div class="payment-price-flex mt-8" *ngIf="hasTva"
-        style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
-        <div class="bdetail">
-          {{'text_tva' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{(totalNotaxes * tva).toFixed(2)}}
-            CHF</span>
-        </div>
-      </div>
+			<div *ngIf="hasTva"
+				class="payment-price-flex mt-8"
+				style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
+				<div class="bdetail">
+					{{'text_tva' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{(totalNotaxes * tva).toFixed(2)}}
+            CHF
+					</span>
+				</div>
+			</div>
 
-    </div>
-    <div style="padding-bottom: 20px;">
-      <div class="payment-price-flex mt-8"
-        style="margin: 16px 0; padding: 16px 20px;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
-        <div class="bdetail">
-          {{'text_total' | translate }}
-        </div>
-        <div class="text-color min-width-price">
-          <span class="detailPrice">{{totalPrice.toFixed(2)}} CHF</span>
-        </div>
-      </div>
+		</div>
+		<div style="padding-bottom: 20px;">
+			<div class="payment-price-flex mt-8"
+				style="margin: 16px 0; padding: 16px 20px;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
+				<div class="bdetail">
+					{{'text_total' | translate }}
+				</div>
+				<div class="text-color min-width-price">
+					<span class="detailPrice">
+						{{totalPrice.toFixed(2)}} CHF
+					</span>
+				</div>
+			</div>
 
-      <div style="padding: 0 20px;">
-        <div class="payment-conditions" [ngClass]="mobileHidden?'mobile':''">
-          <div class="checkbox-custom">
-            <input type="checkbox" id="conditions"
-              [(ngModel)]="conditionsAccepted">
-            <label for="conditions"
-              class="checkbox-custom-label-normal text-color-light montserrat"></label>
-          </div>
-          <div for="conditions"
-            class="checkbox-custom-label-normal text-color-light montserrat">
-            {{'text_i_accept_terms' | translate }}
-            <span (click)="openModalConditions()"
-              style="color: #E91E63;">{{'text_booking_conditions'
-              | translate }}</span>
-          </div>
-        </div>
-        <div class="text-color-light montserrat mt-12"
-          [ngClass]="mobileHidden?'mobile':''">
-          {{'text_payment2' | translate }}
-        </div>
-        <button (click)="sendBooking()"
-          [disabled]="!conditionsAccepted"
-          class="rounded-8 button-style cursor-pointer width-100"
-          type="button" style="margin-top: 10px;height: 48px;color: white;
+			<div style="padding: 0 20px;">
+				<div [ngClass]="mobileHidden?'mobile':''"
+					class="payment-conditions">
+					<div class="checkbox-custom">
+						<input [(ngModel)]="conditionsAccepted"
+							type="checkbox"
+							id="conditions">
+						<label for="conditions"
+							class="checkbox-custom-label-normal text-color-light montserrat"></label>
+					</div>
+					<div for="conditions"
+						class="checkbox-custom-label-normal text-color-light montserrat">
+						{{'text_i_accept_terms' | translate }}
+						<span (click)="openModalConditions()"
+							style="color: #E91E63;">
+							{{'text_booking_conditions'
+              | translate }}
+						</span>
+					</div>
+				</div>
+				<div [ngClass]="mobileHidden?'mobile':''"
+					class="text-color-light montserrat mt-12">
+					{{'text_payment2' | translate }}
+				</div>
+				<button [disabled]="!conditionsAccepted"
+					(click)="sendBooking()"
+					class="rounded-8 button-style cursor-pointer width-100"
+					type="button"
+					style="margin-top: 10px;height: 48px;color: white;
            font-size: 16px;
            background-color: #E91E63;
            font-weight: 600;
            border-radius: 3px;
            line-height: 20px;
            word-wrap: break-word">
-          {{'text_end_and_pay' | translate }}
-        </button>
+					{{'text_end_and_pay' | translate }}
+				</button>
 
-        <div
-          class="payment-title-icon mt-12 pt-12 text-color fw-semibold text-medium paymenthide">
-          <img src="/assets/icons/payment_landing_pink.svg">
-          {{'text_payment1' | translate }}
-        </div>
-        <div class="text-color mt-12 montserrat text-align-center paymenthide">
-          {{'text_cart1' | translate }}
-        </div>
-        <img [src]="themeService.logoPay"
-          class="payment-logo-pay mt-12 paymenthide" />
-      </div>
-    </div>
-  </div>
+				<div class="payment-title-icon mt-12 pt-12 text-color fw-semibold text-medium paymenthide">
+					<img src="/assets/icons/payment_landing_pink.svg">
+					{{'text_payment1' | translate }}
+				</div>
+				<div class="text-color mt-12 montserrat text-align-center paymenthide">
+					{{'text_cart1' | translate }}
+				</div>
+				<img [src]="themeService.logoPay"
+					class="payment-logo-pay mt-12 paymenthide">
+			</div>
+		</div>
+	</div>
 </div>
 
-<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
-  (onClose)="closeModalVoucher($event)"></app-modal-voucher>
+<app-modal-voucher [isOpen]="isModalVoucher"
+	[slug]="schoolData?.slug"
+	(onClose)="closeModalVoucher($event)"></app-modal-voucher>
 <app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'"
-  [isOpen]="isModalConditions"
-  [data]="'conditions_html' | translate"
-  (onClose)="closeModalConditions()"></app-modal-conditions>
+	[isOpen]="isModalConditions"
+	[data]="'conditions_html' | translate"
+	(onClose)="closeModalConditions()"></app-modal-conditions>
 <app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'"
-  [isOpen]="isModalConditions" [data]="conditionsHTML"
-  (onClose)="closeModalConditions()"></app-modal-conditions>
+	[isOpen]="isModalConditions"
+	[data]="conditionsHTML"
+	(onClose)="closeModalConditions()"></app-modal-conditions>

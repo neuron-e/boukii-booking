@@ -49,7 +49,10 @@
                                 style="display: inline;vertical-align: baseline;">
                             <br>
                             <span style="color: #8B9099;font-size: 12px;">
-                                FR · Switzerland · 47 Años
+                                {{courseC.getLanguage(selectedUser.language1_id)}}
+                                · {{courseC.getCountry(selectedUser.country)}} ·
+                                {{courseC.calculateAge(selectedUser.birth_date)}} {{'years' |
+                                translate }}
                             </span>
                         </div>
                     </div>

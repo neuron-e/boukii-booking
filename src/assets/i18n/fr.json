@@ -693,5 +693,14 @@
   "faq": "Questions fréquentes",
   "privacy_policy": "Politique de confidentialité",
   "terms_conditions": "Termes et conditions",
-  "contact": "Contact"
+  "contact": "Contact",
+  "cart": "Panier",
+  "add_reservation": "Ajouter une réservation",
+  "date_time": "Date et heure",
+  "purchase_summary": "Résumé de l'achat",
+  "one_spot_available": "Seulement 1 place disponible",
+  "book_two_dates_discount": "Réservez 2 dates et obtenez 10% de réduction",
+  "continue": "Continuer",
+  "add_extras_or_notes": "Si vous le souhaitez, vous pouvez ajouter des extras à votre réservation et/ou des observations pour l'école."
+
 }

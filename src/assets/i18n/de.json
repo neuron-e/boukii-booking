@@ -694,5 +694,13 @@
   "faq": "Häufig gestellte Fragen",
   "privacy_policy": "Datenschutzrichtlinie",
   "terms_conditions": "Allgemeine Geschäftsbedingungen",
-  "contact": "Kontakt"
+  "contact": "Kontakt",
+  "cart": "Warenkorb",
+  "add_reservation": "Reservierung hinzufügen",
+  "date_time": "Datum und uhrzeit",
+  "purchase_summary": "Kaufübersicht",
+  "one_spot_available": "Nur 1 Platz verfügbar",
+  "book_two_dates_discount": "Buche 2 Termine und erhalte 10% Rabatt",
+  "continue": "Weiter",
+  "add_extras_or_notes": "Wenn du möchtest, kannst du Extras zu deiner Reservierung hinzufügen und/oder Anmerkungen für die Schule machen."
 }
