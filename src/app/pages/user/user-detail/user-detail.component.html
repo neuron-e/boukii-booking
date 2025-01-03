@@ -1,474 +1,649 @@
-<div class="flex-sections" *ngIf="!loading">
-  <div class="flex-sections-user" *ngIf="!editing"
-    [style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'">
-    <div>
-      <div>
-        <p>{{'NOMBRE' | translate }}</p>
-        <p>{{defaults.first_name}}</p>
-      </div>
+<div *ngIf="!loading"
+	class="flex-sections">
+	<div *ngIf="!editing"
+		[style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'"
+		class="flex-sections-user">
+		<div>
+			<div>
+				<p>
+					{{'text_last_name' | translate }}
+				</p>
+				<p>
+					{{defaults.first_name}}
+				</p>
+			</div>
 
-      <div>
-        <p>{{'APELLIDO' | translate }}</p>
-        <p>{{defaults.last_name}}</p>
-      </div>
-      <div>
-        <p>{{"EMAIL" | translate}}</p>
-        <p>{{defaults.email}} </p>
-      </div>
-      <div>
-        <p>{{"username" | translate}}</p>
-        <p>{{defaults.username}} </p>
-      </div>
-      <img src="assets/icons/edit.png" class="icon24"
-        (click)="showInfoEditEvent(true)">
-      <div class="delete" (click)="deleteUserClient(defaults.id)"
-        *ngIf="mainId!==id"
-        style="justify-content: flex-end;">
-        <img src="assets/icons/delete.png" alt class="icon20">
-        <span>
-          Borrar usuario
-        </span>
-      </div>
-    </div>
-    <div style="transform: translateY(-0.5px);">
-      <div>
-        <p>{{'birth_date' | translate }}</p>
-        <p>{{defaults.birth_date | date: 'dd/MM/YYYY'}}
-        </p>
-      </div>
-      <div>
-        <p>{{'langs' | translate }}</p>
-        <p>{{getSelectedLanguageNames()}} </p>
-      </div>
+			<div>
+				<p>
+					{{'text_first_name' | translate }}
+				</p>
+				<p>
+					{{defaults.last_name}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{"text_email" | translate}}
+				</p>
+				<p>{{defaults.email}}</p>
+			</div>
+			<div>
+				<p>
+					{{"text_username" | translate}}
+				</p>
+				<p>
+					{{defaults.username}}
+				</p>
+			</div>
+			<img (click)="showInfoEditEvent(true)"
+				src="assets/icons/edit.png"
+				class="icon24">
+			<div *ngIf="mainId!==id"
+				(click)="deleteUserClient(defaults.id)"
+				class="delete"
+				style="justify-content: flex-end;">
+				<img src="assets/icons/delete.png"
+					alt
+					class="icon20">
+				<span>
+					{{"delete_user" | translate}}
+				</span>
+			</div>
+		</div>
+		<div style="transform: translateY(-0.5px);">
+			<div>
+				<p>
+					{{'text_birth_date' | translate }}
+				</p>
+				<p>
+					{{defaults.birth_date | date: 'dd/MM/YYYY'}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_language' | translate }}
+				</p>
+				<p>
+					{{getSelectedLanguageNames()}}
+				</p>
+			</div>
 
-      <div>
-        <p>{{'mobile' | translate }}</p>
-        <p>{{defaults.phone}} </p>
-      </div>
-      <div>
-        <p>{{'telephone' | translate }}</p>
-        <p>{{defaults.telephone}} </p>
-      </div>
-      <div>
-        <p>{{'address' | translate }}</p>
-        <p>{{defaults.address}} </p>
-      </div>
-      <div>
-        <p>{{'cp' | translate }}</p>
-        <p>{{defaults.cp}} </p>
-      </div>
+			<div>
+				<p>
+					{{'text_phone' | translate }}
+				</p>
+				<p>{{defaults.phone}}</p>
+			</div>
+			<div>
+				<p>
+					{{'text_telephone' | translate }}
+				</p>
+				<p>
+					{{defaults.telephone}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_address' | translate }}
+				</p>
+				<p>
+					{{defaults.address}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_cp' | translate }}
+				</p>
+				<p>{{defaults.cp}}</p>
+			</div>
 
-      <div>
-        <p>{{'city' | translate }}</p>
-        <p>{{getProvince(defaults.province)}} </p>
-      </div>
-      <div>
-        <p>{{'province' | translate }}</p>
-        <p>{{getCountry(defaults.country)}} </p>
-      </div>
+			<div>
+				<p>
+					{{'city' | translate }}
+				</p>
+				<p>
+					{{getProvince(defaults.province)}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_province' | translate }}
+				</p>
+				<p>
+					{{getCountry(defaults.country)}}
+				</p>
+			</div>
 
-      <img src="assets/icons/edit.png" class="icon24"
-        (click)="showAddressInfoEditEvent(true)">
-    </div>
-    <div style="transform: translateY(-1px);">
-      <div>
-        <p>{{'EMAIL' | translate }}</p>
-        <p>{{defaults.email}} </p>
-      </div>
-      <div>
-        <p>{{'Password' | translate }}</p>
-        <p> ************ </p>
-      </div>
-      <div>
-        <p>{{'observation_school' | translate }}</p>
-        <p> {{defaultsObservations.notes || 'No asigned'}} </p>
-      </div>
-      <div>
-        <p>{{'observation_general' | translate }}</p>
-        <p> {{defaultsObservations.general ||
-          'No asigned'}} </p>
-      </div>
+			<img (click)="showAddressInfoEditEvent(true)"
+				src="assets/icons/edit.png"
+				class="icon24">
+		</div>
+		<div style="transform: translateY(-1px);">
+			<div>
+				<p>
+					{{'text_email' | translate }}
+				</p>
+				<p>{{defaults.email}}</p>
+			</div>
+			<div>
+				<p>
+					{{'text_password' | translate }}
+				</p>
+				<p>************</p>
+			</div>
+			<div>
+				<p>
+					{{'observation_school' | translate }}
+				</p>
+				<p>
+					{{defaultsObservations.notes || ('not_assigned' | translate)}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'observation_general' | translate }}
+				</p>
+				<p>
+					{{defaultsObservations.general ||
+          ('not_assigned' | translate)}}
+				</p>
+			</div>
 
-      <img src="assets/icons/edit.png" class="icon24"
-        (click)="showPersonalInfoEditEvent(true)">
-    </div>
+			<img (click)="showPersonalInfoEditEvent(true)"
+				src="assets/icons/edit.png"
+				class="icon24">
+		</div>
 
-  </div>
-  <div class="flex-sections-user level"
-    *ngIf="!editing && defaults.client_sports && defaults.client_sports.length>0">
-    <div>
-      <div style="width: 100%;flex: none;">
-        <p style="margin-bottom: 20px;">{{"DEPORTES" | translate}}</p>
-        <div *ngFor="let sport of defaults.client_sports; index as i">
-          <div
-            style="display: flex; align-items: center;margin-bottom: 20px;">
-            <img [src]="sport.sport.icon_selected" alt="icono" class="icon40">
-            <span style> {{sport.sport.name}} </span>
-            <span style="margin-left: auto;cursor: pointer;
+	</div>
+	<div *ngIf="!editing && defaults.client_sports && defaults.client_sports.length>0"
+		class="flex-sections-user level">
+		<div>
+			<div style="width: 100%;flex: none;">
+				<p style="margin-bottom: 20px;">
+					{{"sports" | translate}}
+				</p>
+				<div *ngFor="let sport of defaults.client_sports; index as i">
+					<div style="display: flex; align-items: center;margin-bottom: 20px;">
+						<img [src]="sport.sport.icon_selected"
+							alt="icono"
+							class="icon40">
+						<span style>
+							{{sport.sport.name}}
+						</span>
+						<span style="margin-left: auto;cursor: pointer;
             color: #E91E63;">
-              Ver evolución deportiva</span>
-          </div>
-          <div
-            style="display: flex; align-items: center;gap: 20px;">
-            <app-level-user
-              [allLevels]="userC.allLevels"
-              [selectLevel]="userC.allLevels[0].id" [size]="40"
-              [userImage]="user?.image"></app-level-user>
-            <div>
-              <div>
-                <span
-                  style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
-                   font-size: 12px;
-                   
-                   
+							{{"view_sports_progress" | translate}}
+						</span>
+					</div>
+					<div style="display: flex; align-items: center;gap: 20px;">
+						<app-level-user [allLevels]="userC.allLevels"
+							[selectLevel]="userC.allLevels[0].id"
+							[size]="40"
+							[userImage]="user?.image"></app-level-user>
+						<div>
+							<div>
+								<span [style.background]="sport.degree.color"
+									style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
+                   font-size: 12px;                  
                    line-height: 16px;
-                   word-wrap: break-word"
-                  [style.background]="sport.degree.color">
-                  {{sport.degree.name}}
-                </span>
-                <span style="
-                 
-                 
-                 font-weight: 600;
+                   word-wrap: break-word">
+									{{sport.degree.name}}
+								</span>
+								<span style="font-weight: 600;
                  margin-left: 8px;
                  word-wrap: break-word">
-                  {{sport.degree.progress}}%
-                </span>
-              </div>
-              <div style="margin-top: 8px;">
-                <span
-                  *ngIf="sport.degree.progress<33"
-                  style="font-size: 12px;line-height: 16px;">
-                  Todavía no has logrado ningún objectivo de tu nivel. Sigue
-                  entrenando!
-                </span>
-                <span
-                  *ngIf="sport.degree.progress>=33 && sport.degree.progress<100"
-                  style="font-size: 12px;line-height: 16px;">
-                  Sigue así! Estás progresando bien!
-                </span>
-                <span *ngIf="sport.degree.progress===100"
-                  style="font-size: 12px;line-height: 16px;">
-                  Enhorabuena, has completado el nivel!
-                </span>
-              </div>
-            </div>
-          </div>
-          <mat-divider *ngIf="i<defaults.client_sports.length-1"
-            style="margin: 30px 0;">
-          </mat-divider>
-        </div>
-      </div>
-      <img src="assets/icons/edit.png" class="icon24"
-        (click)="showPersonalInfoEditEvent(true)">
-    </div>
-  </div>
+									{{sport.degree.progress}}%
+								</span>
+							</div>
+							<div style="margin-top: 8px;">
+								<span *ngIf="sport.degree.progress<33"
+									style="font-size: 12px;line-height: 16px;">
+									{{"no_goals_achieved" | translate}}
+								</span>
+								<span *ngIf="sport.degree.progress>=33 && sport.degree.progress<100"
+									style="font-size: 12px;line-height: 16px;">
+									{{"keep_going" | translate}}
+								</span>
+								<span *ngIf="sport.degree.progress===100"
+									style="font-size: 12px;line-height: 16px;">
+									{{"level_completed" | translate}}
+								</span>
+							</div>
+						</div>
+					</div>
+					<mat-divider *ngIf="i<defaults.client_sports.length-1"
+						style="margin: 30px 0;">
+					</mat-divider>
+				</div>
+			</div>
+			<img (click)="showPersonalInfoEditEvent(true)"
+				src="assets/icons/edit.png"
+				class="icon24">
+		</div>
+	</div>
 </div>
 
-<vex-user-detail-dialog title="Editar Cliente" *ngIf="editing"
-  (close)="editing=false">
-  <mat-vertical-stepper #stepper="matHorizontalStepper" [linear]="false"
-    [selectedIndex]="selectedTabIndex" style="width: 100%;">
-
-    <ng-template matStepperIcon="edit"> </ng-template>
-
-    <ng-template matStepperIcon="done"> </ng-template>
-
-    <mat-step [stepControl]="formInfoAccount" style="    overflow-y: scroll;
+<vex-user-detail-dialog *ngIf="editing"
+	(close)="editing=false"
+	title="Editar Cliente">
+	<mat-vertical-stepper #stepper="matHorizontalStepper"
+		[linear]="false"
+		[selectedIndex]="selectedTabIndex"
+		style="width: 100%;">
+		<ng-template matStepperIcon="edit"></ng-template>
+		<ng-template matStepperIcon="done"></ng-template>
+		<mat-step [stepControl]="formInfoAccount"
+			style="overflow-y: scroll;
     height: calc(100vh - 450px);">
-      <form [formGroup]="formInfoAccount">
-        <ng-template matStepLabel>{{'monitors.creation.info' | translate
-          }}</ng-template>
+			<form [formGroup]="formInfoAccount">
+				<ng-template matStepLabel>
+					{{'monitors.creation.info' | translate
+          }}
+				</ng-template>
 
-        <vex-flux-upload-img
-          (upload)="onFileChanged($event)"></vex-flux-upload-img>
+				<vex-flux-upload-img (upload)="onFileChanged($event)"></vex-flux-upload-img>
 
-        <div class="modalInputD">
-          <mat-form-field appearance="outline" class="inputWidth">
-            <mat-label>{{'name' | translate }}</mat-label>
-            <input formControlName="name" matInput required type="text"
-              [(ngModel)]="defaults.first_name">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="inputWidth">
-            <mat-label>{{'surname' | translate }}</mat-label>
-            <input formControlName="surname" matInput required type="text"
-              [(ngModel)]="defaults.last_name">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="inputWidth">
-            <mat-label>Email</mat-label>
-            <input formControlName="email" matInput required type="mail"
-              [(ngModel)]="defaults.email">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="inputWidth">
-            <mat-label>{{'username' | translate }}</mat-label>
-            <input formControlName="username" matInput type="text"
-              [(ngModel)]="defaultsUser.username">
-          </mat-form-field>
-          <mat-form-field style="width: 100%;" appearance="outline">
-            <mat-label>{{'text_password' | translate }}</mat-label>
-            <input formControlName="password" matInput type="password"
-              [(ngModel)]="defaultsUser.password">
-          </mat-form-field>
-        </div>
+				<div class="modalInputD">
+					<mat-form-field appearance="outline"
+						class="inputWidth">
+						<mat-label>
+							{{'name' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaults.first_name"
+							formControlName="name"
+							matInput
+							required
+							type="text">
+					</mat-form-field>
+					<mat-form-field appearance="outline"
+						class="inputWidth">
+						<mat-label>
+							{{'surname' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaults.last_name"
+							formControlName="surname"
+							matInput
+							required
+							type="text">
+					</mat-form-field>
+					<mat-form-field appearance="outline"
+						class="inputWidth">
+						<mat-label>
+							{{"text_email" | translate}}
+						</mat-label>
+						<input [(ngModel)]="defaults.email"
+							formControlName="email"
+							matInput
+							required
+							type="mail">
+					</mat-form-field>
+					<mat-form-field appearance="outline"
+						class="inputWidth">
+						<mat-label>
+							{{'username' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaultsUser.username"
+							formControlName="username"
+							matInput
+							type="text">
+					</mat-form-field>
+					<mat-form-field style="width: 100%;"
+						appearance="outline">
+						<mat-label>
+							{{'text_password' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaultsUser.password"
+							formControlName="password"
+							matInput
+							type="password">
+					</mat-form-field>
+				</div>
 
-        <div
-          style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
-          <button mat-button type="button"
-            style="border: 1px solid black; color: black; border-radius: 3px;"
-            (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-            translate }}</button>
-          <button [disabled]="formInfoAccount.invalid" color="accent"
-            style="color: white; border-radius: 3px;background: #E91E63;"
-            mat-raised-button matStepperNext>
-            {{'next' | translate}}
-          </button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step [stepControl]="formPersonalInfo">
-      <form [formGroup]="formPersonalInfo">
-        <ng-template matStepLabel>{{'personal_data' | translate }}</ng-template>
+				<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+					<button (click)="editing = false; selectedTabIndex = 0"
+						mat-button
+						type="button"
+						style="border: 1px solid black; color: black; border-radius: 3px;">
+						{{'go_preview' |
+            translate }}
+					</button>
+					<button [disabled]="formInfoAccount.invalid"
+						color="accent"
+						style="color: white; border-radius: 3px;background: #E91E63;"
+						mat-raised-button
+						matStepperNext>
+						{{'next' | translate}}
+					</button>
+				</div>
+			</form>
+		</mat-step>
+		<mat-step [stepControl]="formPersonalInfo">
+			<form [formGroup]="formPersonalInfo">
+				<ng-template matStepLabel>
+					{{'personal_data' | translate }}
+				</ng-template>
 
-        <div class="modalInputD">
+				<div class="modalInputD">
 
-          <mat-form-field class="inputWidth" appearance="outline">
-            <input matInput [matDatepicker]="pickerFrom"
-              placeholder="{{'birth_date' | translate }}"
-              formControlName="fromDate" [max]="minDate"
-              [(ngModel)]="defaults.birth_date">
-            <mat-datepicker-toggle matSuffix
-              [for]="pickerFrom"></mat-datepicker-toggle>
-            <mat-datepicker #pickerFrom
-              [startAt]="minDate"></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field class="inputWidth" appearance="outline">
-            <mat-label>{{'phone' | translate }}</mat-label>
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<input [matDatepicker]="pickerFrom"
+							[max]="minDate"
+							[(ngModel)]="defaults.birth_date"
+							matInput
+							placeholder="{{'birth_date' | translate }}"
+							formControlName="fromDate">
+						<mat-datepicker-toggle [for]="pickerFrom"
+							matSuffix></mat-datepicker-toggle>
+						<mat-datepicker #pickerFrom
+							[startAt]="minDate"></mat-datepicker>
+					</mat-form-field>
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<mat-label>
+							{{'phone' | translate }}
+						</mat-label>
 
-            <input formControlName="phone" matInput type="tel"
-              [(ngModel)]="defaults.telephone">
-          </mat-form-field>
+						<input [(ngModel)]="defaults.telephone"
+							formControlName="phone"
+							matInput
+							type="tel">
+					</mat-form-field>
 
-          <mat-form-field class="inputWidth" appearance="outline">
-            <mat-label>{{'mobile' | translate }}</mat-label>
-            <input formControlName="mobile" matInput required type="tel"
-              [(ngModel)]="defaults.phone">
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<mat-label>
+							{{'mobile' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaults.phone"
+							formControlName="mobile"
+							matInput
+							required
+							type="tel">
 
-          </mat-form-field>
-          <mat-form-field class="inputWidth" appearance="outline">
-            <mat-label>{{'address' | translate }}</mat-label>
+					</mat-form-field>
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<mat-label>
+							{{'address' | translate }}
+						</mat-label>
 
-            <input formControlName="address" matInput type="text"
-              [(ngModel)]="defaults.address">
-          </mat-form-field>
+						<input [(ngModel)]="defaults.address"
+							formControlName="address"
+							matInput
+							type="text">
+					</mat-form-field>
 
-          <mat-form-field class="inputWidth" appearance="outline">
-            <mat-label>{{'cp' | translate }}</mat-label>
-            <input formControlName="postalCode" matInput type="text"
-              [(ngModel)]="defaults.cp">
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<mat-label>
+							{{'cp' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaults.cp"
+							formControlName="postalCode"
+							matInput
+							type="text">
 
-          </mat-form-field>
-          <mat-form-field class="vex-flex-form-field flex-auto"
-            appearance="outline">
-            <mat-label>{{'country' | translate }}</mat-label>
-            <input type="text" placeholder="Selecciona una opción" matInput
-              [formControl]="myControlCountries"
-              [matAutocomplete]="autoCountry">
-            <mat-autocomplete #autoCountry="matAutocomplete"
-              [displayWith]="displayFnCountry">
-              <mat-option *ngFor="let country of filteredCountries | async"
-                [value]="country"
-                (onSelectionChange)="defaults.country = country.id">
-                {{country.name}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+					</mat-form-field>
+					<mat-form-field class="vex-flex-form-field flex-auto"
+						appearance="outline">
+						<mat-label>
+							{{'country' | translate }}
+						</mat-label>
+						<input [formControl]="myControlCountries"
+							[matAutocomplete]="autoCountry"
+							type="text"
+							placeholder="Selecciona una opción"
+							matInput>
+						<mat-autocomplete #autoCountry="matAutocomplete"
+							[displayWith]="displayFnCountry">
+							<mat-option *ngFor="let country of filteredCountries | async"
+								[value]="country"
+								(onSelectionChange)="defaults.country = country.id">
+								{{country.name}}
+							</mat-option>
+						</mat-autocomplete>
+					</mat-form-field>
 
-          <mat-form-field class="vex-flex-form-field flex-auto"
-            appearance="outline">
-            <mat-label>{{'province' | translate }}</mat-label>
-            <input type="text" placeholder="Selecciona una opción" matInput
-              [formControl]="myControlProvinces"
-              [matAutocomplete]="autoProvince">
-            <mat-autocomplete #autoProvince="matAutocomplete"
-              [displayWith]="displayFnProvince">
-              <mat-option *ngFor="let province of filteredProvinces | async"
-                [value]="province"
-                (onSelectionChange)="defaults.province = province.id">
-                {{province.name}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+					<mat-form-field class="vex-flex-form-field flex-auto"
+						appearance="outline">
+						<mat-label>
+							{{'province' | translate }}
+						</mat-label>
+						<input [formControl]="myControlProvinces"
+							[matAutocomplete]="autoProvince"
+							type="text"
+							placeholder="Selecciona una opción"
+							matInput>
+						<mat-autocomplete #autoProvince="matAutocomplete"
+							[displayWith]="displayFnProvince">
+							<mat-option *ngFor="let province of filteredProvinces | async"
+								[value]="province"
+								(onSelectionChange)="defaults.province = province.id">
+								{{province.name}}
+							</mat-option>
+						</mat-autocomplete>
+					</mat-form-field>
 
-          <mat-form-field class="inputWidth" appearance="outline">
-            <mat-label>{{'langs' | translate }}</mat-label>
-            <mat-select [formControl]="languagesControl" multiple>
-              <mat-select-trigger>
-                <div
-                  *ngIf="selectedLanguages.length > 0; else placeholderLangs">
-                  {{ getSelectedLanguageNames() }}
-                </div>
-                <ng-template #placeholderLangs>{{'choose_langs' | translate
-                  }}</ng-template>
-              </mat-select-trigger>
-              <mat-option *ngFor="let language of filteredLanguages | async"
-                [value]="language"
-                (onSelectionChange)="toggleSelectionLanguages(language)">
-                {{language.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+					<mat-form-field class="inputWidth"
+						appearance="outline">
+						<mat-label>
+							{{'langs' | translate }}
+						</mat-label>
+						<mat-select [formControl]="languagesControl"
+							multiple>
+							<mat-select-trigger>
+								<div *ngIf="selectedLanguages.length > 0; else placeholderLangs">
+									{{ getSelectedLanguageNames() }}
+								</div>
+								<ng-template #placeholderLangs>
+									{{'choose_langs' | translate
+                  }}
+								</ng-template>
+							</mat-select-trigger>
+							<mat-option *ngFor="let language of filteredLanguages | async"
+								[value]="language"
+								(onSelectionChange)="toggleSelectionLanguages(language)">
+								{{language.name}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
 
-        <div
-          style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
-          <button mat-button type="button"
-            style="border: 1px solid black; color: black; border-radius: 3px;"
-            (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-            translate }}</button>
-          <button [disabled]="formPersonalInfo.invalid" color="accent"
-            style="color: white; border-radius: 3px;background: #E91E63;"
-            mat-raised-button matStepperNext>
-            {{'next' | translate}}
-          </button>
-        </div>
+				<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+					<button (click)="editing = false; selectedTabIndex = 0"
+						mat-button
+						type="button"
+						style="border: 1px solid black; color: black; border-radius: 3px;">
+						{{'go_preview' |
+            translate }}
+					</button>
+					<button [disabled]="formPersonalInfo.invalid"
+						color="accent"
+						style="color: white; border-radius: 3px;background: #E91E63;"
+						mat-raised-button
+						matStepperNext>
+						{{'next' | translate}}
+					</button>
+				</div>
 
-      </form>
-    </mat-step>
+			</form>
+		</mat-step>
 
-    <mat-step [stepControl]="formSportInfo">
-      <form [formGroup]="formSportInfo">
-        <ng-template matStepLabel>{{'sports' |translate}}</ng-template>
+		<mat-step [stepControl]="formSportInfo">
+			<form [formGroup]="formSportInfo">
+				<ng-template matStepLabel>
+					{{'sports' |translate}}
+				</ng-template>
 
-        <div class="modalInputD">
-          <mat-form-field style="width: 100%;margin: 5px;" appearance="outline">
-            <mat-label>{{'sports' |translate}}</mat-label>
-            <mat-select [formControl]="sportsControl" multiple>
+				<div class="modalInputD">
+					<mat-form-field style="width: 100%;margin: 5px;"
+						appearance="outline">
+						<mat-label>
+							{{'sports' |translate}}
+						</mat-label>
+						<mat-select [formControl]="sportsControl"
+							multiple>
 
-              <mat-select-trigger>
-                <div
-                  *ngIf="sportsControl.value?.length > 0; else placeholder">
-                  {{ getSelectedSportsNames() }}
-                </div>
-                <ng-template #placeholder>{{'choose_sports' | translate
-                  }}</ng-template>
-              </mat-select-trigger>
+							<mat-select-trigger>
+								<div *ngIf="sportsControl.value?.length > 0; else placeholder">
+									{{ getSelectedSportsNames() }}
+								</div>
+								<ng-template #placeholder>
+									{{'choose_sports' | translate
+                  }}
+								</ng-template>
+							</mat-select-trigger>
 
-              <mat-option *ngFor="let sport of filteredSports | async"
-                [value]="sport"
-                (onSelectionChange)="toggleSelection($event, sport)">
-                {{sport.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+							<mat-option *ngFor="let sport of filteredSports | async"
+								[value]="sport"
+								(onSelectionChange)="toggleSelection($event, sport)">
+								{{sport.name}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
 
-          <!-- Añadir niños con modal -->
-          <mat-table #sportsCurrentTable [dataSource]="sportsCurrentData">
-            <caption style="width: 200px"> {{'current_sport' | translate
-              }}</caption>
+					<!-- Añadir niños con modal -->
+					<mat-table #sportsCurrentTable
+						[dataSource]="sportsCurrentData">
+						<caption style="width: 200px">
+							{{'current_sport' | translate
+              }}
+						</caption>
 
-            <!-- Otros contenedores según tu descripción -->
+						<!-- Otros contenedores según tu descripción -->
 
-            <ng-container matColumnDef="name">
-              <mat-header-cell *matHeaderCellDef> {{'name' | translate
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let element" style="margin: 5px;">
-                <mat-form-field
-                  style="width: 100%;margin: 5px;"
-                  appearance="outline">
-                  <mat-label>{{'name' | translate }}</mat-label>
-                  <input matInput [value]="element.name" type="text"
-                    [readonly]="true">
-                </mat-form-field>
-              </mat-cell>
-            </ng-container>
+						<ng-container matColumnDef="name">
+							<mat-header-cell *matHeaderCellDef>
+								{{'name' | translate
+                }}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element"
+								style="margin: 5px;">
+								<mat-form-field style="width: 100%;margin: 5px;"
+									appearance="outline">
+									<mat-label>
+										{{'name' | translate }}
+									</mat-label>
+									<input [value]="element.name"
+										[readonly]="true"
+										matInput
+										type="text">
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
 
-            <ng-container matColumnDef="level">
-              <mat-header-cell *matHeaderCellDef>{{'level' | translate
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let element" style="margin: 5px;">
-                <mat-form-field
-                  style="width: 100%;"
-                  appearance="outline">
-                  <mat-label>{{'level' | translate }}</mat-label>
-                  <input type="text" placeholder="Pick one"
-                    aria-label="Number" matInput
-                    [matAutocomplete]="autoLevel"
-                    [value]="element?.level?.name"
-                    [(ngModel)]="element.level" />
-                  <mat-autocomplete #autoLevel="matAutocomplete"
-                    [displayWith]="displayFnLevel">
-                    <mat-option *ngFor="let level of element?.degrees"
-                      [value]="level"
-                      (onSelectionChange)="element.level = level"
-                      (onSelectionChange)="updateLevel(element, level)">
-                      {{level.annotation}} - {{level.name}}
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-              </mat-cell>
-            </ng-container>
+						<ng-container matColumnDef="level">
+							<mat-header-cell *matHeaderCellDef>
+								{{'level' | translate
+                }}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element"
+								style="margin: 5px;">
+								<mat-form-field style="width: 100%;"
+									appearance="outline">
+									<mat-label>
+										{{'level' | translate }}
+									</mat-label>
+									<input [matAutocomplete]="autoLevel"
+										[value]="element?.level?.name"
+										[(ngModel)]="element.level"
+										type="text"
+										placeholder="Pick one"
+										aria-label="Number"
+										matInput>
+									<mat-autocomplete #autoLevel="matAutocomplete"
+										[displayWith]="displayFnLevel">
+										<mat-option *ngFor="let level of element?.degrees"
+											[value]="level"
+											(onSelectionChange)="element.level = level"
+											(onSelectionChange)="updateLevel(element, level)">
+											{{level.annotation}} - {{level.name}}
+										</mat-option>
+									</mat-autocomplete>
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
 
-            <ng-container matColumnDef="delete">
-              <mat-header-cell *matHeaderCellDef
-                class="delete-column">{{'delete' |
-                translate}}</mat-header-cell>
-              <mat-cell *matCellDef="let element; let i = index"
-                style="margin: 5px;"
-                class="delete-column">
-                <i class="fa fa-trash cursor-pointer" style="color:black"
-                  (click)="removeSport(i, element)"></i>
-              </mat-cell>
-            </ng-container>
-            <mat-header-row
-              *matHeaderRowDef="displayedCurrentColumns"></mat-header-row>
-            <mat-row
-              *matRowDef="let row; columns: displayedCurrentColumns;"></mat-row>
-          </mat-table>
+						<ng-container matColumnDef="delete">
+							<mat-header-cell *matHeaderCellDef
+								class="delete-column">
+								{{'delete' |
+                translate}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element; let i = index"
+								style="margin: 5px;"
+								class="delete-column">
+								<i (click)="removeSport(i, element)"
+									class="fa fa-trash cursor-pointer"
+									style="color:black"></i>
+							</mat-cell>
+						</ng-container>
+						<mat-header-row *matHeaderRowDef="displayedCurrentColumns"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedCurrentColumns;"></mat-row>
+					</mat-table>
 
-          <!-- Añadir niños con modal -->
-          <mat-table #sportsTable [dataSource]="sportsData"
-            *ngIf="this.sportsData.data.length > 0">
-            <caption style="width: 200px"> {{'sports' | translate
-              }}</caption>
+					<!-- Añadir niños con modal -->
+					<mat-table #sportsTable
+						*ngIf="this.sportsData.data.length > 0"
+						[dataSource]="sportsData">
+						<caption style="width: 200px">
+							{{'sports' | translate
+              }}
+						</caption>
 
-            <!-- Otros contenedores según tu descripción -->
+						<!-- Otros contenedores según tu descripción -->
 
-            <ng-container matColumnDef="name">
-              <mat-header-cell *matHeaderCellDef> {{'name' | translate
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let element" style="margin: 5px;">
-                <mat-form-field style="width: 100%;margin: 5px;"
-                  appearance="outline">
-                  <mat-label>{{'name' | translate }}</mat-label>
-                  <input matInput [value]="element.name" type="text"
-                    [readonly]="true">
-                </mat-form-field>
-              </mat-cell>
-            </ng-container>
+						<ng-container matColumnDef="name">
+							<mat-header-cell *matHeaderCellDef>
+								{{'name' | translate
+                }}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element"
+								style="margin: 5px;">
+								<mat-form-field style="width: 100%;margin: 5px;"
+									appearance="outline">
+									<mat-label>
+										{{'name' | translate }}
+									</mat-label>
+									<input [value]="element.name"
+										[readonly]="true"
+										matInput
+										type="text">
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
 
-            <ng-container matColumnDef="date">
-              <mat-header-cell *matHeaderCellDef>{{'level' | translate
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let element">
-                <mat-form-field style="width: 100%;margin: 5px;"
-                  appearance="outline">
-                  <mat-label>{{'level' | translate }}</mat-label>
-                  <input type="text" placeholder="Pick one"
-                    aria-label="Number" matInput [formControl]="levelForm"
-                    [matAutocomplete]="autoLevel"
-                    [(ngModel)]="element.level" />
-                  <mat-autocomplete #autoLevel="matAutocomplete"
-                    [displayWith]="displayFnLevel">
-                    <mat-option *ngFor="let level of element.degrees"
-                      [value]="level">
-                      {{level.annotation}} - {{level.name}}
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-              </mat-cell>
-            </ng-container>
+						<ng-container matColumnDef="date">
+							<mat-header-cell *matHeaderCellDef>
+								{{'level' | translate
+                }}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element">
+								<mat-form-field style="width: 100%;margin: 5px;"
+									appearance="outline">
+									<mat-label>
+										{{'level' | translate }}
+									</mat-label>
+									<input [formControl]="levelForm"
+										[matAutocomplete]="autoLevel"
+										[(ngModel)]="element.level"
+										type="text"
+										placeholder="Pick one"
+										aria-label="Number"
+										matInput>
+									<mat-autocomplete #autoLevel="matAutocomplete"
+										[displayWith]="displayFnLevel">
+										<mat-option *ngFor="let level of element.degrees"
+											[value]="level">
+											{{level.annotation}} - {{level.name}}
+										</mat-option>
+									</mat-autocomplete>
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
 
-            <!-- Ícono para eliminar
+						<!-- Ícono para eliminar
           <ng-container matColumnDef="delete">
             <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
             <mat-cell *matCellDef="let element">
@@ -476,45 +651,59 @@
             </mat-cell>
           </ng-container> -->
 
-            <mat-header-row
-              *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row
-              *matRowDef="let row; columns: displayedColumns;"></mat-row>
-          </mat-table>
-        </div>
-      </form>
-      <form [formGroup]="formOtherInfo" style="margin-top: 20px;">
-        <div class="modalInputD">
-          <mat-form-field style="width: 100%;" appearance="outline">
-            <mat-label>{{'general' |translate}}</mat-label>
-            <textarea formControlName="summary" matInput
-              [(ngModel)]="defaultsObservations.general"></textarea>
-          </mat-form-field>
-          <mat-form-field style="width: 100%;" appearance="outline">
-            <mat-label>{{'observation_school' |translate}}</mat-label>
-            <textarea formControlName="notes" matInput
-              [(ngModel)]="defaultsObservations.notes"></textarea>
-          </mat-form-field>
-          <mat-form-field style="width: 100%;" appearance="outline">
-            <mat-label>{{'historical' | translate }}</mat-label>
-            <textarea formControlName="hitorical" matInput
-              [(ngModel)]="defaultsObservations.historical"></textarea>
-          </mat-form-field>
-        </div>
-      </form>
-      <div
-        style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
-        <button mat-button type="button"
-          style="border: 1px solid black; color: black; border-radius: 3px;"
-          (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-          translate }}</button>
-        <button [disabled]="formSportInfo.invalid || formOtherInfo.invalid"
-          color="accent"
-          style="color: white; border-radius: 3px;background: #E91E63;"
-          mat-raised-button matStepperNext>
-          {{'next' | translate}}
-        </button>
-      </div>
-    </mat-step>
-  </mat-vertical-stepper>
+						<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+					</mat-table>
+				</div>
+			</form>
+			<form [formGroup]="formOtherInfo"
+				style="margin-top: 20px;">
+				<div class="modalInputD">
+					<mat-form-field style="width: 100%;"
+						appearance="outline">
+						<mat-label>
+							{{'general' |translate}}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.general"
+							formControlName="summary"
+							matInput></textarea>
+					</mat-form-field>
+					<mat-form-field style="width: 100%;"
+						appearance="outline">
+						<mat-label>
+							{{'observation_school' |translate}}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.notes"
+							formControlName="notes"
+							matInput></textarea>
+					</mat-form-field>
+					<mat-form-field style="width: 100%;"
+						appearance="outline">
+						<mat-label>
+							{{'historical' | translate }}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.historical"
+							formControlName="hitorical"
+							matInput></textarea>
+					</mat-form-field>
+				</div>
+			</form>
+			<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+				<button (click)="editing = false; selectedTabIndex = 0"
+					mat-button
+					type="button"
+					style="border: 1px solid black; color: black; border-radius: 3px;">
+					{{'go_preview' |
+          translate }}
+				</button>
+				<button [disabled]="formSportInfo.invalid || formOtherInfo.invalid"
+					color="accent"
+					style="color: white; border-radius: 3px;background: #E91E63;"
+					mat-raised-button
+					matStepperNext>
+					{{'next' | translate}}
+				</button>
+			</div>
+		</mat-step>
+	</mat-vertical-stepper>
 </vex-user-detail-dialog>

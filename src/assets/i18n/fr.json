@@ -701,6 +701,14 @@
   "one_spot_available": "Seulement 1 place disponible",
   "book_two_dates_discount": "Réservez 2 dates et obtenez 10% de réduction",
   "continue": "Continuer",
-  "add_extras_or_notes": "Si vous le souhaitez, vous pouvez ajouter des extras à votre réservation et/ou des observations pour l'école."
-
+  "add_extras_or_notes": "Si vous le souhaitez, vous pouvez ajouter des extras à votre réservation et/ou des observations pour l'école.",
+  "delete_user": "Supprimer l'utilisateur",
+  "view_sports_progress": "Voir l'évolution sportive",
+  "no_goals_achieved": "Vous n'avez encore atteint aucun objectif de votre niveau. Continuez à vous entraîner !",
+  "keep_going": "Continuez comme ça ! Vous progressez bien !",
+  "level_completed": "Félicitations, vous avez terminé le niveau !",
+  "medal_awarded": "Félicitations ! Vous avez obtenu la médaille pour ce niveau. Il est temps de passer au suivant !",
+  "achieve_all_goals": "Atteignez tous les objectifs de ce cours pour obtenir la médaille.",
+  "comment_previous": "Commentaire précédent...",
+  "not_assigned": "Non assigné"
 }

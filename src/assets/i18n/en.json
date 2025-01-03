@@ -700,5 +700,14 @@
   "one_spot_available": "Only 1 spot available",
   "book_two_dates_discount": "Book 2 dates and get 10% off",
   "continue": "Continue",
-  "add_extras_or_notes": "If you wish, you can add extras to your reservation and/or notes for the school."
+  "add_extras_or_notes": "If you wish, you can add extras to your reservation and/or notes for the school.",
+  "delete_user": "Delete user",
+  "view_sports_progress": "View sports progress",
+  "no_goals_achieved": "You haven't achieved any goals at your level yet. Keep training!",
+  "keep_going": "Keep it up! You're making great progress!",
+  "level_completed": "Congratulations, you've completed the level!",
+  "medal_awarded": "Congratulations! You've earned the medal for this level. It's time to move on to the next one!",
+  "achieve_all_goals": "Achieve all the goals of this course to earn the medal.",
+  "comment_previous": "Comment previous...",
+  "not_assigned": "Not assigned"
 }

@@ -22,13 +22,10 @@
             </app-level-user>
         </div>
         <span *ngIf="user.getGoalImage(goals)" class="descripcion">
-            Enhorabuena! Has obtenido la medalla por este nivel. Es
-            hora
-            de pasar al próximo!
+           {{"medal_awarded" | translate}}
         </span>
         <span *ngIf="!user.getGoalImage(goals)" class="descripcion">
-            Logra todos los objectivos de este curso para obtener la
-            medalla.
+            {{"achieve_all_goals" | translate}}
         </span>
     </div>
     <div style="flex-direction: column;">
@@ -67,7 +64,7 @@
             <div *ngFor="let item of [1,2,3]" style="width: 72px;">
                 <img src="assets/icons/blank.png" class="icon72" alt>
                 <span style="font-size: 12px;line-height: 16px;">
-                    Comment prev...
+                    {{"comment_previous" | translate}}
                 </span>
             </div>
         </div>

@@ -218,7 +218,7 @@ export class UserComponent implements OnInit {
       console.error(error);
     }
   }
-
+  clients_utilizers: any
   getClientUtilisateurs() {
     this.crudService.list('/slug/clients/' + this.id + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(takeUntil(this.destroy$))
@@ -227,6 +227,7 @@ export class UserComponent implements OnInit {
         this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.id)
           .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
+            this.clients_utilizers = data
             data.data.forEach((element: any) => {
               this.clientUsers.forEach((cl: any) => {
                 if (element.client_id === cl.id) {

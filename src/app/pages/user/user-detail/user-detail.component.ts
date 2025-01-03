@@ -67,7 +67,6 @@ export class UserDetailComponent {
   stations: any = [];
 
   languagesControl = new FormControl([]);
-  languages: any = [];
   schoolSports: any = [];
   filteredLanguages: Observable<any[]>;
   selectedLanguages: any = [];
@@ -152,7 +151,7 @@ export class UserDetailComponent {
   schoolData: any;
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
-    private activatedRoute: ActivatedRoute, private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
+    private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
     private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService, public userC: UserComponent) {
 
     this.today = new Date();
@@ -167,15 +166,7 @@ export class UserDetailComponent {
           this.schoolData = data.data;
           this.getInitialData().pipe(
             switchMap(() => this.getData(this.idParent))
-          ).subscribe(() => {
-            // Aquí puedes realizar cualquier lógica adicional después de obtener los datos iniciales y los datos principales.
-          });
-          /*          if (this.idParent) {
-                      this.getData(this.idParent);
-                    }
-                    else{
-                      this.getData();
-                    }*/
+          ).subscribe(() => { });
         }
       }
     );
@@ -199,10 +190,7 @@ export class UserDetailComponent {
   getInitialData() {
 
     const requestsInitial = {
-      languages: this.getLanguages().pipe(retry(3), catchError(error => {
-        console.error('Error fetching languages:', error);
-        return of([]); // Devuelve un array vacío en caso de error
-      })),
+      languages: this.userC.languages,
       stations: this.getStations().pipe(retry(3), catchError(error => {
         console.error('Error fetching stations:', error);
         return of([]); // Devuelve un array vacío en caso de error
@@ -222,7 +210,6 @@ export class UserDetailComponent {
         email: ['', [Validators.required, Validators.email]],
         username: [''],
         password: [''],
-
       });
 
       this.formPersonalInfo = this.fb.group({
@@ -260,114 +247,103 @@ export class UserDetailComponent {
         this.mainClient = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
+        this.defaultsUser = this.userC.defaultsUser
+        this.defaults = this.userC.defaults;
+        if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults[0];
+        else {
+          this.defaultsObservations = {
+            id: null,
+            general: '',
+            notes: '',
+            historical: '',
+            client_id: null,
+            school_id: null
+          };
+        }
+        this.currentImage = this.defaults.image;
+        this.clientSchool = this.userC.clientSchool
+        this.clientSport = this.userC.clientSport
+        this.selectedSport = this.clientSport[0];
 
-        return this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
-          'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
-          .pipe(takeUntil(this.destroy$), switchMap((data) => {
+        this.goals = [];
 
-            this.defaultsUser = data.data.user;
-            this.defaults = data.data;
-            if (data.data.observations.length > 0) {
-              this.defaultsObservations = data.data[0];
-            } else {
-              this.defaultsObservations = {
-                id: null,
-                general: '',
-                notes: '',
-                historical: '',
-                client_id: null,
-                school_id: null
-              };
-            }
-            this.currentImage = data.data.image;
+        this.clientSport.forEach((element: any) => {
+          element.level = element.degree;
 
-            const requestsClient = {
-              clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
-                console.error('Error fetching client school:', error);
-                return of([]); // Devuelve un array vacío en caso de error
-              })),
-              clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
-                console.error('Error fetching client sport:', error);
-                return of([]); // Devuelve un array vacío en caso de error
-              }))
-            };
-            return forkJoin(requestsClient).pipe(tap((results) => {
+        });
+        this.getSchoolSportDegrees();
+        if (!onChangeUser) {
+          this.getClientUtilisateurs();
+        }
 
-              if (!onChangeUser) {
-                this.getClientUtilisateurs();
-              }
+        this.formInfoAccount = this.fb.group({
+          image: [''],
+          name: ['', Validators.required],
+          surname: ['', Validators.required],
+          email: ['', [Validators.required, Validators.email]],
+          username: [''],
+          password: [''],
 
-              this.formInfoAccount = this.fb.group({
-                image: [''],
-                name: ['', Validators.required],
-                surname: ['', Validators.required],
-                email: ['', [Validators.required, Validators.email]],
-                username: [''],
-                password: [''],
+        });
 
-              });
+        this.formPersonalInfo = this.fb.group({
+          fromDate: [''],
+          phone: [''],
+          mobile: ['', Validators.required],
+          address: [''],
+          postalCode: [''],
+          lang: [''],
+          country: this.myControlCountries,
+          province: this.myControlProvinces
 
-              this.formPersonalInfo = this.fb.group({
-                fromDate: [''],
-                phone: [''],
-                mobile: ['', Validators.required],
-                address: [''],
-                postalCode: [''],
-                lang: [''],
-                country: this.myControlCountries,
-                province: this.myControlProvinces
+        });
 
-              });
+        this.formSportInfo = this.fb.group({
+          sportName: [''],
+        });
 
-              this.formSportInfo = this.fb.group({
-                sportName: [''],
-              });
+        this.formOtherInfo = this.fb.group({
+          summary: [''],
+          notes: [''],
+          hitorical: ['']
+        });
 
-              this.formOtherInfo = this.fb.group({
-                summary: [''],
-                notes: [''],
-                hitorical: ['']
-              });
+        if (!onChangeUser) {
 
-              if (!onChangeUser) {
+          this.filteredCountries = this.myControlCountries.valueChanges.pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(name => name ? this._filterCountries(name) : this.countries.slice())
+          );
 
-                this.filteredCountries = this.myControlCountries.valueChanges.pipe(
-                  startWith(''),
-                  map(value => typeof value === 'string' ? value : value.name),
-                  map(name => name ? this._filterCountries(name) : this.countries.slice())
-                );
+          this.myControlCountries.valueChanges.subscribe(country => {
+            this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
+            this.filteredProvinces = this._filterProvinces(country?.id);
+          });
 
-                this.myControlCountries.valueChanges.subscribe(country => {
-                  this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
-                  this.filteredProvinces = this._filterProvinces(country?.id);
-                });
+          /*this.filteredLevel = this.levelForm.valueChanges.pipe(
+            startWith(''),
+            map((value: any) => typeof value === 'string' ? value : value?.annotation),
+            map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
+          );*/
 
-                /*this.filteredLevel = this.levelForm.valueChanges.pipe(
-                  startWith(''),
-                  map((value: any) => typeof value === 'string' ? value : value?.annotation),
-                  map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
-                );*/
+          this.filteredLanguages = this.languagesControl.valueChanges.pipe(
+            startWith(''),
+            map(language => (language ? this._filterLanguages(language) : this.userC.languages.slice()))
+          );
 
-                this.filteredLanguages = this.languagesControl.valueChanges.pipe(
-                  startWith(''),
-                  map(language => (language ? this._filterLanguages(language) : this.languages.slice()))
-                );
-
-              }
+        }
 
 
-              this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
-              this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
-              this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
-              this.languagesControl.setValue(this.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
-                this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
-                || this.defaults?.language5_id || this.defaults?.language6_id)));
+        this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
+        this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
+        this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
+        this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
+          this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
+          || this.defaults?.language5_id || this.defaults?.language6_id)));
 
-              this.loading = false;
+        this.loading = false;
 
-            }));
-
-          }))
       }
       return of(null);
     }),
@@ -509,54 +485,6 @@ export class UserDetailComponent {
       })
   }
 
-  getClientSchoolOld() {
-    this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.clientSchool = data.data;
-
-      })
-  }
-
-  getClientSchool() {
-    return this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id',
-      '&client_id=' + this.id)
-      .pipe(takeUntil(this.destroy$),
-        map((data) => {
-          this.clientSchool = data.data;
-        })
-      );
-  }
-
-  getClientSport() {
-    return this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id='
-      + this.id + "&school_id=" + this.schoolData.id, '', null, '', ['degree.degreesSchoolSportGoals'])
-      .pipe(takeUntil(this.destroy$),
-        switchMap((data: any) => {
-          this.clientSport = data.data;
-          this.selectedSport = this.clientSport[0];
-          
-          this.goals = [];
-
-          this.clientSport.forEach((element: any) => {
-            element.level = element.degree;
-
-          });
-          return this.getSchoolSportDegrees();
-        })
-      );
-  }
-
-  getClientSportOld() {
-    this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.clientSport = data.data;
-        this.selectedSport = this.clientSport[0];
-        this.getSports();
-        this.getDegrees();
-      })
-  }
 
   onFileChanged(event: Event) {
     const file: any = (event.target !== null ? event.target as HTMLInputElement : null);
@@ -623,7 +551,7 @@ export class UserDetailComponent {
   getLanguages() {
     return this.crudService.list('/languages', 1, 1000)
       .pipe(takeUntil(this.destroy$), tap((data) => {
-        this.languages = data.data.reverse();
+        this.userC.languages = data.data.reverse();
         this.setInitLanguages();
       }))
   }
@@ -650,7 +578,7 @@ export class UserDetailComponent {
 
   private _filterLanguages(value: any): any[] {
     const filterValue = value.toLowerCase();
-    return this.languages.filter((language: any) => language?.name.toLowerCase().includes(filterValue));
+    return this.userC.languages.filter((language: any) => language?.name.toLowerCase().includes(filterValue));
   }
 
   private _filterSports(value: any): any[] {
@@ -718,22 +646,17 @@ export class UserDetailComponent {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/slug/clients/' + this.mainId + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' + this.mainId)
+    this.clientUsers = this.userC.clientUsers;
+    this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.mainId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.clientUsers = data.data;
-        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.mainId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((data) => {
-            data.data.forEach((element: any) => {
-              this.clientUsers.forEach((cl: any) => {
-                if (element.client_id === cl.id) {
-                  cl.utilizer_id = element.id;
-                }
-              });
-            });
-          })
-
+        data.data.forEach((element: any) => {
+          this.clientUsers.forEach((cl: any) => {
+            if (element.client_id === cl.id) {
+              cl.utilizer_id = element.id;
+            }
+          });
+        });
       })
   }
 
@@ -765,7 +688,7 @@ export class UserDetailComponent {
 
   setInitLanguages() {
 
-    this.languages.forEach((element: any) => {
+    this.userC.languages.forEach((element: any) => {
       if (element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
         || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
         this.selectedLanguages.push(element);
@@ -1177,7 +1100,7 @@ export class UserDetailComponent {
   }
 
   getLanguage(id: any) {
-    const lang = this.languages.find((c: any) => c.id == +id);
+    const lang = this.userC.languages.find((c: any) => c.id == +id);
     return lang ? lang.code.toUpperCase() : 'NDF';
   }
 
@@ -1297,7 +1220,7 @@ export class UserDetailComponent {
   }
 
   getLanguageById(languageId: number): string {
-    const language = this.languages.find((c: any) => c.id === languageId);
+    const language = this.userC.languages.find((c: any) => c.id === languageId);
     return language ? language.code.toUpperCase() : '';
   }
 
