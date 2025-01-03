@@ -33,7 +33,7 @@ export class CourseComponent implements OnInit {
   userLogged: any;
   course: any;
   courseType: number = 2;
-  dataLevels = [
+  dataLevels:any = [
     {
       'id': 181,
       'league': 'SKV',
@@ -265,15 +265,29 @@ export class CourseComponent implements OnInit {
               console.error('Error al obtener la temporada:', err);
             }
           });
+
         }
       }
     );
     const id = this.route.snapshot.paramMap.get('id');
-    this.dataLevels.forEach((degree: any) => {
-      degree.inactive_color = this.lightenColor(degree.color, 30);
-    });
+
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.crudService
+        .list('/degrees', 1, 10000, 'asc', 'id', '&school_id=' +
+          this.schoolData.id + '&sport_id='+this.course.sport_id, '', null, '', ['degreesSchoolSportGoals']).subscribe({
+        next: (response) => {
+          if (response.data.length > 0) {
+            this.dataLevels = response.data;
+            this.dataLevels.forEach((degree: any) => {
+              degree.inactive_color = this.lightenColor(degree.color, 30);
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error al obtener la temporada:', err);
+        }
+      });
       this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
         this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
@@ -281,7 +295,7 @@ export class CourseComponent implements OnInit {
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
-        if (this.course.is_flexible) {
+        if (this.course.is_flexible && this.selectedDateReservation) {
           this.fetchAvailableDurations(this.selectedHour);
         } else {
           this.selectedDuration = this.course.duration;
@@ -414,8 +428,9 @@ export class CourseComponent implements OnInit {
 
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
 
-      this.fetchAvailableDurations(this.selectedHour);
-
+      if(this.selectedLevel) {
+        this.fetchAvailableDurations(this.selectedHour);
+      }
 
     }
   }
@@ -432,6 +447,10 @@ export class CourseComponent implements OnInit {
   }
 
   fetchAvailableDurations(hour: string): void {
+    const cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+    const cart = cartStorage ? JSON.parse(cartStorage) : {};
+    const courseId = this.course.id;
+
     const bookingUsers = this.selectedUserMultiple.map((selectedUser, index) => ({
       course: this.course,
       client: selectedUser,
@@ -440,35 +459,42 @@ export class CourseComponent implements OnInit {
       price: index === 0 ? this.course.price : 0,
       currency: 'CHF',
       course_id: this.course.id,
-      course_date_id: this.findMatchingCourseDate().id, // Obtener course_date
+      course_date_id: this.findMatchingCourseDate().id,
       course_group_id: null,
       course_subgroup_id: null,
-      date: this.findMatchingCourseDate().date, // Obtener la fecha del course_date
+      date: this.findMatchingCourseDate().date,
       hour_start: hour,
       hour_end: this.calculateEndTime(hour, this.selectedDuration?.duration ?? '00:00'),
       extra: this.selectedForfait,
+      minimumDegreeId: this.selectedLevel ? this.selectedLevel.degree_order : 1,
     }));
 
-    const courseDateId = this.findMatchingCourseDate().id; // ID del course_date
+    const courseDateId = this.findMatchingCourseDate().id;
 
-    // Realizar la solicitud
     this.coursesService.getAvailableDurations(courseDateId, hour, bookingUsers).subscribe({
       next: (response: any) => {
         if (response.success) {
-          // Convertir la respuesta en un array de duraciones
           const durationsArray = Object.values(response.data);
 
           if (durationsArray.length > 0) {
-            // Actualizar las duraciones disponibles
-            this.availableDurations = [...new Set(durationsArray)];
-            this.handleDurationSelection();
+            this.availableDurations = durationsArray
+              .map((duration:any) => ({
+                ...duration,
+                monitors: this.filterMonitorsForOverlap(duration.monitors, cart, courseId, hour, duration.duration),
+              }))
+              .filter((duration:any) => duration.monitors.length > 0); // Eliminar duraciones sin monitores
+
+            if (this.availableDurations.length === 0) {
+              this.availableDurations = [];
+              this.showNoAvailabilityMessage();
+            } else {
+              this.handleDurationSelection();
+            }
           } else {
-            // Manejar el caso de no disponibilidad
             this.availableDurations = [];
-            this.showNoAvailabilityMessage(); // Lógica para manejar el error
+            this.showNoAvailabilityMessage();
           }
         } else {
-          // Manejar respuesta sin éxito
           this.handleNoSuccessResponse();
         }
       },
@@ -480,27 +506,64 @@ export class CourseComponent implements OnInit {
   }
 
 
+  filterMonitorsForOverlap(monitors: any[], cart: any, courseId: number, selectedHour: string, duration: string): any[] {
+    return monitors.filter(monitor => {
+      const monitorStartTime = this.parseTime(selectedHour);
+      const monitorEndTime = this.parseTime(this.calculateEndTime(selectedHour, duration));
+
+      const hasOverlap = Object.keys(cart[courseId] || {}).some(userId => {
+        const userBookings = cart[courseId][userId];
+
+        return userBookings.some((booking: any) => {
+          const bookingStartTime = this.parseTime(booking.hour_start);
+          const bookingEndTime = this.parseTime(booking.hour_end);
+
+          return (
+            bookingStartTime < monitorEndTime &&
+            bookingEndTime > monitorStartTime &&
+            booking.monitor_id === monitor.id
+          );
+        });
+      });
+
+      return !hasOverlap;
+    });
+  }
+
+  private parseTime(time: string): Date {
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+  }
+
+  // Método para manejar la falta de disponibilidad
   showNoAvailabilityMessage(): void {
-    console.warn('No availability for the selected hour.');
-    // Aquí puedes mostrar un mensaje de error en la interfaz de usuario, por ejemplo:
-    this.snackbar.open('No availability for the selected hour.', 'Close', {
-      duration: 3000,
-      panelClass: ['error-snackbar'],
+    this.translateService.get('no_availability_message').subscribe((message: string) => {
+      this.snackbar.open(message, this.translateService.instant('close'), {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
     });
   }
 
+  // Método para manejar respuestas no exitosas
   handleNoSuccessResponse(): void {
-    console.warn('Failed to fetch durations. Please try again.');
-    this.snackbar.open('Failed to fetch durations. Please try again.', 'Close', {
-      duration: 3000,
-      panelClass: ['error-snackbar'],
+    this.translateService.get('fetch_durations_failed').subscribe((message: string) => {
+      this.snackbar.open(message, this.translateService.instant('close'), {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
     });
   }
 
-  showErrorMessage(message: string): void {
-    this.snackbar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: ['error-snackbar'],
+  // Método para mostrar mensajes de error personalizados
+  showErrorMessage(messageKey: string): void {
+    this.translateService.get(messageKey).subscribe((translatedMessage: string) => {
+      this.snackbar.open(translatedMessage, this.translateService.instant('close'), {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
     });
   }
 
@@ -542,6 +605,7 @@ export class CourseComponent implements OnInit {
               'hour_start': this.selectedHour,
               'monitor_id': this.selectedDuration.monitors[0].id,
               'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration.duration),
+              'degree_id': this.selectedLevel.id,
               'extra': this.selectedForfait
             });
           });
@@ -563,6 +627,7 @@ export class CourseComponent implements OnInit {
               'hour_start': this.selectedHour,
               'monitor_id': this.selectedDuration.monitors[0].id,
               'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
+              'degree_id': this.selectedLevel.id,
               'extra': this.selectedForfait
             });
           });
@@ -588,6 +653,7 @@ export class CourseComponent implements OnInit {
                 'course_date_id': date.id,
                 'course_group_id': courseGroup.id,
                 'course_subgroup_id': courseSubgroup.id,
+                'degree_id': this.selectedLevel.id,
                 'date': date.date,
                 'hour_start': date.hour_start,
                 'hour_end': date.hour_end,
@@ -614,6 +680,7 @@ export class CourseComponent implements OnInit {
               'course_date_id': date.id,
               'course_group_id': courseGroup.id,
               'course_subgroup_id': courseSubgroup.id,
+              'degree_id': this.selectedLevel.id,
               'date': date.date,
               'hour_start': date.hour_start,
               'hour_end': date.hour_end,
@@ -639,21 +706,34 @@ export class CourseComponent implements OnInit {
           const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
 
           const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-            const idArray = id.split('-');
-            return idArray.some(singleId => {
-              const keys = Object.keys(cart[this.course.id]);
-              return keys.some(key => {
-                const userCourseIds = key.split('-');
-                const hasUserOverlap = userCourseIds.includes(singleId);
+            const keys = Object.keys(cart[this.course.id] || {});
 
-                if (hasUserOverlap) {
-                  let course_date = this.findMatchingCourseDate();
-                  const userBookings = cart[this.course.id][key];
-                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-                }
+            return keys.some(key => {
+              const userCourseIds = key.split('-');
+              const hasUserOverlap = userCourseIds.includes(id);
 
-                return false;
-              });
+              if (hasUserOverlap) {
+                let course_date = this.findMatchingCourseDate();
+                const userBookings = cart[this.course.id][key];
+
+                return userBookings.some((booking: any) => {
+                  const bookingStartTime = this.parseTime(booking.hour_start);
+                  const bookingEndTime = this.parseTime(booking.hour_end);
+                  const newBookingStartTime = this.parseTime(this.selectedHour);
+                  const newBookingEndTime = this.parseTime(
+                    this.calculateEndTime(this.selectedHour, this.selectedDuration?.duration || '00:00')
+                  );
+
+                  // Comprobar solapamiento de horarios
+                  return (
+                    booking.course_date_id === course_date.id && // Mismo course_date_id
+                    bookingStartTime < newBookingEndTime &&
+                    bookingEndTime > newBookingStartTime
+                  );
+                });
+              }
+
+              return false;
             });
           });
 
@@ -665,8 +745,8 @@ export class CourseComponent implements OnInit {
 
             localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
             this.cartService.carData.next(cart);
-            // TODO: mostrar mensaje de curso guardado correctamente.
             this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+            this.goTo(this.schoolData?.slug + '/cart');
           } else {
             this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
           }
@@ -679,7 +759,7 @@ export class CourseComponent implements OnInit {
             this.cartService.carData.next(cart);
             this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
 
-            this.goTo(this.schoolData.slug);
+            this.goTo(this.schoolData?.slug + '/cart');
           } else {
 
             this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
@@ -785,8 +865,8 @@ export class CourseComponent implements OnInit {
           this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', { duration: 3000 });
         }
       }
-      if (this.course.is_flexible) {
-        this.updatePrice();
+      if (this.course.is_flexible && this.selectedDateReservation && this.selectedLevel) {
+        this.fetchAvailableDurations(this.selectedHour);
       }
     }
     else {
@@ -799,6 +879,9 @@ export class CourseComponent implements OnInit {
 
   selectLevel(level: any) {
     this.selectedLevel = level;
+    if(this.course.course_type == 2 && this.selectedHour) {
+      this.fetchAvailableDurations(this.selectedHour);
+    }
     this.showLevels = false;
   }
 
@@ -832,8 +915,8 @@ export class CourseComponent implements OnInit {
     this.isModalAddUser = false;
   }
 
-  goTo(...urls: string[]) {
-    this.router.navigate(urls);
+  goTo(url: string) {
+    this.router.navigate([url]);
   }
 
   transformAge(birthDate: string) {
@@ -868,6 +951,13 @@ export class CourseComponent implements OnInit {
 
   isAgeAppropriate(userAge: number, minAge: number, maxAge: number): boolean {
     return userAge >= minAge && userAge <= maxAge;
+  }
+
+  isGroupAgeAppropriate(users: { birth_date: string }[], minAge: number, maxAge: number): boolean {
+    return users.every(user => {
+      const userAge = this.transformAge(user.birth_date);
+      return userAge >= minAge && userAge <= maxAge;
+    });
   }
 
   selectDate(date: any) {
@@ -1018,7 +1108,7 @@ export class CourseComponent implements OnInit {
       .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
 
     // Convertir la duración seleccionada a minutos
-    const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration);
+    const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration.duration);
 
     // Comprobar si la duración seleccionada está dentro de las duraciones disponibles
     const isSelectedDurationAvailable = this.availableDurations
@@ -1026,13 +1116,13 @@ export class CourseComponent implements OnInit {
 
     // Si no está disponible, establecer la primera duración disponible
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0]);
+      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0].duration);
     }
     this.updatePrice();
   }
 
   updatePrice(): void {
-    const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration); // Convertir duración a minutos
+    const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration.duration); // Convertir duración a minutos
     //const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
     const selectedPax = this.selectedUserMultiple.length;
 

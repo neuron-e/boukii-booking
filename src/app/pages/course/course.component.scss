@@ -312,7 +312,7 @@
 
 @media (max-width: 1024px) {
   .show-mobile {
-    display: flex !important;
+    display: block !important;
     flex-direction: column;
   }
   .show-desktop {

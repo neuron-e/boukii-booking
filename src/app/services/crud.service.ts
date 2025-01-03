@@ -42,7 +42,8 @@ export class ApiCrudService extends ApiService {
   }
 
   list(model: string, numPage: number = 1, perPage: number = 10, order: string = 'desc', orderColumn: string = 'id',
-       search: string = '', exclude: string = '', user: any = null, filter: string = '', relations: any = []): Observable < ApiResponse > {
+       search: string = '', exclude: string = '', user: any = null,
+       filter: string = '', relations: any = []): Observable < ApiResponse > {
 
 
     let relationsParams = '';

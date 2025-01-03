@@ -685,6 +685,8 @@
   "Client has booking on that date": "Client has booking on that date",
   "text_birth_date_error": "You must be at least 18 years old to register.",
   "forfait_error": "Please select at least one forfait option.",
-  "text_age_not_appropriate": "The user does not meet the required age for this course: "
-
+  "text_age_not_appropriate": "The user does not meet the required age for this course: ",
+  "no_availability_message": "No availability for the selected hour and level. Please try again with another level or hour.",
+  "fetch_durations_failed": "Failed to fetch durations. Please try again.",
+  "close": "Close"
 }

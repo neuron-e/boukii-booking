@@ -693,6 +693,8 @@
   "No monitor available on that date": "No hay disponibilidad para esta hora.",
   "Client has booking on that date": "El cliente ya tiene una reserva en esa fecha.",
   "text_birth_date_error": "Debe tener al menos 18 años para registrarse",
-  "forfait_error": "Por favor, selecciona al menos una opción de forfait."
-
+  "forfait_error": "Por favor, selecciona al menos una opción de forfait.",
+  "no_availability_message": "No hay disponibilidad para la hora y nivel seleccionados. Por favor, inténtelo con otro nivel u hora.",
+  "fetch_durations_failed": "Error al obtener las duraciones. Por favor, inténtelo de nuevo.",
+  "close": "Cerrar"
 }
