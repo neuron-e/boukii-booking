@@ -1042,18 +1042,18 @@ export class UserDetailComponent {
 
       this.crudService.get('/slug/courses/' + this.detailData.course_id)
         .pipe(takeUntil(this.destroy$))
-        .subscribe((course) => {
+        .subscribe((course: any) => {
           this.detailData.course = course.data;
           this.crudService.get('/sports/' + this.detailData.course.sport_id)
             .pipe(takeUntil(this.destroy$))
-            .subscribe((sport) => {
+            .subscribe((sport: any) => {
               this.detailData.sport = sport.data;
             });
 
           if (this.detailData.degree_id !== null) {
             this.crudService.get('/degrees/' + this.detailData.degree_id)
               .pipe(takeUntil(this.destroy$))
-              .subscribe((degree) => {
+              .subscribe((degree: any) => {
                 this.detailData.degree = degree.data;
               })
           }
