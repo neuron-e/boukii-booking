@@ -759,10 +759,9 @@ export class CourseComponent implements OnInit {
     );
 
     // Si no hay niveles disponibles, muestra un mensaje
-    if (!this.hasLevelsAvailable) {
-      // Puedes establecer un mensaje o manejarlo como prefieras
-      console.log("No hay niveles disponibles para este usuario.");
-    }
+    //if (!this.hasLevelsAvailable) {
+    // Puedes establecer un mensaje o manejarlo como prefieras
+    //}
     this.showLevels = true;
   }
 

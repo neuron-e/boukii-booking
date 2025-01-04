@@ -202,7 +202,6 @@ export class UserDetailComponent {
     };
 
     return forkJoin(requestsInitial).pipe(tap((results) => {
-      console.log('All data loaded', results);
       this.formInfoAccount = this.fb.group({
         image: [''],
         name: ['', Validators.required],
@@ -753,9 +752,7 @@ export class UserDetailComponent {
             if (this.defaultsObservations.id) {
               this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
                 .pipe(takeUntil(this.destroy$))
-                .subscribe((obs) => {
-                  console.log('client observation created');
-                })
+                .subscribe((obs) => { })
 
             }
 
@@ -763,18 +760,14 @@ export class UserDetailComponent {
 
               this.crudService.create('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id })
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(() => {
-                  console.log('client sport created');
-                })
+                .subscribe(() => { })
             });
 
             this.sportsCurrentData.data.forEach((element: any) => {
 
               this.crudService.update('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id }, element.id)
                 .pipe(takeUntil(this.destroy$))
-                .subscribe(() => {
-                  console.log('client sport updated');
-                })
+                .subscribe(() => { })
             });
 
             setTimeout(() => {

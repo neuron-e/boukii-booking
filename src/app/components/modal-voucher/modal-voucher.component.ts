@@ -45,9 +45,7 @@ export class ModalVoucherComponent implements OnInit {
       let userLogged = JSON.parse(storageSlug);
       this.clientService.getClientVoucher(this.code, userLogged.clients[0].id).subscribe(res => {
         this.onClose.emit(res);
-      }, error => {
-        console.log(error);
-      })
+      }, error => {      })
     }
 
   }

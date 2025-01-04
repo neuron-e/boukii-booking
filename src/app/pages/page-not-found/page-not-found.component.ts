@@ -90,7 +90,6 @@ export class PageNotFoundComponent {
   }
 
   selectLanguage(lang: string) {
-    console.log('Language selected:', lang);
     this.isOpenDropdownLang = false;
   }
 

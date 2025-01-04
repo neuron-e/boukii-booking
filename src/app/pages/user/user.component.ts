@@ -167,10 +167,7 @@ export class UserComponent implements OnInit {
               }))
             };
             return forkJoin(requestsClient).subscribe((results) => {
-              console.log('All data loaded', results);
-              if (!onChangeUser) {
-                this.getClientUtilisateurs();
-              }
+              if (!onChangeUser) this.getClientUtilisateurs();
               const langs = [];
               this.languages.forEach((element: any) => {
                 if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||

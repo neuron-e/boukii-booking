@@ -97,7 +97,6 @@ export class HeaderComponent implements OnInit {
   }
 
   selectLanguage(lang: string) {
-    console.log('Language selected:', lang);
     this.isOpenDropdownLang = false;
   }
 
