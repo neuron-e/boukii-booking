@@ -153,7 +153,7 @@
                   class="name">{{
                   item?.courseDates[0]?.monitor_id !== null ?
                   getMonitorName(item?.courseDates[0]?.monitor_id) :
-                  'No monitor asigned'}}</mat-card-subtitle>
+                  ("text_nomonitorset" | translate)}}</mat-card-subtitle>
                 <mat-card-subtitle class="namedate">{{
                   getLanguage(getMonitorLang(item?.courseDates[0]?.monitor_id))
                   }} · {{

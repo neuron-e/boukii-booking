@@ -1,72 +1,91 @@
 <div class="card">
-    <div class="card-header">
-        <img [src]="data.image || '../../../assets/images/3.png'"
-            alt="Imagen de esquiadores"
-            class="card-image">
-        <div class="left-icon">
-            <img
-                [src]="data.icon"
-                alt="Icono">
-        </div>
-        <div class="favorite-icon">
-            <img src="assets/icons/destacado.png" alt="Favorito">
-        </div>
-        <span class="last-plaza">
-            {{"Solo 1 plaza disponible!" | translate}}
-        </span>
-    </div>
-    <div class="card-body">
-        <h3 class="card-title">
-            {{getCourseName()}}
-        </h3>
-        <p class="price">
-            {{getCoursePrice()}} {{data.currency}} /{{"Fecha" | translate}}
-        </p>
-        <p class="description" [innerHTML]="getShotrDescription()"> </p>
-        <div class="dates">
-            <img src="assets/icons/calendar.png" alt="Calendario" class="icon">
-            <div>
-                <span>Desde&nbsp;<strong
-                        style="font-weight: 500;">{{data.date_start | date:
-                        'dd.MM.yyyy'}}</strong>
-                    hasta&nbsp;<strong style="font-weight: 500;">{{data.date_end
+	<div class="card-header">
+		<img [src]="data.image || '../../../assets/images/3.png'"
+			alt="Imagen de esquiadores"
+			class="card-image">
+		<div class="left-icon">
+			<img [src]="data.icon"
+				alt="Icono">
+		</div>
+		<div class="favorite-icon">
+			<img src="assets/icons/destacado.png"
+				alt="Favorito">
+		</div>
+		<span class="last-plaza">
+			{{"Solo 1 plaza disponible!" | translate}}
+		</span>
+	</div>
+	<div class="card-body">
+		<h3 class="card-title">{{getCourseName()}}</h3>
+		<p class="price">
+			{{getCoursePrice()}} {{data.currency}} /{{"Fecha" | translate}}
+		</p>
+		<p [innerHTML]="getShotrDescription()"
+			class="description">
+		</p>
+		<div class="dates">
+			<img src="assets/icons/calendar.png"
+				alt="Calendario"
+				class="icon">
+			<div>
+				<span>
+					Desde&nbsp;
+					<strong style="font-weight: 500;">
+						{{data.date_start | date:
+                        'dd.MM.yyyy'}}
+					</strong>
+					hasta&nbsp;
+					<strong style="font-weight: 500;">
+						{{data.date_end
                         | date:
-                        'dd.MM.yyyy'}}</strong></span>
-                <br>
-                <span>
-                    <!--{{getWeekDay()}}
-                    {{findMinHourStart()}}–{{findMaxHourEnd()}}-->
-                    <ng-container *ngIf="data.course_type == 1">
-                        <div
-                            *ngFor="let date of data.course_dates">
-                            {{date.date | date: 'dd.MM.yyyy'}}
+                        'dd.MM.yyyy'}}
+					</strong>
+				</span>
+				<br>
+				<span>
+					<!-- {{getWeekDay()}}
+                    {{findMinHourStart()}}–{{findMaxHourEnd()}} -->
+					<ng-container *ngIf="data.course_type == 1">
+						<div *ngFor="let date of data.course_dates">
+							{{date.date | date: 'dd.MM.yyyy'}}
                             {{date.hour_start}}-{{date.hour_end}}
-                        </div>
-                    </ng-container>
-                    <ng-container *ngIf="data.course_type == 2">
-                        <div class="mt-8 course-box-content-list">
-                            <div>{{data.course_dates[0].date | date:
+						</div>
+					</ng-container>
+					<ng-container *ngIf="data.course_type == 2">
+						<div class="mt-8 course-box-content-list">
+							<div>
+								{{data.course_dates[0].date | date:
                                 'dd.MM.yyyy'}}-{{data.course_dates[data.course_dates.length-1].date
-                                | date: 'dd.MM.yyyy'}}</div>
-                            <div>{{
-                                getWeekdays(data.settings) }}</div>
-                        </div>
-                        <div class="mt-8 course-box-content-list">
-                            <div>{{'text_from_price'
-                                | translate }} {{data.duration}}</div>
-                            <div>{{data.hour_min}}h-{{data.hour_max}}h</div>
-                        </div>
-                    </ng-container>
-                </span>
-            </div>
-        </div>
-        <div class="max-group">
-            <img src="assets/icons/people.png" alt="Grupo máximo" class="icon">
-            <span>Max. {{data.max_participants}}</span>
-            <span
-                *ngIf="data.age_max<99 && data.age_min>1">
-                ,{{data.age_min}}-{{data.age_max}}+ años
-            </span>
-        </div>
-    </div>
+                                | date: 'dd.MM.yyyy'}}
+							</div>
+							<div>
+								{{
+                                getWeekdays(data.settings) }}
+							</div>
+						</div>
+						<div class="mt-8 course-box-content-list">
+							<div>
+								{{'text_from_price'
+                                | translate }} {{data.duration}}
+							</div>
+							<div>
+								{{data.hour_min}}h-{{data.hour_max}}h
+							</div>
+						</div>
+					</ng-container>
+				</span>
+			</div>
+		</div>
+		<div class="max-group">
+			<img src="assets/icons/people.png"
+				alt="Grupo máximo"
+				class="icon">
+			<span>
+				Max. {{data.max_participants}}
+			</span>
+			<span *ngIf="data.age_max<99 && data.age_min>1">
+				,{{data.age_min}}-{{data.age_max}}+ años
+			</span>
+		</div>
+	</div>
 </div>
