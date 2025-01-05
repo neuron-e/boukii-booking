@@ -56,29 +56,29 @@ export class HomeComponent implements OnInit {
     expert: [10, 11, 12]
   };
   degreeOptions = [
-    { id: 1, label: 'text_doesnt_matter', tooltips: [] },
-    { id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
-    { id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
-    { id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
-    { id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] }
+    { id: 1, label: 'text_doesnt_matter', tooltips: [], Range: this.degreeValues.doesntMatter },
+    { id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'], Range: this.degreeValues.novice },
+    { id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'], Range: this.degreeValues.intermediate },
+    { id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'], Range: this.degreeValues.advanced },
+    { id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'], Range: this.degreeValues.expert }
   ];
+
   ageOptions = [
-    { id: 1, label: 'text_all_ages' },
-    { id: 2, label: 'text_ages2' },
-    { id: 3, label: 'text_ages3' },
-    { id: 4, label: 'text_ages4' },
-    { id: 5, label: 'text_adults' }
+    { id: 1, label: 'text_all_ages', min_age: 1, max_age: 99 },
+    { id: 2, label: 'text_ages2', min_age: 2, max_age: 3 },
+    { id: 3, label: 'text_ages3', min_age: 3, max_age: 5 },
+    { id: 4, label: 'text_ages4', min_age: 6, max_age: 99 },
+    { id: 5, label: 'text_adults', min_age: 18, max_age: 99 }
   ];
+
   currentDegreeRange: number[] = [];
   selectedCourseType: number;
   degreesSports: any;
-  min_age: number;
-  max_age: number;
   daySelected: any;
   userLogged: any;
 
   constructor(public router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
-    private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService, private crudService: ApiCrudService,
+    private schoolService: SchoolService, private crudService: ApiCrudService,
     private fb: UntypedFormBuilder) {
   }
 
@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.FormGroup = this.fb.group({
       deporte: ["", Validators.required],
-      cursoType: ["", Validators.required],
+      course_type: ["", Validators.required],
       edat: ["", Validators.required],
       nivel: ["", Validators.required],
     })
@@ -109,7 +109,6 @@ export class HomeComponent implements OnInit {
                       this.myHolidayDates.push(moment(element).toDate());
                     });
                   }
-                  this.setAgeRange();
                   if (this.schoolData?.sports?.length > 0) {
                     this.selectedSportId = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
                     const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
@@ -143,16 +142,14 @@ export class HomeComponent implements OnInit {
       });
   }
   searchCourses() {
-    this.setDegreeRange()
-    this.setAgeRange()
     let params = {
       'start_date': this.formatDate(2000, 1, 1),
-      'end_date': this.formatDate(2034, 1, 1),
-      'course_type': this.FormGroup.controls['nivel'].value,
-      'degree_order': this.currentDegreeRange,
+      'end_date': this.formatDate(2099, 12, 31),
+      'course_type': this.FormGroup.controls['course_type'].value,
+      'degree_order': this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
       'sport_id': this.FormGroup.controls['deporte'].value,
-      'max_age': this.max_age,
-      'min_age': this.min_age
+      'max_age': this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
+      'min_age': this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age
     };
     this.coursesService.getCoursesAvailableByDates(params).subscribe(res => this.ResultCourse = res.data)
   }
@@ -231,55 +228,5 @@ export class HomeComponent implements OnInit {
     this.router.navigate([url]);
   }
 
-  setAgeRange(): void {
-    switch (this.FormGroup.controls['edat'].value) {
-      case 1:
-        this.min_age = 1;
-        this.max_age = 99;
-        break;
-      case 2:
-        this.min_age = 2;
-        this.max_age = 3;
-        break;
-      case 3:
-        this.min_age = 3;
-        this.max_age = 5;
-        break;
-      case 4:
-        this.min_age = 6;
-        this.max_age = 18;
-        break;
-      case 5:
-        this.min_age = 18;
-        this.max_age = 99;
-        break;
-      default:
-        this.min_age = 1;
-        this.max_age = 99;
-        break;
-    }
-  }
 
-  setDegreeRange(): void {
-    switch (this.FormGroup.controls['nivel'].value) {
-      case 1:
-        this.currentDegreeRange = this.degreeValues.doesntMatter;
-        break;
-      case 2:
-        this.currentDegreeRange = this.degreeValues.novice;
-        break;
-      case 3:
-        this.currentDegreeRange = this.degreeValues.intermediate;
-        break;
-      case 4:
-        this.currentDegreeRange = this.degreeValues.advanced;
-        break;
-      case 5:
-        this.currentDegreeRange = this.degreeValues.expert;
-        break;
-      default:
-        this.currentDegreeRange = [];
-        break;
-    }
-  }
 }

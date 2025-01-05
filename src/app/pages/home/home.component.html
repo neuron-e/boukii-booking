@@ -40,8 +40,8 @@
 			{{sport.name}}
 		</option>
 	</select>
-	<select [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'"
-		formControlName="cursoType">
+	<select [style.color]="FormGroup.controls['course_type'].value?'#222222':'#8B9099'"
+		formControlName="course_type">
 		<option selected
 			value>
 			{{"table.filter.course" | translate}}
@@ -170,8 +170,8 @@
 				{{sport.name}}
 			</option>
 		</select>
-		<select [style.color]="FormGroup.controls['cursoType'].value?'#222222':'#8B9099'"
-			formControlName="cursoType">
+		<select [style.color]="FormGroup.controls['course_type'].value?'#222222':'#8B9099'"
+			formControlName="course_type">
 			<option disabled
 				selected
 				hidden
@@ -195,8 +195,7 @@
 			</option>
 			<option *ngFor="let ageOption of ageOptions"
 				[value]="ageOption.id">
-				{{ageOption.label | translate
-        }}
+				{{ageOption.label | translate        }}
 			</option>
 		</select>
 		<select [style.color]="FormGroup.controls['nivel'].value?'#222222':'#8B9099'"
