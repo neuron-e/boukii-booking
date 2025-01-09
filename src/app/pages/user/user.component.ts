@@ -106,6 +106,11 @@ export class UserComponent implements OnInit {
       }
     });
   }
+  getDegreeScore(goal: any) {
+    const d = this.evaluationFullfiled.find((element: any) => element.degrees_school_sport_goals_id === goal)
+    if (d) return d.score
+    return 0
+  }
 
   onTabChange(index: number) {
     if (index === 0) {
@@ -125,7 +130,7 @@ export class UserComponent implements OnInit {
       'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
       .pipe(
         tap((data) => {
-
+          console.log(data)
           this.defaults = data.data;
           this.evaluations = data.data.evaluations;
           this.evaluationFullfiled = [];
@@ -292,8 +297,8 @@ export class UserComponent implements OnInit {
             // await this.getLanguages(data.clients[0]);
             //await this.getClientSchool();
             //await this.getClientSport();
-            /*            await this.getClientObservations();
-                        await this.getEvaluations();*/
+            await this.getClientObservations();
+            await this.getEvaluations();
 
 
           })
@@ -537,7 +542,6 @@ export class UserComponent implements OnInit {
     this.allLevels = [];
     this.selectedGoal = [];
     this.selectedSport = sport;
-
     this.schoolSports?.forEach((element: any) => {
       if (this.selectedSport && this.selectedSport.sport_id === element.sport_id) {
         this.selectedSport.degrees = element.degrees;
@@ -586,16 +590,11 @@ export class UserComponent implements OnInit {
     let ret = 0;
 
     const goals = this.goals.filter((g: any) => g.degree_id == this.selectedSport?.level.id);
-    console.log(this.evaluationFullfiled)
     if (goals.length > 0) {
       const maxPoints = goals.length * 10;
       this.evaluationFullfiled.forEach((element: any) => {
-        if (element.score) {
-
-          ret = ret + element.score;
-        }
+        if (element.score) ret = ret + element.score;
       });
-
       return (ret / maxPoints) * 100;
     } else {
       return ret;
@@ -920,9 +919,7 @@ export class UserComponent implements OnInit {
     this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .subscribe((data) => {
         this.evaluations = data.data;
-
         data.data.forEach((evaluation: any) => {
-
           this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id=' + evaluation.id)
             .subscribe((ev: any) => {
               ev.data.forEach((element: any) => {
