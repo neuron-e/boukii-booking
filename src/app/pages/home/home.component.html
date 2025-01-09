@@ -1,395 +1,500 @@
 <app-header [isModalLogin]="isModalLogin"
-  [isModalNewUser]="isModalNewUser"></app-header>
+	[isModalNewUser]="isModalNewUser"></app-header>
+
 
 <div class="text-color-light mb-24 montserrat">
-  {{'text_available_courses' | translate }}
+	{{'text_available_courses' | translate }}
 </div>
 
+
 <div class="filter-calendar-section">
-  <div class="filter-section">
-    <div class="text-vbig fw-semibold text-color">
-      {{'text_ideal_course' | translate }}
-    </div>
-    <div class="text-color-light montserrat">
-      <span class="text-color montserrat">{{'text_filters_a' | translate
-        }}</span> {{'text_filters_b' | translate }}
-    </div>
+	<div class="filter-section">
+		<div class="text-vbig fw-semibold text-color">
+			{{'text_ideal_course' | translate }}
+		</div>
+		<div class="text-color-light montserrat">
+			<span class="text-color montserrat">
+				{{'text_filters_a' | translate
+        }}
+			</span>
+			{{'text_filters_b' | translate }}
+		</div>
 
-    <div>
-      <div class="text-color uppercase mb-12">
-        {{'text_typeofevent' | translate }}
-      </div>
-      <div class="filter-flex-check">
-        <div class="checkbox-custom">
-          <input type="radio" id="radio-1" name="courseType" [value]="1"
-            [(ngModel)]="selectedCourseType" checked
-            (ngModelChange)="reloadFilters()">
-          <label for="radio-1"
-            class="checkbox-custom-label-collective text-color-light montserrat">{{'text_collectivescourses'
-            | translate }}</label>
-        </div>
-        <div class="checkbox-custom">
-          <input type="radio" id="radio-2" name="courseType" [value]="2"
-            [(ngModel)]="selectedCourseType"
-            (ngModelChange)="reloadFilters()">
-          <label for="radio-2"
-            class="checkbox-custom-label-private text-color-light montserrat">{{'text_privatecourses'
-            | translate }}</label>
-        </div>
-      </div>
-    </div>
 
-    <div>
-      <div class="text-color uppercase mb-12">
-        {{'text_sport' | translate }}
-      </div>
-      <div class="filter-flex-check">
-        <div class="checkbox-custom" *ngFor="let sport of schoolData?.sports">
-          <input type="radio" id="radio-sport-{{sport.id}}" name="sportType"
-            [value]="sport.id" [(ngModel)]="selectedSportId"
-            (ngModelChange)="reloadFilters()">
-          <label for="radio-sport-{{sport.id}}"
-            class="checkbox-custom-label-normal text-color-light montserrat">
-            {{sport.name}}
-          </label>
-        </div>
-      </div>
-    </div>
+		<div>
+			<div class="text-color uppercase mb-12">
+				{{'text_typeofevent' | translate }}
+			</div>
+			<div class="filter-flex-check">
+				<div class="checkbox-custom">
+					<input [value]="1"
+						[(ngModel)]="selectedCourseType"
+						(ngModelChange)="reloadFilters()"
+						type="radio"
+						id="radio-1"
+						name="courseType"
+						checked>
+					<label for="radio-1"
+						class="checkbox-custom-label-collective text-color-light montserrat">
+						{{'text_collectivescourses'
+            | translate }}
+					</label>
+				</div>
+				<div class="checkbox-custom">
+					<input [value]="2"
+						[(ngModel)]="selectedCourseType"
+						(ngModelChange)="reloadFilters()"
+						type="radio"
+						id="radio-2"
+						name="courseType">
+					<label for="radio-2"
+						class="checkbox-custom-label-private text-color-light montserrat">
+						{{'text_privatecourses'
+            | translate }}
+					</label>
+				</div>
+			</div>
+		</div>
 
-    <button *ngIf="!showMoreFilters" (click)="showMoreFilters=true"
-      class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
-      {{'text_more_filters' | translate }}
-    </button>
 
-    <ng-container *ngIf="showMoreFilters">
-      <div>
-        <div class="text-color uppercase mb-12">
-          {{ 'text_age' | translate }}
-        </div>
-        <div class="filter-flex-check">
-          <div class="checkbox-custom" *ngFor="let ageOption of ageOptions">
-            <input type="radio" [id]="'radio-ages-' + ageOption.id"
-              name="ageType" [value]="ageOption.id"
-              [(ngModel)]="selectedAgeType" (ngModelChange)="reloadFilters()">
-            <label [for]="'radio-ages-' + ageOption.id"
-              class="checkbox-custom-label-normal text-color-light montserrat">{{
-              ageOption.label | translate }}</label>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="text-color uppercase mb-12">
-          {{ 'text_level' | translate }}
-        </div>
-        <div class="filter-flex-check">
-          <div class="checkbox-custom position-relative"
-            *ngFor="let degreeOption of degreeOptions; let i = index"
-            (mouseenter)="showTooltipFilter(i)"
-            (mouseleave)="hideTooltipFilter(i)">
-            <input type="radio" [id]="'radio-level-' + degreeOption.id"
-              name="degreeType" [value]="degreeOption.id"
-              [(ngModel)]="selectedDegreeType"
-              (ngModelChange)="reloadFilters()">
-            <label [for]="'radio-level-' + degreeOption.id"
-              class="checkbox-custom-label-normal text-color-light montserrat">{{
-              degreeOption.label | translate }}</label>
+		<div>
+			<div class="text-color uppercase mb-12">
+				{{'text_sport' | translate }}
+			</div>
+			<div class="filter-flex-check">
+				<div *ngFor="let sport of schoolData?.sports"
+					class="checkbox-custom">
+					<input [value]="sport.id"
+						[(ngModel)]="selectedSportId"
+						(ngModelChange)="reloadFilters()"
+						type="radio"
+						id="radio-sport-{{sport.id}}"
+						name="sportType">
+					<label for="radio-sport-{{sport.id}}"
+						class="checkbox-custom-label-normal text-color-light montserrat">
+						{{sport.name}}
+					</label>
+				</div>
+			</div>
+		</div>
 
-            <div class="tooltip-container background-color-trans"
-              *ngIf="tooltipsFilter[i]" [@fadeInOut]>
-              <div class="text-small montserrat text-color-light"
-                *ngFor="let goal of degreeOption.tooltips">
-                {{ goal }}
-              </div>
-            </div>
-            <div (mouseenter)="showTooltipFilter(i)"
-              (mouseleave)="hideTooltipFilter(i)"></div>
-          </div>
-        </div>
-      </div>
 
-      <button (click)="showMoreFilters=false"
-        class="btn-back-grey rounded-8 button-style cursor-pointer"
-        type="button">
-        {{'text_close_more_filters' | translate }}
-      </button>
-    </ng-container>
+		<button *ngIf="!showMoreFilters"
+			(click)="showMoreFilters=true"
+			class="btn-back-grey rounded-8 button-style cursor-pointer"
+			type="button">
+			{{'text_more_filters' | translate }}
+		</button>
 
-  </div>
 
-  <!--Calendar-->
-  <div class="calendar-section">
-    <div class="calendar background-color-trans rounded-8">
-      <div class="header-calendar">
-        <div class="header-calendar-arrows">
-          <img [src]="themeService.arrowLeft" (click)="prevMonth()" *ngIf="!loading"/>
-          <img [src]="themeService.arrowRight" (click)="nextMonth()" *ngIf="!loading"/>
-        </div>
-        <div class="text-color text-semibig fw-medium">{{
-          monthNames[currentMonth] }}</div>
-        <div class="text-color text-semibig fw-medium">{{ currentYear }}</div>
-      </div>
-      <div class="weekdays">
-        <span *ngFor="let day of weekdays"
-          class="montserrat text-small text-color-light">{{ day }}</span>
-      </div>
-      <div class="days">
-        <ng-container *ngFor="let day of days">
-          <span [ngClass]="{'very-light-opacity': day.past}"
-            class="montserrat day-span-a"
-            (click)="selectDay(day)">
-            <span [ngClass]="{
+		<ng-container *ngIf="showMoreFilters">
+			<div>
+				<div class="text-color uppercase mb-12">
+					{{ 'text_age' | translate }}
+				</div>
+				<div class="filter-flex-check">
+					<div *ngFor="let ageOption of ageOptions"
+						class="checkbox-custom">
+						<input [id]="'radio-ages-' + ageOption.id"
+							[value]="ageOption.id"
+							[(ngModel)]="selectedAgeType"
+							(ngModelChange)="reloadFilters()"
+							type="radio"
+							name="ageType">
+						<label [for]="'radio-ages-' + ageOption.id"
+							class="checkbox-custom-label-normal text-color-light montserrat">
+							{{
+              ageOption.label | translate }}
+						</label>
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="text-color uppercase mb-12">
+					{{ 'text_level' | translate }}
+				</div>
+				<div class="filter-flex-check">
+					<div *ngFor="let degreeOption of degreeOptions; let i = index"
+						(mouseenter)="showTooltipFilter(i)"
+						(mouseleave)="hideTooltipFilter(i)"
+						class="checkbox-custom position-relative">
+						<input [id]="'radio-level-' + degreeOption.id"
+							[value]="degreeOption.id"
+							[(ngModel)]="selectedDegreeType"
+							(ngModelChange)="reloadFilters()"
+							type="radio"
+							name="degreeType">
+						<label [for]="'radio-level-' + degreeOption.id"
+							class="checkbox-custom-label-normal text-color-light montserrat">
+							{{
+              degreeOption.label | translate }}
+						</label>
+
+
+						<div *ngIf="tooltipsFilter[i]"
+							[@fadeInOut]
+							class="tooltip-container background-color-trans">
+							<div *ngFor="let goal of degreeOption.tooltips"
+								class="text-small montserrat text-color-light">
+								{{ goal }}
+							</div>
+						</div>
+						<div (mouseenter)="showTooltipFilter(i)"
+							(mouseleave)="hideTooltipFilter(i)"></div>
+					</div>
+				</div>
+			</div>
+
+
+			<button (click)="showMoreFilters=false"
+				class="btn-back-grey rounded-8 button-style cursor-pointer"
+				type="button">
+				{{'text_close_more_filters' | translate }}
+			</button>
+		</ng-container>
+
+
+	</div>
+
+
+	<!-- Calendar -->
+	<div class="calendar-section">
+		<div class="calendar background-color-trans rounded-8">
+			<div class="header-calendar">
+				<div class="header-calendar-arrows">
+					<img *ngIf="!loading"
+						[src]="themeService.arrowLeft"
+						(click)="prevMonth()">
+					<img *ngIf="!loading"
+						[src]="themeService.arrowRight"
+						(click)="nextMonth()">
+				</div>
+				<div class="text-color text-semibig fw-medium">
+					{{
+          monthNames[currentMonth] }}
+				</div>
+				<div class="text-color text-semibig fw-medium">{{ currentYear }}</div>
+			</div>
+			<div class="weekdays">
+				<span *ngFor="let day of weekdays"
+					class="montserrat text-small text-color-light">
+					{{ day }}
+				</span>
+			</div>
+			<div class="days">
+				<ng-container *ngFor="let day of days">
+					<span [ngClass]="{'very-light-opacity': day.past}"
+						(click)="selectDay(day)"
+						class="montserrat day-span-a">
+						<span [ngClass]="{
                             'active-collective': day.active && selectedCourseType == 1,
                             'active-collective-selected': day.selected && selectedCourseType == 1,
                             'active-private': day.active && selectedCourseType == 2,
                             'active-private-selected': day.selected && selectedCourseType == 2
-                            }" class="day-span-b text-color">
-              {{ day.number }}
-            </span>
-          </span>
-        </ng-container>
-      </div>
-    </div>
-    <button
-      class="btn-back-grey rounded-8 button-style cursor-pointer width-100"
-      type="button" (click)="daySelected = null; getCourses();">
-      {{'text_all_availability' | translate }}
-    </button>
-  </div>
+                            }"
+							class="day-span-b text-color">
+							{{ day.number }}
+						</span>
+					</span>
+				</ng-container>
+			</div>
+		</div>
+		<button (click)="daySelected = null; getCourses();"
+    [style]="daySelected?'':'background-color:var(--primary-bs) !important'"
+			class="btn-back-grey rounded-8 button-style cursor-pointer width-100"
+			style="margin-top: 15px;"
+			type="button">
+			{{'text_all_availability' | translate }}
+		</button>
+	</div>
 </div>
+
 
 <div class="separator-line mb-32 mt-32"></div>
 
+
 <div class="course-section-title mb-32">
-  <div class="text-vbig fw-semibold text-color">
-    {{'text_available_courses' | translate }}
-  </div>
-  <div class="text-normal fw-medium text-color-light" *ngIf="!daySelected">
-    {{this.firstDayOfMonth | date: 'dd-MM-yyyy'}} - {{lastDayOfMonth | date:
+	<div class="text-vbig fw-semibold text-color">
+		{{'text_available_courses' | translate }}
+	</div>
+	<div *ngIf="!daySelected"
+		class="text-normal fw-medium text-color-light">
+		{{this.firstDayOfMonth | date: 'dd-MM-yyyy'}} - {{lastDayOfMonth | date:
     'dd-MM-yyyy'}}
-  </div>
-  <div class="text-normal fw-medium text-color-light" *ngIf="daySelected">
-    {{this.daySelected | date: 'dd-MM-yyyy'}}
-  </div>
+	</div>
+	<div *ngIf="daySelected"
+		class="text-normal fw-medium text-color-light">
+		{{this.daySelected | date: 'dd-MM-yyyy'}}
+	</div>
 </div>
 
+
 <div class="course-boxes-wrapper">
-  <!--DESKTOP-->
-  <div
-    class="show-desktop background-color-trans rounded-8 padding-box course-box"
-    *ngFor="let course of courses">
-    <!--border-primary-->
+	<!-- DESKTOP -->
+	<div *ngFor="let course of courses"
+		class="show-desktop background-color-trans rounded-8 padding-box course-box">
+		<!-- border-primary -->
 
-    <div class="course-box-header">
-      <div class="course-box-icon">
-        <img src="assets/icons/prive_ski2x.png"
-          *ngIf="course.course_type == 2" />
-        <img src="assets/icons/collectif_ski2x.png"
-          *ngIf="course.course_type == 1" />
-        <div class="course-box-title">
-          <div
-            class="text-color text-medium fw-medium">{{getCourseName(course)}}</div>
-          <span class="text-color-light text-small">{{course.type}}</span>
-        </div>
-      </div>
-      <div class="text-color fw-medium pb-8 text-align-right min-width-price"
-        *ngIf="course.is_flexible">{{getCoursePrice(course)}} CHFs /{{'date' |
+
+		<div class="course-box-header">
+			<div class="course-box-icon">
+				<img *ngIf="course.course_type == 2"
+					src="assets/icons/prive_ski2x.png">
+				<img *ngIf="course.course_type == 1"
+					src="assets/icons/collectif_ski2x.png">
+				<div class="course-box-title">
+					<div class="text-color text-medium fw-medium">
+						{{getCourseName(course)}}
+					</div>
+					<span class="text-color-light text-small">{{course.type}}</span>
+				</div>
+			</div>
+			<div *ngIf="course.is_flexible"
+				class="text-color fw-medium pb-8 text-align-right min-width-price">
+				{{getCoursePrice(course)}} CHFs /{{'date' |
         translate }}
-      </div>
-      <div class="text-color fw-medium pb-8 text-align-right min-width-price"
-        *ngIf="!course.is_flexible">{{course.price}} CHF
-      </div>
-    </div>
+			</div>
+			<div *ngIf="!course.is_flexible"
+				class="text-color fw-medium pb-8 text-align-right min-width-price">
+				{{course.price}} CHF
+			</div>
+		</div>
 
-    <div class="mt-8 mb-24 course-box-buttons">
-      <!--      <button class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
+
+		<div class="mt-8 mb-24 course-box-buttons">
+			<!-- <button class="btn-back-grey rounded-8 button-style cursor-pointer" type="button">
         {{'text_availability' | translate }}
-      </button>-->
-      <button (click)="goTo(this.schoolData.slug + '/course/' +course.id)"
-        class="btn-back-primary rounded-8 button-style cursor-pointer"
-        type="button">
-        {{'text_see_coourse' | translate }}
-      </button>
-    </div>
+      </button> -->
+			<button (click)="goTo(this.schoolData.slug + '/course/' +course.id)"
+				class="btn-back-primary rounded-8 button-style cursor-pointer"
+				type="button">
+				{{'text_see_coourse' | translate }}
+			</button>
+		</div>
 
-    <div class="course-box-content">
-      <div class="rounded-8 course-box-content-img">
-        <img [src]="course.image !== null ? course?.image : defaultImage"
-          class="rounded-8 course-image-img" />
-      </div>
-      <div>
-        <!-- COLLECTIVE-->
-        <div *ngIf="course.course_type == 1">
-          <div class="text-color montserrat course-box-content-text">
-            <img [src]="themeService.calendar">
-            <span *ngIf="course.is_flexible">{{'text_dates_separated' |
-              translate }}</span>
-            <span *ngIf="!course.is_flexible">{{'text_dates_fixed' | translate
-              }}</span>
-          </div>
-          <div class="mt-12 course-box-content-list">
-            <div class="text-small text-color-light pl-24 montserrat"
-              *ngFor="let date of course.course_dates">
-              {{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
-              {{date.hour_end}}</div>
-          </div>
-        </div>
-        <!--PRIVATE-->
-        <div *ngIf="course.course_type == 2">
-          <div class="text-color montserrat course-box-content-text">
-            <img [src]="themeService.calendar">
-            {{'text_when_course' | translate }}
-          </div>
-          <div class="mt-8 course-box-content-list">
-            <div
-              class="text-small text-color-light pl-24 montserrat">{{course.course_dates[0].date
+
+		<div class="course-box-content">
+			<div class="rounded-8 course-box-content-img">
+				<img [src]="course.image !== null ? course?.image : defaultImage"
+					class="rounded-8 course-image-img">
+			</div>
+			<div>
+				<!-- COLLECTIVE -->
+				<div *ngIf="course.course_type == 1">
+					<div class="text-color montserrat course-box-content-text">
+						<img [src]="themeService.calendar">
+						<span *ngIf="course.is_flexible">
+							{{'text_dates_separated' |
+              translate }}
+						</span>
+						<span *ngIf="!course.is_flexible">
+							{{'text_dates_fixed' | translate
+              }}
+						</span>
+					</div>
+					<div class="mt-12 course-box-content-list">
+						<div *ngFor="let date of course.course_dates"
+							class="text-small text-color-light pl-24 montserrat">
+							{{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
+              {{date.hour_end}}
+						</div>
+					</div>
+				</div>
+				<!-- PRIVATE -->
+				<div *ngIf="course.course_type == 2">
+					<div class="text-color montserrat course-box-content-text">
+						<img [src]="themeService.calendar">
+						{{'text_when_course' | translate }}
+					</div>
+					<div class="mt-8 course-box-content-list">
+						<div class="text-small text-color-light pl-24 montserrat">
+							{{course.course_dates[0].date
               | date: 'dd-MM-yyyy'}}
               - {{course.course_dates[course.course_dates.length - 1].date |
-              date: 'dd-MM-yyyy'}}</div>
-            <div class="text-small text-color-light pl-24 montserrat">{{
-              getWeekdays(course.settings) }}</div>
-          </div>
-          <div class="text-color montserrat course-box-content-text mt-12">
-            <img [src]="themeService.clock">
-            {{'text_course_duration' | translate }}
-          </div>
-          <div class="mt-8 course-box-content-list">
-            <div
-              class="text-small text-color-light pl-24 montserrat">{{'text_from_price'
-              | translate }} {{course.duration}}</div>
-            <div
-              class="text-small text-color-light pl-24 montserrat">{{course.hour_min}}h
-              - {{course.hour_max}}h</div>
-          </div>
-        </div>
-      </div>
+              date: 'dd-MM-yyyy'}}
+						</div>
+						<div class="text-small text-color-light pl-24 montserrat">
+							{{
+              getWeekdays(course.settings) }}
+						</div>
+					</div>
+					<div class="text-color montserrat course-box-content-text mt-12">
+						<img [src]="themeService.clock">
+						{{'text_course_duration' | translate }}
+					</div>
+					<div class="mt-8 course-box-content-list">
+						<div class="text-small text-color-light pl-24 montserrat">
+							{{'text_from_price'
+              | translate }} {{course.duration}}
+						</div>
+						<div class="text-small text-color-light pl-24 montserrat">
+							{{course.hour_min}}h
+              - {{course.hour_max}}h
+						</div>
+					</div>
+				</div>
+			</div>
 
-    </div>
-    <div class="text-color text-medium fw-medium">{{'text_short_description' |
-      translate}}</div>
-    <div class="text-small text-color-light montserrat quill-editor"
-      [innerHTML]="getShotrDescription(course)"></div>
-    <div class="text-color text-medium fw-medium quill-editor" *ngIf="course.showSeeLess"
-      style="margin-top: 10px">{{'text_description' | translate}}</div>
-    <div class="text-small text-color-light montserrat quill-editor"
-      [ngClass]="{'hidden':!course.showSeeLess }"
-      [innerHTML]="getDescription(course)"></div>
-    <div *ngIf="!course.showSeeLess"
-      class="text-color underline mt-8 montserrat text-small cursor-pointer"
-      (click)="showFullText(course)">{{'text_more' | translate }}</div>
-    <div *ngIf="course.showSeeLess"
-      class="text-color underline mt-8 montserrat text-small cursor-pointer"
-      (click)="showLessText(course)">{{'text_less' | translate }}</div>
-  </div>
-  <!--/DESKTOP-->
 
-  <!--MOBILE-->
-  <div class="show-mobile background-color-trans rounded-8 border-primary"
-    *ngFor="let course of courses">
-    <div class="course-wrapper">
-      <div class="course-wrapper-left">
-        <div class="course-box-header">
-          <div class="course-box-icon">
-            <img src="assets/icons/prive_ski2x.png"
-              *ngIf="course.course_type == 2" />
-            <img src="assets/icons/collectif_ski2x.png"
-              *ngIf="course.course_type == 1" />
-            <div class="course-box-title">
-              <div
-                class="text-color text-medium fw-medium">{{getCourseName(course)}}</div>
-              <span class="text-color-light text-small">{{course.type}}</span>
-            </div>
-          </div>
-        </div>
-        <div class="course-box-content">
-          <div *ngIf="course.course_type == 1">
-            <div class="text-color montserrat course-box-content-text">
-              <img src="assets/icons/icons-outline-calendar-1.svg">
-              <span *ngIf="course.is_flexible">{{'text_dates_separated' |
-                translate }}</span>
-              <span *ngIf="!course.is_flexible">{{'text_dates_fixed' | translate
-                }}</span>
-            </div>
-            <div class="mt-12 course-box-content-list">
-              <div class="text-small text-color-light montserrat"
-                *ngFor="let date of course.course_dates">
-                {{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
-                {{date.hour_end}}</div>
-            </div>
-          </div>
-          <!-- COLLECTIVE-->
-          <!--
-          -->
-          <div *ngIf="course.course_type == 2">
-            <!--PRIVATE-->
-            <div class="text-color montserrat course-box-content-text">
-              <img [src]="themeService.calendar">
-              {{'text_when_course' | translate }}
-            </div>
-            <div class="mt-8 course-box-content-list">
-              <div
-                class="text-small text-color-light montserrat">{{course.course_dates[0].date
+		</div>
+		<div class="text-color text-medium fw-medium">
+			{{'text_short_description' |
+      translate}}
+		</div>
+		<div [innerHTML]="getShotrDescription(course)"
+			class="text-small text-color-light montserrat quill-editor"></div>
+		<div *ngIf="course.showSeeLess"
+			class="text-color text-medium fw-medium quill-editor"
+			style="margin-top: 10px">
+			{{'text_description' | translate}}
+		</div>
+		<div [ngClass]="{'hidden':!course.showSeeLess }"
+			[innerHTML]="getDescription(course)"
+			class="text-small text-color-light montserrat quill-editor"></div>
+		<div *ngIf="!course.showSeeLess"
+			(click)="showFullText(course)"
+			class="text-color underline mt-8 montserrat text-small cursor-pointer">
+			{{'text_more' | translate }}
+		</div>
+		<div *ngIf="course.showSeeLess"
+			(click)="showLessText(course)"
+			class="text-color underline mt-8 montserrat text-small cursor-pointer">
+			{{'text_less' | translate }}
+		</div>
+	</div>
+	<!-- /DESKTOP -->
+
+
+	<!-- MOBILE -->
+	<div *ngFor="let course of courses"
+		class="show-mobile background-color-trans rounded-8 border-primary">
+		<div class="course-wrapper">
+			<div class="course-wrapper-left">
+				<div class="course-box-header">
+					<div class="course-box-icon">
+						<img *ngIf="course.course_type == 2"
+							src="assets/icons/prive_ski2x.png">
+						<img *ngIf="course.course_type == 1"
+							src="assets/icons/collectif_ski2x.png">
+						<div class="course-box-title">
+							<div class="text-color text-medium fw-medium">
+								{{getCourseName(course)}}
+							</div>
+							<span class="text-color-light text-small">{{course.type}}</span>
+						</div>
+					</div>
+				</div>
+				<div class="course-box-content">
+					<div *ngIf="course.course_type == 1">
+						<div class="text-color montserrat course-box-content-text">
+							<img src="assets/icons/icons-outline-calendar-1.svg">
+							<span *ngIf="course.is_flexible">
+								{{'text_dates_separated' |
+                translate }}
+							</span>
+							<span *ngIf="!course.is_flexible">
+								{{'text_dates_fixed' | translate
+                }}
+							</span>
+						</div>
+						<div class="mt-12 course-box-content-list">
+							<div *ngFor="let date of course.course_dates"
+								class="text-small text-color-light montserrat">
+								{{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
+                {{date.hour_end}}
+							</div>
+						</div>
+					</div>
+					<!-- COLLECTIVE -->
+					<!--  -->
+					<div *ngIf="course.course_type == 2">
+						<!-- PRIVATE -->
+						<div class="text-color montserrat course-box-content-text">
+							<img [src]="themeService.calendar">
+							{{'text_when_course' | translate }}
+						</div>
+						<div class="mt-8 course-box-content-list">
+							<div class="text-small text-color-light montserrat">
+								{{course.course_dates[0].date
                 | date: 'dd-MM-yyyy'}}
                 - {{course.course_dates[course.course_dates.length - 1].date |
-                date: 'dd-MM-yyyy'}}</div>
-              <div class="text-small text-color-light montserrat">{{
-                getWeekdays(course.settings) }}</div>
-            </div>
-            <div class="text-color montserrat course-box-content-text mt-12">
-              <img [src]="themeService.clock">
-              {{'text_course_duration' | translate }}
-            </div>
-            <div class="mt-8 course-box-content-list">
-              <div
-                class="text-small text-color-light montserrat">{{'text_from_price'
-                | translate }} {{course.duration}}</div>
-              <div
-                class="text-small text-color-light montserrat">{{course.hour_min}}h
-                - {{course.hour_max}}h</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="course-wrapper-right">
-        <div class="text-color fw-medium" *ngIf="course.is_flexible">
-          {{course.price}} CHF /{{'date' | translate }}
-        </div>
-        <div class="text-color fw-medium" *ngIf="!course.is_flexible">
-          {{course.price}} CHF
-        </div>
-        <div class="course-wrapper-image">
-          <img [src]="course.image !== null ? course?.image : defaultImage" />
-        </div>
-        <div class="course-box-buttons">
-          <div
-            class="btn-back-grey rounded-8 button-style cursor-pointer width-100">
-            {{'text_availability' | translate }}
-          </div>
-          <div (click)="goTo(this.schoolData.slug + '/course/' + course.id)"
-            class="btn-back-primary rounded-8 button-style cursor-pointer width-100">
-            {{'text_see_coourse' | translate }}
-          </div>
-        </div>
-      </div>
-    </div>
+                date: 'dd-MM-yyyy'}}
+							</div>
+							<div class="text-small text-color-light montserrat">
+								{{
+                getWeekdays(course.settings) }}
+							</div>
+						</div>
+						<div class="text-color montserrat course-box-content-text mt-12">
+							<img [src]="themeService.clock">
+							{{'text_course_duration' | translate }}
+						</div>
+						<div class="mt-8 course-box-content-list">
+							<div class="text-small text-color-light montserrat">
+								{{'text_from_price'
+                | translate }} {{course.duration}}
+							</div>
+							<div class="text-small text-color-light montserrat">
+								{{course.hour_min}}h
+                - {{course.hour_max}}h
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="course-wrapper-right">
+				<div *ngIf="course.is_flexible"
+					class="text-color fw-medium">
+					{{course.price}} CHF /{{'date' | translate }}
+				</div>
+				<div *ngIf="!course.is_flexible"
+					class="text-color fw-medium">
+					{{course.price}} CHF
+				</div>
+				<div class="course-wrapper-image">
+					<img [src]="course.image !== null ? course?.image : defaultImage">
+				</div>
+				<div class="course-box-buttons">
+					<div class="btn-back-grey rounded-8 button-style cursor-pointer width-100">
+						{{'text_availability' | translate }}
+					</div>
+					<div (click)="goTo(this.schoolData.slug + '/course/' + course.id)"
+						class="btn-back-primary rounded-8 button-style cursor-pointer width-100">
+						{{'text_see_coourse' | translate }}
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="course-text-padding">
-      <div class="text-color text-medium fw-medium">{{'text_short_description' |
-        translate}}</div>
-      <div class="text-small text-color-light montserrat"
-        [innerHTML]="getShotrDescription(course)"></div>
-      <div class="text-color text-medium fw-medium" *ngIf="course.showSeeLess"
-        style="margin-top: 10px">{{'text_description' | translate}}</div>
-      <div class="text-small text-color-light montserrat"
-        [ngClass]="{'hidden':!course.showSeeLess }"
-        [innerHTML]="getDescription(course)"></div>
-      <div *ngIf="!course.showSeeLess"
-        class="text-color underline mt-8 montserrat text-small cursor-pointer"
-        (click)="showFullText(course)">{{'text_more' | translate }}</div>
-      <div *ngIf="course.showSeeLess"
-        class="text-color underline mt-8 montserrat text-small cursor-pointer"
-        (click)="showLessText(course)">{{'text_less' | translate }}</div>
-    </div>
-  </div>
-  <!--/MOBILE-->
+
+		<div class="course-text-padding">
+			<div class="text-color text-medium fw-medium">
+				{{'text_short_description' |
+        translate}}
+			</div>
+			<div [innerHTML]="getShotrDescription(course)"
+				class="text-small text-color-light montserrat"></div>
+			<div *ngIf="course.showSeeLess"
+				class="text-color text-medium fw-medium"
+				style="margin-top: 10px">
+				{{'text_description' | translate}}
+			</div>
+			<div [ngClass]="{'hidden':!course.showSeeLess }"
+				[innerHTML]="getDescription(course)"
+				class="text-small text-color-light montserrat"></div>
+			<div *ngIf="!course.showSeeLess"
+				(click)="showFullText(course)"
+				class="text-color underline mt-8 montserrat text-small cursor-pointer">
+				{{'text_more' | translate }}
+			</div>
+			<div *ngIf="course.showSeeLess"
+				(click)="showLessText(course)"
+				class="text-color underline mt-8 montserrat text-small cursor-pointer">
+				{{'text_less' | translate }}
+			</div>
+		</div>
+	</div>
+	<!-- /MOBILE -->
+
 
 </div>

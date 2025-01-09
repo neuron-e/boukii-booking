@@ -292,7 +292,7 @@
                 </div>
 
                 <div class="tooltip-container-level background-color-trans"
-                     *ngIf="tooltipsFilter[0]" [@fadeInOut]>
+                     *ngIf="tooltipsFilter[0] && selectedLevel.degrees_school_sport_goals.length>0" [@fadeInOut]>
                   <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
                   <div class="text-small montserrat text-color-light"
                        *ngFor="let goal of selectedLevel.degrees_school_sport_goals">
@@ -326,7 +326,7 @@
                       <img src="assets/icons/check.png" />
                     </div>
                     <div class="tooltip-container-level background-color-trans"
-                         *ngIf="tooltipsFilter[i]" [@fadeInOut]>
+                         *ngIf="tooltipsFilter[i] && level.degrees_school_sport_goals.length>0" [@fadeInOut]>
                       <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
                       <div class="text-small montserrat text-color-light"
                            *ngFor="let goal of level.degrees_school_sport_goals">
@@ -421,7 +421,7 @@
                         <img src="assets/icons/check.png" />
                       </div>
                       <div class="tooltip-container-level background-color-trans"
-                           *ngIf="tooltipsFilter[i]" [@fadeInOut]>
+                           *ngIf="tooltipsFilter[i] && level.degrees_school_sport_goals.length>0" [@fadeInOut]>
                         <!--<div *ngFor="let goal of getFilteredGoals(1)">-->
                         <div class="text-small montserrat text-color-light"
                              *ngFor="let goal of level.degrees_school_sport_goals">
