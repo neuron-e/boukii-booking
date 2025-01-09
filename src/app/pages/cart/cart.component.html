@@ -281,7 +281,8 @@
   </div>
 </div>
 
-<app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
+<app-modal-voucher [isOpen]="isModalVoucher" [schoolData]="schoolData" [bonuses]="vouchers"
+                   [appliedBonus]="vouchersApplied"
   (onClose)="closeModalVoucher($event)"></app-modal-voucher>
 <app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey' && schoolData?.slug != 'ecole-suisse-de-ski'"
   [isOpen]="isModalConditions" [data]="'conditions_html' | translate"

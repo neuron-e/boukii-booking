@@ -7,15 +7,16 @@
 
         <div class="modal-form">
 
-            <div class="modal-form-block-full">
-                <div class="text-color-light text-small uppercase">
-                    {{'text_code' | translate }}
-                </div>
-                <input type="text" class="form-control width-100" [(ngModel)]="code"/>
-            </div>
+          <mat-radio-group>
+            <ng-container *ngFor="let b of bonuses">
+              <mat-radio-button *ngIf="!b.payed " [disabled]="isInUse(b.id)" class="radio"  (change)="bonus = b" [value]="b">
+                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance }} <span style="color:#8fd14f">{{ isInUse(b.id) ? 'applied' : '' | translate}}</span>
+              </mat-radio-button>
+            </ng-container>
+          </mat-radio-group>
         </div>
 
-        <button (click)="searchVoucher()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
+        <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
             {{'text_confirm' | translate }}
         </button>
 

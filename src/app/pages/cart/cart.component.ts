@@ -18,6 +18,8 @@ export class CartComponent implements OnInit {
   isModalVoucher:boolean=false;
   isModalConditions:boolean=false;
   voucher: any;
+  vouchers: any;
+  vouchersApplied: any = [];
   hasInsurance = false;
   hasBoukiiCare = false;
   hasTva = false;
@@ -307,12 +309,17 @@ export class CartComponent implements OnInit {
   }
 
   openModalVoucher() {
-    this.isModalVoucher = true;
+      this.crudService.list('/vouchers', 1, 10000, 'desc', 'id', '&school_id=' +
+        this.schoolData.id + '&client_id=' + this.user.clients[0].id + '&payed=0')
+        .subscribe((data: any) => {
+          this.vouchers = data.data;
+          this.isModalVoucher = true;
+        })
   }
 
   closeModalVoucher(voucher: any) {
     if(voucher) {
-      this.voucher = voucher.data;
+      this.voucher = voucher;
     }
     this.isModalVoucher = false;
     this.updateTotal(); // Actualiza el total cuando se cierra el modal del cupón
