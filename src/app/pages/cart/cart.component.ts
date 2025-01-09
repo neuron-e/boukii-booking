@@ -547,7 +547,7 @@ export class CartComponent implements OnInit {
       this.cart.splice(indexToRemove, 1);
       let cartArray = this.transformArrayToCart(this.cart);
       localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
-
+      this.updateTotal();
       this.cartService.carData.next(cartArray);
     }
   }
