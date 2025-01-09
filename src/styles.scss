@@ -1422,3 +1422,9 @@ input[type="date"]::-webkit-clear-button {
     padding: 1.5rem 1rem;
   }
 }
+
+@media only screen and (min-width: 1024px) {
+  .lading-padding {
+    border-radius: 16px;
+  }
+}

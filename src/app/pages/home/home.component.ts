@@ -1,17 +1,17 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {ThemeService} from '../../services/theme.service';
-import {CoursesService} from '../../services/courses.service';
-import {SchoolService} from '../../services/school.service';
-import {DatePipe} from '@angular/common';
-import {AuthService} from '../../services/auth.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { ThemeService } from '../../services/theme.service';
+import { CoursesService } from '../../services/courses.service';
+import { SchoolService } from '../../services/school.service';
+import { DatePipe } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
-import {map, Observable, of, tap} from 'rxjs';
-import {ApiCrudService} from '../../services/crud.service';
+import { map, Observable, of, tap } from 'rxjs';
+import { ApiCrudService } from '../../services/crud.service';
 import * as moment from 'moment';
-import {catchError} from 'rxjs/operators';
-import {DomSanitizer} from '@angular/platform-browser';
+import { catchError } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -46,8 +46,8 @@ export class HomeComponent implements OnInit {
   sports: any[];
   courses: any[];
 
-  isModalLogin:boolean=false;
-  isModalNewUser:boolean=false;
+  isModalLogin: boolean = false;
+  isModalNewUser: boolean = false;
   activeDates: string[] = [];
 
   //SEE MORE -> do it for each course
@@ -68,18 +68,18 @@ export class HomeComponent implements OnInit {
     expert: [10, 11, 12]
   };
   degreeOptions = [
-    {id: 1, label: 'text_doesnt_matter', tooltips: []},
-    {id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']},
-    {id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3']}
+    { id: 1, label: 'text_doesnt_matter', tooltips: [] },
+    { id: 2, label: 'text_novice', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 3, label: 'text_intermediate', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 4, label: 'text_advanced', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] },
+    { id: 5, label: 'text_expert', tooltips: ['Objetivo 1', 'Objetivo 2', 'Objetivo 3'] }
   ];
   ageOptions = [
-    {id: 1, label: 'text_all_ages'},
-    {id: 2, label: 'text_ages2'},
-    {id: 3, label: 'text_ages3'},
-    {id: 4, label: 'text_ages4'},
-    {id: 5, label: 'text_adults'}
+    { id: 1, label: 'text_all_ages' },
+    { id: 2, label: 'text_ages2' },
+    { id: 3, label: 'text_ages3' },
+    { id: 4, label: 'text_ages4' },
+    { id: 5, label: 'text_adults' }
   ];
   currentDegreeRange: number[] = [];
   selectedSportId: number;
@@ -96,47 +96,47 @@ export class HomeComponent implements OnInit {
   myHolidayDates: any = [];
 
   constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
-              private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
-              private crudService: ApiCrudService, private sanitizer: DomSanitizer) {
+    private schoolService: SchoolService, private datePipe: DatePipe, private authService: AuthService,
+    private crudService: ApiCrudService, private sanitizer: DomSanitizer) {
   }
 
   ngOnInit(): void {
-  //  this.userLogged = JSON.parse(localStorage.getItem(this.authService.slug+ '-boukiiUser') ?? '');
+    //  this.userLogged = JSON.parse(localStorage.getItem(this.authService.slug+ '-boukiiUser') ?? '');
 
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
           this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
-          this.selectedDegreeType =  parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
+          this.selectedDegreeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
           this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
           this.crudService
             .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' +
               this.schoolData.id + '&is_active=1').subscribe({
-            next: (res) => {
-                if (res.data.length > 0) {
-                  this.season = res.data[0]; // Guardamos la temporada en caché
-                  this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
-                  this.holidays.forEach((element: any) => {
-                    this.myHolidayDates.push(moment(element).toDate());
-                  });
-                }
-                this.setAgeRange();
-                if (this.schoolData?.sports?.length > 0) {
-                  this.selectedSportId = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
-                  this.initializeMonthNames();
-                  const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
-                  this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+                next: (res) => {
+                  if (res.data.length > 0) {
+                    this.season = res.data[0]; // Guardamos la temporada en caché
+                    this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+                    this.holidays.forEach((element: any) => {
+                      this.myHolidayDates.push(moment(element).toDate());
+                    });
+                  }
+                  this.setAgeRange();
+                  if (this.schoolData?.sports?.length > 0) {
+                    this.selectedSportId = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
+                    this.initializeMonthNames();
+                    const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+                    this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
 
-                  const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
-                  this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
-                  this.getCourses();
+                    const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+                    this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
+                    this.getCourses();
+                  }
+                },
+                error: (err) => {
+                  console.error('Error al obtener la temporada:', err);
                 }
-            },
-            error: (err) => {
-              console.error('Error al obtener la temporada:', err);
-            }
-          });
+              });
 
         }
       }
@@ -183,7 +183,7 @@ export class HomeComponent implements OnInit {
       'min_age': this.min_age
     };
     this.coursesService.getCoursesAvailableByDates(params).subscribe(res => {
-      this.courses = res.data;
+      this.courses = [...res.data, ...res.data, ...res.data, ...res.data, ...res.data];
       this.activeDates = [];
       this.activeDates = this.courses.reduce((acc, course) => {
         const formattedDates = course.course_dates.map((dateObj: any) =>
@@ -220,8 +220,8 @@ export class HomeComponent implements OnInit {
         this.currentMonth = 11;
         this.currentYear--;
       }
-      localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
-      localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
+      localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
+      localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
       this.getCourses();
     }
   }
@@ -232,8 +232,8 @@ export class HomeComponent implements OnInit {
       this.currentMonth = 0;
       this.currentYear++;
     }
-    localStorage.setItem(this.schoolData.slug + '-month',  String(this.currentMonth));
-    localStorage.setItem(this.schoolData.slug + '-year',  String(this.currentYear));
+    localStorage.setItem(this.schoolData.slug + '-month', String(this.currentMonth));
+    localStorage.setItem(this.schoolData.slug + '-year', String(this.currentYear));
     this.getCourses();
   }
 
@@ -252,7 +252,7 @@ export class HomeComponent implements OnInit {
     if (adjustedStartDay < 0) adjustedStartDay = 6;
 
     for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
@@ -262,12 +262,12 @@ export class HomeComponent implements OnInit {
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
       const isActive = !isPast && this.activeDates.includes(dateStr) && this.inUseDatesFilter(spanDate);
-      this.days.push({number: i, active: isActive, selected: false, past: isPast});
+      this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
 
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
     for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({number: '', active: false});
+      this.days.push({ number: '', active: false });
     }
 
   }
@@ -310,7 +310,7 @@ export class HomeComponent implements OnInit {
     const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
     const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
     // Encuentra si la fecha actual está en myHolidayDates.
-    const isHoliday = this.myHolidayDates.some((x:any) => x.getTime() === time);
+    const isHoliday = this.myHolidayDates.some((x: any) => x.getTime() === time);
 
     // La fecha debería ser seleccionable si no es un día festivo y está activa (o sea, active no es falso ni 0).
     return !isHoliday;
@@ -441,10 +441,10 @@ export class HomeComponent implements OnInit {
 
   getCoursePrice(course: any) {
     if (course) {
-      if(course.course_type == 2 && course.is_flexible) {
-        const priceRange = course.price_range.find((a:any) => a[1] !== null);
+      if (course.course_type == 2 && course.is_flexible) {
+        const priceRange = course.price_range.find((a: any) => a[1] !== null);
         return priceRange[1];
-      } else{
+      } else {
         return course.price
       }
     }
@@ -456,7 +456,7 @@ export class HomeComponent implements OnInit {
   getWeekdays(settings: string): string {
     const settingsObj = JSON.parse(settings);
     const weekDays = settingsObj.weekDays;
-    const daysMap:any = {
+    const daysMap: any = {
       "monday": "Lundi",
       "tuesday": "Mardi",
       "wednesday": "Mercredi",

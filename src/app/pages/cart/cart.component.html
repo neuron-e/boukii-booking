@@ -53,7 +53,7 @@
 						class="course-content-list">
 						<div *ngFor="let date of cartItem.details"
 							class="text-color-light montserrat">
-							· {{date.date | date: 'dd-MM-yyyy'}}
+							· {{date.date | date: 'dd.MM.yyyy'}}
               {{date.hour_start.substring(0,5) }} -
               {{date.hour_end.substring(0,5)}}
 						</div>
@@ -78,7 +78,7 @@
 						<div *ngFor="let detail of getUniqueDates(cartItem.details)"
 							class="text-color-light montserrat list-flex">
 							<img [src]="themeService.calendar">
-							{{ detail.date | date: 'dd-MM-yyyy' }}
+							{{ detail.date | date: 'dd.MM.yyyy' }}
 							<img [src]="themeService.clock">
 							<span>
 								{{ detail.hour_start }} - {{ detail.hour_end }}
@@ -110,21 +110,19 @@
 						<div class="text-color">
 							<span class="text-color fw-semibold text-medium">
 								{{
-                getTotalBasePrice(cartItem.details) }}
+                getTotalBasePrice(cartItem.details) | number:'0.2'}}
 							</span>
-							{{
-              cartItem.details[0].course.currency }}
+							{{ cartItem.details[0].course.currency }}
 						</div>
 					</ng-container>
 					<ng-container *ngIf="cartItem.details[0].course.course_type ==1">
 						<div class="text-color">
 							<span class="text-color fw-semibold text-medium">
-								{{cartItem.details[0].course.is_flexible ?
+								{{(cartItem.details[0].course.is_flexible ?
                 (cartItem.details.length * cartItem.details[0].price) :
-                cartItem.details[0].course.price * 1 }}
+                cartItem.details[0].course.price * 1) | number:'0.2'}}
 							</span>
-							{{
-              cartItem.details[0].course.currency }}
+							{{ cartItem.details[0].course.currency }}
 						</div>
 					</ng-container>
 				</div>
@@ -138,7 +136,6 @@
 			</div>
 			<div class="separator-line mb-32 mt-32"></div>
 		</ng-container>
-		<div class="separator-line mb-32 mt-32"></div>
 		<button (click)="goTo(schoolData.slug )"
 			class="btn-back-grey rounded-8 button-style-icon cursor-pointer button-right"
 			type="button">
@@ -191,14 +188,14 @@
 			</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					{{getBasePrice().toFixed(2)}}
+					{{getBasePrice() | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div *ngIf="voucher"
 			class="payment-price-flex mt-8">
-			<div class="text-color uppercase">
+			<div class="text-color uppercase" style="display: flex; align-items: flex-end;">
 				<img [src]="themeService.trash"
 					(click)="voucher = null; vouchersApplied=[]"
 					class="course-box-delete cursor-pointer">
@@ -206,9 +203,9 @@
 			</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					-{{usedVoucherAmount}}
+					-{{usedVoucherAmount | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div class="payment-price-flex mt-8">
@@ -219,9 +216,9 @@
 			<div *ngIf="getExtrasPrice() > 0"
 				class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					+{{getExtrasPrice()}}
+					+{{getExtrasPrice() | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div *ngIf="hasInsurance"
@@ -231,9 +228,9 @@
 			</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					+{{getInsurancePrice()}}
+					+{{getInsurancePrice() | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div *ngIf="hasBoukiiCare"
@@ -241,9 +238,9 @@
 			<div class="text-color uppercase">Boukii Care</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					+{{getBoukiiCarePrice()}}
+					+{{getBoukiiCarePrice() | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div *ngIf="hasTva"
@@ -253,10 +250,9 @@
 			</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					+{{(totalNotaxes *
-          tva).toFixed(2)}}
+					+{{(totalNotaxes * tva) | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div class="payment-price-flex mt-8">
@@ -265,9 +261,9 @@
 			</div>
 			<div class="text-color min-width-price">
 				<span class="text-color fw-bold">
-					{{totalPrice.toFixed(2)}}
+					{{totalPrice | number:'0.2'}}
 				</span>
-				CHF
+				{{cart[0].details[0].course.currency}}
 			</div>
 		</div>
 		<div>
@@ -284,8 +280,7 @@
 					{{'text_i_accept_terms' | translate }}
 					<span (click)="openModalConditions()"
 						class="text-color-light underline cursor-pointer">
-						{{'text_booking_conditions'
-            | translate }}
+						{{'text_booking_conditions' | translate }}
 					</span>
 				</div>
 			</div>

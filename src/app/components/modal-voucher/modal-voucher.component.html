@@ -10,7 +10,7 @@
           <mat-radio-group>
             <ng-container *ngFor="let b of bonuses">
               <mat-radio-button *ngIf="!b.payed " [disabled]="isInUse(b.id)" class="radio"  (change)="bonus = b" [value]="b">
-                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance }} <span style="color:#8fd14f">{{ isInUse(b.id) ? 'applied' : '' | translate}}</span>
+                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance  | number:'0.2'}} CHF <span style="color:#8fd14f">{{ isInUse(b.id) ? 'applied' : '' | translate}}</span>
               </mat-radio-button>
             </ng-container>
           </mat-radio-group>

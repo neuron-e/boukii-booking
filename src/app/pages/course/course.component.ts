@@ -1083,7 +1083,7 @@ export class CourseComponent implements OnInit {
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]?.date;
 
-    return startDate ? moment(startDate).format('DD/MM/YYYY') : '';
+    return startDate ? moment(startDate).format('DD.MM.YYYY') : '';
   }
 
   // Método para obtener la fecha de fin
@@ -1092,7 +1092,7 @@ export class CourseComponent implements OnInit {
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date;
 
-    return endDate ? moment(endDate).format('DD/MM/YYYY') : '';
+    return endDate ? moment(endDate).format('DD.MM.YYYY') : '';
   }
 
   updateAvailableDurations(selectedHour: string): void {

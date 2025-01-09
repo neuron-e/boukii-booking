@@ -58,7 +58,7 @@
             <ng-container *ngFor="let date of course?.course_dates">
               <div class="text-color-light pl-32 montserrat"
                    *ngIf="date.active || date.active === 1">·
-                {{date.date | date: 'dd-MM-yyyy'}}
+                {{date.date | date: 'dd.MM.yyyy'}}
                 {{date.hour_start.substring(0,5) }} -
                 {{date.hour_end.substring(0,5)}}</div>
             </ng-container>
@@ -75,7 +75,7 @@
                   (change)="selectDate(date.date)" />
                 <label class="text-color-light montserrat"
                        for="checkbox-course-{{date.id}}">
-                  {{ date.date | date: 'dd-MM-yyyy' }}
+                  {{ date.date | date: 'dd.MM.yyyy' }}
                   {{ date.hour_start.substring(0, 5) }} - {{
                     date.hour_end.substring(0, 5) }}
                 </label>
@@ -183,7 +183,7 @@
           </div>
           <div class="text-medium text-color">
             <span class="text-medium fw-bold">{{ getCoursePrice(course)
-              }}</span> {{ course?.currency }} /{{'date' | translate }}
+              }}</span> {{ course?.currency }}/{{'date' | translate }}
           </div>
         </div>
         <div>

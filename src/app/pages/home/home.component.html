@@ -219,12 +219,12 @@
 	</div>
 	<div *ngIf="!daySelected"
 		class="text-normal fw-medium text-color-light">
-		{{this.firstDayOfMonth | date: 'dd-MM-yyyy'}} - {{lastDayOfMonth | date:
-    'dd-MM-yyyy'}}
+		{{this.firstDayOfMonth | date: 'dd.MM.yyyy'}} - {{lastDayOfMonth | date:
+    'dd.MM.yyyy'}}
 	</div>
 	<div *ngIf="daySelected"
 		class="text-normal fw-medium text-color-light">
-		{{this.daySelected | date: 'dd-MM-yyyy'}}
+		{{this.daySelected | date: 'dd.MM.yyyy'}}
 	</div>
 </div>
 
@@ -251,12 +251,11 @@
 			</div>
 			<div *ngIf="course.is_flexible"
 				class="text-color fw-medium pb-8 text-align-right min-width-price">
-				{{getCoursePrice(course)}} CHFs /{{'date' |
-        translate }}
+				{{getCoursePrice(course) | number:'0.2'}} {{course.currency}}/{{'date' | translate }}
 			</div>
 			<div *ngIf="!course.is_flexible"
 				class="text-color fw-medium pb-8 text-align-right min-width-price">
-				{{course.price}} CHF
+				{{course.price | number:'0.2'}} {{course.currency}}
 			</div>
 		</div>
 
@@ -295,7 +294,7 @@
 					<div class="mt-12 course-box-content-list">
 						<div *ngFor="let date of course.course_dates"
 							class="text-small text-color-light pl-24 montserrat">
-							{{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
+							{{date.date | date: 'dd.MM.yyyy'}} {{date.hour_start}} -
               {{date.hour_end}}
 						</div>
 					</div>
@@ -309,13 +308,12 @@
 					<div class="mt-8 course-box-content-list">
 						<div class="text-small text-color-light pl-24 montserrat">
 							{{course.course_dates[0].date
-              | date: 'dd-MM-yyyy'}}
+              | date: 'dd.MM.yyyy'}}
               - {{course.course_dates[course.course_dates.length - 1].date |
-              date: 'dd-MM-yyyy'}}
+              date: 'dd.MM.yyyy'}}
 						</div>
 						<div class="text-small text-color-light pl-24 montserrat">
-							{{
-              getWeekdays(course.settings) }}
+							{{ getWeekdays(course.settings) }}
 						</div>
 					</div>
 					<div class="text-color montserrat course-box-content-text mt-12">
@@ -324,12 +322,10 @@
 					</div>
 					<div class="mt-8 course-box-content-list">
 						<div class="text-small text-color-light pl-24 montserrat">
-							{{'text_from_price'
-              | translate }} {{course.duration}}
+							{{'text_from_price' | translate }} {{course.duration}}
 						</div>
 						<div class="text-small text-color-light pl-24 montserrat">
-							{{course.hour_min}}h
-              - {{course.hour_max}}h
+							{{course.hour_min}}h - {{course.hour_max}}h
 						</div>
 					</div>
 				</div>
@@ -367,7 +363,7 @@
 
 	<!-- MOBILE -->
 	<div *ngFor="let course of courses"
-		class="show-mobile background-color-trans rounded-8 border-primary">
+		class="show-mobile background-color-trans rounded-8" style="margin: 1rem 0;">
 		<div class="course-wrapper">
 			<div class="course-wrapper-left">
 				<div class="course-box-header">
@@ -400,7 +396,7 @@
 						<div class="mt-12 course-box-content-list">
 							<div *ngFor="let date of course.course_dates"
 								class="text-small text-color-light montserrat">
-								{{date.date | date: 'dd-MM-yyyy'}} {{date.hour_start}} -
+								{{date.date | date: 'dd.MM.yyyy'}} {{date.hour_start}} -
                 {{date.hour_end}}
 							</div>
 						</div>
@@ -416,9 +412,9 @@
 						<div class="mt-8 course-box-content-list">
 							<div class="text-small text-color-light montserrat">
 								{{course.course_dates[0].date
-                | date: 'dd-MM-yyyy'}}
+                | date: 'dd.MM.yyyy'}}
                 - {{course.course_dates[course.course_dates.length - 1].date |
-                date: 'dd-MM-yyyy'}}
+                date: 'dd.MM.yyyy'}}
 							</div>
 							<div class="text-small text-color-light montserrat">
 								{{
@@ -445,11 +441,11 @@
 			<div class="course-wrapper-right">
 				<div *ngIf="course.is_flexible"
 					class="text-color fw-medium">
-					{{course.price}} CHF /{{'date' | translate }}
+					{{course.price | number:'0.2'}} {{course.currency}} /{{'date' | translate }}
 				</div>
 				<div *ngIf="!course.is_flexible"
 					class="text-color fw-medium">
-					{{course.price}} CHF
+					{{course.price | number:'0.2'}} {{course.currency}}
 				</div>
 				<div class="course-wrapper-image">
 					<img [src]="course.image !== null ? course?.image : defaultImage">
