@@ -290,7 +290,7 @@ export class CourseComponent implements OnInit {
       });
       this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
-        this.datePipe.transform(dateObj.date, 'dd.MM.YYYY')
+        this.datePipe.transform(dateObj.date, 'dd.MM.yyyy')
       );
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
@@ -410,7 +410,7 @@ export class CourseComponent implements OnInit {
   inUseDatesFilter = (d: Date): boolean => {
     if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
 
-    const formattedDate = moment(d).format('dd.MM.YYYY');
+    const formattedDate = moment(d).format('DD.MM.yyyy');
     const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
     const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
     // Encuentra si la fecha actual está en myHolidayDates.
@@ -635,7 +635,7 @@ export class CourseComponent implements OnInit {
         if (this.course.is_flexible) {
           this.course.course_dates.forEach((date: any) => {
 
-            if (this.selectedDates.find((d: any) => moment(d).format('dd.MM.YYYY') === moment(date.date).format('dd.MM.YYYY'))) {
+            if (this.selectedDates.find((d: any) => moment(d).format('DD.MM.yyyy') === moment(date.date).format('DD.MM.yyyy'))) {
               let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
               let courseSubgroup = courseGroup.course_subgroups[0];
               bookingUsers.push({
@@ -1082,7 +1082,7 @@ export class CourseComponent implements OnInit {
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]?.date;
 
-    return startDate ? moment(startDate).format('DD.MM.YYYY') : '';
+    return startDate ? moment(startDate).format('DD.MM.yyyy') : '';
   }
 
   // Método para obtener la fecha de fin
@@ -1091,7 +1091,7 @@ export class CourseComponent implements OnInit {
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date;
 
-    return endDate ? moment(endDate).format('DD.MM.YYYY') : '';
+    return endDate ? moment(endDate).format('DD.MM.yyyy') : '';
   }
 
   updateAvailableDurations(selectedHour: string): void {

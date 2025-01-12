@@ -187,7 +187,7 @@ export class HomeComponent implements OnInit {
       this.activeDates = [];
       this.activeDates = this.courses.reduce((acc, course) => {
         const formattedDates = course.course_dates.map((dateObj: any) =>
-          this.datePipe.transform(dateObj.date, 'dd.MM.YYYY')
+          this.datePipe.transform(dateObj.date, 'dd.MM.yyyy')
         );
         return acc.concat(formattedDates);
       }, []);
@@ -306,7 +306,7 @@ export class HomeComponent implements OnInit {
   inUseDatesFilter = (d: Date): boolean => {
     if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
 
-    const formattedDate = moment(d).format('dd.MM.YYYY');
+    const formattedDate = moment(d).format('DD.MM.yyyy');
     const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
     const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
     // Encuentra si la fecha actual está en myHolidayDates.
