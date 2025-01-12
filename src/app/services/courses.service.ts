@@ -21,7 +21,7 @@ export class CoursesService extends ApiService{
     // Crear HttpParams y añadir los parámetros
     let httpParams = new HttpParams();
     if (params.start_date) {
-      const startDate = moment(params.start_date).isSameOrAfter(moment()) ? moment(params.start_date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+      const startDate = moment(params.start_date).isSameOrAfter(moment()) ? moment(params.start_date).format('dd.MM.YYYY') : moment().format('dd.MM.YYYY');
       httpParams = httpParams.append('start_date', startDate);
     }
     if (params.end_date) {

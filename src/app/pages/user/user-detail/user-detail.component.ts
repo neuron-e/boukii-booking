@@ -965,7 +965,7 @@ export class UserDetailComponent {
               email: this.defaults.email,
               first_name: data.data.name,
               last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
+              birth_date: moment(data.data.fromDate).format('dd.MM.YYYY'),
               phone: this.defaults.phone,
               telephone: this.defaults.telephone,
               address: this.defaults.address,
@@ -1145,7 +1145,7 @@ export class UserDetailComponent {
           this.detailData.users = [];
 
           booking.data.forEach((element: any) => {
-            if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
+            if (moment(element.date).format('dd.MM.YYYY') === moment(this.detailData.date).format('dd.MM.YYYY')) {
               this.detailData.users.push(element);
 
               this.crudService.list('/client-sports', 1, 10000, 'desc', 'id', '&client_id=' + element.client_id)
@@ -1213,7 +1213,7 @@ export class UserDetailComponent {
     let ret = 0;
     if (this.detailData.course && this.detailData.course.course_dates) {
       this.detailData.course.course_dates.forEach((element: any, idx: any) => {
-        if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
+        if (moment(element.date).format('dd.MM.YYYY') === moment(this.detailData.date).format('dd.MM.YYYY')) {
           ret = idx + 1;
         }
       });
@@ -1226,7 +1226,7 @@ export class UserDetailComponent {
     let ret = 0;
     if (this.detailData.course && this.detailData.course.course_dates) {
       this.detailData.course.course_dates.forEach((element: any) => {
-        if (moment(element.date).format('YYYY-MM-DD') === moment(this.detailData.date).format('YYYY-MM-DD')) {
+        if (moment(element.date).format('dd.MM.YYYY') === moment(this.detailData.date).format('dd.MM.YYYY')) {
           ret = element.groups.length;
         }
       });

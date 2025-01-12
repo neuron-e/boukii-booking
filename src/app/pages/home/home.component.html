@@ -309,7 +309,7 @@
 						<div class="text-small text-color-light pl-24 montserrat">
 							{{course.course_dates[0].date
               | date: 'dd.MM.yyyy'}}
-              - {{course.course_dates[course.course_dates.length - 1].date |
+              - {{course.course_dates[course.course_dates.length - 1]?.date |
               date: 'dd.MM.yyyy'}}
 						</div>
 						<div class="text-small text-color-light pl-24 montserrat">
@@ -413,7 +413,7 @@
 							<div class="text-small text-color-light montserrat">
 								{{course.course_dates[0].date
                 | date: 'dd.MM.yyyy'}}
-                - {{course.course_dates[course.course_dates.length - 1].date |
+                - {{course.course_dates[course.course_dates.length - 1]?.date |
                 date: 'dd.MM.yyyy'}}
 							</div>
 							<div class="text-small text-color-light montserrat">
