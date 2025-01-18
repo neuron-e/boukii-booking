@@ -130,7 +130,6 @@ export class UserComponent implements OnInit {
       'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
       .pipe(
         tap((data) => {
-          console.log(data)
           this.defaults = data.data;
           this.evaluations = data.data.evaluations;
           this.evaluationFullfiled = [];
@@ -169,7 +168,6 @@ export class UserComponent implements OnInit {
           };
 
           forkJoin(requestsClient).subscribe((results) => {
-            console.log('All data loaded', results);
             if (!onChangeUser) {
               this.getClientUtilisateurs();
             }
@@ -275,7 +273,6 @@ export class UserComponent implements OnInit {
             };
 
             forkJoin(requestsClient).subscribe((results) => {
-              console.log('All data loaded', results);
               this.getClientUtilisateurs();
 
               if (client.data.user) {

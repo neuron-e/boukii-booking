@@ -259,7 +259,6 @@ export class CartComponent implements OnInit {
     };
     this.bookingService.createBooking(bookingData).subscribe(
       (response: any) => {
-        console.log('Reserva creada con éxito', response);
         if (this.totalPrice > 0) {
           this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
             .subscribe((result: any) => {
