@@ -370,7 +370,7 @@
                 class="text-border"></mat-divider>
               <span style="width: 100%; float:left" *ngIf="this.tva">
                 <p style="float:left">{{'tva' | translate | uppercase }}</p>
-                <p style="float:right">{{ (tvaPrice).toFixed(2) }}
+                <p style="float:right">{{ (tvaPrice)| number:'0.2-2' }}
                   {{bookingsToCreate.length > 0 ?
                   bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
