@@ -185,33 +185,33 @@ export class UserComponent implements OnInit {
             });
 
             /* this.languagesControl.setValue(langs);
- 
+
              if (!onChangeUser) {
- 
+
                this.filteredCountries = this.myControlCountries.valueChanges.pipe(
                  startWith(''),
                  map(value => typeof value === 'string' ? value : value.name),
                  map(name => name ? this._filterCountries(name) : this.countries.slice())
                );
- 
+
                this.myControlCountries.valueChanges.subscribe(country => {
                  this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
                  this.filteredProvinces = this._filterProvinces(country?.id);
                });
- 
+
                this.filteredLevel = this.levelForm.valueChanges.pipe(
                  startWith(''),
                  map((value: any) => typeof value === 'string' ? value : value?.annotation),
                  map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
                );
- 
+
                this.filteredLanguages = this.languagesControl.valueChanges.pipe(
                  startWith(''),
                  map(language => (language ? this._filterLanguages(language) : this.languages.slice()))
                );
- 
+
              }
- 
+
              this.myControlStations.setValue(this.stations.find((s) => s.id === this.defaults.active_station)?.name);
              this.myControlCountries.setValue(this.countries.find((c) => c.id === +this.defaults.country));
              this.myControlProvinces.setValue(this.provinces.find((c) => c.id === +this.defaults.province));*/
@@ -293,7 +293,7 @@ export class UserComponent implements OnInit {
             // await this.getSchoolSportDegrees();
             // await this.getLanguages(data.clients[0]);
             //await this.getClientSchool();
-            //await this.getClientSport();
+            this.getBookings();
             await this.getClientObservations();
             await this.getEvaluations();
 
@@ -468,7 +468,7 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.defaults.id,
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.defaults.id + '&all=1',
       '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))
       .subscribe((bookings) => {
