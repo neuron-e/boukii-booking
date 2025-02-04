@@ -410,7 +410,7 @@ export class CourseComponent implements OnInit {
   inUseDatesFilter = (d: Date): boolean => {
     if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
 
-    const formattedDate = moment(d).format('DD.MM.yyyy');
+    const formattedDate = moment(d).format('yyyy-MM-dd');
     const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
     const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
     // Encuentra si la fecha actual está en myHolidayDates.
@@ -1091,7 +1091,7 @@ export class CourseComponent implements OnInit {
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date;
 
-    return endDate ? moment(endDate).format('DD.MM.yyyy') : '';
+    return endDate ? moment(endDate).format('yyyy-MM-dd') : '';
   }
 
   updateAvailableDurations(selectedHour: string): void {

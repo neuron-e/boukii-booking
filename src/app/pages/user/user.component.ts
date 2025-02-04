@@ -820,7 +820,7 @@ export class UserComponent implements OnInit {
               email: this.userLogged.clients[0].email,
               first_name: data.data.name,
               last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('DD.MM.yyyy'),
+              birth_date: moment(data.data.fromDate).format('yyyy-MM-dd'),
               phone: this.userLogged.clients[0].phone,
               telephone: this.userLogged.clients[0].telephone,
               address: this.userLogged.clients[0].address,
