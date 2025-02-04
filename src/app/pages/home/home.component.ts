@@ -183,7 +183,7 @@ export class HomeComponent implements OnInit {
       'min_age': this.min_age
     };
     this.coursesService.getCoursesAvailableByDates(params).subscribe(res => {
-      this.courses = [...res.data, ...res.data, ...res.data, ...res.data, ...res.data];
+      this.courses = [...res.data];
       this.activeDates = [];
       this.activeDates = this.courses.reduce((acc, course) => {
         const formattedDates = course.course_dates.map((dateObj: any) =>

@@ -290,7 +290,7 @@ export class CourseComponent implements OnInit {
       });
       this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
       this.activeDates = this.course.course_dates.map((dateObj: any) =>
-        this.datePipe.transform(dateObj.date, 'dd.MM.yyyy')
+        this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
       );
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
