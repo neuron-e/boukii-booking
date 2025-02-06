@@ -268,7 +268,7 @@ export class UserDetailComponent {
             this.defaults = data.data;
 
             if (data.data.observations.length > 0) {
-              this.defaultsObservations = data.data[0];
+              this.defaultsObservations = data.data.observations[0];
             } else {
               this.defaultsObservations = {
                 id: null,
@@ -959,7 +959,7 @@ export class UserDetailComponent {
               email: this.defaults.email,
               first_name: data.data.name,
               last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('yyyy-MM-dd'),
+              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
               phone: this.defaults.phone,
               telephone: this.defaults.telephone,
               address: this.defaults.address,

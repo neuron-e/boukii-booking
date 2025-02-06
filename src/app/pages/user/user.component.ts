@@ -338,11 +338,12 @@ export class UserComponent implements OnInit {
   }
 
   getClientUtilisateurs() {
-    this.crudService.list('/slug/clients/' + this.id + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
+    this.crudService.list('/slug/clients/' +  this.mainId + '/utilizers', 1, 10000, 'desc', 'id', '&client_id=' +  this.mainId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
+        //debugger;
         this.clientUsers = data.data;
-        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' + this.id)
+        this.crudService.list('/clients-utilizers', 1, 10000, 'desc', 'id', '&main_id=' +  this.mainId)
           .pipe(takeUntil(this.destroy$))
           .subscribe((data) => {
             data.data.forEach((element: any) => {
@@ -820,7 +821,7 @@ export class UserComponent implements OnInit {
               email: this.userLogged.clients[0].email,
               first_name: data.data.name,
               last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('yyyy-MM-dd'),
+              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
               phone: this.userLogged.clients[0].phone,
               telephone: this.userLogged.clients[0].telephone,
               address: this.userLogged.clients[0].address,
@@ -951,13 +952,16 @@ export class UserComponent implements OnInit {
       this.sportIdx = this.allLevels.length - 1;
     }
     this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
-    this.selectedSport.level = this.allLevels[this.sportIdx];
-    this.goals.forEach((element: any) => {
-      if (element.degree_id === this.allLevels[this.sportIdx].id) {
+    if(this.selectedSport) {
+      this.selectedSport.level = this.allLevels[this.sportIdx];
+      this.goals.forEach((element: any) => {
+        if (element.degree_id === this.allLevels[this.sportIdx].id) {
 
-        this.selectedGoal.push(element);
-      }
-    });
+          this.selectedGoal.push(element);
+        }
+      });
+    }
+
     this.coloring = false;
   }
 
