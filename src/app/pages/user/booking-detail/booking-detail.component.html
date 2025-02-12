@@ -121,17 +121,17 @@
               <div class="price"
                 *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 2 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible ">
                 {{'from' | translate}} {{ getAmountCourse(bookingUsersUnique,
-                bI)}} CHF
+                bI)}} {{item?.courseDates[0].currency}}
 
               </div>
               <div class="price"
                 *ngIf="getCourse(item?.courseDates[0]?.course_id)?.course_type === 1 && getCourse(item?.courseDates[0]?.course_id)?.is_flexible">
-                {{ getAmountCourse(bookingUsersUnique, bI)}} CHF {{'/ per day'}}
+                {{ getAmountCourse(bookingUsersUnique, bI)}} {{item?.courseDates[0].currency}} {{'/ per day'}}
               </div>
 
               <div class="price"
                 *ngIf="!getCourse(item?.courseDates[0]?.course_id)?.is_flexible">
-                {{ getAmountCourse(bookingUsersUnique, bI)}} CHF
+                {{ getAmountCourse(bookingUsersUnique, bI)}} {{item?.courseDates[0].currency}}
               </div>
             </mat-card-header>
 
@@ -177,7 +177,7 @@
                   <span class="color-dark-always">
                     {{"Total Forfait" | translate}} </span>
                   <span class="price">
-                    +{{getCourseExtraForfaitPrice(item.courseDates[0])}} CHF
+                    +{{getCourseExtraForfaitPrice(item.courseDates[0])}} {{item?.courseDates[0].currency}}
                   </span>
                 </div>
               </div>
@@ -190,7 +190,7 @@
                     }}</span>
                   <span
                     class="price">{{getCourseExtraForfaitPrice(item.courseDates[0])}}
-                    CHF</span>
+                    {{bookingsToCreate[0].courseDates[0].currency}}</span>
                 </div>
               </div>
               <mat-divider style="float: left;width: 100%;"
