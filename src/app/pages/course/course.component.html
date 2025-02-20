@@ -1,21 +1,17 @@
 <div class="text-color mb-24 montserrat">
-	<span (click)="goTo(schoolData.slug)"
-		class="text-color-light underline cursor-pointer montserrat">
+	<span (click)="goTo(schoolData.slug)" class="text-color-light underline cursor-pointer montserrat">
 		{{'menu.home' | translate
-    }}
+		}}
 	</span>
 	/ {{getCourseName(course)}}
 </div>
 
-<div *ngIf="course"
-	class="course-reservation-section">
+<div *ngIf="course" class="course-reservation-section">
 	<div class="course-section">
 		<div class="rounded-8 course-image-wrapper">
-			<div class="course-image-text"
-				style="padding: 16px 0;">
+			<div class="course-image-text" style="padding: 16px 0;">
 				<div class="fw-semibold course-image-icon montserrat">
-					<img [src]="course.icon"
-						alt="Icono">
+					<img [src]="course.icon" alt="Icono">
 					<div class="text-white fw-semibold text-semibig">
 						{{getCourseName(course)}}
 					</div>
@@ -23,31 +19,26 @@
 				</div>
 			</div>
 			<div style="position: relative;">
-				<img [src]="course?.image !== null ? course?.image : defaultImage"
-					class="course-image-img"
+				<img [src]="course?.image !== null ? course?.image : defaultImage" class="course-image-img"
 					style="border-radius: 10px;">
 				<span class="last-plaza">
 					{{"one_spot_available" | translate}}!
 				</span>
 			</div>
 		</div>
-		<div *ngIf="course"
-			class="course-content">
+		<div *ngIf="course" class="course-content">
 			<div style="display: flex;justify-content: space-between;flex-wrap: wrap;gap: 8px;">
 				<div style="min-width: 150px;">
-					<span *ngIf="!course.is_flexible"
-						class="price">
-						{{course.price}} {{course.currency}} /{{"text_date" | translate}}
+					<span *ngIf="!course.is_flexible" class="price">
+						{{course.price|number:'0.2-2'}} {{course.currency}} /{{"text_date" | translate}}
 					</span>
-					<span *ngIf="course.is_flexible"
-						class="price">
-						{{"text_from" | translate}}	{{collectivePrice}} {{course.currency}} /{{"text_date" | translate}}
+					<span *ngIf="course.is_flexible" class="price">
+						{{"text_from" | translate}} {{collectivePrice|number:'0.2-2'}} {{course.currency}}
+						/{{"text_date" | translate}}
 					</span>
 				</div>
 				<div style="display: flex;align-items: center;">
-					<img src="assets/icons/start_empty.png"
-						alt
-						class="icon24">
+					<img src="assets/icons/start_empty.png" alt class="icon24">
 					<span style="
           color: #E91E63;
           word-wrap: break-word">
@@ -55,11 +46,8 @@
 					</span>
 				</div>
 			</div>
-			<div class="dates"
-				style="display: flex;gap: 8px;align-items: center;">
-				<img src="assets/icons/calendar.png"
-					alt="Calendario"
-					class="icon24">
+			<div class="dates" style="display: flex;gap: 8px;align-items: center;">
+				<img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
 				<div>
 					<span class="descripcion">
 						{{"text_from" | translate}}
@@ -78,23 +66,21 @@
 			<div class="dates"
 				style="display: flex;gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;">
 				<ng-container *ngIf="course.course_type == 1">
-					<div *ngFor="let date of course.course_dates"
-						class="campo2">
+					<div *ngFor="let date of course.course_dates" class="campo2">
 						<span style="font-weight: 600;">
 							{{date.date | date: 'dd.MM.yyyy'}}
 						</span>
 						<span style="color: #8B9099;">
-							{{date.hour_start}}-{{date.hour_end}}
+							{{date.hour_start}}h-{{date.hour_end}}h
 						</span>
 					</div>
 				</ng-container>
 				<ng-container *ngIf="course.course_type == 2">
-					<div class="campo2"
-						class="mt-8 course-box-content-list">
+					<div class="campo2" class="mt-8 course-box-content-list">
 						<span style="font-weight: 600;">
 							{{course.course_dates[0].date | date:
-              'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
-              | date: 'dd.MM.yyyy'}}
+							'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
+							| date: 'dd.MM.yyyy'}}
 						</span>
 						<div>
 							{{ getWeekdays(course.settings) }}
@@ -110,16 +96,12 @@
 					</div>
 				</ng-container>
 			</div>
-			<div class="max-group"
-				style="display: flex;gap: 8px;align-items: center;">
-				<img src="assets/icons/people.png"
-					alt="Grupo máximo"
-					class="icon24">
+			<div class="max-group" style="display: flex;gap: 8px;align-items: center;">
+				<img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
 				<span class="campo2">
 					{{"max_pax" | translate}} {{course.max_participants}}
 				</span>
-				<span *ngIf="course.age_max<99 && course.age_min>1"
-					class="campo2">
+				<span *ngIf="course.age_max<99 && course.age_min>1" class="campo2">
 					,{{course.age_min}}-{{course.age_max}}+ {{"text_years" | translate}}
 				</span>
 			</div>
@@ -228,25 +210,22 @@
         </div>
       </ng-container> -->
 			<span class="descripcion2">
-				{{"courses.summary" |translate}}
+				{{"summary" |translate}}
 			</span>
-			<div [innerHTML]="getShotrDescription(course)"
-				class="show-desktop text-color-light montserrat">
+			<div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat">
 			</div>
 
 			<span class="descripcion2">
 				{{"courses.desc" |translate}}
 			</span>
-			<div [innerHTML]="getDescription(course)"
-				class="show-desktop text-color-light montserrat">
+			<div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat">
 			</div>
 			<ng-container *ngIf="course.availableDegrees.length>0">
 				<span class="descripcion2">
 					{{"levels" |translate}}
 				</span>
 				<div style="display: flex;flex-wrap: wrap;gap: 5px;">
-					<span *ngFor="let item of course.availableDegrees"
-						[style.backgroundColor]="item.color"
+					<span *ngFor="let item of course.availableDegrees" [style.backgroundColor]="item.color"
 						style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;">
 						{{item.name}}
 					</span>
@@ -258,8 +237,9 @@
 					{{"text_forfait" |translate}}
 				</span>
 				<div style="display: flex;gap: 16px;padding: 20px 0;flex-direction: column;">
-					<mat-checkbox *ngFor="let extra of settingsExtras"
-						style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
+					<mat-checkbox *ngFor="let extra of settingsExtras" style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px;display: flex
+						;
+							align-items: center;">
 						<div style="display: flex;gap: 8px;padding: 4px 0;
             padding-right: 10px;
             justify-content: space-between;
@@ -286,59 +266,46 @@
 	<!-- Reservation -->
 	<div class="reservation-section">
 		<div class="rounded-8 reservation-box">
-			<div *ngIf="!userLogged"
-				class="reservation-box"
-				style="padding: 20px;">
-				<div style="width: 100%;"
-					class="text-color montserrat">
+			<div *ngIf="!userLogged" class="reservation-box" style="padding: 20px;">
+				<div style="width: 100%;" class="text-color montserrat">
 					{{'text_booking1' | translate }}
 				</div>
 				<button (click)="schoolService.isModalLogin=true"
 					style="height: 40px;border-radius: 3px;color: white;background-color: #E91E63;"
-					class="rounded-8 button-style cursor-pointer width-100"
-					type="button">
+					class="rounded-8 button-style cursor-pointer width-100" type="button">
 					{{'text_already_client' | translate }}
 				</button>
 				<button (click)="schoolService.isModalNewUser = !schoolService.isModalNewUser"
 					style="height: 40px;border-radius: 3px;background-color: white;border:1px solid black;"
-					class="rounded-8 button-style cursor-pointer width-100"
-					type="button">
+					class="rounded-8 button-style cursor-pointer width-100" type="button">
 					{{'text_new_client' | translate }}
 				</button>
 			</div>
-			<div *ngIf="isSmallScreen && userLogged && course && !SmallScreenModal"
-				style="display: flex;    justify-content: center;    padding: 16px;
+			<div *ngIf="isSmallScreen && userLogged && course && !SmallScreenModal" style="display: flex;    justify-content: center;    padding: 16px;
         height: 70px;
         width: 100%;
         gap: 16px;">
-				<div class="reservation-price-flex"
-					style="justify-content: space-around;">
+				<div class="reservation-price-flex" style="justify-content: space-around;">
 					<div class="text-medium text-color uppercase">
 						{{'text_price' | translate }}
 					</div>
-					<div *ngIf="!course.is_flexible"
-						class="text-medium text-color"
-						style="text-align: -webkit-center;">
+					<div *ngIf="!course.is_flexible" class="text-medium text-color" style="text-align: -webkit-center;">
 						<span class="text-color text-medium fw-bold">{{course?.price}}</span>
 						{{ course?.currency }}
 					</div>
-					<div *ngIf="course.is_flexible"
-						class="text-medium text-color"
-						style="text-align: -webkit-center;">
+					<div *ngIf="course.is_flexible" class="text-medium text-color" style="text-align: -webkit-center;">
 						<span class="text-color text-medium fw-bold">{{collectivePrice}}</span>
 						{{ course?.currency }} /{{'date' |
-            translate }}
+						translate }}
 					</div>
 				</div>
-				<button (click)="SmallScreenModal=true"
-					style="
+				<button (click)="SmallScreenModal=true" style="
             background-color: rgba(233, 30, 99, 1);
             width: 100%;border-radius: 3px;
             height: 38px;padding: 10px 12px;
             color: white;
              font-weight: 600;
-             word-wrap: break-word"
-					type="button">
+             word-wrap: break-word" type="button">
 					{{'continue' | translate }}
 				</button>
 			</div>
@@ -347,47 +314,37 @@
 				<div class="titlexxxx">
 					<img *ngIf="courseFlux>0"
 						(click)="!course.is_flexible&&course.course_type === 3?courseFlux=courseFlux-2:courseFlux=courseFlux-1;"
-						src="assets/icons/arrow-left.png"
-						style="cursor: pointer;"
-						class="icon24">
+						src="assets/icons/arrow-left.png" style="cursor: pointer;" class="icon24">
 					{{'text_new_booking' | translate }}
-					<img (click)="SmallScreenModal=false"
-						src="assets/icons/x.png"
-						style="margin-left: auto;cursor: pointer;"
-						class="icon24">
+					<img (click)="SmallScreenModal=false" src="assets/icons/x.png"
+						style="margin-left: auto;cursor: pointer;" class="icon24">
 				</div>
-				<div style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
-					<span [style.color]="courseFlux===0?'#E91E63':'#8B9099'"
-						style="
+				<div
+					style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
+					<span [style.color]="courseFlux===0?'#E91E63':'#8B9099'" style="
           font-size: 12px;
           line-height: 16px;
           word-wrap: break-word">
 						{{"participant" | translate}}
 					</span>
-					<img src="assets/icons/arrow-right.png"
-						class="icon20">
-					<span [style.color]="courseFlux===1?'#E91E63':'#8B9099'"
-						style="
+					<img src="assets/icons/arrow-right.png" class="icon20">
+					<span [style.color]="courseFlux===1?'#E91E63':'#8B9099'" style="
           font-size: 12px;
           line-height: 16px;
           word-wrap: break-word">
 						{{"level" | translate}}
 					</span>
-					<img *ngIf="course.is_flexible || course.course_type===2"
-						src="assets/icons/arrow-right.png"
+					<img *ngIf="course.is_flexible || course.course_type===2" src="assets/icons/arrow-right.png"
 						class="icon20">
 					<span *ngIf="course.is_flexible || course.course_type===2"
-						[style.color]="courseFlux===2?'#E91E63':'#8B9099'"
-						style="
+						[style.color]="courseFlux===2?'#E91E63':'#8B9099'" style="
             font-size: 12px;
             line-height: 16px;
             word-wrap: break-word">
 						{{"date" | translate}}
 					</span>
-					<img src="assets/icons/arrow-right.png"
-						class="icon20">
-					<span [style.color]="courseFlux===3?'#E91E63':'#8B9099'"
-						style="
+					<img src="assets/icons/arrow-right.png" class="icon20">
+					<span [style.color]="courseFlux===3?'#E91E63':'#8B9099'" style="
               font-size: 12px;
               line-height: 16px;
               word-wrap: break-word">
@@ -395,13 +352,11 @@
 					</span>
 				</div>
 
-				<div *ngIf="courseFlux===0"
-					class="reservation-users"
-					style="padding: 20px;">
+				<div *ngIf="courseFlux===0" class="reservation-users" style="padding: 20px;">
 					<div style="  word-wrap: break-word">
 						<ng-container *ngIf="course?.course_type === 2">
 							{{'text_select_user_or_more' | translate }}
-              {{course?.max_participants}}
+							{{course?.max_participants}}
 						</ng-container>
 						<ng-container *ngIf="!(course?.course_type === 2)">
 							{{'text_select_user' | translate }}
@@ -411,25 +366,23 @@
 					<mat-checkbox (click)="selectUser(userLogged.clients[0],course?.course_type)"
 						style="height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
 						<div style="display: flex;gap: 8px;padding: 12px 0;">
-							<app-level-user *ngIf="dataLevels && dataLevels.length"
-								[allLevels]="dataLevels"
-								[selectLevel]="185"
-								[size]="40"
+							<app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
+								[selectLevel]="185" [size]="40"
 								[userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
 							<div class="text-color text-small montserrat reservation-user-title">
 								<div style="text-align: -webkit-left;">
 									<span style="font-weight: 600;">
 										{{userLogged?.clients[0].first_name}}
-                    {{userLogged?.clients[0].last_name}}
+										{{userLogged?.clients[0].last_name}}
 									</span>
 									<img src="assets/images/gold-crown.png"
 										style="display: inline;vertical-align: baseline;">
 									<br>
 									<span style="color: #8B9099;font-size: 12px;">
 										{{getLanguage(userLogged?.clients[0]?.language1_id)}}
-                · {{getCountry(userLogged?.clients[0]?.country)}} ·
-                {{calculateAge(userLogged?.clients[0]?.birth_date)}} {{'years' |
-                translate }}
+										· {{getCountry(userLogged?.clients[0]?.country)}} ·
+										{{calculateAge(userLogged?.clients[0]?.birth_date)}} {{'years' |
+										translate }}
 									</span>
 								</div>
 							</div>
@@ -440,10 +393,8 @@
 						(click)="selectUser(utilizer,course?.course_type)"
 						style="height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
 						<div style="display: flex;gap: 8px;padding: 12px 0;">
-							<app-level-user *ngIf="dataLevels && dataLevels.length"
-								[allLevels]="dataLevels"
-								[selectLevel]="185"
-								[size]="40"
+							<app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
+								[selectLevel]="185" [size]="40"
 								[userImage]="themeService.avatarEmpty || 'assets/avatar.png'"></app-level-user>
 							<div class="text-color text-small montserrat reservation-user-title">
 								<div style="text-align: -webkit-left;">
@@ -453,9 +404,9 @@
 									<br>
 									<span style="color: #8B9099;font-size: 12px;">
 										{{getLanguage(utilizer.language1_id)}}
-                    · {{getCountry(utilizer.country)}} ·
-                    {{calculateAge(utilizer.birth_date)}} {{'years' |
-                    translate }}
+										· {{getCountry(utilizer.country)}} ·
+										{{calculateAge(utilizer.birth_date)}} {{'years' |
+										translate }}
 									</span>
 								</div>
 							</div>
@@ -468,20 +419,16 @@
 					</button>
 				</div>
 
-				<div *ngIf="courseFlux===1"
-					style="padding: 20px;">
+				<div *ngIf="courseFlux===1" style="padding: 20px;">
 					<div>
 						{{'text_select_level' | translate }}
 					</div>
-					<div *ngIf="course.availableDegrees.length>0"
-						style="
+					<div *ngIf="course.availableDegrees.length>0" style="
             background-color: rgba(210, 239, 255, 1);
         border-radius: 8px;margin-top: 12px;
             padding: 10px;display: flex;gap: 8px; align-items: center;
            word-wrap: break-word">
-						<img src="assets/icons/info.png"
-							alt
-							class="icon24">
+						<img src="assets/icons/info.png" alt class="icon24">
 						{{ 'text_no_level' | translate }}
 					</div>
 					<div>
@@ -513,9 +460,9 @@
               {{'text_change_level' | translate }}
             </div> -->
 						<!-- showLevels && -->
-						<div class="levels-section"
-							style="margin-top: 20px;">
-							<ng-container *ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
+						<div class="levels-section" style="margin-top: 20px;">
+							<ng-container
+								*ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
 								<div *ngIf="i===0 || level.league !== (course.availableDegrees.length>0?course.availableDegrees:dataLevels)[i-1].league"
 									style="
                 color: #8B9099;
@@ -525,7 +472,8 @@
 								</div>
 								<!-- *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
                        hasMatchingSportLevel(level)" -->
-								<mat-checkbox [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}"
+								<mat-checkbox
+									[ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}"
 									(click)="selectLevel(level)"
 									style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
 									<div style="display: flex;gap: 8px;padding: 12px 0;">
@@ -537,15 +485,15 @@
 								</mat-checkbox>
 							</ng-container>
 						</div>
-						<div *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
+						<div
+							*ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
 							<p>
 								{{'text_no_degrees' | translate }}
 							</p>
 						</div>
 					</div>
 				</div>
-				<div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2"
-					style="padding: 20px;">
+				<div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2" style="padding: 20px;">
 					<div>
 						{{"Selecciona las fechas que quieres reservar." | translate}}
 					</div>
@@ -553,14 +501,12 @@
           flex-wrap: wrap;
           justify-content: space-between;;">
 						<mat-checkbox *ngFor="let date of getDaysBetweenDates(course.date_start,course.date_end)"
-							(click)="flexDateGet(date)"
-							style="font-weight: 600;">
+							(click)="flexDateGet(date)" style="font-weight: 600;">
 							{{date | date: 'dd.MM.yyyy'}}
 						</mat-checkbox>
 					</div>
 				</div>
-				<div *ngIf="course?.course_type==2 && courseFlux===2"
-					style="padding: 20px;">
+				<div *ngIf="course?.course_type==2 && courseFlux===2" style="padding: 20px;">
 
 					<ng-container *ngIf="selectedUserMultiple && selectedUserMultiple.length">
 						<div class="text-color montserrat mt-12 margin-auto">
@@ -572,40 +518,35 @@
 							<div class="calendar">
 								<div class="header-calendar">
 									<div class="header-calendar-arrows">
-										<img [src]="themeService.arrowLeft"
-											(click)="prevMonth()">
-										<img [src]="themeService.arrowRight"
-											(click)="nextMonth()">
+										<img [src]="themeService.arrowLeft" (click)="prevMonth()">
+										<img [src]="themeService.arrowRight" (click)="nextMonth()">
 									</div>
 									<div class="text-color text-semibig fw-medium">
 										{{
-                    monthNames[currentMonth] }}
+										monthNames[currentMonth] }}
 									</div>
 									<div class="text-color text-semibig fw-medium">
 										{{
-                    currentYear
-                    }}
+										currentYear
+										}}
 									</div>
 								</div>
 								<div class="weekdays">
-									<span *ngFor="let day of weekdays"
-										class="montserrat text-small text-color-light">
+									<span *ngFor="let day of weekdays" class="montserrat text-small text-color-light">
 										{{ day
-                    }}
+										}}
 									</span>
 								</div>
 								<div class="days">
 									<ng-container *ngFor="let day of days">
-										<span [ngClass]="{'very-light-opacity': day.past}"
-											(click)="selectDay(day)"
+										<span [ngClass]="{'very-light-opacity': day.past}" (click)="selectDay(day)"
 											class="montserrat day-span-a">
 											<span [ngClass]="{
                                                   'active-collective': day.active && course.course_type == 1,
                                                   'active-collective-selected': day.selected && course.course_type == 1,
                                                   'active-private': day.active  && course.course_type == 2,
                                                   'active-private-selected': day.selected  && course.course_type == 2
-                                                  }"
-												class="day-span-b text-color">
+                                                  }" class="day-span-b text-color">
 												{{ day.number }}
 											</span>
 										</span>
@@ -622,32 +563,23 @@
                   required>
               </mat-form-field> -->
 
-							<mat-form-field appearance="outline"
-								class="flex-auto"
-								style="width: calc(50% - 8px);">
+							<mat-form-field appearance="outline" class="flex-auto" style="width: calc(50% - 8px);">
 								<mat-label>
 									{{'Hora' | translate}}
 								</mat-label>
-								<input matInput
-									type="text"
-									required>
+								<input matInput type="text" required>
 							</mat-form-field>
 
-							<mat-form-field appearance="outline"
-								class="flex-auto"
-								style="width: calc(50% - 8px);">
+							<mat-form-field appearance="outline" class="flex-auto" style="width: calc(50% - 8px);">
 								<mat-label>
 									{{'Duracion' | translate}}
 								</mat-label>
-								<input matInput
-									type="text"
-									required>
+								<input matInput type="text" required>
 							</mat-form-field>
 						</div>
 					</ng-container>
 				</div>
-				<div *ngIf="courseFlux===3"
-					style="display: flex;padding: 20px;flex-direction: column;">
+				<div *ngIf="courseFlux===3" style="display: flex;padding: 20px;flex-direction: column;">
 					<div>
 						{{"add_extras_or_notes" |translate}}
 					</div>
@@ -667,20 +599,17 @@
 								</div>
 								<span style="width: 125px;padding: 10px;">
 									{{extra.price}}{{course?.currency}} / {{'date' | translate
-                  }}
+									}}
 								</span>
 							</div>
 						</mat-checkbox>
 					</div>
 					<div style="margin-top: 20px;">
-						<mat-form-field appearance="outline"
-							class="flex-auto"
-							style="width: 100%">
+						<mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
 							<mat-label>
 								{{'text_observations' | translate}}
 							</mat-label>
-							<textarea matInput
-								cols="3">
+							<textarea matInput cols="3">
 							</textarea>
 						</mat-form-field>
 					</div>
@@ -691,28 +620,25 @@
 					<div class="text-medium text-color uppercase">
 						{{'text_price' | translate }}
 					</div>
-					<div *ngIf="!course.is_flexible"
-						class="text-medium text-color">
+					<div *ngIf="!course.is_flexible" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{course?.price}}</span>
 						{{ course?.currency }}
 					</div>
-					<div *ngIf="course.is_flexible"
-						class="text-medium text-color">
+					<div *ngIf="course.is_flexible" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{collectivePrice}}</span>
 						{{ course?.currency }} /{{'date' |
-            translate }}
+						translate }}
 					</div>
 				</div>
 				<div style="padding: 20px;">
-					<button [disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1"
-						(click)="next()"
-						style="
+					<button
+						[disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1"
+						(click)="next()" style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
               color: white;
-              font-weight: 600;"
-						type="button">
+              font-weight: 600;" type="button">
 						{{'continue' | translate }}
 					</button>
 				</div>
@@ -727,16 +653,11 @@
 	</div>
 </div>
 
-<app-modal-add-user [slug]="schoolData?.slug"
-	[isOpen]="isModalAddUser"
+<app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser"
 	(onClose)="closeModalAddUser()"></app-modal-add-user>
 
-<app-course-modal-confirm *ngIf="confirmModal"
-	[course]="course"
-	[selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple"
-	[selectedForfait]="selectedForfait"
-	[collectivePrice]="collectivePrice"
-	(onClose)="confirmModal=false"
-	(goCart)="goTo('/'+schoolData.slug+'/cart/')"
+<app-course-modal-confirm *ngIf="confirmModal" [course]="course"
+	[selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple" [selectedForfait]="selectedForfait"
+	[collectivePrice]="collectivePrice" (onClose)="confirmModal=false" (goCart)="goTo('/'+schoolData.slug+'/cart/')"
 	(next)="addBookingToCart()">
 </app-course-modal-confirm>

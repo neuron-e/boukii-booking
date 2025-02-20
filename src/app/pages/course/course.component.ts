@@ -103,7 +103,6 @@ export class CourseComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
-      this.course.is_flexible = true
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
