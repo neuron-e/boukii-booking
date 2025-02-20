@@ -5,7 +5,6 @@ import { ThemeService } from '../../services/theme.service';
 import { CoursesService } from '../../services/courses.service';
 import { SchoolService } from '../../services/school.service';
 import { DatePipe } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { catchError, tap } from 'rxjs/operators';
@@ -32,8 +31,11 @@ export class HomeComponent implements OnInit {
   ResultCourse: any
   DestacadoCourse: any
   ProximosCourse: any
-  FilterModal: boolean = false
+  moreProximosCourse: number = 8
+  typeProximosCourse = ["text_all_availability"]
+  selectedTypeProximosCourse: string = this.typeProximosCourse[0]
 
+  FilterModal: boolean = false
   schoolData: any = null;
   sports: any[];
   season: any
@@ -131,15 +133,19 @@ export class HomeComponent implements OnInit {
   }
 
   getCourses() {
-    let params = {
+    this.coursesService.getCoursesAvailableByDates({
       'start_date': this.formatDate(2000, 1, 1),
-      'end_date': this.formatDate(2034, 1, 1),
-    };
-    this.coursesService.getCoursesAvailableByDates(params)
-      .subscribe(res => {
-        this.DestacadoCourse = res.data;
-        this.ProximosCourse = res.data;
-      });
+      'end_date': this.formatDate(new Date().getFullYear() + 100, 1, 1),
+    }).subscribe(res => {
+      this.DestacadoCourse = res.data;
+    });
+    this.coursesService.getCoursesAvailableByDates({
+      'start_date': this.formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 10),
+      'end_date': this.formatDate(new Date().getFullYear() + 100, 1, 1),
+    }).subscribe(res => {
+      this.ProximosCourse = res.data
+      this.typeProximosCourse = ["text_all_availability", ...this.ProximosCourse.map((a: any) => a.sport.name).filter((valor: any, indice: any) => this.ProximosCourse.map((a: any) => a.sport.name).indexOf(valor) === indice)]
+    });
   }
   searchCourses() {
     let params = {
@@ -228,5 +234,5 @@ export class HomeComponent implements OnInit {
     this.router.navigate([url]);
   }
 
-
+  find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 }

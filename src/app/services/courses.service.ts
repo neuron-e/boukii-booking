@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import {environment} from '../../environments/environment';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {ApiResponse} from '../interface/api-response';
-import {ApiService} from './api.service';
-import {ActivatedRoute} from '@angular/router';
+import { environment } from '../../environments/environment';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { ApiResponse } from '../interface/api-response';
+import { ApiService } from './api.service';
+import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CoursesService extends ApiService{
+export class CoursesService extends ApiService {
 
   constructor(http: HttpClient, route: ActivatedRoute) {
     super(http, route);
@@ -20,10 +20,7 @@ export class CoursesService extends ApiService{
 
     // Crear HttpParams y añadir los parámetros
     let httpParams = new HttpParams();
-    if (params.start_date) {
-      const startDate = moment(params.start_date).isSameOrAfter(moment()) ? moment(params.start_date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
-      httpParams = httpParams.append('start_date', startDate);
-    }
+    httpParams = httpParams.append('start_date', params.start_date);
     if (params.end_date) {
       httpParams = httpParams.append('end_date', params.end_date);
     }
@@ -53,7 +50,7 @@ export class CoursesService extends ApiService{
   }
 
   getCourse(id: any) {
-    const url = this.baseUrl + '/slug/courses/'+id;
-    return this.http.get<ApiResponse>(url, { headers: this.getHeaders()});
+    const url = this.baseUrl + '/slug/courses/' + id;
+    return this.http.get<ApiResponse>(url, { headers: this.getHeaders() });
   }
 }
