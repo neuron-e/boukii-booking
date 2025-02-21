@@ -15,7 +15,6 @@
 					<div class="text-white fw-semibold text-semibig">
 						{{getCourseName(course)}}
 					</div>
-
 				</div>
 			</div>
 			<div style="position: relative;">
@@ -64,7 +63,7 @@
 				</div>
 			</div>
 			<div class="dates"
-				style="display: flex;gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;">
+				style="display: flex;gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;width: fit-content;">
 				<ng-container *ngIf="course.course_type == 1">
 					<div *ngFor="let date of course.course_dates" class="campo2">
 						<span style="font-weight: 600;">
@@ -210,19 +209,19 @@
         </div>
       </ng-container> -->
 			<span class="descripcion2">
-				{{"summary" |translate}}
+				{{"summary"|translate|uppercase}}
 			</span>
 			<div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat">
 			</div>
 
 			<span class="descripcion2">
-				{{"courses.desc" |translate}}
+				{{"courses.desc"|translate|uppercase}}
 			</span>
 			<div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat">
 			</div>
 			<ng-container *ngIf="course.availableDegrees.length>0">
 				<span class="descripcion2">
-					{{"levels" |translate}}
+					{{"levels"|translate|uppercase}}
 				</span>
 				<div style="display: flex;flex-wrap: wrap;gap: 5px;">
 					<span *ngFor="let item of course.availableDegrees" [style.backgroundColor]="item.color"
@@ -234,9 +233,9 @@
 
 			<ng-container *ngIf="course?.options">
 				<span class="descripcion2">
-					{{"text_forfait" |translate}}
+					{{"text_forfait"|translate|uppercase}}
 				</span>
-				<div style="display: flex;gap: 16px;padding: 20px 0;flex-direction: column;">
+				<div style="display: flex;gap: 16px;flex-direction: column;">
 					<mat-checkbox *ngFor="let extra of settingsExtras" style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px;display: flex
 						;
 							align-items: center;">
