@@ -54,6 +54,8 @@ import { UserDetailDialogComponent } from './pages/user/user-detail/dialog/dialo
 import { ConfirmModalModule } from './components/confirm-dialog/confirm-dialog.component.module';
 import { FluxUploadImgModule } from './pages/user/user-detail/upload-img/app.module';
 import { SportCardComponent } from './pages/user/sport-card/app.component';
+import { ComponenteDatePickerModule } from './components/form/datepicker/app.module';
+import { ComponenteSelectModule } from './components/form/select/app.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -121,6 +123,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgxMatTimepickerModule,
     MatSortModule,
     MatFormFieldModule,
+    ComponenteDatePickerModule,
+    ComponenteSelectModule
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

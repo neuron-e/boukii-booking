@@ -313,41 +313,31 @@
 				<div class="titlexxxx">
 					<img *ngIf="courseFlux>0"
 						(click)="!course.is_flexible&&course.course_type === 3?courseFlux=courseFlux-2:courseFlux=courseFlux-1;"
-						src="assets/icons/arrow-left.png" style="cursor: pointer;" class="icon24">
+						src="assets/icons/arrow-left.png" style="cursor: pointer;filter:invert(1)" class="icon24">
 					{{'text_new_booking' | translate }}
 					<img (click)="SmallScreenModal=false" src="assets/icons/x.png"
 						style="margin-left: auto;cursor: pointer;" class="icon24">
 				</div>
 				<div
 					style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
-					<span [style.color]="courseFlux===0?'#E91E63':'#8B9099'" style="
-          font-size: 12px;
-          line-height: 16px;
-          word-wrap: break-word">
-						{{"participant" | translate}}
+					<span [style.color]="courseFlux===0?'#E91E63':'#8B9099'" class="placeLevel" (click)="courseFlux=0">
+						{{"participant"|translate|uppercase}}
 					</span>
 					<img src="assets/icons/arrow-right.png" class="icon20">
-					<span [style.color]="courseFlux===1?'#E91E63':'#8B9099'" style="
-          font-size: 12px;
-          line-height: 16px;
-          word-wrap: break-word">
-						{{"level" | translate}}
+					<span [style.color]="courseFlux===1?'#E91E63':'#8B9099'" class="placeLevel"
+						(click)="courseFlux>1?courseFlux=1:null">
+						{{"level"|translate|uppercase}}
 					</span>
 					<img *ngIf="course.is_flexible || course.course_type===2" src="assets/icons/arrow-right.png"
 						class="icon20">
 					<span *ngIf="course.is_flexible || course.course_type===2"
-						[style.color]="courseFlux===2?'#E91E63':'#8B9099'" style="
-            font-size: 12px;
-            line-height: 16px;
-            word-wrap: break-word">
-						{{"date" | translate}}
+						[style.color]="courseFlux===2?'#E91E63':'#8B9099'" class="placeLevel"
+						(click)="courseFlux>2?courseFlux=2:null">
+						{{"date"|translate|uppercase}}
 					</span>
 					<img src="assets/icons/arrow-right.png" class="icon20">
-					<span [style.color]="courseFlux===3?'#E91E63':'#8B9099'" style="
-              font-size: 12px;
-              line-height: 16px;
-              word-wrap: break-word">
-						{{"extras" | translate}}
+					<span [style.color]="courseFlux===3?'#E91E63':'#8B9099'" class="placeLevel">
+						{{"extras"|translate|uppercase}}
 					</span>
 				</div>
 
@@ -561,20 +551,12 @@
                   [(ngModel)]="selectedDateReservation"
                   required>
               </mat-form-field> -->
-
-							<mat-form-field appearance="outline" class="flex-auto" style="width: calc(50% - 8px);">
-								<mat-label>
-									{{'Hora' | translate}}
-								</mat-label>
-								<input matInput type="text" required>
-							</mat-form-field>
-
-							<mat-form-field appearance="outline" class="flex-auto" style="width: calc(50% - 8px);">
-								<mat-label>
-									{{'Duracion' | translate}}
-								</mat-label>
-								<input matInput type="text" required>
-							</mat-form-field>
+							<app-form-select style="width: calc(50% - 8px);" [value]="coursesService.hours[0]"
+								label="hour" [table]="coursesService.hours"
+								(do)="selectedHour=$event.option.value"></app-form-select>
+							<app-form-select style="width: calc(50% - 8px);" [value]="coursesService.duration[0]"
+								[table]="coursesService.duration" label="duration"
+								(do)="selectedDuration=$event.option.value"></app-form-select>
 						</div>
 					</ng-container>
 				</div>

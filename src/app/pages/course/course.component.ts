@@ -71,7 +71,7 @@ export class CourseComponent implements OnInit {
 
   defaultImage = '../../../assets/images/3.png';
 
-  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
+  constructor(private router: Router, public themeService: ThemeService, public coursesService: CoursesService,
     private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
     private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar,
     private crudService: ApiCrudService
@@ -974,4 +974,6 @@ export class CourseComponent implements OnInit {
     this.dataLevels = []
     data.data.forEach((element: any) => element.active ? this.dataLevels.push(element) : null);
   });
+
+  Date = (date: string) => new Date(date)
 }

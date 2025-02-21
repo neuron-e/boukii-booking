@@ -8,13 +8,13 @@
 			<img src="assets/icons/destacado.png" alt="Favorito">
 		</div>
 		<span class="last-plaza">
-			{{"Solo 1 plaza disponible!" | translate}}
+			{{"one_spot_available" | translate}}
 		</span>
 	</div>
 	<div class="card-body">
 		<h3 class="card-title">{{getCourseName()}}</h3>
 		<p class="price">
-			{{data.is_flexible?'text_from':''|translate}} {{getCoursePrice()}} {{data.currency}}/{{"date"|translate}}
+			{{(data.is_flexible?'text_from':'')|translate}} {{getCoursePrice()}} {{data.currency}}/{{"date"|translate}}
 		</p>
 		<p [innerHTML]="getShotrDescription()" class="description">
 		</p>

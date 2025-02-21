@@ -1,0 +1,15 @@
+span {
+    display: flex;
+    align-items: center;
+}
+
+
+button:hover {
+    span {
+        color: white !important;
+    }
+}
+
+button {
+    padding: 0 15px !important;
+}
