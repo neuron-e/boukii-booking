@@ -9,8 +9,8 @@ import { SchoolService } from 'src/app/services/school.service';
 export class FooterComponent implements OnInit {
   constructor(private schoolService: SchoolService) { }
   SchoolData: any
-  async ngOnInit() {
+  ngOnInit() {
     this.schoolService.fetchSchoolData();
-    this.schoolService.getSchoolData().subscribe((data: any) => this.SchoolData = data.data)
+    this.schoolService.getSchoolData().subscribe((data: any) => data ? this.SchoolData = data.data : null)
   }
 }

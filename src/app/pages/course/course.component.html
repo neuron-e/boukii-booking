@@ -253,7 +253,7 @@
                word-wrap: break-word">{{extra.name}}</span>
 							</div>
 							<span style="word-wrap: break-word">
-								{{extra.price}}{{course?.currency}} / {{'date' | translate }}
+								{{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate }}
 							</span>
 						</div>
 					</mat-checkbox>
@@ -289,11 +289,11 @@
 						{{'text_price' | translate }}
 					</div>
 					<div *ngIf="!course.is_flexible" class="text-medium text-color" style="text-align: -webkit-center;">
-						<span class="text-color text-medium fw-bold">{{course?.price}}</span>
+						<span class="text-color text-medium fw-bold">{{course?.price|number:'0.2-2'}}</span>
 						{{ course?.currency }}
 					</div>
 					<div *ngIf="course.is_flexible" class="text-medium text-color" style="text-align: -webkit-center;">
-						<span class="text-color text-medium fw-bold">{{collectivePrice}}</span>
+						<span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
 						{{ course?.currency }} /{{'date' |
 						translate }}
 					</div>
@@ -579,7 +579,7 @@
 									<span>{{extra.name}}</span>
 								</div>
 								<span style="width: 125px;padding: 10px;">
-									{{extra.price}}{{course?.currency}} / {{'date' | translate
+									{{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate
 									}}
 								</span>
 							</div>
@@ -602,11 +602,11 @@
 						{{'text_price' | translate }}
 					</div>
 					<div *ngIf="!course.is_flexible" class="text-medium text-color">
-						<span class="text-color text-medium fw-bold">{{course?.price}}</span>
+						<span class="text-color text-medium fw-bold">{{course?.price|number:'0.2-2'}}</span>
 						{{ course?.currency }}
 					</div>
 					<div *ngIf="course.is_flexible" class="text-medium text-color">
-						<span class="text-color text-medium fw-bold">{{collectivePrice}}</span>
+						<span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
 						{{ course?.currency }} /{{'date' |
 						translate }}
 					</div>

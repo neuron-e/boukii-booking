@@ -7,10 +7,8 @@ import { SchoolService } from '../../services/school.service';
 import { DatePipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { catchError, tap } from 'rxjs/operators';
 import * as moment from 'moment';
 import { ApiCrudService } from 'src/app/services/crud.service';
-import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -45,10 +43,6 @@ export class HomeComponent implements OnInit {
   currentMonth: any
   currentYear: any
   days: any
-  tooltipsFilter: any
-
-  selectedDegreeType: number;
-  selectedAgeType: number;
 
   degreeValues: any = {
     doesntMatter: null,
@@ -75,9 +69,6 @@ export class HomeComponent implements OnInit {
 
   currentDegreeRange: number[] = [];
   selectedCourseType: number;
-  degreesSports: any;
-  daySelected: any;
-  userLogged: any;
 
   constructor(public router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
     private schoolService: SchoolService, private crudService: ApiCrudService,
@@ -92,40 +83,39 @@ export class HomeComponent implements OnInit {
       edat: ["", Validators.required],
       nivel: ["", Validators.required],
     })
-
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.selectedAgeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1');
-          this.selectedDegreeType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1');
-          this.selectedCourseType = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1');
+          this.FormGroup.patchValue({
+            course_type: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1'),
+            edat: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1'),
+            nivel: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1')
+          })
           this.crudService
             .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' +
               this.schoolData.id + '&is_active=1').subscribe({
                 next: (res) => {
                   if (res.data.length > 0) {
-                    this.season = res.data[0]; // Guardamos la temporada en caché
+                    this.season = res.data[0];
                     this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
                     this.holidays.forEach((element: any) => {
                       this.myHolidayDates.push(moment(element).toDate());
                     });
                   }
                   if (this.schoolData?.sports?.length > 0) {
-                    this.selectedSportId = parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id);
-                    const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
-                    this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
-                    const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
-                    this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
+                    this.FormGroup.patchValue({
+                      sport_id: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedSportId') ?? this.schoolData.sports[0].id)
+                    })
+                    //const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
+                    //this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
+                    //const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
+                    //this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
                     this.getCourses();
                   }
                 },
-                error: (err) => {
-                  console.error('Error al obtener la temporada:', err);
-                }
+                error: (err) => console.error('Error al obtener la temporada:', err)
               });
-
         }
       }
     );
@@ -134,101 +124,85 @@ export class HomeComponent implements OnInit {
 
   getCourses() {
     this.coursesService.getCoursesAvailableByDates({
-      'start_date': this.formatDate(2000, 1, 1),
-      'end_date': this.formatDate(new Date().getFullYear() + 100, 1, 1),
-    }).subscribe(res => {
-      this.DestacadoCourse = res.data;
-    });
+      start_date: this.formatDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()),
+      end_date: this.formatDate(new Date().getFullYear() + 100, 1, 1),
+      course_type: this.FormGroup.controls['course_type'].value,
+      degree_order: this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
+      sport_id: this.FormGroup.controls['deporte'].value,
+      max_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
+      min_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age
+    }).subscribe(res => { this.DestacadoCourse = res.data; });
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     this.coursesService.getCoursesAvailableByDates({
-      'start_date': this.formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 10),
+      start_date: this.formatDate(tomorrow.getFullYear(), tomorrow.getMonth() + 1, tomorrow.getDate()),
       'end_date': this.formatDate(new Date().getFullYear() + 100, 1, 1),
     }).subscribe(res => {
       this.ProximosCourse = res.data
       this.typeProximosCourse = ["text_all_availability", ...this.ProximosCourse.map((a: any) => a.sport.name).filter((valor: any, indice: any) => this.ProximosCourse.map((a: any) => a.sport.name).indexOf(valor) === indice)]
     });
   }
+
   searchCourses() {
-    let params = {
-      'start_date': this.formatDate(2000, 1, 1),
-      'end_date': this.formatDate(2099, 12, 31),
-      'course_type': this.FormGroup.controls['course_type'].value,
-      'degree_order': this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
-      'sport_id': this.FormGroup.controls['deporte'].value,
-      'max_age': this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
-      'min_age': this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age
-    };
-    this.coursesService.getCoursesAvailableByDates(params).subscribe(res => this.ResultCourse = res.data)
+    this.coursesService.getCoursesAvailableByDates({
+      start_date: this.formatDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()),
+      end_date: this.formatDate(new Date().getFullYear() + 100, 1, 1),
+      course_type: this.FormGroup.controls['course_type'].value,
+      degree_order: this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
+      sport_id: this.FormGroup.controls['deporte'].value,
+      max_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
+      min_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age
+    }).subscribe(res => this.ResultCourse = res.data)
   }
 
   formatDate(year: number, month: number, day: number): string {
     return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   }
 
-  getSeason(schoolId: number): Observable<any> {
-    // Si ya tenemos la temporada, devolverla directamente
-    if (this.season) {
-      return of(this.season); // Devuelve un Observable con la temporada almacenada
-    }
+  // getSeason(schoolId: number): Observable<any> {
+  //   if (this.season) return of(this.season);
+  //   return this.crudService
+  //     .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' + schoolId + '&is_active=1')
+  //     .pipe(
+  //       tap((response) => {
+  //         if (response.data.length > 0) {
+  //           this.season = response.data[0]; // Guardamos la temporada en caché
+  //           this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
+  //           this.holidays.forEach((element: any) => {
+  //             this.myHolidayDates.push(moment(element).toDate());
+  //           });
+  //         }
+  //       }),
+  //       catchError((error) => {
+  //         console.error('Error fetching season:', error);
+  //         return of(null); // Manejar error y devolver un valor vacío
+  //       })
+  //     );
+  // }
 
-    // Si no está almacenada, hacemos la llamada a la API
-    return this.crudService
-      .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' + schoolId + '&is_active=1')
-      .pipe(
-        tap((response) => {
-          if (response.data.length > 0) {
-            this.season = response.data[0]; // Guardamos la temporada en caché
-            this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
-            this.holidays.forEach((element: any) => {
-              this.myHolidayDates.push(moment(element).toDate());
-            });
-          }
-        }),
-        catchError((error) => {
-          console.error('Error fetching season:', error);
-          return of(null); // Manejar error y devolver un valor vacío
-        })
-      );
-  }
+  // selectDay(day: any) {
+  //   if (day.active) {
+  //     this.days.forEach((d: any) => d.selected = false);
+  //     day.selected = true;
+  //     const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
+  //     this.daySelected = formattedDate;
+  //     this.getCourses();
+  //   } else {
+  //     this.daySelected = null;
+  //   }
+  // }
+  //showTooltipFilter(index: number) {
+  //  this.tooltipsFilter[index] = true;
+  //}
 
+  //hideTooltipFilter(index: number) {
+  //  this.tooltipsFilter[index] = false;
+  //}
 
-  inUseDatesFilter = (d: Date): boolean => {
-    if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
-
-    const formattedDate = moment(d).format('YYYY-MM-DD');
-    const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
-    const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
-    // Encuentra si la fecha actual está en myHolidayDates.
-    const isHoliday = this.myHolidayDates.some((x: any) => x.getTime() === time);
-
-    // La fecha debería ser seleccionable si no es un día festivo y está activa (o sea, active no es falso ni 0).
-    return !isHoliday;
-  }
-
-  selectDay(day: any) {
-    if (day.active) {
-      this.days.forEach((d: any) => d.selected = false);
-      day.selected = true;
-      const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
-      this.daySelected = formattedDate;
-      this.getCourses();
-    } else {
-      this.daySelected = null;
-    }
-  }
-
-  showTooltipFilter(index: number) {
-    this.tooltipsFilter[index] = true;
-  }
-
-  hideTooltipFilter(index: number) {
-    this.tooltipsFilter[index] = false;
-  }
-
-  /*
-  getFilteredGoals(degree:number): any[] {
-    return this.degreeGoals.filter((goal:any) => goal.sport.id === this.selectedSport && goal.degree.id === degree);
-  }
-  */
+  //getFilteredGoals(degree:number): any[] {
+  //  return this.degreeGoals.filter((goal:any) => goal.sport.id === this.selectedSport && goal.degree.id === degree);
+  //}
 
   goTo(url: string) {
     this.router.navigate([url]);

@@ -1,51 +1,40 @@
 <div class="modal" (click)="closeModal()">
     <div class="modal-content background-color-full rounded-8">
         <div class="text-color fw-semibold text-semibig modal-flex-title">
-            {{'Tu reserva' | translate }}
-            <img [src]="themeService.close" class="cursor-pointer"
-                (click)="closeModal()" />
+            {{'your_reservation' | translate }}
+            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
         </div>
         <div class="modal-body">
             <div style="gap: 8px;">
-                <img src="assets/icons/prive_ski2x.png" class="icon40"
-                    *ngIf="course?.course_type==2" />
-                <img src="assets/icons/collectif_ski2x.png" class="icon40"
-                    *ngIf="course?.course_type==1" />
+                <img src="assets/icons/prive_ski2x.png" class="icon40" *ngIf="course?.course_type==2" />
+                <img src="assets/icons/collectif_ski2x.png" class="icon40" *ngIf="course?.course_type==1" />
                 <div class="blackL">
                     {{getCourseName(course)}}
                     <div class="greyS">
                         <ng-container *ngIf="course?.course_type==1">
-                            {{'colective' | translate }}
+                            {{'colective'|translate }}
                         </ng-container>
                         <ng-container *ngIf="course?.course_type==2">
-                            {{'private' | translate }}
+                            {{'private'|translate }}
                         </ng-container>
                     </div>
                 </div>
             </div>
-            <div
-                style="flex-direction: column;align-items: flex-start;">
-                <div style="display: flex;gap: 8px; align-items: center;"
-                    class="greyL">
-                    <img src="assets/icons/people.png" alt="Grupo máximo"
-                        class="icon24">
-                    {{'PARTICIPANTE' | translate }}
+            <div style="flex-direction: column;align-items: flex-start;">
+                <div style="display: flex;gap: 8px; align-items: center;" class="greyL">
+                    <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
+                    {{'participant'|translate|uppercase}}
                 </div>
-                <div style="display: flex;gap: 8px;padding: 12px 0;"
-                    *ngFor="let selectedUser of selectedUsers">
-                    <app-level-user
-                        [allLevels]="courseC.dataLevels" [selectLevel]="185"
-                        [size]="40"
+                <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
+                    <app-level-user [allLevels]="courseC.dataLevels" [selectLevel]="185" [size]="40"
                         [userImage]="selectedUser.image"></app-level-user>
-                    <div
-                        class="text-color text-small montserrat reservation-user-title">
+                    <div class="text-color text-small montserrat reservation-user-title">
                         <div style="text-align: -webkit-left;">
                             <span style="font-weight: 600;">
                                 {{selectedUser.first_name}}
                                 {{selectedUser.last_name}}
                             </span>
-                            <img src="assets/images/gold-crown.png"
-                                *ngIf="courseC.userLogged.id===selectedUser.user_id"
+                            <img src="assets/images/gold-crown.png" *ngIf="courseC.userLogged.id===selectedUser.user_id"
                                 style="display: inline;vertical-align: baseline;">
                             <br>
                             <span style="color: #8B9099;font-size: 12px;">
@@ -58,52 +47,50 @@
                     </div>
                 </div>
             </div>
-            <div class="dates"
-                style="display: flex;gap: 8px;align-items: center;">
-                <div style="display: flex;align-items: center; gap: 8px;"
-                    class="greyL">
-                    <img src="assets/icons/calendar.png" alt="Calendario"
-                        class="icon24">
-                    {{'FECHA Y HORA' | translate }}
+            <div class="dates" style="display: flex;gap: 8px;align-items: center;">
+                <div style="display: flex;align-items: center; gap: 8px;" class="greyL">
+                    <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
+                    {{'date_time'|translate|uppercase }}
                 </div>
             </div>
-            <div class="dates"
-                style="display: flex;gap: 8px;align-items: center;">
+            <div class="dates" style="display: flex;gap: 8px;align-items: center;">
                 <div>
-                    <span class="descripcion"> Desde </span>
-                    <span class="campo">{{course.date_start | date: 'dd.MM.yyyy'
-                        }}</span>
-                    <span class="descripcion"> hasta </span>
-                    <span class="campo">{{course.date_end | date:
-                        'dd.MM.yyyy'}}</span>
+                    <span class="descripcion"> {{"from"|translate}} </span>
+                    <span class="campo">
+                        {{course.date_start|date:'dd.MM.yyyy'}}
+                    </span>
+                    <span class="descripcion"> {{"to"|translate}} </span>
+                    <span class="campo">
+                        {{course.date_end|date:'dd.MM.yyyy'}}
+                    </span>
                 </div>
             </div>
-            <div class="dates"
-                style="display: flex;gap: 4px;align-items: self-start;flex-direction: column;">
+            <div class="dates" style="display: flex;gap: 4px;align-items: self-start;flex-direction: column;">
                 <ng-container *ngIf="course.course_type == 1">
-                    <div class="campo2"
-                        *ngFor="let date of course.course_dates">
+                    <div class="campo2" *ngFor="let date of course.course_dates">
                         <span style="font-weight: 600;">
                             {{date.date | date: 'dd.MM.yyyy'}}
                         </span>
                         <span style="color: #8B9099;">
-                            {{date.hour_start}}-{{date.hour_end}}
+                            {{date.hour_start}}h-{{date.hour_end}}h
                         </span>
                     </div>
                 </ng-container>
                 <ng-container *ngIf="course.course_type == 2">
                     <div class="campo2" class="mt-8 course-box-content-list">
                         <span style="font-weight: 600;">
-                            {{course.course_dates[0].date | date:
-                            'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
-                            | date: 'dd.MM.yyyy'}}
+                            {{course.course_dates[0].date|date:'dd.MM.yyyy'}}
+                            -
+                            {{course.course_dates[course.course_dates.length-1].date|date: 'dd.MM.yyyy'}}
                         </span>
                         <div>{{ courseC.getWeekdays(course.settings) }}
                         </div>
                     </div>
                     <div class="mt-8 course-box-content-list">
-                        <div>{{'text_from_price' | translate }}
-                            {{course.duration}}</div>
+                        <div>
+                            {{'text_from_price' | translate }}
+                            {{course.duration}}
+                        </div>
                         <span style="color: #8B9099;">
                             {{course.hour_min}}h-{{course.hour_max}}h
                         </span>
@@ -112,7 +99,7 @@
             </div>
             <div *ngIf="false">
                 <div class="greyL">
-                    {{'EXTRAS' | translate }}
+                    {{'extras'|translate|uppercase}}
                 </div>
                 <!--selectedForfait-->
             </div>
@@ -126,36 +113,29 @@
                 {{'text_price' | translate }}
             </div>
             <div class="blackL" *ngIf="!course?.is_flexible">
-                {{course?.price}}{{ course?.currency }}
+                {{course?.price|number:'0.2-2'}}{{ course?.currency }}
             </div>
             <div class="blackL" *ngIf="course?.is_flexible">
-                {{collectivePrice}} {{ course?.currency }} /{{'date' | translate
+                {{collectivePrice|number:'0.2-2'}} {{ course?.currency }} /{{'date' | translate
                 }}
             </div>
         </div>
-        <div
-            style="padding: 20px; display: flex; gap: 16px;flex-direction: column;">
-            <button
-                (click)="next.emit();onClose.emit();goCart.emit()"
-                style="
+        <div style="padding: 20px; display: flex; gap: 16px;flex-direction: column;">
+            <button (click)="next.emit();onClose.emit();goCart.emit()" style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;
               height: 54px;padding: 10px 12px;
               color: white;
-               font-weight: 600;"
-                type="button">
-                {{'Confirmar y ir al carrito' | translate }}
+               font-weight: 600;" type="button">
+                {{'confirm_and_go_to_cart'|translate }}
             </button>
-            <button
-                (click)="next.emit();onClose.emit()"
-                style="
+            <button (click)="next.emit();onClose.emit()" style="
                 border: 1px solid black;
               background-color: white;
               width: 100%;border-radius: 3px;
               height: 38px;padding: 10px 12px;
-               font-weight: 600;"
-                type="button">
-                {{'Añadir al carrito y hacer otra reserva' | translate }}
+               font-weight: 600;" type="button">
+                {{'add_to_cart_and_make_another_reservation'|translate }}
             </button>
         </div>
     </div>
