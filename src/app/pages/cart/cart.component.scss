@@ -2,9 +2,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  
+
   cursor: pointer;
-  
 }
 .reservation-return2 {
   margin-top: 42px;
@@ -12,12 +11,10 @@
   align-items: center;
   display: flex;
   > span {
-    
     font-size: 24px;
     font-family: Dinamit;
     font-weight: 500;
     line-height: 26px;
-    
   }
   > button {
     margin-left: auto;
@@ -25,9 +22,8 @@
     border-radius: 3px;
     padding: 10px;
     border: 1px solid black;
-    
+
     font-weight: 600;
-    
   }
 }
 
@@ -191,7 +187,6 @@
   font-family: Dinamit;
   font-weight: 500;
   line-height: 20px;
-  
 }
 .cardcabecera2 {
   background-color: white;
@@ -204,26 +199,26 @@
 }
 .extra_add {
   color: #e91e63;
-  
 }
 .detail {
   color: #8b9099;
-  
 }
 .detailPrice {
-  
-  
   margin-left: auto;
 }
 .priceTotal {
-  
   font-weight: 700;
-  
 }
-.bdetail {
-  
-}
+
 input[type="checkbox"] {
   transform: scale(1.5);
   min-width: 40px;
+}
+.extra_product {
+  font-weight: 600;
+  word-wrap: break-word;
+}
+.extra_name {
+  color: #8b9099;
+  word-wrap: break-word;
 }

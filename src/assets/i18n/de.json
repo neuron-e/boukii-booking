@@ -711,5 +711,8 @@
   "medal_awarded": "Herzlichen Glückwunsch! Du hast die Medaille für dieses Level erhalten. Es ist Zeit, zum nächsten zu wechseln!",
   "achieve_all_goals": "Erreiche alle Ziele dieses Kurses, um die Medaille zu erhalten.",
   "comment_previous": "Vorheriger Kommentar...",
-  "not_assigned": "Nicht zugewiesen"
+  "not_assigned": "Nicht zugewiesen",
+  "your_reservation": "Ihre Reservierung",
+  "confirm_and_go_to_cart": "Bestätigen und zum Warenkorb gehen",
+  "add_to_cart_and_make_another_reservation": "Zum Warenkorb hinzufügen und eine weitere Reservierung vornehmen"
 }

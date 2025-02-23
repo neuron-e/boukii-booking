@@ -710,5 +710,8 @@
   "medal_awarded": "Félicitations ! Vous avez obtenu la médaille pour ce niveau. Il est temps de passer au suivant !",
   "achieve_all_goals": "Atteignez tous les objectifs de ce cours pour obtenir la médaille.",
   "comment_previous": "Commentaire précédent...",
-  "not_assigned": "Non assigné"
+  "not_assigned": "Non assigné",
+  "your_reservation": "Votre réservation",
+  "confirm_and_go_to_cart": "Confirmer et aller au panier",
+  "add_to_cart_and_make_another_reservation": "Ajouter au panier et faire une autre réservation"
 }

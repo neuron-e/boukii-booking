@@ -73,7 +73,7 @@
 <ng-container *ngIf="ResultCourse">
 	<div class="Section">
 		<span class="titleSection">
-			{{ResultCourse.length}} {{"results" | translate}}
+			{{ResultCourse?.length||0}} {{"results" | translate}}
 		</span>
 		<span (click)="ResultCourse=undefined" style="margin: 10px;cursor: pointer;">
 			X

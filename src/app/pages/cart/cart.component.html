@@ -1,9 +1,7 @@
 <div (click)="goBack('home')" class="reservation-return">
 	<span style="color: #61656d;">
 		{{'menu.home' | translate }}
-	</span>
-	/
-	<span style="font-weight: 600;">
+	</span>/<span style="font-weight: 600;">
 		{{'cart' | translate }}
 	</span>
 </div>
@@ -21,6 +19,7 @@
 </div>
 
 <mat-spinner *ngIf="loading" style="margin: 0 auto"></mat-spinner>
+
 <div class="cart-payment">
 	<div *ngIf="!loading" class="cart-payment-section1">
 		<div *ngFor="let cartItem of cart; index as i"
@@ -123,15 +122,15 @@
 							</span>
 						</div>
 						<div *ngFor="let client of getUniqueClients(cartItem.details)"
-							class="text-color-light montserrat list-flex mt-12">
+							class="text-color-light montserrat list-flex">
 							<app-level-user [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
 								[userImage]="client.image || 'assets/avatar.png'"></app-level-user>
 							{{ client.first_name + ' ' + client.last_name }}
 						</div>
-						<div class="text-color-light montserrat pl-18">
+						<!--<div class="text-color-light montserrat pl-18">
 							{{ getUniqueClients(cartItem.details).length }} {{
 							'text_people_under' | translate }}
-						</div>
+						</div>-->
 						<!-- Iterar sobre fechas únicas -->
 						<div style="display: flex;align-items: center;gap: 8px;">
 							<img src="assets/icons/calendar.png" alt="Grupo máximo" class="icon24">
@@ -146,27 +145,28 @@
 						</div>
 						<div *ngFor="let detail of getUniqueDates(cartItem.details)"
 							class="text-color-light montserrat list-flex">
-							<img [src]="themeService.calendar">
 							{{ detail.date | date: 'dd.MM.yyyy' }}
-							<img [src]="themeService.clock">
-							<span>
-								{{ detail.hour_start }}-{{ detail.hour_end }}
+							<span style="color: #8B9099;">
+								{{ detail.hour_start }}h-{{ detail.hour_end }}h
 							</span>
 						</div>
-
-						<!-- Muestra hora de inicio y fin (asumiendo que son iguales para todas las entradas) -->
-						<!-- <div class="text-color-light montserrat list-flex">
-              <img [src]="themeService.clock" />
-              {{ cartItem.details[0].hour_start }} - {{ cartItem.details[0].hour_end }}
-            </div> -->
-						<!-- Iterar sobre clientes únicos -->
 						<ng-container *ngIf="cartItem.details[0].extra">
 							{{'text_forfait' | translate }}
-							<div class="text-color">
-								{{cartItem.details[0].extra.name}}
-							</div>
 						</ng-container>
-
+						<div *ngIf="cartItem.details[0].extra.length>0"
+							style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+							<div *ngFor="let extra of cartItem.details[0].extra" style="width: 100%;">
+								<div>
+									<span class="extra_product">{{extra.product}}</span>
+									<br>
+									<span class="extra_name">{{extra.name}}</span>
+								</div>
+								<span>
+									{{extra.price|number:'0.2-2'}}{{cartItem.details[0].course.currency}} /{{'date' |
+									translate}}
+								</span>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="course-box-dates" style="  border-top: 1px solid #dee6ea;">
@@ -196,11 +196,11 @@
 				</div>
 
 				<!-- <div class="width-100">
-          <div class="text-color mb-8">
-            {{'text_notes' | translate }}
-          </div>
-          <textarea rows="2" class="form-control width-100"></textarea>
-        </div> -->
+					<div class="text-color mb-8">
+						{{'text_notes' | translate }}
+					</div>
+					<textarea rows="2" class="form-control width-100"></textarea>
+					</div> -->
 			</div>
 		</div>
 	</div>

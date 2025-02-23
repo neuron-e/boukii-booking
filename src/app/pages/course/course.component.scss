@@ -58,6 +58,9 @@
   gap: 16px;
   margin-top: 16px;
   margin-bottom: 10vw;
+  > div {
+    display: flex;
+  }
 }
 .course-content-flex {
   display: flex;
@@ -103,6 +106,7 @@
   gap: 16px;
 }
 .reservation-price-flex {
+  height: 60px;
   display: flex;
   width: 100%;
   align-items: center;
@@ -444,4 +448,29 @@
   line-height: 16px;
   word-wrap: break-word;
   cursor: pointer;
+}
+
+::ng-deep {
+  .mdc-checkbox
+    .mdc-checkbox__native-control:enabled
+    ~ .mdc-checkbox__background
+    .mdc-checkbox__checkmark {
+    display: none !important;
+  }
+  .mdc-checkbox
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not(
+      [data-indeterminate="true"]
+    )
+    ~ .mdc-checkbox__background {
+    background-color: white !important;
+  }
+}
+
+.extra_product {
+  font-weight: 600;
+  word-wrap: break-word;
+}
+.extra_name {
+  color: #8b9099;
+  word-wrap: break-word;
 }

@@ -97,11 +97,23 @@
                     </div>
                 </ng-container>
             </div>
-            <div *ngIf="false">
+            <div *ngIf="selectedForfait.length>0">
                 <div class="greyL">
                     {{'extras'|translate|uppercase}}
                 </div>
-                <!--selectedForfait-->
+            </div>
+            <div *ngIf="selectedForfait.length>0"
+                style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div *ngFor="let extra of selectedForfait" style="width: 100%;">
+                    <div>
+                        <span class="extra_product">{{extra.product}}</span>
+                        <br>
+                        <span class="extra_name">{{extra.name}}</span>
+                    </div>
+                    <span>
+                        {{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}}
+                    </span>
+                </div>
             </div>
         </div>
         <div style="padding: 20px;

@@ -15,10 +15,10 @@ export class SchoolService extends ApiService {
   private schoolDataSubject = new BehaviorSubject<any>(null);
   constructor(http: HttpClient, route: ActivatedRoute) {
     super(http, route);
-    this.fetchSchoolData().subscribe();  // Llamada a fetchSchoolData al iniciar el servicio
+    //this.fetchSchoolData().subscribe();  // Llamada a fetchSchoolData al iniciar el servicio
   }
 
-  fetchSchoolData(slug:  string = ''): Observable<any> {
+  fetchSchoolData(slug: string = ''): Observable<any> {
     const url = `${this.baseUrl}/slug/school`;
     const headers = this.getHeaders(slug);
 

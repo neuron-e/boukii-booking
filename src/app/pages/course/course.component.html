@@ -1,9 +1,6 @@
 <div class="text-color mb-24 montserrat">
 	<span (click)="goTo(schoolData.slug)" class="text-color-light underline cursor-pointer montserrat">
-		{{'menu.home' | translate
-		}}
-	</span>
-	/ {{getCourseName(course)}}
+		{{'menu.home' | translate}}</span> / {{getCourseName(course)}}
 </div>
 
 <div *ngIf="course" class="course-reservation-section">
@@ -26,7 +23,7 @@
 			</div>
 		</div>
 		<div *ngIf="course" class="course-content">
-			<div style="display: flex;justify-content: space-between;flex-wrap: wrap;gap: 8px;">
+			<div style="justify-content: space-between;flex-wrap: wrap;gap: 8px;">
 				<div style="min-width: 150px;">
 					<span *ngIf="!course.is_flexible" class="price">
 						{{course.price|number:'0.2-2'}} {{course.currency}} /{{"text_date" | translate}}
@@ -45,7 +42,7 @@
 					</span>
 				</div>
 			</div>
-			<div class="dates" style="display: flex;gap: 8px;align-items: center;">
+			<div style="gap: 8px;align-items: center;">
 				<img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
 				<div>
 					<span class="descripcion">
@@ -62,8 +59,7 @@
 					</span>
 				</div>
 			</div>
-			<div class="dates"
-				style="display: flex;gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;width: fit-content;">
+			<div style="gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;width: fit-content;">
 				<ng-container *ngIf="course.course_type == 1">
 					<div *ngFor="let date of course.course_dates" class="campo2">
 						<span style="font-weight: 600;">
@@ -95,7 +91,7 @@
 					</div>
 				</ng-container>
 			</div>
-			<div class="max-group" style="display: flex;gap: 8px;align-items: center;">
+			<div style="gap: 8px;align-items: center;">
 				<img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
 				<span class="campo2">
 					{{"max_pax" | translate}} {{course.max_participants}}
@@ -104,121 +100,10 @@
 					,{{course.age_min}}-{{course.age_max}}+ {{"text_years" | translate}}
 				</span>
 			</div>
-			<!-- <ng-container *ngIf="course?.course_type==1">
-        <div class="text-color text-medium montserrat course-content-title" *ngIf="course.is_flexible">
-          <img [src]="themeService.calendar">
-          {{'text_choose_dates' | translate }}
-        </div>
-        <div class="text-color text-medium montserrat course-content-title"
-          *ngIf="!course.is_flexible">
-          <img [src]="themeService.calendar">
-          {{'text_availability' | translate }}
-        </div>
-        <div class="mt-12 course-content-list">
-          <div *ngIf="!course.is_flexible">
-            <ng-container *ngFor="let date of course?.course_dates">
-              <div class="text-color-light pl-32 montserrat"
-                *ngIf="date.active || date.active === 1">·
-                {{date.date | date: 'dd-MM-yyyy'}}
-                {{date.hour_start.substring(0,5) }} -
-                {{date.hour_end.substring(0,5)}}</div>
-                *ngIf="date.active || date.active === 1">·
-                {{date.date | date: 'dd-MM-yyyy'}}
-                {{date.hour_start.substring(0,5) }} -
-                {{date.hour_end.substring(0,5)}}</div>
-            </ng-container>
-          </div>
-          <div *ngIf="course.is_flexible">
-            <ng-container *ngFor="let date of course?.course_dates">
-
-              <div class="checkbox-circle pl-32"
-                *ngIf="(date.active || date.active === 1) && isDateValid(date.date, date.hour_start, date.hour_end)">
-              <div class="checkbox-circle pl-32"
-                *ngIf="(date.active || date.active === 1) && isDateValid(date.date, date.hour_start, date.hour_end)">
-                <input
-                  id="checkbox-course-{{date.id}}"
-                  type="checkbox"
-                  *ngIf="course?.is_flexible "
-                  (change)="selectDate(date.date)" />
-                <label class="text-color-light montserrat"
-                  for="checkbox-course-{{date.id}}">
-                  (change)="selectDate(date.date)" />
-                <label class="text-color-light montserrat"
-                  for="checkbox-course-{{date.id}}">
-                  {{ date.date | date: 'dd-MM-yyyy' }}
-                  {{ date.hour_start.substring(0, 5) }} - {{
-                  date.hour_end.substring(0, 5) }}
-                  {{ date.hour_start.substring(0, 5) }} - {{
-                  date.hour_end.substring(0, 5) }}
-                </label>
-              </div>
-            </ng-container>
-          </div>
-
-        </div>
-      </ng-container>
-      <ng-container *ngIf="course?.course_type==2">
-        <div class="course-content-flex">
-          <div>
-            <div class="text-color text-medium montserrat course-content-title">
-              <img [src]="themeService.calendar">
-              {{'text_when_course' | translate }}
-            </div>
-            <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat">{{ getStartDate() }} - {{ getEndDate() }}</div>
-              <div class="text-color-light pl-32 montserrat">{{ getWeekdays(course?.settings) }}</div>
-              <div class="text-color-light pl-32 montserrat">
-                {{ 'text_max_participants' | translate }}: {{ course?.max_participants }}
-              </div>
-              <div
-                class="text-color-light pl-32 montserrat">{{course?.date_start |
-                date: 'dd/MM/yyyy'}} - {{course?.date_end | date:
-                'dd/MM/yyyy'}}</div>
-              <div class="text-color-light pl-32 montserrat">{{
-                getWeekdays(course?.settings) }}</div>
-              <div
-                class="text-color-light pl-32 montserrat">{{'text_max_participants'
-                | translate }}: {{course?.max_participants}}</div>
-            </div>
-          </div>
-          <div>
-            <div class="text-color text-medium montserrat course-content-title">
-              <img [src]="themeService.clock">
-              {{ 'text_course_duration' | translate }}
-            </div>
-            <div class="mt-8 course-content-list">
-              <div class="text-color-light pl-32 montserrat"
-                *ngIf="!course?.is_flexible">{{course?.duration}}</div>
-              <div class="text-color-light pl-32 montserrat"
-                *ngIf="course?.is_flexible">{{'text_from_price' | translate }}
-                {{course?.duration}}</div>
-              <div
-                class="text-color-light pl-32 montserrat">{{course?.hour_min}}h
-                - {{course?.hour_max}}h</div>
-              <div class="text-color-light pl-32 montserrat" *ngIf="!course?.is_flexible">
-                {{ course?.duration }}
-              </div>
-              <div class="text-color-light pl-32 montserrat" *ngIf="course?.is_flexible">
-                {{ 'text_from_price' | translate }} {{ course?.duration }}
-              </div>
-              <div class="text-color-light pl-32 montserrat">
-                {{ course?.hour_min }}h - {{ course?.hour_max }}h
-              </div>
-            </div>
-          </div>
-        </div>
-      </ng-container> -->
-			<span class="descripcion2">
-				{{"summary"|translate|uppercase}}
-			</span>
-			<div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat">
-			</div>
-
-			<span class="descripcion2">
-				{{"courses.desc"|translate|uppercase}}
-			</span>
-			<div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat">
-			</div>
+			<span class="descripcion2"> {{"summary"|translate|uppercase}} </span>
+			<div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat"> </div>
+			<span class="descripcion2"> {{"courses.desc"|translate|uppercase}} </span>
+			<div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat"> </div>
 			<ng-container *ngIf="course.availableDegrees.length>0">
 				<span class="descripcion2">
 					{{"levels"|translate|uppercase}}
@@ -244,13 +129,9 @@
             justify-content: space-between;
             align-items: center;">
 							<div>
-								<span style="
-               font-weight: 600;
-               word-wrap: break-word">{{extra.product}}</span>
+								<span class="extra_product">{{extra.product}}</span>
 								<br>
-								<span style="
-              color: #8B9099;
-               word-wrap: break-word">{{extra.name}}</span>
+								<span class="extra_name">{{extra.name}}</span>
 							</div>
 							<span style="word-wrap: break-word">
 								{{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate }}
@@ -311,15 +192,12 @@
 			<div *ngIf="(!isSmallScreen || isSmallScreen && SmallScreenModal) && userLogged && course"
 				class="reservation-view">
 				<div class="titlexxxx">
-					<img *ngIf="courseFlux>0"
-						(click)="!course.is_flexible&&course.course_type === 3?courseFlux=courseFlux-2:courseFlux=courseFlux-1;"
-						src="assets/icons/arrow-left.png" style="cursor: pointer;filter:invert(1)" class="icon24">
 					{{'text_new_booking' | translate }}
 					<img (click)="SmallScreenModal=false" src="assets/icons/x.png"
 						style="margin-left: auto;cursor: pointer;" class="icon24">
 				</div>
 				<div
-					style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(139, 144, 153, 1);align-items: center;">
+					style="height: 48px; padding: 16px 20px;display: flex;border-bottom: 1px solid rgba(222, 230, 234, 1);align-items: center;">
 					<span [style.color]="courseFlux===0?'#E91E63':'#8B9099'" class="placeLevel" (click)="courseFlux=0">
 						{{"participant"|translate|uppercase}}
 					</span>
@@ -342,7 +220,7 @@
 				</div>
 
 				<div *ngIf="courseFlux===0" class="reservation-users" style="padding: 20px;">
-					<div style="  word-wrap: break-word">
+					<div style="word-wrap: break-word;margin-bottom: 10px;">
 						<ng-container *ngIf="course?.course_type === 2">
 							{{'text_select_user_or_more' | translate }}
 							{{course?.max_participants}}
@@ -551,36 +429,33 @@
                   [(ngModel)]="selectedDateReservation"
                   required>
               </mat-form-field> -->
-							<app-form-select style="width: calc(50% - 8px);" [value]="coursesService.hours[0]"
-								label="hour" [table]="coursesService.hours"
+							<app-form-select style="width: calc(50% - 8px);" [value]="getAvailableHours()[0]"
+								label="hour" [table]="getAvailableHours()"
 								(do)="selectedHour=$event.option.value"></app-form-select>
-							<app-form-select style="width: calc(50% - 8px);" [value]="coursesService.duration[0]"
-								[table]="coursesService.duration" label="duration"
+							<app-form-select style="width: calc(50% - 8px);"
+								[value]="getAvailableDurations(selectedHour)[0]"
+								[table]="getAvailableDurations(selectedHour)" label="duration"
 								(do)="selectedDuration=$event.option.value"></app-form-select>
 						</div>
 					</ng-container>
 				</div>
 				<div *ngIf="courseFlux===3" style="display: flex;padding: 20px;flex-direction: column;">
-					<div>
-						{{"add_extras_or_notes" |translate}}
-					</div>
+					<div> {{"add_extras_or_notes" |translate}} </div>
 					<div *ngFor="let date of course.is_flexible&&course?.course_type===1?flexDateGroup:[selectedDateReservation]"
 						style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
 						{{course.is_flexible?date:''}}
 						<mat-checkbox *ngFor="let extra of settingsExtras"
-							style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px">
-							<div style="display: flex;gap: 8px ;
-              height: 64px;
-              justify-content: space-between;
-              align-items: center;">
+							style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px"
+							(click)="toggleForfaitSelection(extra)">
+							<div
+								style="display: flex;gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
 								<div>
-									<span>{{extra.product}}</span>
+									<span class="extra_product">{{extra.product}}</span>
 									<br>
-									<span>{{extra.name}}</span>
+									<span class="extra_name">{{extra.name}}</span>
 								</div>
 								<span style="width: 125px;padding: 10px;">
-									{{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate
-									}}
+									{{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}}
 								</span>
 							</div>
 						</mat-checkbox>

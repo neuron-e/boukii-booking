@@ -709,5 +709,8 @@
   "medal_awarded": "Congratulations! You've earned the medal for this level. It's time to move on to the next one!",
   "achieve_all_goals": "Achieve all the goals of this course to earn the medal.",
   "comment_previous": "Comment previous...",
-  "not_assigned": "Not assigned"
+  "not_assigned": "Not assigned",
+  "your_reservation": "Your reservation",
+  "confirm_and_go_to_cart": "Confirm and go to cart",
+  "add_to_cart_and_make_another_reservation": "Add to cart and make another reservation"
 }

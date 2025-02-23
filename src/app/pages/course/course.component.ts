@@ -40,7 +40,7 @@ export class CourseComponent implements OnInit {
   selectedUser: any;
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
-  selectedForfait: any
+  selectedForfait: any[] = []
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -82,7 +82,7 @@ export class CourseComponent implements OnInit {
   SmallScreenModal: boolean = false
   isSmallScreen: boolean = false;
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  onResize() {
     this.checkScreenWidth();
   }
   checkScreenWidth() {
@@ -103,6 +103,7 @@ export class CourseComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
@@ -211,7 +212,7 @@ export class CourseComponent implements OnInit {
             'school_id': this.schoolData.id,
             'client_id': selectedUser.id,
             'price': index === 0 ? this.course.price : 0,
-            'currency': 'CHF',
+            'currency': this.course?.currency || 'CHF',
             'course_id': this.course.id,
             'course_date_id': course_date.id,
             'course_group_id': null,
@@ -231,7 +232,7 @@ export class CourseComponent implements OnInit {
             'school_id': this.schoolData.id,
             'client_id': selectedUser.id,
             'price': this.course.price,
-            'currency': 'CHF',
+            'currency': this.course?.currency || 'CHF',
             'course_id': this.course.id,
             'course_date_id': course_date.id,
             'course_group_id': null,
@@ -258,7 +259,7 @@ export class CourseComponent implements OnInit {
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
               'price': this.collectivePrice,
-              'currency': 'CHF',
+              'currency': this.course?.currency || 'CHF',
               'course_id': this.course.id,
               'course_date_id': date.id,
               'course_group_id': courseGroup.id,
@@ -283,7 +284,7 @@ export class CourseComponent implements OnInit {
             'school_id': this.schoolData.id,
             'client_id': this.selectedUser.id,
             'price': this.course.price,
-            'currency': 'CHF',
+            'currency': this.course?.currency || 'CHF',
             'course_id': this.course.id,
             'course_date_id': date.id,
             'course_group_id': courseGroup.id,
@@ -380,14 +381,11 @@ export class CourseComponent implements OnInit {
         if (!cart[this.course.id][this.selectedUser.id]) {
           cart[this.course.id][this.selectedUser.id] = [];
           cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-
           this.goTo(this.schoolData.slug);
         } else {
-
           this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
         }
       }
@@ -607,10 +605,8 @@ export class CourseComponent implements OnInit {
   }
 
   getAvailableDurations(selectedHour: string): any[] {
-    const endTime = parseInt(this.course.hour_max);
-    const startTime = parseInt(selectedHour.split(':')[0]);
-    const availableTime = endTime - startTime; // Tiempo disponible en horas
-
+    //const endTime = parseInt(this.course.hour_max);
+    //const startTime = parseInt(selectedHour.split(':')[0]);
     let durations = this.filteredPriceRange();
     this.selectedDuration = this.convertToHoursAndMinutes(durations[0]);
     return durations;
@@ -621,10 +617,7 @@ export class CourseComponent implements OnInit {
     const hourMin = parseInt(this.course.hour_min);
     const hourMax = parseInt(this.course.hour_max);
     const duration = parseInt(this.course.duration);
-
     if (!this.course.is_flexible) {
-      // Generar intervalos de 5 minutos desde la hora de inicio hasta la hora final,
-      // teniendo en cuenta la duración máxima
       for (let hour = hourMin; hour < hourMax; hour++) {
         for (let minute = 0; minute <= 60 - duration; minute += 5) {
           let formattedHour = hour < 10 ? '0' + hour : '' + hour;
@@ -633,22 +626,14 @@ export class CourseComponent implements OnInit {
           hours.push(formattedTime);
         }
       }
-      // Añadir la hora final teniendo en cuenta la duración
       let formattedHourMax = hourMax - 1 < 10 ? '0' + (hourMax - 1) : '' + (hourMax - 1);
       let formattedTimeMax = `${formattedHourMax}:00`;
       hours.push(formattedTimeMax);
     } else {
-      // Obtener los intervalos de tiempo de los price_range y ordenarlos
       let timeIntervals = this.filteredPriceRange();
-
-      // Calcular las diferencias entre intervalos consecutivos
       let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
-
-      // Encontrar el intervalo mínimo en minutos
       let minInterval = Math.min(...differences);
-      let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
-
-      // Calcular las horas disponibles en intervalos de minInterval
+      //let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
       for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
         let hour = Math.floor(minute / 60);
         let min = minute % 60;
@@ -658,14 +643,10 @@ export class CourseComponent implements OnInit {
         hours.push(formattedTime);
       }
     }
-
-
     this.selectedHour = hours[0];
-
     return hours;
   }
 
-  // Método para obtener la fecha de inicio
   getStartDate(): string {
     const startDate = this.course?.course_dates
       .filter((date: any) => date.active)
@@ -674,7 +655,6 @@ export class CourseComponent implements OnInit {
     return startDate ? moment(startDate).format('DD/MM/YYYY') : '';
   }
 
-  // Método para obtener la fecha de fin
   getEndDate(): string {
     const endDate = this.course?.course_dates
       .filter((date: any) => date.active)
@@ -687,22 +667,14 @@ export class CourseComponent implements OnInit {
     const selectedHourInt = parseInt(selectedHour.split(':')[0]);
     const selectedMinutesInt = parseInt(selectedHour.split(':')[1]);
     const hourMax = parseInt(this.course.hour_max);
-
-    // Convertir la hora seleccionada y la hora máxima a minutos para comparación
     const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
     const maxTimeInMinutes = hourMax * 60;
 
     this.availableDurations = this.filteredPriceRange()
       .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
-
-    // Convertir la duración seleccionada a minutos
     const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration);
-
-    // Comprobar si la duración seleccionada está dentro de las duraciones disponibles
     const isSelectedDurationAvailable = this.availableDurations
       .some((range: any) => range === selectedDurationMinutes); // Cambiar esta línea
-
-    // Si no está disponible, establecer la primera duración disponible
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
       this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0]);
     }
@@ -713,8 +685,6 @@ export class CourseComponent implements OnInit {
     const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration); // Convertir duración a minutos
     //const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
     const selectedPax = this.selectedUserMultiple.length;
-
-    // Encontrar el price_range que coincida con la duración y el pax seleccionados
     const matchingTimeRange = this.course.price_range.find((range: any) => {
       const parts = range.intervalo.split(' ');
       let rangeMinutes = 0;
@@ -727,12 +697,9 @@ export class CourseComponent implements OnInit {
       }
       return rangeMinutes === selectedDurationInMinutes;
     });
-
-    // Calcular el precio basado en el rango de tiempo encontrado y el número de pax seleccionado
     if (matchingTimeRange && matchingTimeRange[selectedPax]) {
       this.course.price = matchingTimeRange[selectedPax];
     } else {
-      // Si no hay una coincidencia, puedes establecer un precio predeterminado o dejarlo como está
       this.course.price = 0; // O cualquier valor predeterminado que desees
     }
   }
@@ -744,20 +711,13 @@ export class CourseComponent implements OnInit {
   }
 
   calculateAvailableLevels(user: any) {
-    // Suponiendo que tienes una función para transformar la fecha de nacimiento en edad
     const userAge = this.transformAge(user.birth_date);
-
-    // Convertir availableDegrees en un arreglo si es necesario
     const availableDegreesArray = Array.isArray(this.course?.availableDegrees)
       ? this.course?.availableDegrees
       : Object.values(this.course?.availableDegrees || {});
-
-    // Calcula si hay niveles disponibles
     this.hasLevelsAvailable = availableDegreesArray.some((level: any) =>
       level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.age_min, level.age_max)
     );
-
-    // Si no hay niveles disponibles, muestra un mensaje
     //if (!this.hasLevelsAvailable) {
     // Puedes establecer un mensaje o manejarlo como prefieras
     //}
@@ -766,47 +726,27 @@ export class CourseComponent implements OnInit {
 
 
   hasMatchingSportLevel(level: any): boolean {
-    // Obtén el deporte seleccionado por el usuario
     const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
-
-    if (!selectedSport) {
-      return true;
-    }
-
-    // Verifica si el deporte tiene un grado (degree) que coincide con el nivel actual
+    if (!selectedSport) return true;
     return selectedSport && selectedSport.pivot.degree_id >= level.id;
   }
 
   isDateValid(dateToCheck: string, hourStart: string, hourEnd: string): boolean {
     const currentDate = new Date();
     const date = new Date(dateToCheck);
-
-    // Compara la fecha completa incluyendo hora, minutos y segundos
-    if (date < currentDate) {
-      return false;
-    }
-
-    // Extrae la hora y los minutos de dateToCheck
+    if (date < currentDate) return false;
     const checkHour = parseInt(dateToCheck.substring(11, 13));
     const checkMinutes = parseInt(dateToCheck.substring(14, 16));
-
-    // Extrae la hora de hourStart y hourEnd
     const startHour = parseInt(hourStart.substring(0, 2));
     const endHour = parseInt(hourEnd.substring(0, 2));
-
-    // Compara la hora y los minutos con hourStart y hourEnd
     const isStartTimeValid = checkHour < startHour ||
       (checkHour === startHour && checkMinutes < parseInt(hourStart.substring(3, 5)));
-
     const isEndTimeValid = checkHour < endHour ||
       (checkHour === endHour && checkMinutes < parseInt(hourEnd.substring(3, 5)));
-
-    // Si la fecha es igual o posterior y la hora está dentro del rango, devuelve true
     return isStartTimeValid && isEndTimeValid;
   }
 
   getDescription(course: any) {
-
     if (course) {
       if (!course.translations || course.translations === null) {
         return course.description;
@@ -912,7 +852,6 @@ export class CourseComponent implements OnInit {
   }
   next() {
     if (this.courseFlux === 0) {
-      this.getDegrees()
     } else if (this.courseFlux === 1) {
       this.selectLevel(this.selectedLevel)
       if (!this.course.is_flexible && this.course.course_type !== 2) {
@@ -976,4 +915,14 @@ export class CourseComponent implements OnInit {
   });
 
   Date = (date: string) => new Date(date)
+
+  toggleForfaitSelection(extra: any) {
+    const index = this.selectedForfait.indexOf(extra);
+    if (index > -1) {
+      this.selectedForfait.splice(index, 1); // Elimina si ya está seleccionado
+    } else {
+      this.selectedForfait.push(extra); // Añade si no está seleccionado
+    }
+  }
+
 }
