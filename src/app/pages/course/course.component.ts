@@ -169,14 +169,10 @@ export class CourseComponent implements OnInit {
   renderCalendar() {
     const startDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-
     this.days = [];
-    //Start monday
     let adjustedStartDay = startDay - 1;
     if (adjustedStartDay < 0) adjustedStartDay = 6;
-
     for (let j = 0; j < adjustedStartDay; j++) this.days.push({ number: '', active: false });
-
     for (let i = 1; i <= daysInMonth; i++) {
       const spanDate = new Date(this.currentYear, this.currentMonth, i);
       const isPast = spanDate < new Date();
@@ -194,13 +190,13 @@ export class CourseComponent implements OnInit {
     if (day.active) {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
-      //const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
       if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
     }
   }
 
   addBookingToCart() {
+    console.log(2)
     let bookingUsers: any = [];
     if (this.course.course_type == 2) {
       if (this.course.is_flexible) {
@@ -319,7 +315,6 @@ export class CourseComponent implements OnInit {
             });
           });
         });
-
         if (!isAnyUserReserved) {
           if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
           cart[this.course.id][selectedUserIds].push(...bookingUsers);

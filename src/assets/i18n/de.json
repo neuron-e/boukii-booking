@@ -714,5 +714,7 @@
   "not_assigned": "Nicht zugewiesen",
   "your_reservation": "Ihre Reservierung",
   "confirm_and_go_to_cart": "Bestätigen und zum Warenkorb gehen",
-  "add_to_cart_and_make_another_reservation": "Zum Warenkorb hinzufügen und eine weitere Reservierung vornehmen"
+  "add_to_cart_and_make_another_reservation": "Zum Warenkorb hinzufügen und eine weitere Reservierung vornehmen",
+  "no_account": "Sie haben kein Konto?",
+  "sign_up": "Registrieren"
 }

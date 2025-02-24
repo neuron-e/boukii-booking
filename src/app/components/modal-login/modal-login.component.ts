@@ -29,7 +29,7 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
   loginForm: FormGroup;
-  mailRecover = '';
+  forgetForm: FormGroup;
   isForgotPass: boolean = false;
   private schoolDataSubscription: Subscription | undefined;
 
@@ -38,6 +38,9 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
+    });
+    this.forgetForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -63,13 +66,13 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
   }
 
   sendMail() {
-    this.schoolDataSubscription = this.schoolService.getSchoolData().subscribe(
-      data => {
-        if (data) {
-          let schoolData = data;
-          if (this.mailRecover) {
+    if (this.forgetForm.valid) {
+      this.schoolDataSubscription = this.schoolService.getSchoolData().subscribe(
+        data => {
+          if (data) {
+            let schoolData = data;
             let requestData = {
-              email: this.mailRecover,
+              email: this.forgetForm.controls["email"].value,
               type: 2,
               school_id: schoolData.id
             };
@@ -79,21 +82,15 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
                   this.closeModal();
                   this.snackbar.open(this.translateService.instant('email_send'), 'OK', { duration: 3000 });
                 } else {
-                  //TODO: cambiar el texto
                   let errorMessage = this.translateService.instant('error.client.register');
                   this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
                 }
               })
-              .catch(error => {
-                this.showErrorSnackbar();
-              });
+              .catch(() => this.showErrorSnackbar());
           }
-        }
-      },
-      error => {
-        this.showErrorSnackbar();
-      }
-    );
+        }, () => this.showErrorSnackbar()
+      );
+    }
   }
 
   private showErrorSnackbar() {

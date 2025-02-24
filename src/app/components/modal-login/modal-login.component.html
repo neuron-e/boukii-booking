@@ -1,90 +1,57 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-  <div class="modal-content background-color-full rounded-8"
-    (click)="$event.stopPropagation()">
-    <ng-container *ngIf="!isForgotPass">
-      <div class="text-color fw-semibold text-semibig modal-flex-title">
-        {{'text_login' | translate }}
-        <img [src]="themeService.close" class="cursor-pointer"
-          (click)="closeModal()" />
-      </div>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="modal-form">
-          <mat-form-field appearance="outline" class="flex-auto"
-            style="width: 100%">
-            <mat-label>{{'text_email' | translate}}</mat-label>
-            <input matInput type="email" formControlName="email"
-              required>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-auto"
-            style="width: 100%">
-            <mat-label>{{'text_password' | translate}}</mat-label>
-            <input matInput type="password" formControlName="password"
-              required>
-          </mat-form-field>
-          <div (click)="isForgotPass=true"
-            style="color: var(--Primary, #E91E63);
-            
-            font-style: normal;
-            
-            "
-            class="cursor-pointer">
-            {{'text_forgot_password' | translate }}
-          </div>
-          <button (click)="onSubmit()"
-            class="button-primary"
-            type="button">
-            {{'text_login' | translate }}
-          </button>
-          <div style="width: 100%;    text-align: -webkit-center;">
-            No tienes una cuenta?
-          </div>
-          <div (click)="isForgotPass=true"
-            style="color: var(--Primary, #E91E63);
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <div class="text-color fw-semibold text-semibig modal-flex-title">
+      {{'text_login' | translate }}
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!isForgotPass">
+      <div class="modal-form">
+        <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
+          <mat-label>{{'text_email' | translate}}</mat-label>
+          <input matInput type="email" formControlName="email" required>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
+          <mat-label>{{'text_password' | translate}}</mat-label>
+          <input matInput type="password" formControlName="password" required>
+        </mat-form-field>
+        <div (click)="isForgotPass=true" style="color: var(--Primary, #E91E63);          
+            font-style: normal;           
+            " class="cursor-pointer">
+          {{'text_forgot_password' | translate }}
+        </div>
+        <button (click)="onSubmit()" class="button-primary" type="button">
+          {{'text_login' | translate }}
+        </button>
+        <div style="width: 100%;    text-align: -webkit-center;">
+          {{"no_account"|translate}}
+        </div>
+        <div (click)="isForgotPass=true" style="color: var(--Primary, #E91E63);
           font-weight: 600;
           width: 100%; 
           text-align: -webkit-center;
-          "
-            class="cursor-pointer">
-            {{'Registrate' | translate }}
-          </div>
+          " class="cursor-pointer">
+          {{'sign_up' | translate }}
         </div>
-      </form>
-    </ng-container>
-    <ng-container *ngIf="isForgotPass">
-      <div class="text-color fw-semibold text-semibig modal-flex-title">
-        {{'text_reset_password' | translate }}
-        <img [src]="themeService.close" class="cursor-pointer"
-          (click)="closeModal()" />
       </div>
+    </form>
+    <form [formGroup]="forgetForm" (ngSubmit)="onSubmit()" *ngIf="isForgotPass">
       <div class="modal-form">
-        <div class="modal-form-block-full">
-          <div class="text-color-light text-small uppercase">
-            {{'text_email' | translate }}
-          </div>
-          <input type="email" [(ngModel)]="mailRecover"
-            class="form-control width-100" />
-        </div>
-      </div>
-
-      <button (click)="sendMail()"
-        class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100"
-        type="button">
-        {{'text_reset_password' | translate }}
-      </button>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="flex-auto"
-          style="width: 100%">
+        <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
           <mat-label>{{'text_email' | translate}}</mat-label>
-          <input matInput type="email" formControlName="email"
-            required>
+          <input matInput type="email" formControlName="email" required>
         </mat-form-field>
-        <button (click)="closeModal()"
-          class="button-primary"
-          style="margin-top: 16px;"
-          type="button">
+        <button (click)="sendMail()" class="button-primary" style="margin-top: 16px;" type="button"
+          [disabled]="forgetForm.status!=='VALID'">
           {{'text_reset_password' | translate }}
         </button>
-      </form>
-    </ng-container>
+        <div (click)="isForgotPass=false" style="color: var(--Primary, #E91E63);
+      font-weight: 600;
+      width: 100%; 
+      text-align: -webkit-center;
+      " class="cursor-pointer">
+          {{'text_login' | translate }}
+        </div>
+      </div>
+    </form>
   </div>
 </div>

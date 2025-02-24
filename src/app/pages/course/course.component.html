@@ -422,13 +422,6 @@
 							</div>
 						</div>
 						<div style="display: flex;flex-wrap: wrap;gap: 16px; margin-top: 20px;">
-							<!-- <mat-form-field appearance="outline" class="flex-auto"
-                style="width: 100%">
-                <mat-label>{{'text_birth_date' | translate}}</mat-label>
-                <input matInput type="date"
-                  [(ngModel)]="selectedDateReservation"
-                  required>
-              </mat-form-field> -->
 							<app-form-select style="width: calc(50% - 8px);" [value]="getAvailableHours()[0]"
 								label="hour" [table]="getAvailableHours()"
 								(do)="selectedHour=$event.option.value"></app-form-select>
@@ -488,7 +481,7 @@
 				</div>
 				<div style="padding: 20px;">
 					<button
-						[disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1"
+						[disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1 || course.course_type===2&&courseFlux===2&&!selectedDateReservation"
 						(click)="next()" style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;

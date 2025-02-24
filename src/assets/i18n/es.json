@@ -713,5 +713,7 @@
   "not_assigned": "No asignado",
   "your_reservation": "Tu reserva",
   "confirm_and_go_to_cart": "Confirmar y ir al carrito",
-  "add_to_cart_and_make_another_reservation": "Añadir al carrito y hacer otra reserva"
+  "add_to_cart_and_make_another_reservation": "Añadir al carrito y hacer otra reserva",
+  "no_account": "¿No tienes una cuenta?",
+  "sign_up": "Regístrate"
 }

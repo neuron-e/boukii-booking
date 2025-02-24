@@ -2,12 +2,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from 'src/app/services/theme.service';
 import { CourseComponent } from '../course.component';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-course-modal-confirm',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.scss', '../course.component.scss'],
 
 })
 export class CourseModalConfirmComponent {
@@ -65,5 +64,27 @@ export class CourseModalConfirmComponent {
     const minHourString = maxHourStart.toString().padStart(4, "0");
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
+  getWeekdays(settings: string): string {
+    const settingsObj = JSON.parse(settings);
+    const weekDays = settingsObj.weekDays;
+    const daysMap: any = {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Diamanche",
+    };
 
+    const activeDays = Object.entries(weekDays)
+      .filter(([_, isActive]) => isActive)
+      .map(([day]) => this.translateService.instant(daysMap[day]));
+
+    if (activeDays.length === 7) {
+      return `${this.translateService.instant('Lundi')} - ${this.translateService.instant('Diamanche')}`;
+    } else {
+      return activeDays.join(', ');
+    }
+  }
 }
