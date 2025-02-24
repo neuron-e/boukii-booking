@@ -61,36 +61,36 @@
 					</div>
 				</div>
 				<div class="course-box-dates">
-					<div *ngIf="cartItem.details[0].course.course_type == 1" class="course-content-list">
+					<div class="course-content-list">
 						<div style="display: flex;align-items: center;gap: 8px;">
 							<img src="assets/icons/people.png" class="icon24">
 							<span style="
-              color: #8B9099;
-               font-size: 12px;
-               font-weight: 600;
-               line-height: 16px;
-               word-wrap: break-word">
+									color: #8B9099;
+									font-size: 12px;
+									font-weight: 600;
+									line-height: 16px;
+									word-wrap: break-word">
 								{{"participants"|translate|uppercase}}
 							</span>
 						</div>
-						<div class="text-color-light montserrat list-flex">
+						<div *ngFor="let client of getUniqueClients(cartItem.details)"
+							class="text-color-light montserrat list-flex">
 							<app-level-user [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
-								[userImage]="cartItem.details[0].client.image || 'assets/avatar.png'"></app-level-user>
-							{{cartItem.details[0].client.first_name + ' ' +
-							cartItem.details[0].client.last_name}}
+								[userImage]="client.image || 'assets/avatar.png'"></app-level-user>
+							{{ client.first_name + ' ' + client.last_name }}
 						</div>
 						<div style="display: flex;align-items: center;gap: 8px;">
 							<img src="assets/icons/calendar.png" class="icon24">
 							<span style="
-              color: #8B9099;
-               font-size: 12px;
-               font-weight: 600;
-               line-height: 16px;
-               word-wrap: break-word">
+								color: #8B9099;
+								font-size: 12px;
+								font-weight: 600;
+								line-height: 16px;
+								word-wrap: break-word">
 								{{"date_time"|translate|uppercase}}
 							</span>
 						</div>
-						<div *ngFor="let date of cartItem.details"
+						<div *ngFor="let date of getUniqueDates(cartItem.details)"
 							style="display: flex;justify-content: space-between;width: 100%;gap: 20px;">
 							<span>
 								{{date.date | date: 'dd.MM.yyyy'}}
@@ -100,61 +100,19 @@
 								}}-{{date.hour_end.substring(0,5)}}
 							</span>
 						</div>
-						<ng-container *ngIf="cartItem.details[0].extra">
-							{{'text_forfait' | translate }}
-							<div class="text-color">
-								{{cartItem.details[0].extra.name}}
-							</div>
-						</ng-container>
-						<!-- <div
-              class="text-color-light montserrat mt-12">{{cartItem.details[0].subGroup.degree.name}}</div> -->
-					</div>
-					<div *ngIf="cartItem.details[0].course.course_type == 2" class="course-content-list">
-						<div style="display: flex;align-items: center;gap: 8px;">
-							<img src="assets/icons/people.png" class="icon24">
+						<div style="display: flex;align-items: center;gap: 8px;"
+							*ngIf="cartItem.details[0].extra.length>0">
 							<span style="
-              color: #8B9099;
-               font-size: 12px;
-               font-weight: 600;
-               line-height: 16px;
-               word-wrap: break-word">
-								{{"participants" | translate}}
+								color: #8B9099;
+								font-size: 12px;
+								font-weight: 600;
+								line-height: 16px;
+								word-wrap: break-word">
+								{{"text_forfait"|translate|uppercase}}
 							</span>
 						</div>
-						<div *ngFor="let client of getUniqueClients(cartItem.details)"
-							class="text-color-light montserrat list-flex">
-							<app-level-user [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
-								[userImage]="client.image || 'assets/avatar.png'"></app-level-user>
-							{{ client.first_name + ' ' + client.last_name }}
-						</div>
-						<!--<div class="text-color-light montserrat pl-18">
-							{{ getUniqueClients(cartItem.details).length }} {{
-							'text_people_under' | translate }}
-						</div>-->
-						<!-- Iterar sobre fechas únicas -->
-						<div style="display: flex;align-items: center;gap: 8px;">
-							<img src="assets/icons/calendar.png" alt="Grupo máximo" class="icon24">
-							<span style="
-              color: #8B9099;
-               font-size: 12px;
-               font-weight: 600;
-               line-height: 16px;
-               word-wrap: break-word">
-								{{"date_time" | translate}}
-							</span>
-						</div>
-						<div *ngFor="let detail of getUniqueDates(cartItem.details)"
-							class="text-color-light montserrat list-flex">
-							{{ detail.date | date: 'dd.MM.yyyy' }}
-							<span style="color: #8B9099;">
-								{{ detail.hour_start }}h-{{ detail.hour_end }}h
-							</span>
-						</div>
-						<ng-container *ngIf="cartItem.details[0].extra">
-							{{'text_forfait' | translate }}
-						</ng-container>
 						<div *ngIf="cartItem.details[0].extra.length>0"
-							style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+							style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;margin-left: 10px;">
 							<div *ngFor="let extra of cartItem.details[0].extra" style="width: 100%;">
 								<div>
 									<span class="extra_product">{{extra.product}}</span>
@@ -169,30 +127,23 @@
 						</div>
 					</div>
 				</div>
-				<div class="course-box-dates" style="  border-top: 1px solid #dee6ea;">
+				<div class="course-box-dates" style="border-top: 1px solid #dee6ea;">
 					<span style>
 						{{"booking_total" | translate}}
 					</span>
-					<ng-container *ngIf="cartItem.details[0].course.course_type ==2">
-						<div class="text-color">
-							<span class="text-color fw-semibold text-medium">
-								{{
-								getTotalBasePrice(cartItem.details).toFixed(2) }}
-							</span>
-							{{ cartItem.details[0].course.currency }}
-						</div>
-					</ng-container>
-					<ng-container *ngIf="cartItem.details[0].course.course_type ==1">
-						<div class="text-color">
-							<span class="text-color fw-semibold text-medium">
-								{{(cartItem.details[0].course.is_flexible ?
-								(cartItem.details.length * cartItem.details[0].price) :
-								cartItem.details[0].course.price * 1).toFixed(2) }}
-							</span>
-							{{
-							cartItem.details[0].course.currency }}
-						</div>
-					</ng-container>
+					<div class="text-color">
+						<span class="text-color fw-semibold text-medium"
+							*ngIf="cartItem.details[0].course.course_type ==2">
+							{{getTotalBasePrice(cartItem.details)|number:'0.2-2' }}
+						</span>
+						<span class="text-color fw-semibold text-medium"
+							*ngIf="cartItem.details[0].course.course_type ==1">
+							{{(cartItem.details[0].course.is_flexible ?
+							(cartItem.details.length * cartItem.details[0].price) :
+							cartItem.details[0].course.price * 1)|number:'0.2-2'}}
+						</span>
+						{{ cartItem.details[0].course.currency }}
+					</div>
 				</div>
 
 				<!-- <div class="width-100">
@@ -222,14 +173,14 @@
 					{{getSportName(cartItem.details[0].course.sport_id)}}
 				</span>
 				<span *ngIf="cartItem.details[0].course.course_type ==2" class="detailPrice">
-					{{ getTotalBasePrice(cartItem.details).toFixed(2) }} {{
+					{{ getTotalBasePrice(cartItem.details)|number:'0.2-2' }} {{
 					cartItem.details[0].course.currency }}
 				</span>
 				<span *ngIf="cartItem.details[0].course.course_type ==1" class="detailPrice">
-					{{cartItem.details[0].course.is_flexible ?
-					(cartItem.details.length * cartItem.details[0].price).toFixed(2) :
-					(+cartItem.details[0].course.price).toFixed(2) }} {{
-					cartItem.details[0].course.currency }}
+					{{(cartItem.details[0].course.is_flexible ?
+					cartItem.details.length * cartItem.details[0].price :
+					+cartItem.details[0].course.price)|number:'0.2-2'}}
+					{{ cartItem.details[0].course.currency }}
 				</span>
 			</div>
 			<div *ngIf="hasInsurance" class="payment-price-flex mt-8">
@@ -238,7 +189,7 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{getInsurancePrice().toFixed(2)}}
+						{{getInsurancePrice()|number:'0.2-2'}}
 						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
@@ -249,7 +200,8 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{getExtrasPrice()}} {{ cart[0].details[0].course.currency }}
+						{{getExtrasPrice()|number:'0.2-2'}}
+						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
 			</div>
@@ -258,7 +210,7 @@
 				<div class="detail">Boukii Care</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{getBoukiiCarePrice().toFixed(2)}}
+						{{getBoukiiCarePrice()|number:'0.2-2'}}
 						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
@@ -271,7 +223,8 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{getBasePrice().toFixed(2)}} {{ cart[0].details[0].course.currency }}
+						{{getBasePrice()|number:'0.2-2'}}
+						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
 			</div>
@@ -283,7 +236,7 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="text-color fw-bold">
-						-{{usedVoucherAmount}}
+						-{{usedVoucherAmount|number:'0.2-2'}}
 					</span>
 					{{ cart[0].details[0].course.currency }}
 				</div>
@@ -317,7 +270,7 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{(totalNotaxes * tva).toFixed(2)}}
+						{{(totalNotaxes * tva)|number:'0.2-2'}}
 						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
@@ -332,7 +285,8 @@
 				</div>
 				<div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{totalPrice.toFixed(2)}} {{ cart[0].details[0].course.currency }}
+						{{totalPrice|number:'0.2-2'}}
+						{{ cart[0].details[0].course.currency }}
 					</span>
 				</div>
 			</div>

@@ -334,63 +334,61 @@ export class CourseComponent implements OnInit {
           localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
           this.cartService.carData.next(cart);
           this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-          this.goTo(this.schoolData.slug);
         } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
       }
-    }, error => {
-      let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-      let cart: any = {};
-      if (cartStorage) {
-        cart = JSON.parse(cartStorage);
-      }
-      if (!cart[this.course.id]) {
-        cart[this.course.id] = {};
-      }
-      if (this.course.course_type === 2) {
-        const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
-        const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-          const idArray = id.split('-');
-          return idArray.some(singleId => {
-            const keys = Object.keys(cart[this.course.id]);
-            return keys.some(key => {
-              const userCourseIds = key.split('-');
-              const hasUserOverlap = userCourseIds.includes(singleId);
-              if (hasUserOverlap) {
-                let course_date = this.findMatchingCourseDate();
-                const userBookings = cart[this.course.id][key];
-                return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-              }
-              return false;
+    },
+      error => {
+        let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+        let cart: any = {};
+        if (cartStorage) {
+          cart = JSON.parse(cartStorage);
+        }
+        if (!cart[this.course.id]) {
+          cart[this.course.id] = {};
+        }
+        if (this.course.course_type === 2) {
+          const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
+          const isAnyUserReserved = selectedUserIds.split('-').some(id => {
+            const idArray = id.split('-');
+            return idArray.some(singleId => {
+              const keys = Object.keys(cart[this.course.id]);
+              return keys.some(key => {
+                const userCourseIds = key.split('-');
+                const hasUserOverlap = userCourseIds.includes(singleId);
+                if (hasUserOverlap) {
+                  let course_date = this.findMatchingCourseDate();
+                  const userBookings = cart[this.course.id][key];
+                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
+                }
+                return false;
+              });
             });
           });
-        });
 
-        if (!isAnyUserReserved) {
-          if (!cart[this.course.id][selectedUserIds]) {
-            cart[this.course.id][selectedUserIds] = [];
+          if (!isAnyUserReserved) {
+            if (!cart[this.course.id][selectedUserIds]) {
+              cart[this.course.id][selectedUserIds] = [];
+            }
+            cart[this.course.id][selectedUserIds].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else {
+            this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
           }
-          cart[this.course.id][selectedUserIds].push(...bookingUsers);
-
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
         } else {
-          this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
+          if (!cart[this.course.id][this.selectedUser.id]) {
+            cart[this.course.id][this.selectedUser.id] = [];
+            cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else {
+            this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          }
         }
-      } else {
-        if (!cart[this.course.id][this.selectedUser.id]) {
-          cart[this.course.id][this.selectedUser.id] = [];
-          cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-          this.goTo(this.schoolData.slug);
-        } else {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-        }
-      }
-      this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-    })
+        this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+      })
   }
 
   calculateEndTime(startTime: string, duration: string): string {
