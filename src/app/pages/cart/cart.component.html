@@ -295,10 +295,9 @@
 				<div [ngClass]="mobileHidden?'mobile':''" class="payment-conditions">
 					<div class="checkbox-custom">
 						<input [(ngModel)]="conditionsAccepted" type="checkbox" id="conditions">
-						<label for="conditions"
-							class="checkbox-custom-label-normal text-color-light montserrat"></label>
+						<label for="conditions" class="checkbox-custom-label-normal montserrat"></label>
 					</div>
-					<div for="conditions" class="checkbox-custom-label-normal text-color-light montserrat">
+					<div for="conditions" class="checkbox-custom-label-normal montserrat">
 						{{'text_i_accept_terms' | translate }}
 						<span (click)="openModalConditions()" style="color: #E91E63;">
 							{{'text_booking_conditions'
@@ -306,7 +305,12 @@
 						</span>
 					</div>
 				</div>
-				<div [ngClass]="mobileHidden?'mobile':''" class="text-color-light montserrat mt-12">
+				<div [ngClass]="mobileHidden?'mobile':''" style="font-family: DM Sans;
+				font-weight: 400;
+				font-size: 12px;
+				line-height: 16px;
+				letter-spacing: 0px;
+				">
 					{{'text_payment2' | translate }}
 				</div>
 				<button [disabled]="!conditionsAccepted" (click)="sendBooking()"
@@ -319,13 +323,9 @@
            word-wrap: break-word">
 					{{'text_end_and_pay' | translate }}
 				</button>
-
 				<div class="payment-title-icon mt-12 pt-12 text-color fw-semibold text-medium paymenthide">
 					<img src="/assets/icons/payment_landing_pink.svg">
 					{{'text_payment1' | translate }}
-				</div>
-				<div class="text-color mt-12 montserrat text-align-center paymenthide">
-					{{'text_cart1' | translate }}
 				</div>
 				<img [src]="themeService.logoPay" class="payment-logo-pay mt-12 paymenthide">
 			</div>
