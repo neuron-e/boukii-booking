@@ -1,14 +1,15 @@
-<div
-	style="background-color: #D2EFFF;border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;">
-	<img src="assets/icons/info.png" class="icon24">
+<div style="border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;"
+	[style.backgroundColor]="settings.bookingPage.messages.type?'#D2EFFF':'#FFEBEB'">
+	<img [src]="settings.bookingPage.messages.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'"
+		class="icon24">
 	<div style="display: flex;flex-direction: column;justify-content: space-between;">
 		<span style="
      font-weight: 600;
      line-height: 23px;">
-			{{"important_info" | translate}}
+			{{settings.bookingPage.messages.title}}
 		</span>
 		<span>
-			{{"avalanche_risk" | translate}}
+			{{settings.bookingPage.messages.desc}}
 		</span>
 	</div>
 </div>
@@ -103,7 +104,12 @@
 		</div>
 	</div>
 	<div class="Section">
-		<img src="assets/images/banner.png" alt>
+		<a [href]="settings.bookingPage.banner.link" target="_blank">
+			<img [src]="settings.bookingPage.banner.desktopImg||'assets/images/banner.png'" alt class="desktop"
+				style="width: 100%; aspect-ratio: 10 / 1;object-fit: contain;">
+			<img [src]="settings.bookingPage.banner.mobileImg||'assets/images/banner.png'" alt class="mobile"
+				style="width: 100%; aspect-ratio: 3 / 1;object-fit: contain;">
+		</a>
 	</div>
 	<div class="Section">
 		<span class="titleSection">
@@ -140,14 +146,19 @@
 				</div>
 			</mat-tab>
 		</mat-tab-group>
-
 	</div>
 </ng-container>
-<div class="Section" style="text-align: -webkit-center;">
+<div class="Section" style="text-align: -webkit-center;" *ngIf="settings.bookingPage.sponsors.length>0">
 	<span class="titleSection">
 		{{"sponsors" | translate}}
 	</span>
-	<img src="assets/images/patrocinio.png" alt style="margin: 30px 0;">
+	<div style="display: flex;justify-content: space-evenly;gap: 10px;">
+		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings.bookingPage.sponsors"
+			style="width: fit-content;">
+			<img [src]="sponsor.img||'assets/images/banner.png'"
+				style="height: 76px; aspect-ratio: 1.7 / 1;object-fit: contain;">
+		</a>
+	</div>
 </div>
 <app-mobile-modal *ngIf="FilterModal" (Close)="FilterModal=false" title="Encuentra tu curso ideal">
 	<div [formGroup]="FormGroup" body class="filterMobile">

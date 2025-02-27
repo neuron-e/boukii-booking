@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
   currentMonth: any
   currentYear: any
   days: any
-
+  settings: any
   degreeValues: any = {
     doesntMatter: null,
     novice: [1, 2, 3],
@@ -87,6 +87,7 @@ export class HomeComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
+          this.settings = JSON.parse(data.data.settings)
           this.FormGroup.patchValue({
             course_type: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1'),
             edat: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1'),
