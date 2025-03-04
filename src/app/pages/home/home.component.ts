@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   sports: any[];
   season: any
   holidays: any
-  myHolidayDates: any
+  myHolidayDates: any = [];
   selectedSportId: any
   currentMonth: any
   currentYear: any
