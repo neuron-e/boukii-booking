@@ -26,18 +26,17 @@
 			<div style="justify-content: space-between;flex-wrap: wrap;gap: 8px;">
 				<div style="min-width: 150px;">
 					<span *ngIf="!course.is_flexible" class="price">
-						{{course.price|number:'0.2-2'}} {{course.currency}} /{{"text_date" | translate}}
+						{{course.minPrice|number:'0.2-2'}}
+						{{course.currency}}/{{'mails.course'|translate}}
 					</span>
 					<span *ngIf="course.is_flexible" class="price">
-						{{"text_from" | translate}} {{collectivePrice|number:'0.2-2'}} {{course.currency}}
-						/{{"text_date" | translate}}
+						{{"text_from" | translate}} {{course.minPrice|number:'0.2-2'}}
+						{{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
 					</span>
 				</div>
 				<div style="display: flex;align-items: center;">
 					<img src="assets/icons/start_empty.png" alt class="icon24">
-					<span style="
-          color: #E91E63;
-          word-wrap: break-word">
+					<span style="color: #E91E63;word-wrap: break-word">
 						{{"book_two_dates_discount" | translate}}!
 					</span>
 				</div>

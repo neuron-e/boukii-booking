@@ -14,8 +14,8 @@
 	<div class="card-body">
 		<h3 class="card-title">{{getCourseName()}}</h3>
 		<p class="price">
-			{{(data.is_flexible?'text_from':'')|translate}} {{getCoursePrice()}}
-			{{data.currency}}/{{(data.is_flexible?data.minDuration:"mails.course")|translate}}
+			{{(data.is_flexible?'text_from':'')|translate}} {{getCoursePrice()|number:'0.2-2'}}
+			{{data.currency}}/{{(data.is_flexible?data.minDuration?data.minDuration:'mails.course':"mails.course")|translate}}
 		</p>
 		<p [innerHTML]="getShotrDescription()" class="description">
 		</p>
