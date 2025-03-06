@@ -104,10 +104,10 @@
 		</div>
 	</div>
 	<div class="Section">
-		<a [href]="settings.bookingPage.banner.link" target="_blank">
-			<img [src]="settings.bookingPage.banner.desktopImg||'assets/images/banner.png'" alt class="desktop"
+		<a [href]="settings.bookingPage?.banner?.link" target="_blank">
+			<img [src]="settings.bookingPage?.banner?.desktopImg||'assets/images/banner.png'" alt class="desktop"
 				style="width: 100%; aspect-ratio: 10 / 1;object-fit: contain;">
-			<img [src]="settings.bookingPage.banner.mobileImg||'assets/images/banner.png'" alt class="mobile"
+			<img [src]="settings.bookingPage?.banner?.mobileImg||'assets/images/banner.png'" alt class="mobile"
 				style="width: 100%; aspect-ratio: 3 / 1;object-fit: contain;">
 		</a>
 	</div>
@@ -148,12 +148,12 @@
 		</mat-tab-group>
 	</div>
 </ng-container>
-<div class="Section" style="text-align: -webkit-center;" *ngIf="settings.bookingPage.sponsors.length>0">
+<div class="Section" style="text-align: -webkit-center;" *ngIf="settings.bookingPage?.sponsors?.length>0">
 	<span class="titleSection">
 		{{"sponsors" | translate}}
 	</span>
 	<div style="display: flex;justify-content: space-evenly;gap: 10px;">
-		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings.bookingPage.sponsors"
+		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings?.bookingPage?.sponsors"
 			style="width: fit-content;">
 			<img [src]="sponsor.img||'assets/images/banner.png'"
 				style="height: 76px; aspect-ratio: 1.7 / 1;object-fit: contain;">
