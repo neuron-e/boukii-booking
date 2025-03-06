@@ -1,15 +1,15 @@
 <div style="border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;"
-	[style.backgroundColor]="settings.bookingPage.messages.type?'#D2EFFF':'#FFEBEB'">
-	<img [src]="settings.bookingPage.messages.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'"
+	[style.backgroundColor]="settings.bookingPage?.messages?.type?'#D2EFFF':'#FFEBEB'">
+	<img [src]="settings.bookingPage?.messages?.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'"
 		class="icon24">
 	<div style="display: flex;flex-direction: column;justify-content: space-between;">
 		<span style="
      font-weight: 600;
      line-height: 23px;">
-			{{settings.bookingPage.messages.title}}
+			{{settings.bookingPage?.messages?.title}}
 		</span>
 		<span>
-			{{settings.bookingPage.messages.desc}}
+			{{settings.bookingPage?.messages?.desc}}
 		</span>
 	</div>
 </div>
