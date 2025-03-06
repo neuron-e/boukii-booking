@@ -1,5 +1,5 @@
 <div style="border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;"
-	[style.backgroundColor]="settings.bookingPage?.messages?.type?'#D2EFFF':'#FFEBEB'">
+	*ngIf="settings.bookingPage" [style.backgroundColor]="settings.bookingPage?.messages?.type?'#D2EFFF':'#FFEBEB'">
 	<img [src]="settings.bookingPage?.messages?.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'"
 		class="icon24">
 	<div style="display: flex;flex-direction: column;justify-content: space-between;">
@@ -106,7 +106,7 @@
 	<div class="Section">
 		<a [href]="settings.bookingPage?.banner?.link" target="_blank">
 			<img [src]="settings.bookingPage?.banner?.desktopImg||'assets/images/banner.png'" alt class="desktop"
-				style="width: 100%; aspect-ratio: 10 / 1;object-fit: contain;">
+				style="width: 100%; aspect-ratio: 6 / 1;object-fit: contain;">
 			<img [src]="settings.bookingPage?.banner?.mobileImg||'assets/images/banner.png'" alt class="mobile"
 				style="width: 100%; aspect-ratio: 3 / 1;object-fit: contain;">
 		</a>
@@ -115,7 +115,26 @@
 		<span class="titleSection">
 			{{"upcoming_courses" | translate}}
 		</span>
-		<mat-tab-group style="width: 100%;"
+		<div class="card-container" *ngIf="typeProximosCourse.length<=2">
+			<ng-container *ngFor="let item of ProximosCourse; index as i">
+				<app-home-course-card [data]="item" (click)="router.navigate([schoolData.slug+'/course/'+item.id])"
+					*ngIf="i<moreProximosCourse && (selectedTypeProximosCourse===typeProximosCourse[0] || item.sport.name === selectedTypeProximosCourse)">
+				</app-home-course-card>
+			</ng-container>
+
+			<span *ngIf="ProximosCourse.length===0">
+				{{"no_course_available" | translate}}
+			</span>
+			<div style="width: 100%;display: flex;align-items: center;justify-content: center;"
+				*ngIf="ProximosCourse.length>moreProximosCourse">
+				<button (click)="moreProximosCourse=moreProximosCourse+8"
+					style="border: 1px solid black;border-radius: 3px;padding: 12px 10px;width: 250px;">
+					{{"text_more"|translate}}
+				</button>
+			</div>
+		</div>
+
+		<mat-tab-group style="width: 100%;" *ngIf="typeProximosCourse.length>2"
 			(selectedIndexChange)="selectedTypeProximosCourse=typeProximosCourse[$event]">
 			<mat-tab *ngFor="let type of typeProximosCourse; index as i">
 				<ng-template mat-tab-label>
@@ -148,11 +167,14 @@
 		</mat-tab-group>
 	</div>
 </ng-container>
-<div class="Section" style="text-align: -webkit-center;" *ngIf="settings.bookingPage?.sponsors?.length>0">
+<div class="Section" style="text-align: -webkit-center;    display: flex;
+    gap: 30px;
+    flex-direction: column;padding: 40px 0;" *ngIf="settings.bookingPage?.sponsors?.length>0">
 	<span class="titleSection">
 		{{"sponsors" | translate}}
 	</span>
-	<div style="display: flex;justify-content: space-evenly;gap: 10px;">
+	<div style="display: flex;justify-content: center;
+    gap: 30px;">
 		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings?.bookingPage?.sponsors"
 			style="width: fit-content;">
 			<img [src]="sponsor.img||'assets/images/banner.png'"

@@ -1,11 +1,7 @@
 <div class="header">
-	<div (click)="goBack('')"
-		style="display: flex;">
-		<img src="assets/images/school-logo.png"
-			class="icon36"
-			alt>
-		<p *ngIf="schoolData"
-			style="line-height: 14px; margin: 0 12px;">
+	<div (click)="goBack('')" style="display: flex;">
+		<img src="assets/images/school-logo.png" class="icon36" alt>
+		<p *ngIf="schoolData" style="line-height: 14px; margin: 0 12px;">
 			<span class="title1">
 				{{schoolData.data.name}}
 			</span>
@@ -20,91 +16,63 @@
 	<div style="display: flex;margin-left: auto;position: relative;">
 		<div (click)="isOpenDropdownLang=!isOpenDropdownLang"
 			style="display: flex; padding: 10px; gap: 5px;position: relative;">
-			<img src="assets/icons/lang.png"
-				class="icon24">
-			<img [src]="themeService.arrowUp"
-				[ngClass]="{'rotate-arrow': isOpenDropdownLang}"
-				class="icon24 arrow">
-			<div *ngIf="isOpenDropdownLang"
-				class="dropdown">
+			<img src="assets/icons/lang.png" class="icon24">
+			<img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownLang}" class="icon24 arrow">
+			<div *ngIf="isOpenDropdownLang" class="dropdown">
 				<div (click)="switchLang('fr')">
-					<img src="/assets/images/fr.png"
-						class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='fr'}"
-						class="text-color-light">
+					<img src="/assets/images/fr.png" class="icon24">
+					<span [ngClass]="{'fw-semibold': selectedLang=='fr'}" class="text-color-light">
 						FR
 					</span>
 				</div>
 				<div (click)="switchLang('en')">
-					<img src="/assets/images/en.png"
-						class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='en'}"
-						class="text-color-light">
+					<img src="/assets/images/en.png" class="icon24">
+					<span [ngClass]="{'fw-semibold': selectedLang=='en'}" class="text-color-light">
 						EN
 					</span>
 				</div>
 				<div (click)="switchLang('de')">
-					<img src="/assets/images/de.png"
-						class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='de'}"
-						class="text-color-light">
+					<img src="/assets/images/de.png" class="icon24">
+					<span [ngClass]="{'fw-semibold': selectedLang=='de'}" class="text-color-light">
 						DE
 					</span>
 				</div>
 				<div (click)="switchLang('es')">
-					<img src="/assets/images/es.png"
-						class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='es'}"
-						class="text-color-light">
+					<img src="/assets/images/es.png" class="icon24">
+					<span [ngClass]="{'fw-semibold': selectedLang=='es'}" class="text-color-light">
 						ES
 					</span>
 				</div>
 				<div (click)="switchLang('it')">
-					<img src="/assets/images/it.png"
-						class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='it'}"
-						class="text-color-light">
+					<img src="/assets/images/it.png" class="icon24">
+					<span [ngClass]="{'fw-semibold': selectedLang=='it'}" class="text-color-light">
 						IT
 					</span>
 				</div>
 			</div>
 		</div>
-		<div *ngIf="!userLogged"
-			(click)="schoolService.isModalLogin=true"
-			style="padding: 10px;">
-			<img src="assets/icons/login.png"
-				class="icon24">
+		<div *ngIf="!userLogged" (click)="schoolService.isModalLogin=true" style="padding: 10px;">
+			<img src="assets/icons/login.png" class="icon24">
 		</div>
-		<div *ngIf="userLogged"
-			(click)="goBack('cart')"
+		<div *ngIf="userLogged" (click)="goBack('cart')"
 			style="display: flex;align-items: center;padding: 10px;position: relative">
-			<img src="assets/icons/cart-black.png"
-				class="icon24">
-			<div *ngIf="cart"
-				class="header-cart-number">
+			<img src="assets/icons/cart-black.png" class="icon24">
+			<div *ngIf="cart" class="header-cart-number">
 				{{calculateCartLength()}}
 			</div>
 		</div>
-		<div *ngIf="userLogged"
-			(click)="isOpenDropdownUser=!isOpenDropdownUser"
-			class="title2"
+		<div *ngIf="userLogged" (click)="isOpenDropdownUser=!isOpenDropdownUser" class="title2"
 			style="display: flex;align-items: center;padding: 10px;position: relative;">
-			<img src="assets/icons/login.png"
-				class="usericon icon24">
+			<img src="assets/icons/login.png" class="usericon icon24">
 			<span class="username">
 				{{userLogged.username || "User"}}
 			</span>
-			<img [src]="themeService.arrowUp"
-				[ngClass]="{'rotate-arrow': isOpenDropdownUser}"
-				class="icon24 arrow">
-			<div *ngIf="isOpenDropdownUser"
-				class="dropdown">
-				<div (click)="goBack('user')"
-					class="text-color-light cursor-pointer">
+			<img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownUser}" class="icon24 arrow">
+			<div *ngIf="isOpenDropdownUser" class="dropdown">
+				<div (click)="goBack('user')" class="text-color-light cursor-pointer">
 					{{"Perfil" | translate}}
 				</div>
-				<div (click)="logOut()"
-					class="text-color-light cursor-pointer">
+				<div (click)="logOut()" class="text-color-light cursor-pointer">
 					{{"Logout" | translate}}
 				</div>
 			</div>
@@ -135,10 +103,8 @@
 
 
 
-<app-modal-login [isOpen]="schoolService.isModalLogin"
-	(onClose)="schoolService.isModalLogin=false">
+<app-modal-login [isOpen]="schoolService.isModalLogin" (onClose)="schoolService.isModalLogin=false">
 </app-modal-login>
-<app-modal-new-user [isOpen]="schoolService.isModalNewUser"
-	(onClose)="schoolService.isModalNewUser=false"
+<app-modal-new-user [isOpen]="schoolService.isModalNewUser" (onClose)="schoolService.isModalNewUser=false"
 	(goLogin)="schoolService.isModalNewUser=false;schoolService.isModalLogin=true">
 </app-modal-new-user>

@@ -14,7 +14,8 @@
 	<div class="card-body">
 		<h3 class="card-title">{{getCourseName()}}</h3>
 		<p class="price">
-			{{(data.is_flexible?'text_from':'')|translate}} {{getCoursePrice()}} {{data.currency}}/{{"date"|translate}}
+			{{(data.is_flexible?'text_from':'')|translate}} {{getCoursePrice()}}
+			{{data.currency}}/{{(data.is_flexible?data.minDuration:"mails.course")|translate}}
 		</p>
 		<p [innerHTML]="getShotrDescription()" class="description">
 		</p>
@@ -35,14 +36,22 @@
 					</strong>
 				</span>
 				<br>
-				<span>
-					<!-- {{getWeekDay()}}
-                    {{findMinHourStart()}}–{{findMaxHourEnd()}} -->
+				<span style="width: max-content;
+				display: flex;
+				flex-direction: column;">
 					<ng-container *ngIf="data.course_type == 1">
-						<div *ngFor="let date of data.course_dates">
-							{{date.date | date: 'dd.MM.yyyy'}}
-							{{date.hour_start}}-{{date.hour_end}}
-						</div>
+						<ng-container *ngFor="let date of data.course_dates">
+							<span style="display: flex;justify-content: space-between;"
+								*ngIf="compareISOWithToday(date.date)">
+								<span style="font-weight: 600;">
+									{{date.date | date: 'dd.MM.yyyy'}}
+								</span>
+								<span style="color: #8B9099;">
+									{{date.hour_start}}h-{{date.hour_end}}h
+								</span>
+							</span>
+
+						</ng-container>
 					</ng-container>
 					<ng-container *ngIf="data.course_type == 2">
 						<div class="mt-8 course-box-content-list">

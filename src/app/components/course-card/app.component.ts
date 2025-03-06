@@ -10,6 +10,7 @@ export class CourseCardComponent {
   @Input() data: any
   Week: string[] = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"]
   WeekDisplayed: number[] = []
+  today = new Date()
   constructor(public translateService: TranslateService) { }
   getWeekDay(): string {
     const uniqueDays: Set<number> = new Set();
@@ -104,4 +105,12 @@ export class CourseCardComponent {
   }
 
   protected readonly JSON = JSON;
+  compareISOWithToday(isoDate: string): boolean {
+    const isoDateObj = new Date(isoDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return isoDateObj > today;
+  }
+
+
 }
