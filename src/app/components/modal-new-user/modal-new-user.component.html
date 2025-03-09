@@ -1,11 +1,8 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-  <div class="modal-content background-color-full rounded-8"
-    (click)="$event.stopPropagation()">
-    <div
-      class="text-color fw-semibold text-semibig modal-flex-title">
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <div class="text-color fw-semibold text-semibig modal-flex-title">
       {{ 'text_new_client' | translate }}
-      <img [src]="themeService.close" class="cursor-pointer"
-        (click)="closeModal()" />
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
     </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="modal-form">
@@ -18,8 +15,7 @@
         </div>
         <div
           style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-start; gap: 4px; display: inline-flex">
-          <div
-            style="align-self: stretch;  word-wrap: break-word">La
+          <div style="align-self: stretch;  word-wrap: break-word">La
             cuenta tiene que ser creada por el administrador de la cuenta. Si
             desea reservar cursos para menores, podrás añadir uno o más usuarios
             una vez registrado. </div>
@@ -28,34 +24,28 @@
 
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_first_name' | translate}}</mat-label>
-        <input matInput type="text" formControlName="first_name"
-          required>
+        <input matInput type="text" formControlName="first_name" required>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_last_name' | translate}}</mat-label>
-        <input matInput type="text" formControlName="last_name"
-          required>
+        <input matInput type="text" formControlName="last_name" required>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_birth_date' | translate}}</mat-label>
-        <input matInput type="date" formControlName="birth_date"
-          required>
+        <input matInput type="date" formControlName="birth_date" required>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_phone' | translate}}</mat-label>
-        <input matInput type="text" formControlName="phone"
-          required>
+        <input matInput type="text" formControlName="phone" required>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 1</mat-label>
-        <input type="text" matInput
-          formControlName="language1_id" [matAutocomplete]="autoStation">
-        <mat-autocomplete #autoStation="matAutocomplete"
-          [displayWith]="displayFn">
+        <input type="text" matInput formControlName="language1_id" [matAutocomplete]="autoStation">
+        <mat-autocomplete #autoStation="matAutocomplete" [displayWith]="displayFn">
           <mat-option *ngFor="let item of langs" [value]="item">
             {{ item.lang | translate }}
           </mat-option>
@@ -64,10 +54,8 @@
 
       <mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 2</mat-label>
-        <input type="text" matInput
-          formControlName="language2_id" [matAutocomplete]="autoStation">
-        <mat-autocomplete #autoStation="matAutocomplete"
-          [displayWith]="displayFn">
+        <input type="text" matInput formControlName="language2_id" [matAutocomplete]="autoStation">
+        <mat-autocomplete #autoStation="matAutocomplete" [displayWith]="displayFn">
           <mat-option *ngFor="let item of langs" [value]="item">
             {{ item.lang | translate }}
           </mat-option>
@@ -86,40 +74,32 @@
         </mat-autocomplete>
       </mat-form-field>-->
 
-      <mat-form-field appearance="outline" class="flex-auto"
-        style="width: 100%">
+      <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
         <mat-label>{{'text_email' | translate}}</mat-label>
-        <input matInput type="email" formControlName="email"
-          required>
+        <input matInput type="email" formControlName="email" required>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="flex-auto"
-        style="width: calc(50% - 8px)">
+      <mat-form-field appearance="outline" class="flex-auto" style="width: calc(50% - 8px)">
         <mat-label>{{'text_password' | translate}}</mat-label>
-        <input matInput type="password" formControlName="password"
-          required>
+        <input matInput type="password" formControlName="password" required>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="flex-auto widthInput">
         <mat-label>{{'text_repeat_password' | translate}}</mat-label>
-        <input matInput type="password" formControlName="confirmPassword"
-          required>
+        <input matInput type="password" formControlName="confirmPassword" required>
       </mat-form-field>
 
-      <button type="submit" [disabled]="loginForm.invalid"
-        class="button-primary">
+      <button type="submit" [disabled]="loginForm.invalid" class="button-primary">
         {{ 'text_confirm' | translate }}
       </button>
       <div style="width: 100%;    text-align: -webkit-center;">
         Ya tienes una cuenta?
       </div>
-      <div (click)="goLogin.emit()"
-        style="color: var(--Primary, #E91E63);
+      <div (click)="goLogin.emit()" style="color: var(--Primary, #E91E63);
       font-weight: 600;
       width: 100%; 
       text-align: -webkit-center;
-      "
-        class="cursor-pointer">
+      " class="cursor-pointer">
         {{'Log in' | translate }}
       </div>
     </form>

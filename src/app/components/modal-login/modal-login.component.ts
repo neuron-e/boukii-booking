@@ -28,9 +28,12 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
+  @Output() onCloseNewUser = new EventEmitter<void>();
+
   loginForm: FormGroup;
   forgetForm: FormGroup;
   isForgotPass: boolean = false;
+  isModalNewUser: boolean = false
   private schoolDataSubscription: Subscription | undefined;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
@@ -113,5 +116,8 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
       this.schoolDataSubscription.unsubscribe(); // Desuscribirse cuando el componente se destruye
     }
   }
-
+  closeModalNewUser() {
+    this.isModalNewUser = false;
+    this.onCloseNewUser.emit();
+  }
 }

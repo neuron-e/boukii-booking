@@ -25,7 +25,7 @@
         <div style="width: 100%;    text-align: -webkit-center;">
           {{"no_account"|translate}}
         </div>
-        <div (click)="isForgotPass=true" style="color: var(--Primary, #E91E63);
+        <div (click)="isModalNewUser=true" style="color: var(--Primary, #E91E63);
           font-weight: 600;
           width: 100%; 
           text-align: -webkit-center;
@@ -55,3 +55,6 @@
     </form>
   </div>
 </div>
+
+<app-modal-new-user [isOpen]="isModalNewUser" (onClose)="closeModalNewUser()"
+  (goLogin)="isModalNewUser=false"></app-modal-new-user>
