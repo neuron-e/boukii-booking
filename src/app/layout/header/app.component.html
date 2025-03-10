@@ -65,7 +65,7 @@
 			style="display: flex;align-items: center;padding: 10px;position: relative;">
 			<img src="assets/icons/login.png" class="usericon icon24">
 			<span class="username">
-				{{userLogged.username || "User"}}
+				{{(userLogged.username || userLogged.first_name +' '+ userLogged.last_name || "User")|uppercase}}
 			</span>
 			<img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownUser}" class="icon24 arrow">
 			<div *ngIf="isOpenDropdownUser" class="dropdown">

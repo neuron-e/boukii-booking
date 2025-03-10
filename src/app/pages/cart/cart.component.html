@@ -76,7 +76,7 @@
 						<div *ngFor="let client of getUniqueClients(cartItem.details)"
 							class="text-color-light montserrat list-flex">
 							<app-level-user [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
-								[userImage]="client.image || 'assets/avatar.png'"></app-level-user>
+								[userImage]="client.image || 'assets/images/avatar.png'"></app-level-user>
 							{{ client.first_name + ' ' + client.last_name }}
 						</div>
 						<div style="display: flex;align-items: center;gap: 8px;">

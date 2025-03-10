@@ -4,6 +4,9 @@
   width: 100%;
   background-color: #2f3844;
   padding: 60px calc(5% - 20px);
+  @media (max-width: 768px) {
+    padding: 10px calc(5% - 20px);
+  }
   justify-content: space-evenly;
   flex-wrap: wrap;
   > div {
@@ -17,12 +20,12 @@
 }
 .title2 {
   font-size: 17.25px;
-  
+
   line-height: 23px;
 }
 span {
   color: white;
-  
+
   align-content: center;
   cursor: pointer;
 }
@@ -30,7 +33,6 @@ span {
   width: 200px;
   p {
     color: white;
-    
   }
 }
 

@@ -4,11 +4,11 @@
 		<div class="left-icon">
 			<img [src]="data.icon" alt="Icono">
 		</div>
-		<div class="favorite-icon">
+		<div class="favorite-icon" *ngIf="data.highlited">
 			<img src="assets/icons/destacado.png" alt="Favorito">
 		</div>
-		<span class="last-plaza">
-			{{"one_spot_available" | translate}}
+		<span class="last-plaza" *ngIf="data.claim_text">
+			{{data.claim_text | translate}}
 		</span>
 	</div>
 	<div class="card-body">

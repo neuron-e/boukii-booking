@@ -22,7 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
     ]),
   ]
 })
-export class ModalNewUserComponent implements OnInit {
+export class ModalNewUserComponent {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
@@ -34,6 +34,7 @@ export class ModalNewUserComponent implements OnInit {
     { id: 2, lang: "english" },
     { id: 3, lang: "spanish" },
   ]
+
   constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService,
     private snackbar: MatSnackBar, private translateService: TranslateService) {
     this.loginForm = this.fb.group({
@@ -46,24 +47,17 @@ export class ModalNewUserComponent implements OnInit {
       phone: ['', Validators.required],
       language1_id: [1, Validators.required],
       language2_id: [''],
-      language3_id: [''],
+      //language3_id: [''],
     }, {
       validators: this.passwordMatchValidator // Validador personalizado para comprobar la coincidencia de contraseñas
     });
   }
 
-  ngOnInit(): void {
-  }
-
   onSubmit() {
-    if (!this.loginForm || this.loginForm.invalid) {
-      return;
-    }
-
+    if (!this.loginForm || this.loginForm.invalid) return;
     const formData = this.loginForm.value;
-
     this.clientService.createClient(formData).subscribe(
-      (res) => {
+      () => {
         this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
         this.onClose.emit();
       },
@@ -78,11 +72,7 @@ export class ModalNewUserComponent implements OnInit {
   private passwordMatchValidator(control: AbstractControl): { [key: string]: any } | null {
     const password = control.get('password');
     const confirmPassword = control.get('confirmPassword');
-
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
-    }
-
+    if (password && confirmPassword && password.value !== confirmPassword.value) return { passwordMismatch: true };
     return null;
   }
 
@@ -90,6 +80,13 @@ export class ModalNewUserComponent implements OnInit {
     this.onClose.emit();
   }
   displayFn(d: any): string {
-    return d.lang
+    const langs: any[] = [
+      { id: 1, lang: "france" },
+      { id: 2, lang: "english" },
+      { id: 3, lang: "spanish" },
+    ]
+
+    if (d) return langs.find((a: any) => a.id == d).lang
+    return ''
   }
 }

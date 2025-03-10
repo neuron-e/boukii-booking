@@ -16,9 +16,9 @@
 			</div>
 			<div style="position: relative;">
 				<img [src]="course?.image !== null ? course?.image : defaultImage" class="course-image-img"
-					style="border-radius: 10px;">
-				<span class="last-plaza">
-					{{"one_spot_available" | translate}}!
+					style="border-radius: 10px;" >
+				<span class="last-plaza" *ngIf="course.claim_text">
+					{{course.claim_text | translate}}!
 				</span>
 			</div>
 		</div>
@@ -234,7 +234,7 @@
 						<div style="display: flex;gap: 8px;padding: 12px 0;">
 							<app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
 								[selectLevel]="185" [size]="40"
-								[userImage]="userLogged?.clients[0].image || 'assets/avatar.png'"></app-level-user>
+								[userImage]="userLogged?.clients[0].image || 'assets/images/avatar.png'"></app-level-user>
 							<div class="text-color text-small montserrat reservation-user-title">
 								<div style="text-align: -webkit-left;">
 									<span style="font-weight: 600;">
@@ -261,7 +261,7 @@
 						<div style="display: flex;gap: 8px;padding: 12px 0;">
 							<app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
 								[selectLevel]="185" [size]="40"
-								[userImage]="themeService.avatarEmpty || 'assets/avatar.png'"></app-level-user>
+								[userImage]="themeService.avatarEmpty || 'assets/images/avatar.png'"></app-level-user>
 							<div class="text-color text-small montserrat reservation-user-title">
 								<div style="text-align: -webkit-left;">
 									<span style="font-weight: 600;">

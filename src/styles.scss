@@ -128,7 +128,6 @@ $boukii-booking-theme: mat.define-light-theme(
   font-weight: 500;
 }
 
-
 @font-face {
   font-family: "Dinamit";
   src: url("./assets/fonts/Dinamit/Dinamit Light.otf") format("opentype");
@@ -197,7 +196,9 @@ $boukii-booking-theme: mat.define-light-theme(
   font-weight: 900; /* Black */
   src: url("./assets/fonts/DM_Sans/DMSans-Black.ttf") format("opentype");
 }
-
+body {
+  background: #f8f9fb;
+}
 .main-bs {
   background-image: var(--background-image-screen);
   background-size: cover;
@@ -426,7 +427,7 @@ button[disabled] {
   padding: 0;
   box-sizing: border-box;
   outline: 0;
-  font-family: "Dinamit", sans-serif;
+  font-family: "DM Sans";
   font-size: 14px;
   line-height: 1.3;
 }
@@ -434,7 +435,7 @@ button[disabled] {
 body,
 html {
   font-size: 14px;
-  font-family: "Dinamit", sans-serif;
+  font-family: "DM Sans";
 }
 
 @media (max-width: 600px) {
@@ -1413,16 +1414,6 @@ option .form-options {
 /*INPUT CALENDAR LEFT*/
 input[type="date"] {
   position: relative;
-}
-
-/* create a new arrow, because we are going to mess up the native one
-  see "List of symbols" below if you want another, you could also try to add a font-awesome icon.. */
-input[type="date"]:after {
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  content: "\f073";
-  color: #555;
-  padding: 0 5px;
 }
 
 /* change color of symbol on hover */

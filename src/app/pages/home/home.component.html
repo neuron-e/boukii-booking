@@ -1,18 +1,19 @@
-<div style="border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;"
-	*ngIf="settings.bookingPage" [style.backgroundColor]="settings.bookingPage?.messages?.type?'#D2EFFF':'#FFEBEB'">
-	<img [src]="settings.bookingPage?.messages?.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'"
-		class="icon24">
-	<div style="display: flex;flex-direction: column;justify-content: space-between;">
-		<span style="
-     font-weight: 600;
-     line-height: 23px;">
-			{{settings.bookingPage?.messages?.title}}
-		</span>
-		<span>
-			{{settings.bookingPage?.messages?.desc}}
-		</span>
+<div *ngIf="settings" style="display: flex; gap: 8px;flex-direction: column;">
+	<div style="border-radius: 8px;width: 100%;padding: 10px 20px; display: flex; gap: 8px;min-height: 65px;"
+		*ngFor="let messages of settings?.bookingPage?.messages"
+		[style.backgroundColor]="messages.type?'#D2EFFF':'#FFEBEB'">
+		<img [src]="messages.type?'assets/icons/info_message1.png':'assets/icons/info_message2.png'" class="icon24">
+		<div style="display: flex;flex-direction: column;justify-content: space-between;">
+			<span style="font-weight: 600;line-height: 23px;">
+				{{messages.title}}
+			</span>
+			<span>
+				{{messages.desc}}
+			</span>
+		</div>
 	</div>
 </div>
+
 <div style="margin-top: 45px;">
 	<p style="color: var(--Dark-01, #222);
   font-family: Dinamit;
@@ -106,22 +107,21 @@
 	<div class="Section">
 		<a [href]="settings.bookingPage?.banner?.link" target="_blank">
 			<img [src]="settings.bookingPage?.banner?.desktopImg||'assets/images/banner.png'" alt class="desktop"
-				style="width: 100%; aspect-ratio: 6 / 1;object-fit: contain;">
+				style="width: 100%; aspect-ratio: 6 / 1;object-fit: contain; border-radius: 10px">
 			<img [src]="settings.bookingPage?.banner?.mobileImg||'assets/images/banner.png'" alt class="mobile"
-				style="width: 100%; aspect-ratio: 3 / 1;object-fit: contain;">
+				style="width: 100%; aspect-ratio: 2 / 1;object-fit: contain; border-radius: 10px">
 		</a>
 	</div>
 	<div class="Section">
 		<span class="titleSection">
 			{{"upcoming_courses" | translate}}
 		</span>
-		<div class="card-container" *ngIf="typeProximosCourse.length<=2">
+		<div class="card-container" *ngIf="typeProximosCourse.length<=2 && ProximosCourse">
 			<ng-container *ngFor="let item of ProximosCourse; index as i">
 				<app-home-course-card [data]="item" (click)="router.navigate([schoolData.slug+'/course/'+item.id])"
 					*ngIf="i<moreProximosCourse && (selectedTypeProximosCourse===typeProximosCourse[0] || item.sport.name === selectedTypeProximosCourse)">
 				</app-home-course-card>
 			</ng-container>
-
 			<span *ngIf="ProximosCourse.length===0">
 				{{"no_course_available" | translate}}
 			</span>
@@ -133,7 +133,6 @@
 				</button>
 			</div>
 		</div>
-
 		<mat-tab-group style="width: 100%;" *ngIf="typeProximosCourse.length>2"
 			(selectedIndexChange)="selectedTypeProximosCourse=typeProximosCourse[$event]">
 			<mat-tab *ngFor="let type of typeProximosCourse; index as i">
@@ -151,7 +150,6 @@
 							*ngIf="i<moreProximosCourse && (selectedTypeProximosCourse===typeProximosCourse[0] || item.sport.name === selectedTypeProximosCourse)">
 						</app-home-course-card>
 					</ng-container>
-
 					<span *ngIf="ProximosCourse.length===0">
 						{{"no_course_available" | translate}}
 					</span>
@@ -173,12 +171,11 @@
 	<span class="titleSection">
 		{{"sponsors" | translate}}
 	</span>
-	<div style="display: flex;justify-content: center;
-    gap: 30px;">
+	<div style="display: flex;justify-content: space-evenly;gap: 10px 1%; flex-wrap: wrap;">
 		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings?.bookingPage?.sponsors"
 			style="width: fit-content;">
 			<img [src]="sponsor.img||'assets/images/banner.png'"
-				style="height: 76px; aspect-ratio: 1.7 / 1;object-fit: contain;">
+				style="height: 100px; width: 100px; aspect-ratio: 1 / 1;object-fit: contain; border-radius: 10px;">
 		</a>
 	</div>
 </div>

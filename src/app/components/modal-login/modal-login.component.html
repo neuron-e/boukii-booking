@@ -8,11 +8,11 @@
       <div class="modal-form">
         <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
           <mat-label>{{'text_email' | translate}}</mat-label>
-          <input matInput type="email" formControlName="email" required>
+          <input matInput type="email" formControlName="email" required autocomplete="username">
         </mat-form-field>
         <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
           <mat-label>{{'text_password' | translate}}</mat-label>
-          <input matInput type="password" formControlName="password" required>
+          <input matInput type="password" formControlName="password" required autocomplete="current-password">
         </mat-form-field>
         <div (click)="isForgotPass=true" style="color: var(--Primary, #E91E63);          
             font-style: normal;           
