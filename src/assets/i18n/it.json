@@ -715,5 +715,16 @@
   "confirm_and_go_to_cart": "Conferma e vai al carrello",
   "add_to_cart_and_make_another_reservation": "Aggiungi al carrello e fai un'altra prenotazione",
   "no_account": "Non hai un account?",
-  "sign_up": "Registrati"
+  "sign_up": "Registrati",
+  "link_to_logo_url": "Collegamento all'URL del logo",
+  "add_sponsor": "Aggiungi sponsor",
+  "or_add_a_link": "O aggiungere un link",
+  "date_cannot_be_after_today": "La data non può essere successiva a oggi",
+  "indicator": "Indicatore",
+  "group_by": "Raggruppa per",
+  "log_in": "Accedi",
+  "already_have_an_account": "Hai già un account",
+  "account_must_be_created_by_admin": "L'account deve essere creato dall'amministratore dell'account. Se desideri prenotare corsi per minori, potrai aggiungere uno o più utenti una volta registrato.",
+  "book_dates_and_get_discount": "Prenota le date e ottieni lo sconto!",
+  "book": "Prenota"
 }

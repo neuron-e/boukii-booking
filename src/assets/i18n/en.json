@@ -714,5 +714,16 @@
   "confirm_and_go_to_cart": "Confirm and go to cart",
   "add_to_cart_and_make_another_reservation": "Add to cart and make another reservation",
   "no_account": "Don't have an account?",
-  "sign_up": "Sign up"
+  "sign_up": "Sign up",
+  "link_to_logo_url": "Link to logo URL",
+  "add_sponsor": "Add sponsor",
+  "or_add_a_link": "Or add a link",
+  "date_cannot_be_after_today": "Date cannot be after today",
+  "indicator": "Indicator",
+  "group_by": "Group by",
+  "log_in": "Log in",
+  "already_have_an_account": "Already have an account",
+  "account_must_be_created_by_admin": "The account must be created by the account administrator. If you want to book courses for minors, you can add one or more users once registered.",
+  "book_dates_and_get_discount": "Book dates and get the discount!",
+  "book": "Book"
 }

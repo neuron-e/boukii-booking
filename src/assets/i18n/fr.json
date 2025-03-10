@@ -715,5 +715,16 @@
   "confirm_and_go_to_cart": "Confirmer et aller au panier",
   "add_to_cart_and_make_another_reservation": "Ajouter au panier et faire une autre réservation",
   "no_account": "Vous n'avez pas de compte ?",
-  "sign_up": "Inscrivez-vous"
+  "sign_up": "Inscrivez-vous",
+  "link_to_logo_url": "Lien vers l'URL du logo",
+  "add_sponsor": "Ajouter un sponsor",
+  "or_add_a_link": "Ou ajouter un lien",
+  "date_cannot_be_after_today": "La date ne peut pas être postérieure à aujourd'hui",
+  "indicator": "Indicateur",
+  "group_by": "Regrouper par",
+  "log_in": "Se connecter",
+  "already_have_an_account": "Vous avez déjà un compte",
+  "account_must_be_created_by_admin": "Le compte doit être créé par l'administrateur du compte. Si vous souhaitez réserver des cours pour des mineurs, vous pourrez ajouter un ou plusieurs utilisateurs une fois inscrit.",
+  "book_dates_and_get_discount": "Réservez des dates et obtenez la réduction!",
+  "book": "Réserver"
 }

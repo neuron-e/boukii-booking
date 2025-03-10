@@ -103,6 +103,7 @@ export class CourseComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.discounts = [{ day: 1, reduccion: 10 }, { day: 1, reduccion: 10 }, { day: 1, reduccion: 10 }]//JSON.parse(this.course.discounts);
       this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
@@ -196,7 +197,6 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
-    console.log(2)
     let bookingUsers: any = [];
     if (this.course.course_type == 2) {
       if (this.course.is_flexible) {
@@ -507,13 +507,9 @@ export class CourseComponent implements OnInit {
 
   transformAge(birthDate: string) {
     let fechaNacimientoDate: Date;
-
-    // Verificar el formato de la fecha y ajustar en consecuencia
     if (/\d{4}-\d{2}-\d{2}/.test(birthDate)) {
-      // Si el formato es "2022-01-18"
       fechaNacimientoDate = new Date(birthDate);
     } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z/.test(birthDate)) {
-      // Si el formato es "2024-01-17T00:00:00.000000Z"
       const parts = birthDate.split('T')[0].split('-');
       fechaNacimientoDate = new Date(
         parseInt(parts[0], 10),
@@ -521,9 +517,8 @@ export class CourseComponent implements OnInit {
         parseInt(parts[2], 10)
       );
     } else {
-      // Formato no reconocido, manejarlo según tus requisitos
       console.error('Formato de fecha de nacimiento no válido');
-      return 0; // Retorna 0 en caso de un formato no válido
+      return 0;
     }
 
     const fechaActual = new Date();
@@ -548,14 +543,14 @@ export class CourseComponent implements OnInit {
     }
     this.updateCollectivePrice();
   }
+
+  discounts: any[] = []
   updateCollectivePrice() {
     let collectivePrice = this.course.price;
     if (this.course.discounts) {
-      let discounts = JSON.parse(this.course.discounts);
-      discounts.forEach((discount: any) => {
-        // Verificar si el date coincide con la longitud de las fechas seleccionadas
+      this.discounts = JSON.parse(this.course.discounts);
+      this.discounts.forEach((discount: any) => {
         if (this.selectedDates.length === discount.date) {
-          // Aplicar descuento al precio colectivo
           var discountApplied = collectivePrice * (discount.percentage / 100);
           collectivePrice = collectivePrice - discountApplied;
         }

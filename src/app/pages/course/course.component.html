@@ -16,7 +16,7 @@
 			</div>
 			<div style="position: relative;">
 				<img [src]="course?.image !== null ? course?.image : defaultImage" class="course-image-img"
-					style="border-radius: 10px;" >
+					style="border-radius: 10px;">
 				<span class="last-plaza" *ngIf="course.claim_text">
 					{{course.claim_text | translate}}!
 				</span>
@@ -34,11 +34,14 @@
 						{{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
 					</span>
 				</div>
-				<div style="display: flex;align-items: center;">
-					<img src="assets/icons/start_empty.png" alt class="icon24">
-					<span style="color: #E91E63;word-wrap: break-word">
-						{{"book_two_dates_discount" | translate}}!
-					</span>
+				<div>
+					<div style="display: flex;align-items: center;" *ngFor="let discount of discounts">
+						<img src="assets/icons/start_empty.png" alt class="icon24">
+						<span style="color: #E91E63;word-wrap: break-word">
+							{{"book"|translate}} {{discount.day}} {{'dates_and_get'|translate}} {{discount.reduccion}}
+							{{'discount'|translate}}!
+						</span>
+					</div>
 				</div>
 			</div>
 			<div style="gap: 8px;align-items: center;">
