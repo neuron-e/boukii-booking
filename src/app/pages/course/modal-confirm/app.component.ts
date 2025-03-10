@@ -17,7 +17,6 @@ export class CourseModalConfirmComponent {
 
   @Output() onClose = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
-  @Output() goCart = new EventEmitter<void>();
   constructor(public themeService: ThemeService, public translateService: TranslateService, public courseC: CourseComponent,) { }
   closeModal() {
     this.onClose.emit();

@@ -364,25 +364,22 @@
 				</div>
 				<div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2" style="padding: 20px;">
 					<div>
-						{{"Selecciona las fechas que quieres reservar." | translate}}
+						{{"select_dates_to_book" | translate}}
 					</div>
-					<div style="display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;;">
-						<mat-checkbox *ngFor="let date of getDaysBetweenDates(course.date_start,course.date_end)"
-							(click)="flexDateGet(date)" style="font-weight: 600;">
-							{{date | date: 'dd.MM.yyyy'}}
-						</mat-checkbox>
+					<div style="display: flex;flex-wrap: wrap;justify-content: space-between;;">
+						<ng-container *ngFor="let date of course.course_dates">
+							<mat-checkbox (change)="selectDate(date.date)" *ngIf="Date(date.date)>=today"
+								style="font-weight: 600;">
+								{{date.date | date: 'dd.MM.yyyy'}}
+							</mat-checkbox>
+						</ng-container>
 					</div>
 				</div>
 				<div *ngIf="course?.course_type==2 && courseFlux===2" style="padding: 20px;">
-
 					<ng-container *ngIf="selectedUserMultiple && selectedUserMultiple.length">
 						<div class="text-color montserrat mt-12 margin-auto">
 							{{'text_select_date_disponibility' | translate }}
 						</div>
-
-						<!-- Calendar Private -->
 						<div class="calendar-reservation-section">
 							<div class="calendar">
 								<div class="header-calendar">
@@ -391,19 +388,15 @@
 										<img [src]="themeService.arrowRight" (click)="nextMonth()">
 									</div>
 									<div class="text-color text-semibig fw-medium">
-										{{
-										monthNames[currentMonth] }}
+										{{monthNames[currentMonth] }}
 									</div>
 									<div class="text-color text-semibig fw-medium">
-										{{
-										currentYear
-										}}
+										{{currentYear}}
 									</div>
 								</div>
 								<div class="weekdays">
 									<span *ngFor="let day of weekdays" class="montserrat text-small text-color-light">
-										{{ day
-										}}
+										{{ day }}
 									</span>
 								</div>
 								<div class="days">
@@ -436,9 +429,9 @@
 				</div>
 				<div *ngIf="courseFlux===3" style="display: flex;padding: 20px;flex-direction: column;">
 					<div> {{"add_extras_or_notes" |translate}} </div>
-					<div *ngFor="let date of course.is_flexible&&course?.course_type===1?flexDateGroup:[selectedDateReservation]"
+					<div *ngFor="let date of course.is_flexible&&course?.course_type===1?selectedDates:[selectedDateReservation.date]"
 						style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
-						{{course.is_flexible?date:''}}
+						{{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
 						<mat-checkbox *ngFor="let extra of settingsExtras"
 							style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px"
 							(click)="toggleForfaitSelection(extra)">
@@ -450,7 +443,7 @@
 									<span class="extra_name">{{extra.name}}</span>
 								</div>
 								<span style="width: 125px;padding: 10px;">
-									{{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}}
+									{{extra.price|number:'0.2-2'}}{{course?.currency}}/{{'date' | translate}}
 								</span>
 							</div>
 						</mat-checkbox>
@@ -473,12 +466,11 @@
 					</div>
 					<div *ngIf="!course.is_flexible" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{course?.price|number:'0.2-2'}}</span>
-						{{ course?.currency }}
+						{{course.currency}}/{{'mails.course'|translate}}
 					</div>
 					<div *ngIf="course.is_flexible" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
-						{{ course?.currency }} /{{'date' |
-						translate }}
+						{{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
 					</div>
 				</div>
 				<div style="padding: 20px;">
@@ -509,6 +501,6 @@
 
 <app-course-modal-confirm *ngIf="confirmModal" [course]="course"
 	[selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple" [selectedForfait]="selectedForfait"
-	[collectivePrice]="collectivePrice" (onClose)="confirmModal=false" (goCart)="goTo('/'+schoolData.slug+'/cart/')"
+	[collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
 	(next)="addBookingToCart()">
 </app-course-modal-confirm>

@@ -103,7 +103,7 @@ export class CourseComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
-      this.discounts = [{ day: 1, reduccion: 10 }, { day: 1, reduccion: 10 }, { day: 1, reduccion: 10 }]//JSON.parse(this.course.discounts);
+      this.discounts = JSON.parse(this.course.discounts);
       this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
@@ -383,7 +383,10 @@ export class CourseComponent implements OnInit {
           }
         }
         this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-      })
+      },
+      () =>
+        this.goTo('/' + this.schoolData.slug + '/cart/')
+    )
   }
 
   calculateEndTime(startTime: string, duration: string): string {
@@ -546,7 +549,7 @@ export class CourseComponent implements OnInit {
 
   discounts: any[] = []
   updateCollectivePrice() {
-    let collectivePrice = this.course.price;
+    let collectivePrice = this.course.price * this.selectedDates.length;;
     if (this.course.discounts) {
       this.discounts = JSON.parse(this.course.discounts);
       this.discounts.forEach((discount: any) => {
@@ -555,7 +558,6 @@ export class CourseComponent implements OnInit {
           collectivePrice = collectivePrice - discountApplied;
         }
       });
-
     }
     this.collectivePrice = collectivePrice;
   }
@@ -863,16 +865,6 @@ export class CourseComponent implements OnInit {
     }
 
     return dates;
-  }
-
-  flexDateGroup: string[]
-  flexDateGet(str: string) {
-    this.flexDateGroup = this.flexDateGroup || [];
-    const index = this.flexDateGroup.indexOf(str);
-    if (index !== -1)
-      this.flexDateGroup.splice(index, 1);
-    else this.flexDateGroup.push(str);
-
   }
 
   getLanguages = () => this.crudService.list('/languages', 1, 1000).subscribe((data) => this.languages = data.data.reverse())

@@ -129,15 +129,16 @@
                 {{'text_price' | translate }}
             </div>
             <div class="blackL" *ngIf="!course?.is_flexible">
-                {{course?.price|number:'0.2-2'}}{{ course?.currency }}
+                {{course?.price|number:'0.2-2'}}
+                {{course.currency}}/{{'mails.course'|translate}}
             </div>
             <div class="blackL" *ngIf="course?.is_flexible">
-                {{collectivePrice|number:'0.2-2'}} {{ course?.currency }} /{{'date' | translate
-                }}
+                {{collectivePrice|number:'0.2-2'}}
+                {{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
             </div>
         </div>
         <div style="padding: 20px; display: flex; gap: 16px;flex-direction: column;">
-            <button (click)="next.emit();onClose.emit();goCart.emit()" style="
+            <button (click)="next.emit();onClose.emit()" style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;
               height: 54px;padding: 10px 12px;
