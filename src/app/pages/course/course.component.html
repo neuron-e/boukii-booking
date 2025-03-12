@@ -368,8 +368,8 @@
 					</div>
 					<div style="display: flex;flex-wrap: wrap;justify-content: space-between;;">
 						<ng-container *ngFor="let date of course.course_dates">
-							<mat-checkbox (change)="selectDate(date.date)" *ngIf="Date(date.date)>=today"
-								style="font-weight: 600;">
+							<mat-checkbox (change)="selectDate($event.checked,date.date)" *ngIf="Date(date.date)>=today"
+								[checked]="selectedDates.includes(date.date)" style="font-weight: 600;">
 								{{date.date | date: 'dd.MM.yyyy'}}
 							</mat-checkbox>
 						</ng-container>
@@ -417,13 +417,13 @@
 							</div>
 						</div>
 						<div style="display: flex;flex-wrap: wrap;gap: 16px; margin-top: 20px;">
-							<app-form-select style="width: calc(50% - 8px);" [value]="getAvailableHours()[0]"
-								label="hour" [table]="getAvailableHours()"
-								(do)="selectedHour=$event.option.value"></app-form-select>
-							<app-form-select style="width: calc(50% - 8px);"
-								[value]="getAvailableDurations(selectedHour)[0]"
+							<app-form-select style="width: calc(50% - 8px);" [value]="selectedHour" label="hour"
+								[table]="getAvailableHours()"
+								(do)="selectedHour=$event.option.value;updatePrice()"></app-form-select>
+							<app-form-select style="width: calc(50% - 8px);" [value]="selectedDuration"
 								[table]="getAvailableDurations(selectedHour)" label="duration"
-								(do)="selectedDuration=$event.option.value"></app-form-select>
+								(do)="selectedDuration=$event.option.value;updatePrice()"
+								suffix=" min"></app-form-select>
 						</div>
 					</ng-container>
 				</div>
@@ -464,13 +464,13 @@
 					<div class="text-medium text-color uppercase">
 						{{'text_price' | translate }}
 					</div>
-					<div *ngIf="!course.is_flexible" class="text-medium text-color">
+					<div *ngIf="!course.is_flexible || course.course_type===2" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{course?.price|number:'0.2-2'}}</span>
-						{{course.currency}}/{{'mails.course'|translate}}
+						{{course.currency}}
 					</div>
-					<div *ngIf="course.is_flexible" class="text-medium text-color">
+					<div *ngIf="course.is_flexible && course.course_type!==2" class="text-medium text-color">
 						<span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
-						{{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
+						{{course.currency}}
 					</div>
 				</div>
 				<div style="padding: 20px;">
@@ -501,6 +501,5 @@
 
 <app-course-modal-confirm *ngIf="confirmModal" [course]="course"
 	[selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple" [selectedForfait]="selectedForfait"
-	[collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
-	(next)="addBookingToCart()">
+	[collectivePrice]="collectivePrice" (onClose)="confirmModal=false" (next)="addBookingToCart()">
 </app-course-modal-confirm>

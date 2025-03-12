@@ -8,7 +8,7 @@ import { FormGroup, Validators } from '@angular/forms';
 })
 export class ComponenteSelectComponent implements OnInit {
   @Input() control!: string
-  @Input() value!: string
+  @Input() value!: string | number
   @Input() label!: string
   @Input() type: "number" | "text" | "tel" | "email" = "text"
   @Input() form!: FormGroup
@@ -18,16 +18,15 @@ export class ComponenteSelectComponent implements OnInit {
   @Input() id!: string
   @Input() name!: string
   @Input() name2!: string
+  @Input() suffix: string = ""
 
 
   @Output() do = new EventEmitter()
 
   ngOnInit(): void {
-    if (this.form && this.control) {
-      this.required = this.form.get(this.control)?.hasValidator(Validators.required) || false
-    }
+    if (this.form && this.control) this.required = this.form.get(this.control)?.hasValidator(Validators.required) || false
   }
-  
-  displayFn = (value: any): string => this.id && this.name && this.name2 ? this.table.find((a: any) => a[this.id] === value)[this.name] + " " + this.table.find((a: any) => a[this.id] === value)[this.name2] : this.id && this.name ? this.table.find((a: any) => a[this.id] === value)[this.name] : value
+
+  displayFn = (value: any): string => this.id && this.name && this.name2 ? this.table.find((a: any) => a[this.id] === value)[this.name] + " " + this.table.find((a: any) => a[this.id] === value)[this.name2] + this.suffix : this.id && this.name ? this.table.find((a: any) => a[this.id] === value)[this.name] + this.suffix : value + this.suffix
 
 }

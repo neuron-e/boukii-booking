@@ -727,5 +727,6 @@
   "already_have_an_account": "Sie haben bereits ein Konto",
   "account_must_be_created_by_admin": "Das Konto muss vom Kontoadministrator erstellt werden. Wenn Sie Kurse für Minderjährige buchen möchten, können Sie nach der Registrierung einen oder mehrere Benutzer hinzufügen.",
   "book_dates_and_get_discount": "Buchen Sie Termine und erhalten Sie den Rabatt!",
-  "book": "Buchen"
+  "book": "Buchen",
+  "select_dates_to_book": "Wählen Sie die Termine aus, die Sie buchen möchten"
 }

@@ -726,5 +726,6 @@
   "already_have_an_account": "Ya tienes una cuenta",
   "account_must_be_created_by_admin": "La cuenta tiene que ser creada por el administrador de la cuenta. Si desea reservar cursos para menores, podrás añadir uno o más usuarios una vez registrado.",
   "book_dates_and_get_discount": "Reserva fechas y obtén el descuento!",
-  "book": "Reserva"
+  "book": "Reserva",
+  "select_dates_to_book": "Selecciona las fechas que quieres reservar"
 }

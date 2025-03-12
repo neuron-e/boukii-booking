@@ -560,7 +560,7 @@ export class CartComponent implements OnInit {
   }
 
   getTotalBasePrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.course.price), 0);
   }
 
   getTotalItemPrice(details: any[]): number {
@@ -584,21 +584,14 @@ export class CartComponent implements OnInit {
   getBasePrice() {
     let total = 0;
     this.cart?.forEach(cartItem => {
-
       if (cartItem.details[0].course.course_type == 1) {
         if (!cartItem.details[0].course.is_flexible) {
           total += parseFloat(cartItem.details[0].course.price);
         } else {
-          //TODO: Revisar con flexible
           total += this.getTotalBasePrice(cartItem.details);
         }
       } else {
-        if (cartItem.details[0].course.is_flexible) {
-          total += this.getTotalBasePrice(cartItem.details);
-        } else {
-          //TODO: Revisar sin flexible
-          total += this.getTotalBasePrice(cartItem.details);
-        }
+        total += this.getTotalBasePrice(cartItem.details);
       }
     });
     return total;

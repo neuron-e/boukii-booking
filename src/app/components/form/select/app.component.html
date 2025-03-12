@@ -6,7 +6,7 @@
 		[formControlName]="control" [required]="required" placeholder="{{label | translate}}" matInput>
 	<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="do.emit($event)">
 		<mat-option *ngFor="let item of table" [value]="id?item[id]:item">
-			{{name?item[name]:item}} {{name2?item[name2]:null}}
+			{{name?item[name]:item}} {{name2?item[name2]:null}}{{suffix}}
 		</mat-option>
 	</mat-autocomplete>
 </mat-form-field>
@@ -18,7 +18,7 @@
 		placeholder="{{label | translate}}" matInput>
 	<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="do.emit($event)">
 		<mat-option *ngFor="let item of table" [value]="id?item[id]:item">
-			{{name?item[name]:item}} {{name2?item[name2]:null}}
+			{{name?item[name]:item}} {{name2?item[name2]:null}}{{suffix}}
 		</mat-option>
 	</mat-autocomplete>
 </mat-form-field>

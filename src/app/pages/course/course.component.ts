@@ -58,9 +58,8 @@ export class CourseComponent implements OnInit {
   isModalAddUser: boolean = false;
 
   selectedHour: string = '';
-  selectedPaxes: any = 1;
-  selectedDuration: any;
-  availableDurations: any[] = [];
+  selectedDuration: number = 0;
+  availableDurations: number[] = [];
   availableHours: any[] = [];
 
   schoolData: any;
@@ -293,54 +292,51 @@ export class CourseComponent implements OnInit {
         })
       }
     }
-    this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
-      let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-      let cart: any = {};
-      if (cartStorage) cart = JSON.parse(cartStorage);
-      if (!cart[this.course.id]) cart[this.course.id] = {};
-      if (this.course.course_type === 2) {
-        const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
-        const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-          const idArray = id.split('-');
-          return idArray.some(singleId => {
-            const keys = Object.keys(cart[this.course.id]);
-            return keys.some(key => {
-              const userCourseIds = key.split('-');
-              const hasUserOverlap = userCourseIds.includes(singleId);
-              if (hasUserOverlap) {
-                let course_date = this.findMatchingCourseDate();
-                const userBookings = cart[this.course.id][key];
-                return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-              } return false;
-            });
-          });
-        });
-        if (!isAnyUserReserved) {
-          if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
-          cart[this.course.id][selectedUserIds].push(...bookingUsers);
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-        } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-      } else {
-        if (!cart[this.course.id][this.selectedUser.id]) {
-          cart[this.course.id][this.selectedUser.id] = [];
-          cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-          localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-          this.cartService.carData.next(cart);
-          this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-        } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-      }
-    },
-      error => {
+    this.bookingService.checkOverlap(bookingUsers).subscribe(
+      () => {
         let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
         let cart: any = {};
-        if (cartStorage) {
-          cart = JSON.parse(cartStorage);
+        if (cartStorage) cart = JSON.parse(cartStorage);
+        if (!cart[this.course.id]) cart[this.course.id] = {};
+        if (this.course.course_type === 2) {
+          const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
+          const isAnyUserReserved = selectedUserIds.split('-').some(id => {
+            const idArray = id.split('-');
+            return idArray.some(singleId => {
+              const keys = Object.keys(cart[this.course.id]);
+              return keys.some(key => {
+                const userCourseIds = key.split('-');
+                const hasUserOverlap = userCourseIds.includes(singleId);
+                if (hasUserOverlap) {
+                  let course_date = this.findMatchingCourseDate();
+                  const userBookings = cart[this.course.id][key];
+                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
+                } return false;
+              });
+            });
+          });
+          if (!isAnyUserReserved) {
+            if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
+            cart[this.course.id][selectedUserIds].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+        } else {
+          if (!cart[this.course.id][this.selectedUser.id]) {
+            cart[this.course.id][this.selectedUser.id] = [];
+            cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
         }
-        if (!cart[this.course.id]) {
-          cart[this.course.id] = {};
-        }
+      },
+      (error) => {
+        let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+        let cart: any = {};
+        if (cartStorage) cart = JSON.parse(cartStorage);
+        if (!cart[this.course.id]) cart[this.course.id] = {};
         if (this.course.course_type === 2) {
           const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
           const isAnyUserReserved = selectedUserIds.split('-').some(id => {
@@ -361,9 +357,7 @@ export class CourseComponent implements OnInit {
           });
 
           if (!isAnyUserReserved) {
-            if (!cart[this.course.id][selectedUserIds]) {
-              cart[this.course.id][selectedUserIds] = [];
-            }
+            if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
             cart[this.course.id][selectedUserIds].push(...bookingUsers);
             localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
             this.cartService.carData.next(cart);
@@ -384,27 +378,18 @@ export class CourseComponent implements OnInit {
         }
         this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
       },
-      () =>
+      () => {
         this.goTo('/' + this.schoolData.slug + '/cart/')
+      }
     )
   }
 
-  calculateEndTime(startTime: string, duration: string): string {
-    let durationHours = 0;
-    let durationMinutes = 0;
-    if (duration.includes(":")) [durationHours, durationMinutes] = duration.split(':').map(Number);
-    else {
-      const hoursMatch = duration.match(/(\d+)h/);
-      const minutesMatch = duration.match(/(\d+)min/);
-      if (hoursMatch) durationHours = parseInt(hoursMatch[1]);
-      if (minutesMatch) durationMinutes = parseInt(minutesMatch[1]);
-    }
-
+  calculateEndTime(startTime: string, durationMinutes: number): string {
     // Convertir la hora de inicio y la duración a minutos
     const [startHours, startMinutes] = startTime.split(':').map(Number);
 
     const startTotalMinutes = startHours * 60 + startMinutes;
-    const durationTotalMinutes = durationHours * 60 + durationMinutes;
+    const durationTotalMinutes = durationMinutes;
 
     // Calcular la hora de fin en minutos
     const endTotalMinutes = startTotalMinutes + durationTotalMinutes;
@@ -523,13 +508,8 @@ export class CourseComponent implements OnInit {
       console.error('Formato de fecha de nacimiento no válido');
       return 0;
     }
-
     const fechaActual = new Date();
-
-    // Calcula la diferencia en milisegundos entre las dos fechas
     const diferencia = fechaActual.getTime() - fechaNacimientoDate.getTime();
-
-    // Convierte la diferencia en milisegundos a años
     return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 365.25));
   }
 
@@ -537,13 +517,10 @@ export class CourseComponent implements OnInit {
     return userAge >= minAge && userAge <= maxAge;
   }
 
-  selectDate(date: any) {
+  selectDate(checked: boolean, date: any) {
     const index = this.selectedDates.findIndex((d: any) => d === date);
-    if (index === -1) {
-      this.selectedDates.push(date);
-    } else {
-      this.selectedDates.splice(index, 1);
-    }
+    if (index === -1 && checked) this.selectedDates.push(date);
+    else if (!checked) this.selectedDates.splice(index, 1);
     this.updateCollectivePrice();
   }
 
@@ -588,17 +565,13 @@ export class CourseComponent implements OnInit {
     }).sort((a: number, b: number) => a - b);
   }
 
-  convertToHoursAndMinutes(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-  }
+
 
   getAvailableDurations(selectedHour: string): any[] {
-    //const endTime = parseInt(this.course.hour_max);
-    //const startTime = parseInt(selectedHour.split(':')[0]);
+    const endTime = parseInt(this.course.hour_max);
+    const startTime = parseInt(selectedHour.split(':')[0]);
     let durations = this.filteredPriceRange();
-    this.selectedDuration = this.convertToHoursAndMinutes(durations[0]);
+    this.selectedDuration = durations[0];
     return durations;
   }
 
@@ -662,43 +635,29 @@ export class CourseComponent implements OnInit {
 
     this.availableDurations = this.filteredPriceRange()
       .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
-    const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration);
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range: any) => range === selectedDurationMinutes); // Cambiar esta línea
+      .some((range: any) => range === this.selectedDuration); // Cambiar esta línea
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0]);
+      this.selectedDuration = this.availableDurations[0];
     }
     this.updatePrice();
   }
 
   updatePrice(): void {
-    const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration); // Convertir duración a minutos
-    //const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
     const selectedPax = this.selectedUserMultiple.length;
     const matchingTimeRange = this.course.price_range.find((range: any) => {
       const parts = range.intervalo.split(' ');
       let rangeMinutes = 0;
       for (const part of parts) {
-        if (part.endsWith('h')) {
-          rangeMinutes += parseInt(part) * 60;
-        } else if (part.endsWith('m')) {
-          rangeMinutes += parseInt(part);
-        }
+        if (part.endsWith('h')) rangeMinutes += parseInt(part) * 60;
+        else if (part.endsWith('m')) rangeMinutes += parseInt(part);
       }
-      return rangeMinutes === selectedDurationInMinutes;
+      return rangeMinutes === this.selectedDuration;
     });
-    if (matchingTimeRange && matchingTimeRange[selectedPax]) {
-      this.course.price = matchingTimeRange[selectedPax];
-    } else {
-      this.course.price = 0; // O cualquier valor predeterminado que desees
-    }
+    if (matchingTimeRange && matchingTimeRange[selectedPax]) this.course.price = matchingTimeRange[selectedPax];
+    else this.course.price = 0;
   }
 
-
-  convertHourToMinutes(hourString: string): number {
-    const [hours, minutes] = hourString.split(':').map(Number);
-    return hours * 60 + minutes;
-  }
 
   calculateAvailableLevels(user: any) {
     const userAge = this.transformAge(user.birth_date);
@@ -904,5 +863,6 @@ export class CourseComponent implements OnInit {
       this.selectedForfait.push(extra); // Añade si no está seleccionado
     }
   }
+  find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 
 }

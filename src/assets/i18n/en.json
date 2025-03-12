@@ -725,5 +725,6 @@
   "already_have_an_account": "Already have an account",
   "account_must_be_created_by_admin": "The account must be created by the account administrator. If you want to book courses for minors, you can add one or more users once registered.",
   "book_dates_and_get_discount": "Book dates and get the discount!",
-  "book": "Book"
+  "book": "Book",
+  "select_dates_to_book": "Select the dates you want to book"
 }
