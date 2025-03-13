@@ -72,6 +72,9 @@ export class CoursesService extends ApiService {
     if (params.max_age) {
       httpParams = httpParams.append('max_age', params.max_age);
     }
+    if (params.highlighted) {
+      httpParams = httpParams.append('highlighted', params.highlighted);
+    }
     return this.http.get<ApiResponse>(url, { headers: this.getHeaders(), params: httpParams });
 
   }

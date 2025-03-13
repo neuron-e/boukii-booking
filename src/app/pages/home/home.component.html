@@ -39,7 +39,7 @@
 		</option>
 	</select>
 	<select [style.color]="FormGroup.controls['course_type'].value?'#222222':'#8B9099'" formControlName="course_type">
-		<option selected value>
+		<option selected [value]="null">
 			{{"table.filter.course" | translate}}
 		</option>
 		<option [value]="1">

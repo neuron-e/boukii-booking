@@ -89,7 +89,9 @@ export class HomeComponent implements OnInit {
           this.schoolData = data.data;
           this.settings = JSON.parse(data.data.settings)
           this.FormGroup.patchValue({
-            course_type: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType') ?? '1'),
+            course_type: localStorage.getItem(this.schoolData.slug + '-selectedCourseType')
+              ? parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType')!)
+              : null,
             edat: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedAgeType') ?? '1'),
             nivel: parseInt(localStorage.getItem(this.schoolData.slug + '-selectedDegreeType') ?? '1')
           })
@@ -131,7 +133,8 @@ export class HomeComponent implements OnInit {
       degree_order: this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
       sport_id: this.FormGroup.controls['deporte'].value,
       max_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
-      min_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age
+      min_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age,
+      highlighted: 1
     }).subscribe(res => { this.DestacadoCourse = res.data; });
 
     const tomorrow = new Date();
