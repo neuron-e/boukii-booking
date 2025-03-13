@@ -282,7 +282,7 @@
 						</div>
 					</mat-checkbox>
 
-					<button (click)="openModalAddUser()"
+					<button (click)="isModalAddUser=true"
 						style="height: 40px;padding: 10px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
 						{{'text_add' | translate }} {{'text_user' | translate }}
 					</button>
@@ -476,9 +476,7 @@
 				<div style="padding: 20px;">
 					<button
 						[disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1 || course.course_type===2&&courseFlux===2&&!selectedDateReservation"
-						(click)="next()" style="
-              background-color: rgba(233, 30, 99, 1);
-              width: 100%;border-radius: 3px;
+						(click)="next()" style="background-color: rgba(233, 30, 99, 1);width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
               color: white;
               font-weight: 600;" type="button">
@@ -491,13 +489,12 @@
           {{'text_delete_return_courses' | translate }}
         </div> -->
 			</div>
-			<!-- /USER LOGGED -->
 		</div>
 	</div>
 </div>
 
-<app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser"
-	(onClose)="closeModalAddUser()"></app-modal-add-user>
+<app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser" (onClose)="isModalAddUser=false">
+</app-modal-add-user>
 
 <app-course-modal-confirm *ngIf="confirmModal" [course]="course"
 	[selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple" [selectedForfait]="selectedForfait"

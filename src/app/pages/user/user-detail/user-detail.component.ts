@@ -14,9 +14,9 @@ import { ApiCrudService } from 'src/app/services/crud.service';
 import { PasswordService } from 'src/app/services/password.service';
 import { MOCK_PROVINCES } from 'src/app/services/province-data';
 import { SchoolService } from 'src/app/services/school.service';
-import { AddClientUserModalComponent } from '../add-client-user/add-client-user.component';
 import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { UserComponent } from '../user.component';
+import { ModalAddUserComponent } from 'src/app/components/modal-add-user/modal-add-user.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -149,6 +149,7 @@ export class UserDetailComponent {
   detailData: any;
   entity = '/booking-users';
   schoolData: any;
+  isModalAddUser: boolean = false
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
     private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
@@ -848,9 +849,10 @@ export class UserDetailComponent {
   }
 
   addUtilisateur() {
+    return this.isModalAddUser = true
 
     if (this.canAddUtilisateur(this.defaults.birth_date)) {
-      const dialogRef = this.dialog.open(AddClientUserModalComponent, {
+      const dialogRef = this.dialog.open(ModalAddUserComponent, {
         width: '600px',  // Asegurarse de que no haya un ancho máximo
         panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
         data: { id: this.schoolData.id }
@@ -930,7 +932,6 @@ export class UserDetailComponent {
     } else {
       this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
     }
-
   }
 
   setLanguagesUtilizateur(langs: any, dataToModify: any) {

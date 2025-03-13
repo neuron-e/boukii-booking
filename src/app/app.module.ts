@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AddClientUserModalModule } from './pages/user/add-client-user/add-client-user.module';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
@@ -56,6 +55,7 @@ import { FluxUploadImgModule } from './pages/user/user-detail/upload-img/app.mod
 import { SportCardComponent } from './pages/user/sport-card/app.component';
 import { ComponenteDatePickerModule } from './components/form/datepicker/app.module';
 import { ComponenteSelectModule } from './components/form/select/app.module';
+import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -87,7 +87,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatIconModule,
     MatProgressBarModule,
     MatTabsModule,
-    AddClientUserModalModule,
     MatCardModule,
     MatSlideToggleModule,
     MatDividerModule,
@@ -125,6 +124,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatFormFieldModule,
     ComponenteDatePickerModule,
     ComponenteSelectModule
+    ,
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

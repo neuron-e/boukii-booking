@@ -68,7 +68,6 @@ export class ModalNewUserComponent {
     );
   }
 
-  // Validador personalizado para comprobar la coincidencia de contraseñas
   private passwordMatchValidator(control: AbstractControl): { [key: string]: any } | null {
     const password = control.get('password');
     const confirmPassword = control.get('confirmPassword');
@@ -85,7 +84,6 @@ export class ModalNewUserComponent {
       { id: 2, lang: "english" },
       { id: 3, lang: "spanish" },
     ]
-
     if (d) return langs.find((a: any) => a.id == d).lang
     return ''
   }

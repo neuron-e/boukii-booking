@@ -133,11 +133,11 @@ export class CourseComponent implements OnInit {
         }
         this.renderCalendar();
       }
-      this.collectivePrice = this.course.price_range.reduce((max: any, obj: any) => {
+      this.collectivePrice = this.course.price_range?.reduce((max: any, obj: any) => {
         Object.values(obj).forEach((value: any) => {
           if (value !== null && !isNaN(value)) max = Math.max(max, parseInt(value, 10));
         }); return max;
-      }, -Infinity)
+      }, -Infinity) || 0
     });
 
   }
@@ -478,16 +478,6 @@ export class CourseComponent implements OnInit {
     this.tooltipsFilter[index] = false;
   }
 
-
-
-  openModalAddUser() {
-    this.isModalAddUser = true;
-  }
-
-
-  closeModalAddUser() {
-    this.isModalAddUser = false;
-  }
 
   goTo(...urls: string[]) {
     this.router.navigate(urls);

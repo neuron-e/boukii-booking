@@ -14,9 +14,9 @@ import { PasswordService } from 'src/app/services/password.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { AddClientUserModalComponent } from './add-client-user/add-client-user.component';
 import { CartService } from '../../services/cart.service';
 import { ScreenSizeService } from 'src/app/services/screen.service';
+import { ModalAddUserComponent } from 'src/app/components/modal-add-user/modal-add-user.component';
 
 @Component({
   selector: 'app-user',
@@ -644,11 +644,13 @@ export class UserComponent implements OnInit {
 
     return diff >= 18;
   }
+  isModalAddUser: boolean = false
 
   addUtilisateur() {
+    return this.isModalAddUser = true
 
     if (this.canAddUtilisateur(this.userLogged.clients[0].birth_date)) {
-      const dialogRef = this.dialog.open(AddClientUserModalComponent, {
+      const dialogRef = this.dialog.open(ModalAddUserComponent, {
         width: '600px',  // Asegurarse de que no haya un ancho máximo
         panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
         data: { id: this.schoolData.id }

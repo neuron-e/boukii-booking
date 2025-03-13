@@ -1,36 +1,28 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-  <div class="modal-content background-color-full rounded-8"
-    (click)="$event.stopPropagation()">
-    <div
-      class="text-color fw-semibold text-semibig modal-flex-title pb-12">
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <div class="text-color fw-semibold text-semibig modal-flex-title pb-12">
       {{'text_add_user' | translate }}
-      <img [src]="themeService.close" class="cursor-pointer"
-        (click)="closeModal()" />
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
     </div>
     <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
       <div class="modal-form">
         <mat-form-field appearance="outline" class="flex-auto widthInput">
           <mat-label>{{'text_first_name' | translate}}</mat-label>
-          <input matInput type="text" formControlName="first_name"
-            required>
+          <input matInput type="text" formControlName="first_name" required>
         </mat-form-field>
         <mat-form-field appearance="outline" class="flex-auto widthInput">
           <mat-label>{{'text_last_name' | translate}}</mat-label>
-          <input matInput type="text" formControlName="last_name"
-            required>
+          <input matInput type="text" formControlName="last_name" required>
         </mat-form-field>
         <mat-form-field appearance="outline" class="flex-auto widthInput">
           <mat-label>{{'text_birth_date' | translate}}</mat-label>
-          <input matInput type="date" formControlName="birth_date"
-            required>
+          <input matInput type="date" formControlName="birth_date" required>
         </mat-form-field>
         <mat-form-field appearance="outline" class="widthInput">
           <mat-label>{{'text_language' | translate}} 1</mat-label>
-          <input type="text" matInput
-            formControlName="language1_id" [matAutocomplete]="autoStation">
-          <mat-autocomplete #autoStation="matAutocomplete"
-            [displayWith]="displayFn">
-            <mat-option *ngFor="let item of langs" [value]="item">
+          <input type="text" matInput formControlName="language1_id" [matAutocomplete]="autoStation">
+          <mat-autocomplete #autoStation="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let item of langs" [value]="item.id">
               {{ item.lang | translate }}
             </mat-option>
           </mat-autocomplete>
@@ -38,10 +30,7 @@
       </div>
     </form>
     <div style="padding-top: 20px;">
-      <button (click)="onSubmit()"
-        [disabled]="addUserForm.invalid"
-        class="button-primary"
-        type="button">
+      <button (click)="onSubmit()" [disabled]="addUserForm.invalid" class="button-primary" type="button">
         {{'text_confirm' | translate }}
       </button>
     </div>
