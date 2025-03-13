@@ -132,8 +132,6 @@ export class HomeComponent implements OnInit {
       course_type: this.FormGroup.controls['course_type'].value,
       degree_order: this.degreeOptions.find((a: any) => a.id == this.FormGroup.controls['nivel'].value)?.Range,
       sport_id: this.FormGroup.controls['deporte'].value,
-      max_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.max_age,
-      min_age: this.ageOptions.find((a: any) => a.id == this.FormGroup.controls['edat'].value)?.min_age,
       highlighted: 1
     }).subscribe(res => { this.DestacadoCourse = res.data; });
 
