@@ -64,7 +64,6 @@ export class UserComponent implements OnInit {
   clientSchool = [];
   clientUsers: any[] = [];
 
-  firstLoad: boolean = true;
   screenWidth!: number;
   private screenWidthSubscription!: Subscription;
 
@@ -77,27 +76,19 @@ export class UserComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          if (this.firstLoad) {
-            this.getData();
-          }
+          this.getData();
         }
       }
     );
     this.activatedRoute.queryParams.subscribe(params => {
       const status = params['status'];
-
       if (status === 'success') {
-        // Mostrar snackbar de éxito
         this.snackbar.open(this.translateService.instant('Booking completed successfully!'), 'Close', {
           duration: 3000, verticalPosition: "top"// Duración del snackbar en milisegundos
         });
-
-        // Limpiar el carrito
         this.cartService.carData.next(null);
-        localStorage.removeItem(this.schoolData?.slug + '-cart'); // Limpiar el carrito del local storage
-
+        localStorage.removeItem(this.schoolData?.slug + '-cart');
       } else if (status === 'cancel' || status === 'failed') {
-        // Mostrar snackbar de error
         this.snackbar.open(this.translateService.instant('Payment error: Booking could not be completed'), 'Close', {
           duration: 3000, verticalPosition: "top"
         });
@@ -108,8 +99,7 @@ export class UserComponent implements OnInit {
   onTabChange(index: number) {
     if (index === 0) {
       this.userDetailComponent.changeClientDataB(this.defaults.id);
-    }
-    if (index === 1) {
+    } else if (index === 1) {
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
     }
@@ -117,7 +107,6 @@ export class UserComponent implements OnInit {
 
   getData(id = null, onChangeUser = false) {
     this.loading = true;
-    this.firstLoad = false;
     this.authService.getUserData().subscribe(data => {
       if (data !== null) {
         this.mainId = data.clients[0].id;
@@ -195,6 +184,7 @@ export class UserComponent implements OnInit {
     return this.crudService.list('/clients-schools', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
       .pipe(
         map((data) => {
+          if (!data.data.length) console.error("No Client School")
           this.clientSchool = data.data;
         })
       );
@@ -354,7 +344,6 @@ export class UserComponent implements OnInit {
       .subscribe((bookings) => {
         this.bookings = bookings.data;
         this.dataSource = bookings.data;
-
       })
   }
 
@@ -427,6 +416,7 @@ export class UserComponent implements OnInit {
       element.inactive_color = this.lightenColor(element.color, 30);
       this.allLevels.push(element);
     });
+    console.log(this.selectedSport)
     this.allLevels?.sort((a: any, b: any) => a.degree_order - b.degree_order);
     if (sport && sport?.level) {
       for (const i in this.allLevels) {
@@ -468,7 +458,6 @@ export class UserComponent implements OnInit {
       this.getDegrees();
       this.selectedSport = this.clientSport[0];
       this.selectSportEvo(this.selectedSport);
-      //this.loading = false;
     } catch (error) {
       console.error(error);
     }
@@ -479,13 +468,12 @@ export class UserComponent implements OnInit {
       + this.id + "&school_id=" + this.schoolData.id, '', null, '', ['degree.degreesSchoolSportGoals'])
       .pipe(
         switchMap((data) => {
+          if (!data.data.length) console.error("No Client Sport")
           this.clientSport = data.data;
           this.selectedSport = this.clientSport[0];
           this.goals = [];
-
           this.clientSport.forEach((element: any) => {
             element.level = element.degree;
-
           });
           return this.getSchoolSportDegrees();
         })
