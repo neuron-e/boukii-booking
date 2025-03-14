@@ -11,6 +11,8 @@ import { CourseComponent } from '../course.component';
 })
 export class CourseModalConfirmComponent {
   @Input() course: any
+  @Input() selectedDates: any
+  @Input() selectedDuration: any
   @Input() selectedUsers: any
   @Input() selectedForfait: any
   @Input() collectivePrice: number = 0

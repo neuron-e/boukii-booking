@@ -32,6 +32,7 @@ export class UserComponent implements OnInit {
   selectedSports: any[] = [];
   clientSport: any = [];
   allLevels: any = [];
+  allClientLevels: any = [];
   schoolSports: any = [];
   goals: any = [];
   evaluationFullfiled: any = [];
@@ -113,6 +114,7 @@ export class UserComponent implements OnInit {
         this.userLogged = data;
         const getId = id === null ? this.mainId : id;
         this.id = getId;
+        this.getDegrees();
         this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
           'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
           .pipe(takeUntil(this.destroy$))
@@ -407,22 +409,22 @@ export class UserComponent implements OnInit {
 
 
   selectSportEvo(sport: any) {
-    this.allLevels = [];
+    this.allClientLevels = [];
     this.selectedSport = sport;
     this.schoolSports?.forEach((element: any) => {
       if (this.selectedSport && this.selectedSport.sport_id === element.sport_id) this.selectedSport.degrees = element.degrees;
     });
     this.selectedSport?.degrees.forEach((element: any) => {
       element.inactive_color = this.lightenColor(element.color, 30);
-      this.allLevels.push(element);
+      this.allClientLevels.push(element);
     });
     console.log(this.selectedSport)
-    this.allLevels?.sort((a: any, b: any) => a.degree_order - b.degree_order);
+    this.allClientLevels?.sort((a: any, b: any) => a.degree_order - b.degree_order);
     if (sport && sport?.level) {
-      for (const i in this.allLevels) {
+      for (const i in this.allClientLevels) {
         this.sportCard[+i] = []
         this.goals.forEach((element: any) => {
-          if (element.degree_id === this.allLevels[i].id) {
+          if (element.degree_id === this.allClientLevels[i].id) {
             this.sportCard[+i].push(element);
           }
         });
@@ -481,12 +483,10 @@ export class UserComponent implements OnInit {
   }
 
   getDegrees() {
-    this.clientSport.forEach((element: any) => {
-      this.crudService.get('/degrees/' + element.degree_id)
-        .subscribe((data) => {
-          element.level = data.data;
-        })
-    });
+    this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order',  '&school_id=' + this.schoolData.id + '&active=1')
+      .subscribe((data) => {
+        this.allLevels = data.data;
+      })
   }
 
   getGoals() {
@@ -791,14 +791,14 @@ export class UserComponent implements OnInit {
   //  this.selectedGoal = [];
   //  this.sportIdx = this.sportIdx + nextLevel;
   //  if (this.sportIdx < 0) {
-  //    this.sportIdx = this.allLevels.length - 1;
-  //  } else if (this.sportIdx >= this.allLevels.length) {
+  //    this.sportIdx = this.allClientLevels.length - 1;
+  //  } else if (this.sportIdx >= this.allClientLevels.length) {
   //    this.sportIdx = 0;
   //  }
-  //  this.allLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
-  //  this.selectedSport.level = this.allLevels[this.sportIdx];
+  //  this.allClientLevels.sort((a: any, b: any) => a.degree_order - b.degree_order);
+  //  this.selectedSport.level = this.allClientLevels[this.sportIdx];
   //  this.goals.forEach((element: any) => {
-  //    if (element.degree_id === this.allLevels[this.sportIdx].id) {
+  //    if (element.degree_id === this.allClientLevels[this.sportIdx].id) {
   //      this.selectedGoal.push(element);
   //    }
   //  });
@@ -807,7 +807,7 @@ export class UserComponent implements OnInit {
   getGoalImage(goal: any): string {
     let ret = '';
     if (goal.length > 0) {
-      this.allLevels.forEach((element: any) => {
+      this.allClientLevels.forEach((element: any) => {
         if (element.id === goal[0].degree_id) {
           ret = element.image;
         }

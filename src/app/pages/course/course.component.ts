@@ -66,6 +66,7 @@ export class CourseComponent implements OnInit {
   settings: any;
   settingsExtras: any
   selectedDates: any = [];
+  selectedCourseDates: any = [];
   collectivePrice: any = 0;
 
   defaultImage = '../../../assets/images/3.png';
@@ -102,7 +103,16 @@ export class CourseComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
-      this.discounts = JSON.parse(this.course.discounts);
+      if (this.course.discounts) {
+        try {
+          const discounts = JSON.parse(this.course.discounts);
+          console.log(discounts);
+        } catch (error) {
+          console.error("Error al parsear JSON de discounts:", error);
+        }
+      } else {
+        console.warn("La propiedad discounts está vacía o no definida.");
+      }
       this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
@@ -507,6 +517,40 @@ export class CourseComponent implements OnInit {
     return userAge >= minAge && userAge <= maxAge;
   }
 
+  hasMatchingSportLevel(level: any): boolean {
+    const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
+    if (!selectedSport) return true;
+    return selectedSport && selectedSport.pivot.degree_id >= level.id;
+  }
+
+  isUserValidForLevel(user: any, level: any): boolean {
+    return this.isAgeAppropriate(this.transformAge(user.birth_date), level.age_min, level.age_max) &&
+      this.hasMatchingSportLevel(level);
+  }
+
+  findMatchingUser(level: any): boolean {
+    if (this.selectedUser) {
+      // Si hay un selectedUser, valida ese usuario
+      return this.isUserValidForLevel(this.selectedUser, level);
+    } else {
+      // Si no hay selectedUser, busca en selectedUsers
+      return this.selectedUserMultiple.some(user => this.isUserValidForLevel(user, level));
+    }
+  }
+
+  controlSelectedUsers() {
+    return this.selectedUserMultiple.filter((user: any) => {
+      // Verificar que la edad del usuario es apropiada para el nivel
+      const ageAppropriate = this.isAgeAppropriate(user.age, user.minAge, user.maxAge);
+
+      // Verificar si el nivel de deporte coincide con el nivel del grupo
+      const sportLevelMatches = this.hasMatchingSportLevel(user.level);
+
+      // Solo incluir usuarios que cumplan ambas condiciones
+      return ageAppropriate && sportLevelMatches;
+    });
+  }
+
   selectDate(checked: boolean, date: any) {
     const index = this.selectedDates.findIndex((d: any) => d === date);
     if (index === -1 && checked) this.selectedDates.push(date);
@@ -518,13 +562,19 @@ export class CourseComponent implements OnInit {
   updateCollectivePrice() {
     let collectivePrice = this.course.price * this.selectedDates.length;;
     if (this.course.discounts) {
-      this.discounts = JSON.parse(this.course.discounts);
-      this.discounts.forEach((discount: any) => {
-        if (this.selectedDates.length === discount.date) {
-          var discountApplied = collectivePrice * (discount.percentage / 100);
-          collectivePrice = collectivePrice - discountApplied;
-        }
-      });
+      try {
+        const discounts = JSON.parse(this.course.discounts);
+        this.discounts.forEach((discount: any) => {
+          if (this.selectedDates.length === discount.date) {
+            var discountApplied = collectivePrice * (discount.percentage / 100);
+            collectivePrice = collectivePrice - discountApplied;
+          }
+        });
+      } catch (error) {
+        console.error("Error al parsear JSON de discounts:", error);
+      }
+    } else {
+      console.warn("La propiedad discounts está vacía o no definida.");
     }
     this.collectivePrice = collectivePrice;
   }
@@ -563,6 +613,10 @@ export class CourseComponent implements OnInit {
     let durations = this.filteredPriceRange();
     this.selectedDuration = durations[0];
     return durations;
+  }
+
+  getFormattedDuration(duration: number): string {
+    return `${duration} min`;  // Formatea el valor con el sufijo "min"
   }
 
   getAvailableHours(): string[] {
@@ -664,11 +718,7 @@ export class CourseComponent implements OnInit {
   }
 
 
-  hasMatchingSportLevel(level: any): boolean {
-    const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
-    if (!selectedSport) return true;
-    return selectedSport && selectedSport.pivot.degree_id >= level.id;
-  }
+
 
   isDateValid(dateToCheck: string, hourStart: string, hourEnd: string): boolean {
     const currentDate = new Date();
@@ -798,10 +848,30 @@ export class CourseComponent implements OnInit {
       }
     } else if (this.courseFlux === 2) {
     } else if (this.courseFlux === 3) {
+      if(this.course.course_type === 1 && this.course.is_flexible) {
+        this.selectedCourseDates = this.findMatchingCourseDates();
+      } else {
+        let course_date = this.findMatchingCourseDate();
+        course_date.hour_start = this.selectedHour
+        course_date.hour_end = this.calculateEndTime(this.selectedHour, this.selectedDuration);
+        this.selectedCourseDates = [course_date];
+      }
+      debugger;
       this.confirmModal = true
       this.courseFlux--
     }
     this.courseFlux++
+  }
+
+  findMatchingCourseDates() {
+    // Filtrar las course_dates que coinciden con las fechas seleccionadas
+    const matchingDates = this.course.course_dates.filter((courseDate: any) => {
+      return this.selectedDates.some((selectedDate: any) =>
+        moment(selectedDate).isSame(moment(courseDate.date), 'day')
+      );
+    });
+
+    return matchingDates;
   }
 
   getDaysBetweenDates(startDateString: string, endDateString: string): string[] {

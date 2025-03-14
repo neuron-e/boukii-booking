@@ -26,7 +26,7 @@
 					<div [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
 						(click)="changeClientData(userLogged.clients[0].id)" class="flex items-center"
 						style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
-						<app-level-user [allLevels]="allLevels" [selectLevel]="allLevels[0].id" [size]="40"
+						<app-level-user [allLevels]="allLevels" [selectLevel]="allClientLevels.length ? allClientLevels[0].id : allLevels[0].id" [size]="40"
 							[userImage]="userLogged.clients[0]?.image" style="z-index: 0;"></app-level-user>
 						<div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">
 							{{
@@ -198,7 +198,12 @@
 								"ispaid" | translate }}
 							</th>
 							<td *matCellDef="let element" [style.color]=" element ? '#CEE741' : 'red'" mat-cell>
-								{{ (element ? 'yes' : 'no')| translate | uppercase }}
+                <div *ngIf="element"
+                     style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
+                </div>
+                <div *ngIf="!element"
+                     style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
+                </div>
 							</td>
 						</ng-container>
 
@@ -207,11 +212,9 @@
 								{{
 								"status" | translate }}
 							</th>
-							<td *matCellDef="let element" [style.color]=" element === 1 ? '#CEE741' : '#fac710'"
+							<td *matCellDef="let element"
 								mat-cell>
-								{{ (element === 1 ? 'active' : element === 2 ?
-								'cancelled' :
-								'partial_cancelled') | translate | uppercase }}
+							  {{element.cancellation_status}}
 							</td>
 						</ng-container>
 
