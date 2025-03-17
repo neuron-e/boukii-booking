@@ -109,6 +109,32 @@ $boukii-booking-theme: mat.define-light-theme(
   --level-background: #08090e;
 }
 
+body {
+  --color-dark1: #000000;
+  --color-dark2: #2f3844;
+  --color-dark3: #61656d;
+  --color-dark4: #1b2d44;
+  --color-dark5: #122742;
+  --color-grey1: #8b9099;
+  --color-grey2: #c7d0d3;
+  --color-grey3: #dee6ea;
+  --color-grey4: #eff2f5;
+  --color-grey5: #f8f9fb;
+}
+
+body.dark-mode {
+  --color-dark1: #f8f9fb;
+  --color-dark2: #eff2f5;
+  --color-dark3: #dee6ea;
+  --color-dark4: #c7d0d3;
+  --color-dark5: #8b9099;
+  --color-grey1: #61656d;
+  --color-grey2: #1b2d44;
+  --color-grey3: #61656d;
+  --color-grey4: #2f3844;
+  --color-grey5: #222222;
+}
+
 /* Fonts */
 @font-face {
   font-family: "Dinamit";

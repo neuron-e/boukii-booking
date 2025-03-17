@@ -241,8 +241,8 @@ export class UserComponent implements OnInit {
     this.selectedBooking = false;
 
     setTimeout(() => {
-      this.selectedBooking = true;
       this.bookingId = id;
+      this.selectedBooking = true;
       this.bookingSelectionChanged.emit(this.bookingId);
     }, 0);
   }

@@ -22,7 +22,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BookingDetailComponent } from './pages/user/booking-detail/booking-detail.component';
+import { BookingDetailComponent } from './pages/user/booking-detail-old/booking-detail.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
@@ -56,6 +56,7 @@ import { SportCardComponent } from './pages/user/sport-card/app.component';
 import { ComponenteDatePickerModule } from './components/form/datepicker/app.module';
 import { ComponenteSelectModule } from './components/form/select/app.module';
 import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
+import {BookingDetailModule} from './pages/user/booking-detail/booking-detail.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -123,8 +124,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatSortModule,
     MatFormFieldModule,
     ComponenteDatePickerModule,
-    ComponenteSelectModule
-    ,
+    ComponenteSelectModule,
+    BookingDetailModule
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

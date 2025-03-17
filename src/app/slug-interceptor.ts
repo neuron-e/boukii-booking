@@ -12,7 +12,6 @@ export class SlugInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     const slug = environment.slug || this.route.snapshot.paramMap.get('slug') || '';
-    debugger;
 
     const authReq = req.clone({
       headers: req.headers.set('slug', slug)

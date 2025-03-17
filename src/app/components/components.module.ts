@@ -11,7 +11,6 @@ import { ModalNewUserComponent } from './modal-new-user/modal-new-user.component
 import { ModalLoginComponent } from './modal-login/modal-login.component';
 import { ModalConditionsComponent } from './modal-conditions/modal-conditions.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ConfirmModalComponent } from './confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';

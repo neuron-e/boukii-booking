@@ -848,7 +848,7 @@ export class CourseComponent implements OnInit {
       }
     } else if (this.courseFlux === 2) {
     } else if (this.courseFlux === 3) {
-      if(this.course.course_type === 1 && this.course.is_flexible) {
+      if(this.course.course_type === 1 || this.course.is_flexible) {
         this.selectedCourseDates = this.findMatchingCourseDates();
       } else {
         let course_date = this.findMatchingCourseDate();
@@ -856,7 +856,7 @@ export class CourseComponent implements OnInit {
         course_date.hour_end = this.calculateEndTime(this.selectedHour, this.selectedDuration);
         this.selectedCourseDates = [course_date];
       }
-      debugger;
+
       this.confirmModal = true
       this.courseFlux--
     }
