@@ -84,6 +84,7 @@ export class UserComponent implements OnInit {
               this.getData();
               this.getBookings();
               this.getClientUtilisateurs()
+              this.getClientSport().subscribe()
               this.getLanguages().subscribe()
             }
           });
@@ -116,7 +117,7 @@ export class UserComponent implements OnInit {
     }
   }
 
-  getData(onChangeUser = false) {
+  getData() {
     this.loading = true;
     this.crudService.get('/clients/' + this.id, ['user', 'clientSports.degree', 'clientSports.sport',
       'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
@@ -144,10 +145,7 @@ export class UserComponent implements OnInit {
             console.error('Error fetching client school:', error);
             return of([]);
           })),
-          clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
-            console.error('Error fetching client sport:', error);
-            return of([]);
-          })),
+
         };
         return forkJoin(requestsClient).subscribe(() => setTimeout(() => this.loading = false, 0));
       })
@@ -592,45 +590,8 @@ export class UserComponent implements OnInit {
     return this.schoolSports.filter((sport: any) => sport?.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
-  handleIdChange(newId: any) {
-    this.changeClientData(newId);
-  }
-
-  changeClientData(id: any) {
-    this.id = id;
-    this.getData(true);
-  }
-
-  canAddUtilisateur(date: string): boolean {
-    const dateBirth = moment(date);
-    const today = moment();
-    const diff = today.diff(dateBirth, 'years');
-    return diff >= 18;
-  }
 
   isModalAddUser: boolean = false
-
-  setLanguagesUtilizateur(langs: any, dataToModify: any) {
-    if (langs.length >= 1) {
-
-      dataToModify.language1_id = langs[0].id;
-    } if (langs.length >= 2) {
-
-      dataToModify.language2_id = langs[1].id;
-    } if (langs.length >= 3) {
-
-      dataToModify.language3_id = langs[2].id;
-    } if (langs.length >= 4) {
-
-      dataToModify.language4_id = langs[3].id;
-    } if (langs.length >= 5) {
-
-      dataToModify.language5_id = langs[4].id;
-    } if (langs.length === 6) {
-
-      dataToModify.language6_id = langs[5].id;
-    }
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -651,20 +612,20 @@ export class UserComponent implements OnInit {
     }
   }
 
-  async getEvaluations() {
-    this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
-      .subscribe((data) => {
-        this.evaluations = data.data;
-        data.data.forEach((evaluation: any) => {
-          this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id=' + evaluation.id)
-            .subscribe((ev: any) => {
-              ev.data.forEach((element: any) => {
-                this.evaluationFullfiled.push(element);
-              });
-            });
-        });
-      })
-  }
+  // async getEvaluations() {
+  //   this.crudService.list('/evaluations', 1, 10000, 'desc', 'id', '&client_id=' + this.id)
+  //     .subscribe((data) => {
+  //       this.evaluations = data.data;
+  //       data.data.forEach((evaluation: any) => {
+  //         this.crudService.list('/evaluation-fulfilled-goals', 1, 10000, 'desc', 'id', '&evaluation_id=' + evaluation.id)
+  //           .subscribe((ev: any) => {
+  //             ev.data.forEach((element: any) => {
+  //               this.evaluationFullfiled.push(element);
+  //             });
+  //           });
+  //       });
+  //     })
+  // }
 
   getEvaluationsData(): any {
     let ret: any = [];

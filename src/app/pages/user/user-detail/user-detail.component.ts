@@ -191,10 +191,10 @@ export class UserDetailComponent {
 
     const requestsInitial = {
       languages: this.userC.languages,
-      stations: this.getStations().pipe(retry(3), catchError(error => {
-        console.error('Error fetching stations:', error);
-        return of([]); // Devuelve un array vacío en caso de error
-      })),
+      //  stations: this.getStations().pipe(retry(3), catchError(error => {
+      //    console.error('Error fetching stations:', error);
+      //    return of([]); // Devuelve un array vacío en caso de error
+      //  })),
     };
 
     return forkJoin(requestsInitial).pipe(tap((results) => {
@@ -266,7 +266,6 @@ export class UserDetailComponent {
           element.level = element.degree;
 
         });
-        this.getSchoolSportDegrees();
 
         this.formInfoAccount = this.fb.group({
           image: [''],
@@ -345,23 +344,10 @@ export class UserDetailComponent {
       }))
   }
 
-  getSchoolSportDegreesOld() {
-    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((sport) => {
-        this.schoolSports = sport.data;
-        sport.data.forEach((element: any, idx: any) => {
-          this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&sport_id=' + element.sport_id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((data) => {
-              this.schoolSports[idx].degrees = data.data;
-            });
-        });
-      })
-  }
 
   getSchoolSportDegrees() {
-    return this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
+    return
+    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
       this.schoolData.id, '', null, '', ['sport', 'degrees.degreesSchoolSportGoals'])
       .pipe(
         map((sport) => {
@@ -507,39 +493,6 @@ export class UserDetailComponent {
     }
   }
 
-  getStationsOld() {
-    this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((station) => {
-        station.data.forEach((element: any) => {
-          this.crudService.get('/stations/' + element.station_id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((data) => {
-              this.stations.push(data.data);
-
-            })
-        });
-      })
-  }
-
-  getStations() {
-    return this.crudService.list('/stations-schools', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
-      .pipe(
-        switchMap((station) => {
-          const stationRequests = station.data.map((element: any) =>
-            this.crudService.get('/stations/' + element.station_id).pipe(
-              map(data => data.data)
-            )
-          );
-          return forkJoin(stationRequests);
-        }),
-        tap((stations) => {
-          this.stations = stations;
-        })
-      );
-  }
-
-
   getLanguages() {
     return this.crudService.list('/languages', 1, 1000)
       .pipe(takeUntil(this.destroy$), tap((data) => {
@@ -548,7 +501,6 @@ export class UserDetailComponent {
       }))
   }
 
-  /**Countries */
 
   private _filterCountries(name: string): any[] {
     const filterValue = name.toLowerCase();

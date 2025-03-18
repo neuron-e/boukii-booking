@@ -11,7 +11,7 @@ import { CartComponent } from './pages/cart/cart.component';
 import { UserComponent } from './pages/user/user.component';
 import { ComponentsModule } from './components/components.module';
 
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -130,10 +130,10 @@ export function HttpLoaderFactory(http: HttpClient) {
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(translate: TranslateService) {
-    translate.setDefaultLang('fr');
-    translate.use('fr');
-  }
+  // constructor(translate: TranslateService) {
+  // translate.setDefaultLang('fr');
+  // translate.use('fr');
+  // }
 }
 
 

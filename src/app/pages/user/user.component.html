@@ -24,7 +24,7 @@
             </button>
           </div>
           <div [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
-            (click)="changeClientData(userLogged.clients[0].id)" class="flex items-center"
+            (click)="id = userLogged.clients[0].id; this.getData()" class="flex items-center"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user [allLevels]="allLevels"
               [selectLevel]="allClientLevels.length ? allClientLevels[0].id : allLevels[0].id" [size]="40"
@@ -38,7 +38,7 @@
               style="margin-left: auto;">
           </div>
           <div *ngFor="let user of clientUsers" [style.background]="id===user.id?'#DEE6EA':''"
-            (click)="changeClientData(user.id)" class="flex items-center"
+            (click)="id=user.id;this.getData()" class="flex items-center"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user [allLevels]="allLevels" [selectLevel]="allLevels[0].id" [size]="40"
               [userImage]="user?.image" style="z-index: 0;"></app-level-user>
@@ -56,7 +56,7 @@
 
   <mat-tab-group (selectedIndexChange)="onTabChange($event)" class="tabsWrapper">
     <mat-tab label="{{'data' | translate}}">
-      <app-user-detail #userDetail [idParent]="id" (idChange)="handleIdChange($event)"></app-user-detail>
+      <app-user-detail #userDetail [idParent]="id" (idChange)="id=$event;this.getData()"></app-user-detail>
     </mat-tab>
     <mat-tab label="{{'sports' | translate}}">
       <div>
