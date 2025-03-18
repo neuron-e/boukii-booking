@@ -780,7 +780,7 @@ export class CourseComponent implements OnInit {
   }
 
   getWeekdays(settings: string): string {
-    const settingsObj = JSON.parse(settings);
+    const settingsObj = typeof settings === 'string' ? JSON.parse(settings) : settings;
     const weekDays = settingsObj.weekDays;
     const daysMap: any = {
       "monday": "Lundi",

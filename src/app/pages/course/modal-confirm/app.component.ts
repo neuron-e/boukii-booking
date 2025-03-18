@@ -66,7 +66,7 @@ export class CourseModalConfirmComponent {
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
   getWeekdays(settings: string): string {
-    const settingsObj = JSON.parse(settings);
+    const settingsObj = typeof settings === 'string' ? JSON.parse(settings) : settings;
     const weekDays = settingsObj.weekDays;
     const daysMap: any = {
       "monday": "Lundi",
