@@ -3,7 +3,7 @@ import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable, _MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { Observable, map, startWith, Subject, forkJoin, retry, of, switchMap, tap } from 'rxjs';
@@ -16,7 +16,6 @@ import { MOCK_PROVINCES } from 'src/app/services/province-data';
 import { SchoolService } from 'src/app/services/school.service';
 import { ConfirmModalComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { UserComponent } from '../user.component';
-import { ModalAddUserComponent } from 'src/app/components/modal-add-user/modal-add-user.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -268,7 +267,7 @@ export class UserDetailComponent {
 
         });
         this.getSchoolSportDegrees();
-   
+
         this.formInfoAccount = this.fb.group({
           image: [''],
           name: ['', Validators.required],

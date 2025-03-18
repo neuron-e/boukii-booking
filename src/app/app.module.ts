@@ -51,12 +51,11 @@ import { MobileModalComponent } from './components/mobile-modal/app.component';
 import { CourseModalConfirmComponent } from './pages/course/modal-confirm/app.component';
 import { UserDetailDialogComponent } from './pages/user/user-detail/dialog/dialog.component';
 import { ConfirmModalModule } from './components/confirm-dialog/confirm-dialog.component.module';
-import { FluxUploadImgModule } from './pages/user/user-detail/upload-img/app.module';
 import { SportCardComponent } from './pages/user/sport-card/app.component';
 import { ComponenteDatePickerModule } from './components/form/datepicker/app.module';
 import { ComponenteSelectModule } from './components/form/select/app.module';
-import { ModalAddUserComponent } from './components/modal-add-user/modal-add-user.component';
-import {BookingDetailModule} from './pages/user/booking-detail/booking-detail.module';
+import { BookingDetailModule } from './pages/user/booking-detail/booking-detail.module';
+import { FluxUploadImgModule } from './components/form/upload-img/app.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');

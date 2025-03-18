@@ -16,7 +16,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { CartService } from '../../services/cart.service';
 import { ScreenSizeService } from 'src/app/services/screen.service';
-import { ModalAddUserComponent } from 'src/app/components/modal-add-user/modal-add-user.component';
 
 @Component({
   selector: 'app-user',
@@ -83,6 +82,8 @@ export class UserComponent implements OnInit {
               this.id = this.mainId
               this.getDegrees();
               this.getData();
+              this.getBookings();
+              this.getClientUtilisateurs()
               this.getLanguages().subscribe()
             }
           });
@@ -138,7 +139,6 @@ export class UserComponent implements OnInit {
             school_id: null
           };
         }
-        this.getBookings();
         const requestsClient = {
           clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
             console.error('Error fetching client school:', error);
@@ -149,17 +149,7 @@ export class UserComponent implements OnInit {
             return of([]);
           })),
         };
-        return forkJoin(requestsClient).subscribe(() => {
-          if (!onChangeUser) this.getClientUtilisateurs();
-          const langs = [];
-          this.languages.forEach((element: any) => {
-            if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
-              element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
-              langs.push(element);
-            }
-          });
-          setTimeout(() => this.loading = false, 0);
-        });
+        return forkJoin(requestsClient).subscribe(() => setTimeout(() => this.loading = false, 0));
       })
   }
 
@@ -330,7 +320,6 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    console.log(this.id)
     this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.id,
       '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))

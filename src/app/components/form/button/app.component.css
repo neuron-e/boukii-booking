@@ -4,10 +4,8 @@ span {
 }
 
 
-button:hover {
-    span {
-        color: white !important;
-    }
+button:hover>span {
+    color: white !important;
 }
 
 button {
