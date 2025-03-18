@@ -53,7 +53,6 @@ export class UserComponent implements OnInit {
 
   panelOpenState = false;
   bookings: any = [];
-  dataSource: any = [];
 
   displayedColumns: string[] = ['icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
     'has_boukii_care', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
@@ -77,7 +76,17 @@ export class UserComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.getData();
+          this.authService.getUserData().subscribe(data => {
+            if (data) {
+              this.mainId = data.clients[0].id;
+              this.userLogged = data;
+              this.id = this.mainId
+              this.getDegrees();
+              this.getData();
+              this.getLanguages().subscribe()
+            }
+          });
+
         }
       }
     );
@@ -106,72 +115,54 @@ export class UserComponent implements OnInit {
     }
   }
 
-  getData(id = null, onChangeUser = false) {
+  getData(onChangeUser = false) {
     this.loading = true;
-    this.authService.getUserData().subscribe(data => {
-      if (data !== null) {
-        this.mainId = data.clients[0].id;
-        this.userLogged = data;
-        const getId = id === null ? this.mainId : id;
-        this.id = getId;
-        this.getDegrees();
-        this.crudService.get('/clients/' + getId, ['user', 'clientSports.degree', 'clientSports.sport',
-          'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(async (client) => {
-            this.defaults = client.data;
-            this.defaultsUser = client.data.user;
-            this.defaults = client.data;
-            this.evaluations = client.data.evaluations;
-            this.evaluationFullfiled = [];
-            this.evaluations.forEach((ev: any) => {
-              ev.evaluation_fulfilled_goals.forEach((element: any) => {
-                ;
-                this.evaluationFullfiled.push(element);
-              });
-            });
-            if (client.data.observations.length > 0) {
-              this.defaultsObservations = client.data[0];
-            } else {
-              this.defaultsObservations = {
-                id: null,
-                general: '',
-                notes: '',
-                historical: '',
-                client_id: null,
-                school_id: null
-              };
+    this.crudService.get('/clients/' + this.id, ['user', 'clientSports.degree', 'clientSports.sport',
+      'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal', 'evaluations.degree', 'observations'])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((client) => {
+        this.defaults = client.data;
+        this.defaultsUser = client.data.user;
+        this.defaults = client.data;
+        this.evaluations = client.data.evaluations;
+        this.evaluationFullfiled = [];
+        this.evaluations.forEach((ev: any) => ev.evaluation_fulfilled_goals.forEach((element: any) => this.evaluationFullfiled.push(element)))
+        if (client.data.observations.length > 0) this.defaultsObservations = client.data[0];
+        else {
+          this.defaultsObservations = {
+            id: null,
+            general: '',
+            notes: '',
+            historical: '',
+            client_id: null,
+            school_id: null
+          };
+        }
+        this.getBookings();
+        const requestsClient = {
+          clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
+            console.error('Error fetching client school:', error);
+            return of([]);
+          })),
+          clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
+            console.error('Error fetching client sport:', error);
+            return of([]);
+          })),
+        };
+        return forkJoin(requestsClient).subscribe(() => {
+          if (!onChangeUser) this.getClientUtilisateurs();
+          const langs = [];
+          this.languages.forEach((element: any) => {
+            if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
+              element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
+              langs.push(element);
             }
-            this.getBookings();
-            const requestsClient = {
-              clientSchool: this.getClientSchool().pipe(retry(3), catchError(error => {
-                console.error('Error fetching client school:', error);
-                return of([]); // Devuelve un array vacío en caso de error
-              })),
-              clientSport: this.getClientSport().pipe(retry(3), catchError(error => {
-                console.error('Error fetching client sport:', error);
-                return of([]); // Devuelve un array vacío en caso de error
-              })),
-              languages: this.getLanguages().pipe(retry(3), catchError(error => {
-                console.error('Error fetching languages:', error);
-                return of([]); // Devuelve un array vacío en caso de error
-              }))
-            };
-            return forkJoin(requestsClient).subscribe((results) => {
-              if (!onChangeUser) this.getClientUtilisateurs();
-              const langs = [];
-              this.languages.forEach((element: any) => {
-                if (element.id === this.defaults?.language1_id || element.id === this.defaults?.language2_id || element.id === this.defaults?.language3_id ||
-                  element.id === this.defaults?.language4_id || element.id === this.defaults?.language5_id || element.id === this.defaults?.language6_id) {
-                  langs.push(element);
-                }
-              });
-              setTimeout(() => this.loading = false, 0);
-            });
-          })
-      }
-    });
+          });
+          setTimeout(() => this.loading = false, 0);
+        });
+      })
   }
+
 
   async getClientSchoolold() {
     try {
@@ -239,7 +230,6 @@ export class UserComponent implements OnInit {
 
   selectBooking(id: number) {
     this.selectedBooking = false;
-
     setTimeout(() => {
       this.bookingId = id;
       this.selectedBooking = true;
@@ -340,13 +330,11 @@ export class UserComponent implements OnInit {
   }
 
   getBookings() {
-    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.defaults.id,
+    console.log(this.id)
+    this.crudService.list('/bookings', 1, 10000, 'desc', 'created_at', '&client_main_id=' + this.id,
       '', null, '', ['bookingUsers.course'])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((bookings) => {
-        this.bookings = bookings.data;
-        this.dataSource = bookings.data;
-      })
+      .subscribe((bookings) => this.bookings = bookings.data)
   }
 
   setInitLanguages() {
@@ -483,7 +471,7 @@ export class UserComponent implements OnInit {
   }
 
   getDegrees() {
-    this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order',  '&school_id=' + this.schoolData.id + '&active=1')
+    this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.schoolData.id + '&active=1')
       .subscribe((data) => {
         this.allLevels = data.data;
       })
@@ -620,105 +608,18 @@ export class UserComponent implements OnInit {
   }
 
   changeClientData(id: any) {
-    //this.loading = true;
     this.id = id;
-    this.getData(id, true);
+    this.getData(true);
   }
 
   canAddUtilisateur(date: string): boolean {
     const dateBirth = moment(date);
     const today = moment();
     const diff = today.diff(dateBirth, 'years');
-
     return diff >= 18;
   }
+
   isModalAddUser: boolean = false
-
-  addUtilisateur() {
-    return this.isModalAddUser = true
-
-    if (this.canAddUtilisateur(this.userLogged.clients[0].birth_date)) {
-      const dialogRef = this.dialog.open(ModalAddUserComponent, {
-        width: '600px',  // Asegurarse de que no haya un ancho máximo
-        panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-        data: { id: this.schoolData.id }
-      });
-
-      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
-        if (data) {
-
-          if (data.action === 'add') {
-            this.crudService.create('/clients-utilizers', { client_id: data.ret, main_id: parseInt(this.id) })
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((res) => {
-                //this.getClientUtilisateurs(); --> Deberia añadirse al objeto del usuario
-              })
-          } else {
-            const user = {
-              username: data.data.name,
-              email: this.userLogged.clients[0].email,
-              password: this.passwordGen.generateRandomPassword(12),
-              image: null,
-              type: 'client',
-              active: true,
-            }
-
-            const client = {
-              email: this.userLogged.clients[0].email,
-              first_name: data.data.name,
-              last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
-              phone: this.userLogged.clients[0].phone,
-              telephone: this.userLogged.clients[0].telephone,
-              address: this.userLogged.clients[0].address,
-              cp: this.userLogged.clients[0].cp,
-              city: this.userLogged.clients[0].city,
-              province: this.userLogged.clients[0].province,
-              country: this.userLogged.clients[0].country,
-              image: null,
-              language1_id: null,
-              language2_id: null,
-              language3_id: null,
-              language4_id: null,
-              language5_id: null,
-              language6_id: null,
-              user_id: null,
-              station_id: this.userLogged.clients[0].station_id
-            }
-
-            this.setLanguagesUtilizateur(data.data.languages, client);
-
-            this.crudService.create('/users', user)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((user) => {
-                client.user_id = user.data.id;
-
-                this.crudService.create('/clients', client)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe((clientCreated) => {
-                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
-
-                    this.crudService.create('/clients-schools', { client_id: clientCreated.data.id, school_id: this.schoolData.id })
-                      .pipe(takeUntil(this.destroy$))
-                      .subscribe((clientSchool) => {
-
-                        setTimeout(() => {
-                          this.crudService.create('/clients-utilizers', { client_id: clientCreated.data.id, main_id: this.id })
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe((res) => {
-                              //this.getClientUtilisateurs(); --> añadir al usuario
-                            })
-                        }, 1000);
-                      });
-                  })
-              })
-          }
-        }
-      });
-    } else {
-      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
-    }
-  }
 
   setLanguagesUtilizateur(langs: any, dataToModify: any) {
     if (langs.length >= 1) {

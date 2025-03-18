@@ -196,10 +196,6 @@ export class UserDetailComponent {
         console.error('Error fetching stations:', error);
         return of([]); // Devuelve un array vacío en caso de error
       })),
-      clients: this.getClients().pipe(retry(3), catchError(error => {
-        console.error('Error fetching clients:', error);
-        return of([]); // Devuelve un array vacío en caso de error
-      })),
     };
 
     return forkJoin(requestsInitial).pipe(tap((results) => {
@@ -272,10 +268,7 @@ export class UserDetailComponent {
 
         });
         this.getSchoolSportDegrees();
-        if (!onChangeUser) {
-          this.getClientUtilisateurs();
-        }
-
+   
         this.formInfoAccount = this.fb.group({
           image: [''],
           name: ['', Validators.required],
@@ -848,92 +841,6 @@ export class UserDetailComponent {
     return diff >= 18;
   }
 
-  addUtilisateur() {
-    return this.isModalAddUser = true
-
-    if (this.canAddUtilisateur(this.defaults.birth_date)) {
-      const dialogRef = this.dialog.open(ModalAddUserComponent, {
-        width: '600px',  // Asegurarse de que no haya un ancho máximo
-        panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
-        data: { id: this.schoolData.id }
-      });
-
-      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
-        if (data) {
-
-          if (data.action === 'add') {
-            this.crudService.create('/clients-utilizers', { client_id: data.ret, main_id: parseInt(this.id) })
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((res) => {
-                this.getClientUtilisateurs();
-              })
-          } else {
-            const user = {
-              username: data.data.name,
-              email: this.defaults.email,
-              password: this.passwordGen.generateRandomPassword(12),
-              image: null,
-              type: 'client',
-              active: true,
-            }
-
-            const client = {
-              email: this.defaults.email,
-              first_name: data.data.name,
-              last_name: data.data.surname,
-              birth_date: moment(data.data.fromDate).format('YYYY-MM-DD'),
-              phone: this.defaults.phone,
-              telephone: this.defaults.telephone,
-              address: this.defaults.address,
-              cp: this.defaults.cp,
-              city: this.defaults.city,
-              province: this.defaults.province,
-              country: this.defaults.country,
-              image: null,
-              language1_id: null,
-              language2_id: null,
-              language3_id: null,
-              language4_id: null,
-              language5_id: null,
-              language6_id: null,
-              user_id: null,
-              station_id: this.defaults.station_id
-            }
-
-            this.setLanguagesUtilizateur(data.data.languages, client);
-
-            this.crudService.create('/users', user)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((user) => {
-                client.user_id = user.data.id;
-
-                this.crudService.create('/clients', client)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe((clientCreated) => {
-                    this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
-
-                    this.crudService.create('/clients-schools', { client_id: clientCreated.data.id, school_id: this.schoolData.id })
-                      .pipe(takeUntil(this.destroy$))
-                      .subscribe((clientSchool) => {
-
-                        setTimeout(() => {
-                          this.crudService.create('/clients-utilizers', { client_id: clientCreated.data.id, main_id: this.id })
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe((res) => {
-                              this.getClientUtilisateurs();
-                            })
-                        }, 1000);
-                      });
-                  })
-              })
-          }
-        }
-      });
-    } else {
-      this.snackbar.open(this.translateService.instant('snackbar.client.no_age'), 'OK', { duration: 3000 });
-    }
-  }
-
   setLanguagesUtilizateur(langs: any, dataToModify: any) {
     if (langs.length >= 1) {
 
@@ -1110,19 +1017,6 @@ export class UserDetailComponent {
     return ret;
   }
 
-  getClient(id: any) {
-    if (id && id !== null) {
-      return this.clients.find((c: any) => c.id === id);
-    }
-  }
-
-  getClients() {
-    return this.crudService.list('/slug/clients/mains',
-      1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
-      .pipe(takeUntil(this.destroy$), tap((client) => {
-        this.clients = client.data;
-      }))
-  }
 
   getDateIndex() {
     let ret = 0;

@@ -220,31 +220,31 @@
 						<mat-label>
 							{{'name' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaults.first_name" formControlName="name" matInput required type="text">
+						<input formControlName="name" matInput required type="text">
 					</mat-form-field>
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{'surname' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaults.last_name" formControlName="surname" matInput required type="text">
+						<input formControlName="surname" matInput required type="text">
 					</mat-form-field>
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{"text_email" | translate}}
 						</mat-label>
-						<input [(ngModel)]="defaults.email" formControlName="email" matInput required type="mail">
+						<input formControlName="email" matInput required type="mail">
 					</mat-form-field>
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{'username' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaultsUser.username" formControlName="username" matInput type="text">
+						<input formControlName="username" matInput type="text">
 					</mat-form-field>
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'text_password' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaultsUser.password" formControlName="password" matInput type="password">
+						<input formControlName="password" matInput type="password">
 					</mat-form-field>
 				</div>
 
@@ -270,7 +270,7 @@
 				<div class="modalInputD">
 
 					<mat-form-field class="inputWidth" appearance="outline">
-						<input [matDatepicker]="pickerFrom" [max]="minDate" [(ngModel)]="defaults.birth_date" matInput
+						<input [matDatepicker]="pickerFrom" [max]="minDate" matInput
 							placeholder="{{'birth_date' | translate }}" formControlName="fromDate">
 						<mat-datepicker-toggle [for]="pickerFrom" matSuffix></mat-datepicker-toggle>
 						<mat-datepicker #pickerFrom [startAt]="minDate"></mat-datepicker>
@@ -280,14 +280,14 @@
 							{{'phone' | translate }}
 						</mat-label>
 
-						<input [(ngModel)]="defaults.telephone" formControlName="phone" matInput type="tel">
+						<input formControlName="phone" matInput type="tel">
 					</mat-form-field>
 
 					<mat-form-field class="inputWidth" appearance="outline">
 						<mat-label>
 							{{'mobile' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaults.phone" formControlName="mobile" matInput required type="tel">
+						<input formControlName="mobile" matInput required type="tel">
 
 					</mat-form-field>
 					<mat-form-field class="inputWidth" appearance="outline">
@@ -295,14 +295,14 @@
 							{{'address' | translate }}
 						</mat-label>
 
-						<input [(ngModel)]="defaults.address" formControlName="address" matInput type="text">
+						<input formControlName="address" matInput type="text">
 					</mat-form-field>
 
 					<mat-form-field class="inputWidth" appearance="outline">
 						<mat-label>
 							{{'cp' | translate }}
 						</mat-label>
-						<input [(ngModel)]="defaults.cp" formControlName="postalCode" matInput type="text">
+						<input formControlName="postalCode" matInput type="text">
 
 					</mat-form-field>
 					<mat-form-field class="vex-flex-form-field flex-auto" appearance="outline">
@@ -528,21 +528,19 @@
 						<mat-label>
 							{{'general' |translate}}
 						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.general" formControlName="summary"
-							matInput></textarea>
+						<textarea formControlName="summary" matInput></textarea>
 					</mat-form-field>
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'observation_school' |translate}}
 						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.notes" formControlName="notes" matInput></textarea>
+						<textarea formControlName="notes" matInput></textarea>
 					</mat-form-field>
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'historical' | translate }}
 						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.historical" formControlName="hitorical"
-							matInput></textarea>
+						<textarea formControlName="hitorical" matInput></textarea>
 					</mat-form-field>
 				</div>
 			</form>
