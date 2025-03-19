@@ -49,7 +49,8 @@ export class CourseCardComponent {
     if (!this.data.translations || this.data.translations === null) {
       return this.data.short_description;
     } else {
-      const translations = JSON.parse(this.data.translations);
+      const translations = typeof this.data.translations === 'string' ?
+        JSON.parse(this.data.translations) : this.data.translations;
       return translations[this.translateService.currentLang].short_description;
     }
   }
@@ -58,8 +59,9 @@ export class CourseCardComponent {
     if (!this.data.translations || this.data.translations === null) {
       return this.data.description;
     } else {
-      const translations = JSON.parse(this.data.translations);
-      return translations[this.translateService.currentLang].description;
+      const translations = typeof this.data.translations === 'string' ?
+        JSON.parse(this.data.translations) : this.data.translations;
+      return translations[this.translateService.currentLang]?.description;
     }
   }
 
@@ -67,7 +69,8 @@ export class CourseCardComponent {
     if (!this.data.translations || this.data.translations === null) {
       return this.data.name;
     } else {
-      const translations = JSON.parse(this.data.translations);
+      const translations = typeof this.data.translations === 'string' ?
+        JSON.parse(this.data.translations) : this.data.translations;
       return translations[this.translateService.currentLang].name;
     }
   }
