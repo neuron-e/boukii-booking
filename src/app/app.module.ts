@@ -56,6 +56,7 @@ import { ComponenteDatePickerModule } from './components/form/datepicker/app.mod
 import { ComponenteSelectModule } from './components/form/select/app.module';
 import { BookingDetailModule } from './pages/user/booking-detail/booking-detail.module';
 import { FluxUploadImgModule } from './components/form/upload-img/app.module';
+import {ActivatedRouteSnapshot} from '@angular/router';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
