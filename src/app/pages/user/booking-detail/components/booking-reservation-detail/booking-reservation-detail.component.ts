@@ -58,7 +58,7 @@ export class BookingReservationDetailComponent implements OnInit {
       data => {
         if (data) {
           this.school = data.data;
-          this.settings = JSON.parse(this.school.settings);
+          this.settings = typeof this.school.settings === 'string' ? JSON.parse(this.school.settings) : this.school.settings;
           this.cancellationInsurancePercent = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
           this.price_boukii_care = parseInt(this.settings?.taxes?.boukii_care_price, 10);
           this.price_tva = parseFloat(this.settings?.taxes?.tva);

@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.settings = JSON.parse(data.data.settings)
+          this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
           this.FormGroup.patchValue({
             course_type: localStorage.getItem(this.schoolData.slug + '-selectedCourseType')
               ? parseInt(localStorage.getItem(this.schoolData.slug + '-selectedCourseType')!)

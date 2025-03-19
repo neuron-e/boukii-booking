@@ -95,7 +95,7 @@ export class CourseComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.settings = JSON.parse(data.data.settings);
+          this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
           this.settingsExtras = [...this.settings.extras.forfait, ...this.settings.extras.food, ...this.settings.extras.transport,]
         }
       }
