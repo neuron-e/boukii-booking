@@ -51,7 +51,7 @@ export class CourseCardComponent {
     } else {
       const translations = typeof this.data.translations === 'string' ?
         JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang].short_description;
+      return translations[this.translateService.currentLang].short_description || this.data.short_description;
     }
   }
 
@@ -61,7 +61,7 @@ export class CourseCardComponent {
     } else {
       const translations = typeof this.data.translations === 'string' ?
         JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang]?.description;
+      return translations[this.translateService.currentLang]?.description || this.data.description;
     }
   }
 
@@ -71,7 +71,7 @@ export class CourseCardComponent {
     } else {
       const translations = typeof this.data.translations === 'string' ?
         JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang].name;
+      return translations[this.translateService.currentLang].name || this.data.name;
     }
   }
 
