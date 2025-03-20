@@ -84,6 +84,24 @@ export class CourseCardComponent {
     }
   }
 
+  getCoursePrivateFlexPrice(duration: string = '15min', participants: number = 1) {
+    if (this.data.course_type == 2 && this.data.is_flexible) {
+      // Buscar la entrada correspondiente a la duración
+      const priceEntry = this.data.price_range.find((entry: any) => entry.intervalo === duration);
+
+      if (!priceEntry) {
+        return null; // Si no se encuentra la duración, devolver null
+      }
+
+      // Obtener el precio basado en el número de participantes
+      const price = priceEntry[participants];
+
+      return price ? parseFloat(price) : null; // Convertir a número y devolver, o null si no hay precio
+    } else {
+      return this.data.price;
+    }
+  }
+
   getWeekdays(settings: string): string {
     const settingsObj = typeof settings === 'string' ? JSON.parse(settings) : settings;
     const weekDays = settingsObj.weekDays;
