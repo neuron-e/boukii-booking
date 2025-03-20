@@ -42,6 +42,7 @@ export class CourseComponent implements OnInit {
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
   selectedForfait: any[] = []
+  tooltipVisible: { [key: number]: boolean } = {}; // Controla la visibilidad de tooltips
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -91,6 +92,14 @@ export class CourseComponent implements OnInit {
     this.isSmallScreen = window.innerWidth < 800;
   }
 
+  showTooltip(index: number) {
+    this.tooltipVisible[index] = true;
+  }
+
+  hideTooltip(index: number) {
+    this.tooltipVisible[index] = false;
+  }
+
   ngOnInit(): void {
     this.authService.getUserData().subscribe(data => this.userLogged = data);
     this.schoolService.getSchoolData().subscribe(
@@ -98,13 +107,14 @@ export class CourseComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
-          this.settingsExtras = [...this.settings.extras.forfait, ...this.settings.extras.food, ...this.settings.extras.transport,]
         }
       }
     );
     const id = this.route.snapshot.paramMap.get('id');
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
+      this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
+      this.settingsExtras = this.course.course_extras;
       if (this.course.discounts) {
         try {
           const discounts = JSON.parse(this.course.discounts);
@@ -229,7 +239,7 @@ export class CourseComponent implements OnInit {
             'course_subgroup_id': null,
             'date': course_date.date,
             'hour_start': this.selectedHour,
-            'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration),
+            'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
             'extra': this.selectedForfait
           });
         });
@@ -249,7 +259,7 @@ export class CourseComponent implements OnInit {
             'course_subgroup_id': null,
             'date': course_date.date,
             'hour_start': this.selectedHour,
-            'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
+            'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
             'extra': this.selectedForfait
           });
         });
@@ -529,8 +539,7 @@ export class CourseComponent implements OnInit {
   }
 
   isUserValidForLevel(user: any, level: any): boolean {
-    return this.isAgeAppropriate(this.transformAge(user.birth_date), level.age_min, level.age_max) &&
-      this.hasMatchingSportLevel(level);
+    return this.isAgeAppropriate(this.transformAge(user.birth_date), level.age_min, level.age_max);
   }
 
   findMatchingUser(level: any): boolean {
@@ -588,34 +597,72 @@ export class CourseComponent implements OnInit {
     return Array.from({ length: max }, (v, k) => k + 1);
   }
 
-  filteredPriceRange() {
-    return this.course.price_range.filter((range: any) => {
-      // Verificar si todos los valores son null excepto el campo 'intervalo'
-      const keys = Object.keys(range).filter((key) => key !== 'intervalo');
-      const allNull = keys.every((key) => range[key] === null);
+  filteredPriceRange(formatted: boolean = false) {
+    const selectedPax = this.selectedUserMultiple.length; // Obtener el número de paxes seleccionados
 
-      // Mantener el objeto si no todos los valores son null
-      return !allNull;
-    }).map((range: any) => {
-      const parts = range.intervalo.split(' ');
-      let minutes = 0;
-      for (const part of parts) {
-        if (part.endsWith('h')) {
-          minutes += parseInt(part) * 60;
-        } else if (part.endsWith('m')) {
-          minutes += parseInt(part);
+    return this.course.price_range
+      .filter((range: any) => {
+        // Verificar si todos los valores son null excepto 'intervalo'
+        const keys = Object.keys(range).filter((key) => key !== 'intervalo');
+        return !keys.every((key) => range[key] === null);
+      })
+      .map((range: any) => {
+        // Convertir el intervalo en minutos
+        const parts = range.intervalo.split(' ');
+        let minutes = 0;
+        for (const part of parts) {
+          if (part.endsWith('h')) {
+            minutes += parseInt(part) * 60;
+          } else if (part.endsWith('m')) {
+            minutes += parseInt(part);
+          }
         }
-      }
-      return minutes;
-    }).sort((a: number, b: number) => a - b);
+
+        // Aplicar el número de paxes al cálculo de la duración
+        // Si el número de paxes está disponible, ajustar el cálculo
+        if (selectedPax && range[selectedPax] !== undefined) {
+          minutes *= selectedPax; // Ajustamos el tiempo por el número de paxes
+        }
+
+        return minutes;
+      })
+      .sort((a: number, b: number) => a - b)
+      .map((minutes: number) => {
+        if (!formatted) {
+          return minutes; // Devuelve solo los minutos si formatted es false
+        }
+        // Convertir minutos a formato "1h 0min" o "15min"
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0 && mins > 0) {
+          return `${hours}h ${mins}m`;
+        } else if (hours > 0) {
+          return `${hours}h 0m`;
+        } else {
+          return `${mins}m`;
+        }
+      });
   }
 
 
+  convertToMinutes(duration: string): number {
+    let minutes = 0;
+    const regex = /(\d+)h|(\d+)m/g;
+    let match;
+
+    // Extraer horas y minutos
+    while ((match = regex.exec(duration)) !== null) {
+      if (match[1]) minutes += parseInt(match[1]) * 60; // Horas a minutos
+      if (match[2]) minutes += parseInt(match[2]); // Minutos
+    }
+
+    return minutes;
+  }
 
   getAvailableDurations(selectedHour: string): any[] {
     const endTime = parseInt(this.course.hour_max);
     const startTime = parseInt(selectedHour.split(':')[0]);
-    let durations = this.filteredPriceRange();
+    let durations = this.filteredPriceRange(true);
 
     return durations;
   }
@@ -687,31 +734,90 @@ export class CourseComponent implements OnInit {
     const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
     const maxTimeInMinutes = hourMax * 60;
 
+    // Filtrar las duraciones disponibles basadas en el tiempo máximo y el tiempo seleccionado
     this.availableDurations = this.filteredPriceRange()
-      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
+      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes);
+
+    // Verificar si la duración seleccionada está disponible en la lista filtrada
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range: any) => range === this.selectedDuration); // Cambiar esta línea
+      .some((range: any) => range === this.convertToMinutes(this.selectedDuration)); // Convertimos selectedDuration a minutos para comparar
+
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.availableDurations[0];
+      // Si la duración seleccionada no está disponible, seleccionamos la primera opción
+      this.selectedDuration = this.convertToDuration(this.availableDurations[0]);
     }
+
+    // Actualizamos el precio basado en la duración seleccionada
     this.updatePrice();
+  }
+
+  convertToDuration(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    let duration = '';
+    if (hours > 0) {
+      duration += `${hours}h`;
+    }
+    if (remainingMinutes > 0) {
+      duration += ` ${remainingMinutes}m`;
+    }
+
+    return duration || '0m'; // Si no hay horas ni minutos, devolvemos "0m"
+  }
+
+  getExtraPrice() {
+    // Verificar si selectedForfait tiene elementos
+    if (this.selectedForfait && this.selectedForfait.length > 0) {
+      // Recorrer cada objeto en selectedForfait y obtener el precio
+      const extraPrice = this.selectedForfait.reduce((total, forfait) => {
+        // Asegurarse de que el precio sea un número (en caso de que esté como string)
+        return total + parseFloat(forfait.price);
+      }, 0);
+
+      // Mostrar el precio total de los extras
+      console.log('Total Extra Price:', extraPrice);
+      return extraPrice;  // Puedes devolver el precio total si lo necesitas
+    } else {
+      // Si no hay extras seleccionados, mostrar un mensaje
+      console.log('No selected forfait');
+      return 0;  // Retorna 0 si no hay forfait seleccionado
+    }
   }
 
   updatePrice(): void {
     const selectedPax = this.selectedUserMultiple.length;
-    const matchingTimeRange = this.course.price_range.find((range: any) => {
-      const parts = range.intervalo.split(' ');
-      let rangeMinutes = 0;
-      for (const part of parts) {
-        if (part.endsWith('h')) rangeMinutes += parseInt(part) * 60;
-        else if (part.endsWith('m')) rangeMinutes += parseInt(part);
-      }
-      return rangeMinutes === this.selectedDuration;
-    });
-    if (matchingTimeRange && matchingTimeRange[selectedPax]) this.course.price = matchingTimeRange[selectedPax];
-    else this.course.price = 0;
-  }
+    let extraPrice = this.getExtraPrice() * selectedPax;
+    if(this.course.course_type == 2) {
+      // Convertir selectedDuration en minutos (si es necesario)
+      const selectedDurationInMinutes = this.convertToMinutes(this.selectedDuration);
 
+      const matchingTimeRange = this.course.price_range.find((range: any) => {
+        let rangeMinutes = 0;
+        const regex = /(\d+)h|(\d+)m/g;
+        let match;
+
+        // Extraer horas y minutos del intervalo
+        while ((match = regex.exec(range.intervalo)) !== null) {
+          if (match[1]) rangeMinutes += parseInt(match[1]) * 60; // Horas a minutos
+          if (match[2]) rangeMinutes += parseInt(match[2]); // Minutos
+        }
+
+        return rangeMinutes === selectedDurationInMinutes;
+      });
+
+
+      // Asignar el precio si hay coincidencia en la duración y participantes
+      this.course.price = matchingTimeRange && matchingTimeRange[selectedPax]
+        ? parseFloat(matchingTimeRange[selectedPax]) + extraPrice
+        : 0 + extraPrice;
+    } else if(this.course.course_type == 1 && !this.course.is_flexible) {
+        this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
+    } else {
+        this.collectivePrice += this.getExtraPrice();
+    }
+
+  }
 
   calculateAvailableLevels(user: any) {
     const userAge = this.transformAge(user.birth_date);
@@ -862,14 +968,16 @@ export class CourseComponent implements OnInit {
       }
     } else if (this.courseFlux === 2) {
     } else if (this.courseFlux === 3) {
-      if(this.course.course_type === 1 || this.course.is_flexible) {
+      if(this.course.course_type === 1 && this.course.is_flexible) {
         this.selectedCourseDates = this.findMatchingCourseDates();
-      } else {
+      } else if(this.course.course_type === 2) {
         let course_date = this.findMatchingCourseDate();
         course_date.hour_start = this.selectedHour
         let duration = this.utilService.parseDurationToMinutes(this.selectedDuration)
         course_date.hour_end = this.calculateEndTime(this.selectedHour, duration);
         this.selectedCourseDates = [course_date];
+      } else {
+        this.selectedCourseDates = this.course.course_dates;
       }
 
       this.confirmModal = true
@@ -937,6 +1045,7 @@ export class CourseComponent implements OnInit {
     } else {
       this.selectedForfait.push(extra); // Añade si no está seleccionado
     }
+    this.updatePrice();
   }
   find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 

@@ -1,4 +1,4 @@
-<div class="modal" (click)="closeModal()">
+<div class="modal">
     <div class="modal-content background-color-full rounded-8">
         <div class="text-color fw-semibold text-semibig modal-flex-title">
             {{'your_reservation' | translate }}
@@ -116,7 +116,7 @@
                         <span class="extra_name">{{extra.name}}</span>
                     </div>
                     <span>
-                        {{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}}
+                        {{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}} {{'pax' | translate}} '
                     </span>
                 </div>
             </div>
@@ -129,16 +129,14 @@
             <div>
                 {{'text_price' | translate }}
             </div>
-          <!-- Primer bloque: curso privado o colectivo flexible -->
-          <div class="blackL" *ngIf="!course?.is_flexible && course.course_type == 1">
-            {{collectivePrice | number:'0.2-2'}}
-            {{course.currency}}/{{'mails.course' | translate}}
+          <!-- Primer bloque: colectivo flexible -->
+          <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 1">
+            {{ collectivePrice | number:'0.2-2' }} {{ course.currency }}
           </div>
 
-          <!-- Segundo bloque: curso colectivo no flexible -->
-          <div class="blackL" *ngIf="course.course_type == 1 || course.course_type == 2">
-            {{course?.price | number:'0.2-2'}}
-            {{course.currency}}/{{(course.minDuration ? course.minDuration : 'mails.course') | translate}}
+          <!-- Segundo bloque: colectivo fijo o curso privado -->
+          <div class="blackL" *ngIf="!course?.is_flexible && (course.course_type == 1 || course.course_type == 2)">
+            {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
           </div>
 
         </div>

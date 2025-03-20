@@ -561,7 +561,7 @@ export class CartComponent implements OnInit {
   }
 
   getTotalBasePrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.course.price), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.course.price), 0) / details.length;
   }
 
   getTotalItemPrice(details: any[]): number {
@@ -687,6 +687,7 @@ export class CartComponent implements OnInit {
 
       this.cartService.carData.next(cartArray);
     }
+    this.updateTotal();
   }
 
   getCourseName(course: any) {

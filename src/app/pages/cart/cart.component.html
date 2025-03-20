@@ -257,7 +257,7 @@
 					Boukii Care
 				</label>
 			</div>
-			<div (click)="openModalVoucher()" style="display: flex;align-items: center;height: 40px;cursor: pointer;">
+			<div  *ngIf="!voucher" (click)="openModalVoucher()" style="display: flex;align-items: center;height: 40px;cursor: pointer;">
 				<img src="assets/icons/add_red.png" class="icon24" style="margin: 0 8px;">
 				<span class="extra_add" style="margin-left: 4px;">
 					{{'text_use_voucher' | translate }}

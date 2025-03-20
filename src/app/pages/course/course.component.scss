@@ -167,6 +167,33 @@
   width: 34px;
   width: 34px;
 }
+.tooltip-container {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: lightgrey;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease-in-out;
+  text-align: center;
+}
+
+/* Flecha del tooltip */
+.tooltip-container::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
 .levels-section {
   display: flex;
   width: 100%;

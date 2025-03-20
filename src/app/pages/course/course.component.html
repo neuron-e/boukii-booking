@@ -25,14 +25,12 @@
     <div *ngIf="course" class="course-content">
       <div style="justify-content: space-between;flex-wrap: wrap;gap: 8px;">
         <div style="min-width: 150px;">
-					<span *ngIf="!course.is_flexible" class="price">
-						{{course.minPrice|number:'0.2-2'}}
-            {{course.currency}}/{{'mails.course'|translate}}
-					</span>
-          <span *ngIf="course.is_flexible" class="price">
-						{{"text_from" | translate}} {{course.minPrice|number:'0.2-2'}}
-            {{course.currency}}/{{(course.minDuration?course.minDuration:'mails.course')|translate}}
-					</span>
+  <span class="price">
+    {{ (course.is_flexible ? 'text_from' : '') | translate }}
+    {{ course.minPrice | number: '0.2-2' }}
+    {{ course.currency }} /
+    {{ (course.course_type !== 1 && course.is_flexible ? ('mails.course' | translate: { duration: course.minDuration }) : ('price_per_date' | translate)) }}
+  </span>
         </div>
         <div>
           <div style="display: flex;align-items: center;" *ngFor="let discount of discounts">
@@ -118,30 +116,30 @@
         </div>
       </ng-container>
 
-<!--      <ng-container *ngIf="course?.options">
-				<span class="descripcion2">
-					{{"text_forfait"|translate|uppercase}}
-				</span>
-        <div style="display: flex;gap: 16px;flex-direction: column;">
-          <mat-checkbox *ngFor="let extra of settingsExtras" style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px;display: flex
-						;
-							align-items: center;">
-            <div style="display: flex;gap: 8px;padding: 4px 0;
-            padding-right: 10px;
-            justify-content: space-between;
-            align-items: center;">
-              <div>
-                <span class="extra_product">{{extra.product}}</span>
-                <br>
-                <span class="extra_name">{{extra.name}}</span>
+      <!--      <ng-container *ngIf="course?.options">
+              <span class="descripcion2">
+                {{"text_forfait"|translate|uppercase}}
+              </span>
+              <div style="display: flex;gap: 16px;flex-direction: column;">
+                <mat-checkbox *ngFor="let extra of settingsExtras" style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px;display: flex
+                  ;
+                    align-items: center;">
+                  <div style="display: flex;gap: 8px;padding: 4px 0;
+                  padding-right: 10px;
+                  justify-content: space-between;
+                  align-items: center;">
+                    <div>
+                      <span class="extra_product">{{extra.product}}</span>
+                      <br>
+                      <span class="extra_name">{{extra.name}}</span>
+                    </div>
+                    <span style="word-wrap: break-word">
+                      {{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate }}
+                    </span>
+                  </div>
+                </mat-checkbox>
               </div>
-              <span style="word-wrap: break-word">
-								{{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate }}
-							</span>
-            </div>
-          </mat-checkbox>
-        </div>
-      </ng-container>-->
+            </ng-container>-->
     </div>
   </div>
 
@@ -292,7 +290,7 @@
           <div>
             {{'text_select_level' | translate }}
           </div>
-          <div *ngIf="course.availableDegrees.length>0" style="
+          <div *ngIf="course.availableDegrees.length==0" style="
             background-color: rgba(210, 239, 255, 1);
         border-radius: 8px;margin-top: 12px;
             padding: 10px;display: flex;gap: 8px; align-items: center;
@@ -331,9 +329,9 @@
             <!-- showLevels && -->
             <div class="levels-section" style="margin-top: 20px;">
 
-                <ng-container
-                  *ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
-                  <ng-container *ngIf="findMatchingUser(level)">
+              <ng-container
+                *ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
+                <ng-container *ngIf="findMatchingUser(level)">
                   <div *ngIf="i===0 || level.league !== (course.availableDegrees.length>0?course.availableDegrees:dataLevels)[i-1].league"
                        style="
                 color: #8B9099;
@@ -346,13 +344,24 @@
                   <mat-checkbox
                     [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}"
                     (click)="selectLevel(level)"
-                    style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
+                    (mouseenter)="showTooltip(i)"
+                    (mouseleave)="hideTooltip(i)"
+                    style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);position: relative;">
+
                     <div style="display: flex;gap: 8px;padding: 12px 0;">
-                      <div [ngStyle]="{'color': level.color}"
-                           style="font-size: 12px;line-height: 16px;">
+                      <div [ngStyle]="{'color': level.color}" style="font-size: 12px;line-height: 16px;">
                         {{level.annotation}} {{level.name}}
                       </div>
                     </div>
+
+                    <!-- Tooltip -->
+                    <div *ngIf="tooltipVisible[i]"
+                         class="tooltip-container">
+                      <div *ngFor="let goal of level.degrees_school_sport_goals">
+                        {{ goal.name }}
+                      </div>
+                    </div>
+
                   </mat-checkbox>
                 </ng-container>
               </ng-container>
@@ -420,22 +429,22 @@
               </div>
             </div>
             <div style="display: flex;flex-wrap: wrap;gap: 16px; margin-top: 20px;">
-<!--              <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
-                <mat-label>{{ 'hour' | translate }}</mat-label>
-                <mat-select [(value)]="selectedHour">
-                  <mat-option *ngFor="let hour of getAvailableHours()" [value]="hour" (change)="selectedHour=$event.option.value;updatePrice()">
-                    {{ hour }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
-                <mat-label>{{ 'hour' | translate }}</mat-label>
-                <mat-select [(value)]="selectedDuration">
-                  <mat-option *ngFor="let duration of getAvailableDurations(selectedHour)" [value]="duration" (change)="selectedDuration=$event.option.value;updatePrice()">
-                    {{ duration + 'min' }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>-->
+              <!--              <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
+                              <mat-label>{{ 'hour' | translate }}</mat-label>
+                              <mat-select [(value)]="selectedHour">
+                                <mat-option *ngFor="let hour of getAvailableHours()" [value]="hour" (change)="selectedHour=$event.option.value;updatePrice()">
+                                  {{ hour }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
+                              <mat-label>{{ 'hour' | translate }}</mat-label>
+                              <mat-select [(value)]="selectedDuration">
+                                <mat-option *ngFor="let duration of getAvailableDurations(selectedHour)" [value]="duration" (change)="selectedDuration=$event.option.value;updatePrice()">
+                                  {{ duration + 'min' }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>-->
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedHour" label="hour"
                                [table]="getAvailableHours()"
                                (do)="selectedHour=$event.option.value;course.is_flexible ? updatePrice() : null"></app-form-select>
@@ -443,14 +452,13 @@
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedDuration"
                                [table]="getAvailableDurations(selectedHour)" label="duration"
                                [readonly]="!course.is_flexible"
-                               (do)="selectedDuration=$event.option.value;updatePrice()"
-                               suffix=" min"></app-form-select>
+                               (do)="selectedDuration=$event.option.value;updatePrice()"></app-form-select>
             </div>
           </ng-container>
         </div>
         <div *ngIf="courseFlux===3" style="display: flex;padding: 20px;flex-direction: column;">
           <div> {{"add_extras_or_notes" |translate}} </div>
-          <div *ngFor="let date of course?.course_type===1?selectedDates:[selectedDateReservation.date]"
+          <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date])"
                style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
             {{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
             <mat-checkbox *ngFor="let extra of settingsExtras"
@@ -459,9 +467,9 @@
               <div
                 style="display: flex;gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
                 <div>
-                  <span class="extra_product">{{extra.product}}</span>
+                  <span class="extra_product">{{extra.name}}</span>
                   <br>
-                  <span class="extra_name">{{extra.name}}</span>
+                  <span class="extra_name">{{extra.description}}</span>
                 </div>
                 <span style="width: 125px;padding: 10px;">
 									{{extra.price|number:'0.2-2'}}{{course?.currency}}/{{'date' | translate}}
@@ -520,6 +528,7 @@
 <app-course-modal-confirm *ngIf="confirmModal" [course]="course" [selectedDates]="selectedCourseDates"
                           [selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple"
                           [selectedForfait]="selectedForfait"
+                          [selectedDuration]="selectedDuration"
                           [collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
                           (next)="addBookingToCart()">
 </app-course-modal-confirm>
