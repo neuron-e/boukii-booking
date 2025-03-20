@@ -85,7 +85,7 @@ export class UserComponent implements OnInit {
               this.getBookings();
               this.getClientUtilisateurs()
               this.getClientSport().subscribe()
-              this.getLanguages().subscribe()
+
             }
           });
 
@@ -124,6 +124,7 @@ export class UserComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((client) => {
         this.defaults = client.data;
+        this.getLanguages().subscribe()
         this.defaultsUser = client.data.user;
         this.defaults = client.data;
         this.evaluations = client.data.evaluations;

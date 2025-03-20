@@ -126,7 +126,7 @@
 					{{'observation_school' | translate }}
 				</p>
 				<p>
-					{{defaultsObservations.notes || ('not_assigned' | translate)}}
+					{{defaultsObservations?.notes || ('not_assigned' | translate)}}
 				</p>
 			</div>
 			<div>
@@ -134,7 +134,7 @@
 					{{'observation_general' | translate }}
 				</p>
 				<p>
-					{{defaultsObservations.general ||
+					{{defaultsObservations?.general ||
 					('not_assigned' | translate)}}
 				</p>
 			</div>
