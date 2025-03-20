@@ -118,7 +118,7 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="course?.options">
+<!--      <ng-container *ngIf="course?.options">
 				<span class="descripcion2">
 					{{"text_forfait"|translate|uppercase}}
 				</span>
@@ -141,7 +141,7 @@
             </div>
           </mat-checkbox>
         </div>
-      </ng-container>
+      </ng-container>-->
     </div>
   </div>
 
@@ -420,11 +420,29 @@
               </div>
             </div>
             <div style="display: flex;flex-wrap: wrap;gap: 16px; margin-top: 20px;">
+<!--              <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
+                <mat-label>{{ 'hour' | translate }}</mat-label>
+                <mat-select [(value)]="selectedHour">
+                  <mat-option *ngFor="let hour of getAvailableHours()" [value]="hour" (change)="selectedHour=$event.option.value;updatePrice()">
+                    {{ hour }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" style="width: calc(50% - 8px);" label="hour">
+                <mat-label>{{ 'hour' | translate }}</mat-label>
+                <mat-select [(value)]="selectedDuration">
+                  <mat-option *ngFor="let duration of getAvailableDurations(selectedHour)" [value]="duration" (change)="selectedDuration=$event.option.value;updatePrice()">
+                    {{ duration + 'min' }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>-->
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedHour" label="hour"
                                [table]="getAvailableHours()"
-                               (do)="selectedHour=$event.option.value;updatePrice()"></app-form-select>
-              <app-form-select style="width: calc(50% - 8px);"  [value]="getFormattedDuration(selectedDuration)"
+                               (do)="selectedHour=$event.option.value;course.is_flexible ? updatePrice() : null"></app-form-select>
+
+              <app-form-select style="width: calc(50% - 8px);" [value]="selectedDuration"
                                [table]="getAvailableDurations(selectedHour)" label="duration"
+                               [readonly]="!course.is_flexible"
                                (do)="selectedDuration=$event.option.value;updatePrice()"
                                suffix=" min"></app-form-select>
             </div>

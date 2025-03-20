@@ -136,7 +136,7 @@
           </div>
 
           <!-- Segundo bloque: curso colectivo no flexible -->
-          <div class="blackL" *ngIf="course?.is_flexible && (course.course_type == 1 || course.course_type == 2)">
+          <div class="blackL" *ngIf="course.course_type == 1 || course.course_type == 2">
             {{course?.price | number:'0.2-2'}}
             {{course.currency}}/{{(course.minDuration ? course.minDuration : 'mails.course') | translate}}
           </div>

@@ -1444,8 +1444,9 @@ export class BookingDetailComponent implements OnInit {
       if (!course.translations || course.translations === null) {
         return course.name;
       } else {
-        const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].name;
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].name || course.name;
       }
     }
   }

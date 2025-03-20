@@ -458,7 +458,7 @@ export class CartComponent implements OnInit {
 
   closeModalVoucher(voucher: any) {
     if (voucher) {
-      this.voucher = voucher.data;
+      this.voucher = voucher;
     }
     this.isModalVoucher = false;
     this.updateTotal(); // Actualiza el total cuando se cierra el modal del cupón
@@ -582,6 +582,11 @@ export class CartComponent implements OnInit {
     }, 0);
   }
 
+  removeVoucher() {
+    this.voucher = null;
+    this.updateTotal();
+  }
+
   getBasePrice() {
     let total = 0;
     this.cart?.forEach(cartItem => {
@@ -688,8 +693,9 @@ export class CartComponent implements OnInit {
     if (!course.translations || course.translations === null) {
       return course.name;
     } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].name;
+      const translations = typeof course.translations === 'string' ?
+        JSON.parse(course.translations) : course.translations;
+      return translations[this.translateService.currentLang].name || course.name;
     }
   }
 

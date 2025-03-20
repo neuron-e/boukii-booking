@@ -19,7 +19,8 @@ export class CourseModalConfirmComponent {
 
   @Output() onClose = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
-  constructor(public themeService: ThemeService, public translateService: TranslateService, public courseC: CourseComponent,) { }
+  constructor(public themeService: ThemeService, public translateService: TranslateService,
+              public courseC: CourseComponent) { }
   closeModal() {
     this.onClose.emit();
   }
@@ -28,8 +29,9 @@ export class CourseModalConfirmComponent {
       if (!course.translations || course.translations === null) {
         return course.name;
       } else {
-        const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].name;
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].name || course.name;
       }
     }
   }

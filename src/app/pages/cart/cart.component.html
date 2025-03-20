@@ -232,7 +232,7 @@
 
 			<div *ngIf="voucher" class="payment-price-flex mt-8">
 				<div class="text-color uppercase">
-					<img [src]="themeService.trash" (click)="voucher = null" class="course-box-delete cursor-pointer">
+					<img [src]="themeService.trash" (click)="removeVoucher();" class="course-box-delete cursor-pointer">
 					{{'text_voucher' | translate }}
 				</div>
 				<div class="text-color min-width-price">
@@ -335,7 +335,7 @@
 </div>
 
 <app-modal-voucher [isOpen]="isModalVoucher" [slug]="schoolData?.slug"
-	(onClose)="closeModalVoucher($event)"></app-modal-voucher>
+	(onClose)="closeModalVoucher($event)" [voucher]="voucher"></app-modal-voucher>
 <app-modal-conditions *ngIf="schoolData?.slug != 'ess-charmey'" [isOpen]="isModalConditions"
 	[data]="'conditions_html' | translate" (onClose)="closeModalConditions()"></app-modal-conditions>
 <app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'" [isOpen]="isModalConditions" [data]="conditionsHTML"

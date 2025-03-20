@@ -13,6 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import { ApiCrudService } from 'src/app/services/crud.service';
+import {UtilsService} from '../../services/utils.service';
 
 @Component({
   selector: 'app-course',
@@ -58,7 +59,7 @@ export class CourseComponent implements OnInit {
   isModalAddUser: boolean = false;
 
   selectedHour: string = '';
-  selectedDuration: number = 0;
+  selectedDuration: any ;
   availableDurations: number[] = [];
   availableHours: any[] = [];
 
@@ -72,9 +73,10 @@ export class CourseComponent implements OnInit {
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, public coursesService: CoursesService,
-    private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
-    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService, private translateService: TranslateService, private snackbar: MatSnackBar,
-    private crudService: ApiCrudService
+              private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
+              private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService,
+              private translateService: TranslateService, private snackbar: MatSnackBar,
+              private crudService: ApiCrudService, private utilService: UtilsService
   ) {
     this.checkScreenWidth();
   }
@@ -118,8 +120,10 @@ export class CourseComponent implements OnInit {
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
+        this.selectedHour = this.availableHours[0];
         if (this.course.is_flexible) {
           this.availableDurations = this.getAvailableDurations(this.selectedHour);
+          this.selectedDuration =  this.availableDurations[0];
           this.updatePrice();
         } else this.selectedDuration = this.course.duration;
         this.initializeMonthNames();
@@ -201,6 +205,7 @@ export class CourseComponent implements OnInit {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
+      this.getAvailableHours();
       if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
     }
   }
@@ -611,7 +616,7 @@ export class CourseComponent implements OnInit {
     const endTime = parseInt(this.course.hour_max);
     const startTime = parseInt(selectedHour.split(':')[0]);
     let durations = this.filteredPriceRange();
-    this.selectedDuration = durations[0];
+
     return durations;
   }
 
@@ -621,8 +626,13 @@ export class CourseComponent implements OnInit {
 
   getAvailableHours(): string[] {
     let hours = [];
-    const hourMin = parseInt(this.course.hour_min);
-    const hourMax = parseInt(this.course.hour_max);
+    let course_date = this.course.course_dates[0];
+    if(this.selectedDateReservation){
+      course_date = this.findMatchingCourseDate();
+    }
+
+    const hourMin = parseInt(course_date.hour_start);
+    const hourMax = parseInt(course_date.hour_end);
     const duration = parseInt(this.course.duration);
     if (!this.course.is_flexible) {
       for (let hour = hourMin; hour < hourMax; hour++) {
@@ -650,7 +660,7 @@ export class CourseComponent implements OnInit {
         hours.push(formattedTime);
       }
     }
-    this.selectedHour = hours[0];
+
     return hours;
   }
 
@@ -740,8 +750,9 @@ export class CourseComponent implements OnInit {
       if (!course.translations || course.translations === null) {
         return course.description;
       } else {
-        const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].description;
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].description || course.description;
       }
     }
 
@@ -750,8 +761,9 @@ export class CourseComponent implements OnInit {
     if (!course.translations || course.translations === null) {
       return course.short_description;
     } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].short_description;
+      const translations = typeof course.translations === 'string' ?
+        JSON.parse(course.translations) : course.translations;
+      return translations[this.translateService.currentLang].short_description || course.short_description;
     }
   }
 
@@ -760,8 +772,9 @@ export class CourseComponent implements OnInit {
       if (!course.translations || course.translations === null) {
         return course.name;
       } else {
-        const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].name;
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].name || course.name;
       }
     }
   }
@@ -839,6 +852,7 @@ export class CourseComponent implements OnInit {
     const minHourString = maxHourStart.toString().padStart(4, "0");
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
+
   next() {
     if (this.courseFlux === 0) {
     } else if (this.courseFlux === 1) {
@@ -853,7 +867,8 @@ export class CourseComponent implements OnInit {
       } else {
         let course_date = this.findMatchingCourseDate();
         course_date.hour_start = this.selectedHour
-        course_date.hour_end = this.calculateEndTime(this.selectedHour, this.selectedDuration);
+        let duration = this.utilService.parseDurationToMinutes(this.selectedDuration)
+        course_date.hour_end = this.calculateEndTime(this.selectedHour, duration);
         this.selectedCourseDates = [course_date];
       }
 

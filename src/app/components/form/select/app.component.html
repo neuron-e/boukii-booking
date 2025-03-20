@@ -1,6 +1,6 @@
 <mat-form-field *ngIf="control" [formGroup]="form" style="margin: 10px 0;cursor: pointer;" appearance="outline">
   <mat-label>{{label | translate}}</mat-label>
-  <input [matAutocomplete]="auto" [type]="type" [value]="value" [name]="label | translate"
+  <input [matAutocomplete]="auto" [type]="type" [readonly]="readonly" [value]="value" [name]="label | translate"
          [formControlName]="control" [required]="required" placeholder="{{label | translate}}" matInput>
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="do.emit($event)">
     <mat-option *ngFor="let item of table" [value]="id ? item[id] : item">
@@ -11,7 +11,7 @@
 
 <mat-form-field *ngIf="!control" style="margin: 10px 0;cursor: pointer;" appearance="outline">
   <mat-label>{{label | translate}}</mat-label>
-  <input [value]="value" [matAutocomplete]="auto" [type]="type" [name]="label | translate" [required]="required"
+  <input [value]="value" [matAutocomplete]="auto" [type]="type" [readonly]="readonly" [name]="label | translate" [required]="required"
          placeholder="{{label | translate}}" matInput>
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="emit($event)">
     <mat-option *ngFor="let item of table" [value]="id ? item[id] : item">

@@ -13,6 +13,7 @@ export class ComponenteSelectComponent implements OnInit {
   @Input() type: "number" | "text" | "tel" | "email" = "text";
   @Input() form!: FormGroup;
   @Input() required: boolean = false;
+  @Input() readonly: boolean = false;
 
   @Input() table!: any;
   @Input() id!: string;
