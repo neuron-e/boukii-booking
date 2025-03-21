@@ -139,7 +139,7 @@
 						<span class="text-color fw-semibold text-medium"
 							*ngIf="cartItem.details[0].course.course_type ==1">
 							{{(cartItem.details[0].course.is_flexible ?
-							(cartItem.details.length * cartItem.details[0].course.price) :
+							(cartItem.details[0].price) :
 							cartItem.details[0].course.price * 1)|number:'0.2-2'}}
 						</span>
 						{{ cartItem.details[0].course.currency }}

@@ -219,7 +219,7 @@
 					</span>
         </div>
 
-        <div *ngIf="courseFlux===0" class="reservation-users" style="padding: 20px;">
+        <div [style.display]="courseFlux===0 ? 'block' : 'none'" class="reservation-users" style="padding: 20px;">
           <div style="word-wrap: break-word;margin-bottom: 10px;">
             <ng-container *ngIf="course?.course_type === 2">
               {{'text_select_user_or_more' | translate }}
@@ -286,7 +286,7 @@
           </button>
         </div>
 
-        <div *ngIf="courseFlux===1" style="padding: 20px;">
+        <div [style.display]="courseFlux===1 ? 'block' : 'none'" style="padding: 20px;">
           <div>
             {{'text_select_level' | translate }}
           </div>
@@ -329,42 +329,44 @@
             <!-- showLevels && -->
             <div class="levels-section" style="margin-top: 20px;">
 
-              <ng-container
-                *ngFor="let level of course.availableDegrees.length>0?course.availableDegrees:dataLevels;let i = index">
+              <ng-container *ngFor="let level of course.availableDegrees.length > 0 ? course.availableDegrees : dataLevels; let i = index">
                 <ng-container *ngIf="findMatchingUser(level)">
-                  <div *ngIf="i===0 || level.league !== (course.availableDegrees.length>0?course.availableDegrees:dataLevels)[i-1].league"
-                       style="
-                color: #8B9099;
-                 font-weight: 600;
-                 line-height: 16px;">
-                    {{level.league }}
+                  <div *ngIf="i === 0 || level.league !== (course.availableDegrees.length > 0 ? course.availableDegrees : dataLevels)[i-1].league"
+                       style="color: #8B9099; font-weight: 600; line-height: 16px;">
+                    {{ level.league }}
                   </div>
-                  <!-- *ngIf="isAgeAppropriate(transformAge(selectedUser.birth_date), level.age_min, level.age_max) &&
-                         hasMatchingSportLevel(level)" -->
-                  <mat-checkbox
-                    [ngStyle]="{'background-color': level.color+'33','border': '1px solid '+level.color}"
-                    (click)="selectLevel(level)"
-                    (mouseenter)="showTooltip(i)"
-                    (mouseleave)="hideTooltip(i)"
-                    style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);position: relative;">
 
-                    <div style="display: flex;gap: 8px;padding: 12px 0;">
-                      <div [ngStyle]="{'color': level.color}" style="font-size: 12px;line-height: 16px;">
-                        {{level.annotation}} {{level.name}}
+                  <div class="checkbox-container" style="position: relative; display: flex; align-items: center;">
+                    <!-- Mat checkbox -->
+                    <mat-checkbox
+                      [ngStyle]="{'background-color': level.color+'33', 'border': '1px solid '+level.color}"
+                      (click)="selectLevel(level)"
+                      style="width: 100%; border-radius: 3px; border: 1px solid rgba(34, 34, 34, 1);">
+                      <div style="display: flex; gap: 8px; padding: 12px 0;">
+                        <div [ngStyle]="{'color': level.color}" style="font-size: 12px; line-height: 16px;">
+                          {{ level.annotation }} {{ level.name }}
+                        </div>
                       </div>
-                    </div>
+                    </mat-checkbox>
 
+                    <!-- Info button outside of the checkbox -->
+                    <img src="assets/icons/info.png"
+                         (click)="showTooltip(i); $event.stopPropagation();"
+                         class="info-icon"
+                         alt="Info">
                     <!-- Tooltip -->
-                    <div *ngIf="tooltipVisible[i]"
-                         class="tooltip-container">
+                    <div *ngIf="tooltipVisible[i]" class="tooltip-container">
                       <div *ngFor="let goal of level.degrees_school_sport_goals">
                         {{ goal.name }}
                       </div>
                     </div>
+                  </div>
 
-                  </mat-checkbox>
+
+
                 </ng-container>
               </ng-container>
+
             </div>
             <div
               *ngIf="showLevels && course?.availableDegrees && course?.availableDegrees.length && !hasLevelsAvailable">
@@ -374,7 +376,7 @@
             </div>
           </div>
         </div>
-        <div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2" style="padding: 20px;">
+        <div [style.display]="course?.course_type==1 && course.is_flexible && courseFlux===2 ? 'block' : 'none'"  style="padding: 20px;">
           <div>
             {{"select_dates_to_book" | translate}}
           </div>
@@ -387,7 +389,7 @@
             </ng-container>
           </div>
         </div>
-        <div *ngIf="course?.course_type==2 && courseFlux===2" style="padding: 20px;">
+        <div [style.display]="course?.course_type==2 && courseFlux===2 ? 'block' : 'none'" style="padding: 20px;">
           <ng-container *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat mt-12 margin-auto">
               {{'text_select_date_disponibility' | translate }}
@@ -456,27 +458,51 @@
             </div>
           </ng-container>
         </div>
-        <div *ngIf="courseFlux===3" style="display: flex;padding: 20px;flex-direction: column;">
+        <div [style.display]="courseFlux===3 ? 'block' : 'none'" style="display: flex;padding: 20px;flex-direction: column;">
           <div> {{"add_extras_or_notes" |translate}} </div>
-          <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date])"
-               style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
-            {{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
-            <mat-checkbox *ngFor="let extra of settingsExtras"
-                          style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px"
-                          (click)="toggleForfaitSelection(extra)">
-              <div
-                style="display: flex;gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
-                <div>
-                  <span class="extra_product">{{extra.name}}</span>
-                  <br>
-                  <span class="extra_name">{{extra.description}}</span>
-                </div>
-                <span style="width: 125px;padding: 10px;">
+          <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
+            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date])"
+                 style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
+              {{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
+              <mat-checkbox *ngFor="let extra of settingsExtras"
+                            style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px"
+                            (click)="toggleForfaitSelection(extra)">
+                <div
+                  style="display: flex;gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="extra_product">{{extra.name}}</span>
+                    <br>
+                    <span class="extra_name">{{extra.description}}</span>
+                  </div>
+                  <span style="width: 125px;padding: 10px;">
 									{{extra.price|number:'0.2-2'}}{{course?.currency}}/{{'date' | translate}}
 								</span>
-              </div>
-            </mat-checkbox>
-          </div>
+                </div>
+              </mat-checkbox>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="course?.course_type === 1 && course?.is_flexible === true">
+            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date]) let i = index"
+                 style="display: flex; gap: 16px; padding-top: 20px; flex-direction: column;">
+              {{ (course.is_flexible ? date : '') | date:'dd.MM.yyyy' }}
+
+              <mat-checkbox *ngFor="let extra of settingsExtras"
+                            [checked]="isExtraSelected(extra, date)"
+                            style="width: 100%; border-radius: 3px; border: 1px solid rgba(34, 34, 34, 1); height: 64px"
+                            (change)="toggleForfaitSelectionCollective(extra, date)">
+                <div style="display: flex; gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="extra_product">{{ extra.name }}</span>
+                    <br>
+                    <span class="extra_name">{{ extra.description }}</span>
+                  </div>
+                  <span style="width: 125px; padding: 10px;">
+                  {{ extra.price | number:'0.2-2' }}{{ course?.currency }}/{{ 'date' | translate }}
+                 </span>
+                </div>
+              </mat-checkbox>
+            </div>
+          </ng-container>
           <div style="margin-top: 20px;">
             <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
               <mat-label>
@@ -528,6 +554,7 @@
 <app-course-modal-confirm *ngIf="confirmModal" [course]="course" [selectedDates]="selectedCourseDates"
                           [selectedUsers]="course.course_type===1?[selectedUser]:selectedUserMultiple"
                           [selectedForfait]="selectedForfait"
+                          [selectedForfaits]="selectedForfaits"
                           [selectedDuration]="selectedDuration"
                           [collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
                           (next)="addBookingToCart()">

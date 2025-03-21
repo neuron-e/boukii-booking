@@ -42,7 +42,8 @@ export class CourseComponent implements OnInit {
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
   selectedForfait: any[] = []
-  tooltipVisible: { [key: number]: boolean } = {}; // Controla la visibilidad de tooltips
+  tooltipVisible: boolean[] = []; // Ahora es un array en lugar de un objeto
+  selectedForfaits: { [date: string]: any[] } = {};
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -82,6 +83,14 @@ export class CourseComponent implements OnInit {
     this.checkScreenWidth();
   }
 
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    if (!(event.target as HTMLElement).closest('.tooltip-container') &&
+      !(event.target as HTMLElement).closest('.icon24')) {
+      this.tooltipVisible = this.tooltipVisible.map(() => false);
+    }
+  }
+
   SmallScreenModal: boolean = false
   isSmallScreen: boolean = false;
   @HostListener('window:resize', ['$event'])
@@ -93,11 +102,9 @@ export class CourseComponent implements OnInit {
   }
 
   showTooltip(index: number) {
+    // Cierra todos los tooltips antes de abrir el nuevo
+    this.tooltipVisible = this.tooltipVisible.map(() => false);
     this.tooltipVisible[index] = true;
-  }
-
-  hideTooltip(index: number) {
-    this.tooltipVisible[index] = false;
   }
 
   ngOnInit(): void {
@@ -118,12 +125,9 @@ export class CourseComponent implements OnInit {
       if (this.course.discounts) {
         try {
           const discounts = JSON.parse(this.course.discounts);
-          console.log(discounts);
         } catch (error) {
-          console.error("Error al parsear JSON de discounts:", error);
         }
       } else {
-        console.warn("La propiedad discounts está vacía o no definida.");
       }
       this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
@@ -157,11 +161,7 @@ export class CourseComponent implements OnInit {
         }
         this.renderCalendar();
       }
-      this.collectivePrice = this.course.price_range?.reduce((max: any, obj: any) => {
-        Object.values(obj).forEach((value: any) => {
-          if (value !== null && !isNaN(value)) max = Math.max(max, parseInt(value, 10));
-        }); return max;
-      }, -Infinity) || 0
+      this.collectivePrice = this.course.price;
     });
 
   }
@@ -267,9 +267,16 @@ export class CourseComponent implements OnInit {
     } else {
       if (this.course.is_flexible) {
         this.course.course_dates.forEach((date: any) => {
+          // Verifica si la fecha está en las fechas seleccionadas
           if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
+            // Encuentra el grupo correspondiente al nivel seleccionado
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
+
+            // Encuentra los extras de la fecha
+            const dateExtras = this.selectedForfaits[date.date] || [];  // Verifica si hay extras para esa fecha
+
+            // Agrega los usuarios con los extras correspondientes
             bookingUsers.push({
               'course': this.course,
               'client': this.selectedUser,
@@ -287,10 +294,10 @@ export class CourseComponent implements OnInit {
               'date': date.date,
               'hour_start': date.hour_start,
               'hour_end': date.hour_end,
-              'extra': this.selectedForfait
-            })
+              'extra': dateExtras  // Asignando los extras de la fecha
+            });
           }
-        })
+        });
       } else {
         this.course.course_dates.forEach((date: any) => {
           let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
@@ -520,7 +527,6 @@ export class CourseComponent implements OnInit {
         parseInt(parts[2], 10)
       );
     } else {
-      console.error('Formato de fecha de nacimiento no válido');
       return 0;
     }
     const fechaActual = new Date();
@@ -585,10 +591,8 @@ export class CourseComponent implements OnInit {
           }
         });
       } catch (error) {
-        console.error("Error al parsear JSON de discounts:", error);
       }
     } else {
-      console.warn("La propiedad discounts está vacía o no definida.");
     }
     this.collectivePrice = collectivePrice;
   }
@@ -776,17 +780,29 @@ export class CourseComponent implements OnInit {
       }, 0);
 
       // Mostrar el precio total de los extras
-      console.log('Total Extra Price:', extraPrice);
       return extraPrice;  // Puedes devolver el precio total si lo necesitas
     } else {
       // Si no hay extras seleccionados, mostrar un mensaje
-      console.log('No selected forfait');
       return 0;  // Retorna 0 si no hay forfait seleccionado
     }
   }
 
+  getExtraPriceCollective() {
+    // Verificar si selectedForfait tiene elementos
+    let totalPrice = 0;
+
+    Object.keys(this.selectedForfaits).forEach(date => {
+      const dateExtras = this.selectedForfaits[date] || [];
+      const dateExtraPrice = dateExtras.reduce((total, extra) => total + parseFloat(extra.price), 0);
+      totalPrice += dateExtraPrice;
+    });
+
+    return totalPrice;
+  }
+
+
   updatePrice(): void {
-    const selectedPax = this.selectedUserMultiple.length;
+    const selectedPax = this.selectedUserMultiple.length || 1;
     let extraPrice = this.getExtraPrice() * selectedPax;
     if(this.course.course_type == 2) {
       // Convertir selectedDuration en minutos (si es necesario)
@@ -814,7 +830,8 @@ export class CourseComponent implements OnInit {
     } else if(this.course.course_type == 1 && !this.course.is_flexible) {
         this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
     } else {
-        this.collectivePrice += this.getExtraPrice();
+        this.updateCollectivePrice();
+        this.collectivePrice = parseFloat(this.collectivePrice) + this.getExtraPriceCollective();
     }
 
   }
@@ -1047,6 +1064,30 @@ export class CourseComponent implements OnInit {
     }
     this.updatePrice();
   }
+  toggleForfaitSelectionCollective(extra: any, date: string): boolean {
+    if (!this.selectedForfaits[date]) {
+      this.selectedForfaits[date] = [];
+    }
+
+    const index = this.selectedForfaits[date].findIndex(e => e.name === extra.name);
+
+    if (index > -1) {
+      // ❌ Se elimina el extra
+      this.selectedForfaits[date].splice(index, 1);
+      this.updatePrice();
+      return false;
+    } else {
+      // ✅ Se agrega el extra
+      this.selectedForfaits[date].push(extra);
+      this.updatePrice();
+      return true;
+    }
+  }
+
+  isExtraSelected(extra: any, date: string): boolean {
+    return this.selectedForfaits[date]?.some(e => e.name === extra.name) ?? false;
+  }
+
   find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 
 }

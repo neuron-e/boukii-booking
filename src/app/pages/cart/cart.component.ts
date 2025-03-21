@@ -594,7 +594,7 @@ export class CartComponent implements OnInit {
         if (!cartItem.details[0].course.is_flexible) {
           total += parseFloat(cartItem.details[0].course.price);
         } else {
-          total += this.getTotalBasePrice(cartItem.details);
+          total += cartItem.details[0].price;
         }
       } else {
         total += this.getTotalBasePrice(cartItem.details);

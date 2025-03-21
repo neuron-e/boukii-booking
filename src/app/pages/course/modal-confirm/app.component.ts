@@ -15,6 +15,7 @@ export class CourseModalConfirmComponent {
   @Input() selectedDuration: any
   @Input() selectedUsers: any
   @Input() selectedForfait: any
+  @Input() selectedForfaits: { [key: string]: any[] } = {};  // Asegúrate de que esto sea un objeto que contenga arrays.
   @Input() collectivePrice: number = 0
 
   @Output() onClose = new EventEmitter<void>();
@@ -90,4 +91,6 @@ export class CourseModalConfirmComponent {
       return activeDays.join(', ');
     }
   }
+
+  protected readonly Object = Object;
 }

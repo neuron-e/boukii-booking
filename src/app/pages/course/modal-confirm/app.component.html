@@ -1,162 +1,180 @@
 <div class="modal">
-    <div class="modal-content background-color-full rounded-8">
-        <div class="text-color fw-semibold text-semibig modal-flex-title">
-            {{'your_reservation' | translate }}
-            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+  <div class="modal-content background-color-full rounded-8">
+    <div class="text-color fw-semibold text-semibig modal-flex-title">
+      {{'your_reservation' | translate }}
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+    </div>
+    <div class="modal-body">
+      <div style="gap: 8px;">
+        <img src="assets/icons/prive_ski2x.png" class="icon40" *ngIf="course?.course_type==2" />
+        <img src="assets/icons/collectif_ski2x.png" class="icon40" *ngIf="course?.course_type==1" />
+        <div class="blackL">
+          {{getCourseName(course)}}
+          <div class="greyS">
+            <ng-container *ngIf="course?.course_type==1">
+              {{'colective'|translate }}
+            </ng-container>
+            <ng-container *ngIf="course?.course_type==2">
+              {{'private'|translate }}
+            </ng-container>
+          </div>
         </div>
-        <div class="modal-body">
-            <div style="gap: 8px;">
-                <img src="assets/icons/prive_ski2x.png" class="icon40" *ngIf="course?.course_type==2" />
-                <img src="assets/icons/collectif_ski2x.png" class="icon40" *ngIf="course?.course_type==1" />
-                <div class="blackL">
-                    {{getCourseName(course)}}
-                    <div class="greyS">
-                        <ng-container *ngIf="course?.course_type==1">
-                            {{'colective'|translate }}
-                        </ng-container>
-                        <ng-container *ngIf="course?.course_type==2">
-                            {{'private'|translate }}
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-            <div style="flex-direction: column;align-items: flex-start;">
-                <div style="display: flex;gap: 8px; align-items: center;" class="greyL">
-                    <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
-                    {{'participant'|translate|uppercase}}
-                </div>
-                <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
-                    <app-level-user [allLevels]="courseC.dataLevels" [selectLevel]="185" [size]="40"
-                        [userImage]="selectedUser.image"></app-level-user>
-                    <div class="text-color text-small montserrat reservation-user-title">
-                        <div style="text-align: -webkit-left;">
+      </div>
+      <div style="flex-direction: column;align-items: flex-start;">
+        <div style="display: flex;gap: 8px; align-items: center;" class="greyL">
+          <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
+          {{'participant'|translate|uppercase}}
+        </div>
+        <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
+          <app-level-user [allLevels]="courseC.dataLevels" [selectLevel]="185" [size]="40"
+                          [userImage]="selectedUser.image"></app-level-user>
+          <div class="text-color text-small montserrat reservation-user-title">
+            <div style="text-align: -webkit-left;">
                             <span style="font-weight: 600;">
                                 {{selectedUser.first_name}}
-                                {{selectedUser.last_name}}
+                              {{selectedUser.last_name}}
                             </span>
-                            <img src="assets/images/gold-crown.png" *ngIf="courseC.userLogged.id===selectedUser.user_id"
-                                style="display: inline;vertical-align: baseline;">
-                            <br>
-                            <span style="color: #8B9099;font-size: 12px;">
+              <img src="assets/images/gold-crown.png" *ngIf="courseC.userLogged.id===selectedUser.user_id"
+                   style="display: inline;vertical-align: baseline;">
+              <br>
+              <span style="color: #8B9099;font-size: 12px;">
                                 {{courseC.getLanguage(selectedUser.language1_id)}}
-                                · {{courseC.getCountry(selectedUser.country)}} ·
-                                {{courseC.calculateAge(selectedUser.birth_date)}} {{'years' |
-                                translate }}
+                · {{courseC.getCountry(selectedUser.country)}} ·
+                {{courseC.calculateAge(selectedUser.birth_date)}} {{'years' |
+                translate }}
                             </span>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="dates" style="display: flex;gap: 8px;align-items: center;">
-                <div style="display: flex;align-items: center; gap: 8px;" class="greyL">
-                    <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
-                    {{'date_time'|translate|uppercase }}
-                </div>
-            </div>
-<!--            <div style="gap: 8px;align-items: center;">
-                <div>
-                    <span class="descripcion">
-                        {{"text_from" | translate}}
-                    </span>
-                    <span class="campo">
-                        {{course.date_start | date: 'dd.MM.yyyy' }}
-                    </span>
-                    <span class="descripcion">
-                        {{"text_till" | translate}}
-                    </span>
-                    <span class="campo">
-                        {{course.date_end | date: 'dd.MM.yyyy'}}
-                    </span>
-                </div>
-            </div>-->
-            <div class="dates" style="display: flex;gap: 4px;align-items: self-start;flex-direction: column;">
-                <ng-container *ngIf="course.course_type == 1 && !course.is_flexible">
-                    <div *ngFor="let date of course.course_dates" class="campo2">
+          </div>
+        </div>
+      </div>
+      <div class="dates" style="display: flex;gap: 8px;align-items: center;">
+        <div style="display: flex;align-items: center; gap: 8px;" class="greyL">
+          <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
+          {{'date_time'|translate|uppercase }}
+        </div>
+      </div>
+      <!--            <div style="gap: 8px;align-items: center;">
+                      <div>
+                          <span class="descripcion">
+                              {{"text_from" | translate}}
+                          </span>
+                          <span class="campo">
+                              {{course.date_start | date: 'dd.MM.yyyy' }}
+                          </span>
+                          <span class="descripcion">
+                              {{"text_till" | translate}}
+                          </span>
+                          <span class="campo">
+                              {{course.date_end | date: 'dd.MM.yyyy'}}
+                          </span>
+                      </div>
+                  </div>-->
+      <div class="dates" style="display: flex;gap: 4px;align-items: self-start;flex-direction: column;">
+        <ng-container *ngIf="course.course_type == 1 && !course.is_flexible">
+          <div *ngFor="let date of course.course_dates" class="campo2">
                         <span style="font-weight: 600;">
                             {{date.date | date: 'dd.MM.yyyy'}}
                         </span>
-                        <span style="color: #8B9099;">
+            <span style="color: #8B9099;">
                             {{date.hour_start}}h-{{date.hour_end}}h
                         </span>
-                    </div>
-                </ng-container>
-              <ng-container *ngIf="course.course_type == 1 && course.is_flexible">
-                <div *ngFor="let date of selectedDates" class="campo2">
+          </div>
+        </ng-container>
+        <ng-container *ngIf="course.course_type == 1 && course.is_flexible">
+          <div *ngFor="let date of selectedDates" class="campo2">
                         <span style="font-weight: 600;">
                             {{date.date | date: 'dd.MM.yyyy'}}
                         </span>
-                  <span style="color: #8B9099;">
+            <span style="color: #8B9099;">
                             {{date.hour_start}}h-{{date.hour_end}}h
                         </span>
-                </div>
-              </ng-container>
-                <ng-container *ngIf="course.course_type == 2">
-                  <div *ngFor="let date of selectedDates" class="campo2">
+          </div>
+        </ng-container>
+        <ng-container *ngIf="course.course_type == 2">
+          <div *ngFor="let date of selectedDates" class="campo2">
                         <span style="font-weight: 600;">
                             {{date.date | date: 'dd.MM.yyyy'}}
                         </span>
-                    <span style="color: #8B9099;">
+            <span style="color: #8B9099;">
                             {{date.hour_start}}h-{{date.hour_end}}h
                         </span>
 
-                    </div>
-                </ng-container>
-            </div>
-            <div *ngIf="selectedForfait.length>0">
-                <div class="greyL">
-                    {{'extras'|translate|uppercase}}
-                </div>
-            </div>
-            <div *ngIf="selectedForfait.length>0"
-                style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                <div *ngFor="let extra of selectedForfait" style="width: 100%;">
-                    <div>
-                        <span class="extra_product">{{extra.product}}</span>
-                        <br>
-                        <span class="extra_name">{{extra.name}}</span>
-                    </div>
-                    <span>
+          </div>
+        </ng-container>
+      </div>
+      <div *ngIf="selectedForfait.length>0">
+        <div class="greyL">
+          {{'extras'|translate|uppercase}}
+        </div>
+      </div>
+      <div *ngIf="selectedForfait.length>0"
+           style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div *ngFor="let extra of selectedForfait" style="width: 100%;">
+          <div>
+            <span class="extra_product">{{extra.product}}</span>
+            <br>
+            <span class="extra_name">{{extra.name}}</span>
+          </div>
+          <span>
                         {{extra.price|number:'0.2-2'}}{{course?.currency}} /{{'date' | translate}} {{'pax' | translate}} '
                     </span>
-                </div>
-            </div>
         </div>
-        <div style="padding: 20px;
+      </div>
+      <div *ngIf="Object.values(this.selectedForfaits).length>0">
+        <div class="greyL">
+          {{'extras'|translate|uppercase}}
+        </div>
+      </div>
+      <div *ngIf="Object.values(this.selectedForfaits).length>0"
+           style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div *ngFor="let extra of Object.values(this.selectedForfaits)[0]" style="width: 100%;">
+          <div>
+            <span class="extra_product">{{extra.product}}</span>
+            <br>
+            <span class="extra_name">{{extra.name}}</span>
+          </div>
+          <span>
+                {{extra.price|number:'0.2-2'}}{{course?.currency}} / {{Object.values(this.selectedForfaits).length}} {{'dates' | translate}}
+              </span>
+        </div>
+      </div>
+    </div>
+    <div style="padding: 20px;
         border-top: 2px solid rgba(222, 230, 234, 1);
         border-bottom: 2px solid rgba(222, 230, 234, 1);
         display: flex;
         justify-content: space-between;">
-            <div>
-                {{'text_price' | translate }}
-            </div>
-          <!-- Primer bloque: colectivo flexible -->
-          <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 1">
-            {{ collectivePrice | number:'0.2-2' }} {{ course.currency }}
-          </div>
+      <div>
+        {{'text_price' | translate }}
+      </div>
+      <!-- Primer bloque: colectivo flexible -->
+      <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 1">
+        {{ collectivePrice | number:'0.2-2' }} {{ course.currency }}
+      </div>
 
-          <!-- Segundo bloque: colectivo fijo o curso privado -->
-          <div class="blackL" *ngIf="!course?.is_flexible && (course.course_type == 1 || course.course_type == 2)">
-            {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
-          </div>
+      <!-- Segundo bloque: colectivo fijo o curso privado -->
+      <div class="blackL" *ngIf="!course?.is_flexible && (course.course_type == 1 || course.course_type == 2)">
+        {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
+      </div>
 
-        </div>
-        <div style="padding: 20px; display: flex; gap: 16px;flex-direction: column;">
-            <button (click)="next.emit();onClose.emit()" style="
+    </div>
+    <div style="padding: 20px; display: flex; gap: 16px;flex-direction: column;">
+      <button (click)="next.emit();onClose.emit()" style="
               background-color: rgba(233, 30, 99, 1);
               width: 100%;border-radius: 3px;
               height: 54px;padding: 10px 12px;
               color: white;
                font-weight: 600;" type="button">
-                {{'confirm_and_go_to_cart'|translate }}
-            </button>
-            <button (click)="next.emit();onClose.emit()" style="
+        {{'confirm_and_go_to_cart'|translate }}
+      </button>
+      <button (click)="next.emit();onClose.emit()" style="
                 border: 1px solid black;
               background-color: white;
               width: 100%;border-radius: 3px;
               height: 38px;padding: 10px 12px;
                font-weight: 600;" type="button">
-                {{'add_to_cart_and_make_another_reservation'|translate }}
-            </button>
-        </div>
+        {{'add_to_cart_and_make_another_reservation'|translate }}
+      </button>
     </div>
+  </div>
 </div>
