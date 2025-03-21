@@ -174,18 +174,18 @@
 								<span style="font-weight: 600;
                  margin-left: 8px;
                  word-wrap: break-word">
-									{{sport.degree.progress}}%
+									{{calculateGoalsScore(sport.degree)}}%
 								</span>
 							</div>
 							<div style="margin-top: 8px;">
-								<span *ngIf="sport.degree.progress<33" style="font-size: 12px;line-height: 16px;">
+								<span *ngIf="calculateGoalsScore(sport.degree)<33" style="font-size: 12px;line-height: 16px;">
 									{{"no_goals_achieved" | translate}}
 								</span>
-								<span *ngIf="sport.degree.progress>=33 && sport.degree.progress<100"
+								<span *ngIf="calculateGoalsScore(sport.degree)>=33 && calculateGoalsScore(sport.degree)<100"
 									style="font-size: 12px;line-height: 16px;">
 									{{"keep_going" | translate}}
 								</span>
-								<span *ngIf="sport.degree.progress===100" style="font-size: 12px;line-height: 16px;">
+								<span *ngIf="calculateGoalsScore(sport.degree)===100" style="font-size: 12px;line-height: 16px;">
 									{{"level_completed" | translate}}
 								</span>
 							</div>
@@ -213,38 +213,42 @@
 					}}
 				</ng-template>
 
-				<vex-flux-upload-img (upload)="onFileChanged($event)"></vex-flux-upload-img>
+        <vex-flux-upload-img [imagePreviewUrl]="defaults.image"
+                             (upload)="formInfoAccount.patchValue({image:$event});
+                             defaults.image=$event;defaultsUser.image=$event;imagePreviewUrl=$event"
+                             [edit]="true" [width]="200" [height]="200" [roundCropper]="true">
+        </vex-flux-upload-img>
 
 				<div class="modalInputD">
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{'name' | translate }}
 						</mat-label>
-						<input formControlName="name" matInput required type="text">
+						<input formControlName="first_name" [(ngModel)]="defaults.first_name" matInput required type="text">
 					</mat-form-field>
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{'surname' | translate }}
 						</mat-label>
-						<input formControlName="surname" matInput required type="text">
+						<input formControlName="last_name" [(ngModel)]="defaults.last_name" matInput required type="text">
 					</mat-form-field>
 					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{"text_email" | translate}}
 						</mat-label>
-						<input formControlName="email" matInput required type="mail">
+						<input formControlName="email" [(ngModel)]="defaults.email" matInput required type="mail">
 					</mat-form-field>
-					<mat-form-field appearance="outline" class="inputWidth">
+<!--					<mat-form-field appearance="outline" class="inputWidth">
 						<mat-label>
 							{{'username' | translate }}
 						</mat-label>
-						<input formControlName="username" matInput type="text">
-					</mat-form-field>
+						<input formControlName="username"  [(ngModel)]="defaults.username" matInput type="text">
+					</mat-form-field>-->
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'text_password' | translate }}
 						</mat-label>
-						<input formControlName="password" matInput type="password">
+						<input [(ngModel)]="defaultsUser.password" formControlName="password" matInput type="password">
 					</mat-form-field>
 				</div>
 
@@ -254,9 +258,9 @@
 						{{'go_preview' |
 						translate }}
 					</button>
-					<button [disabled]="formInfoAccount.invalid" color="accent"
-						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button matStepperNext>
-						{{'next' | translate}}
+					<button [disabled]="formInfoAccount.invalid" color="accent" (click)="save()"
+						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+						{{'save' | translate}}
 					</button>
 				</div>
 			</form>
@@ -271,7 +275,7 @@
 
 					<mat-form-field class="inputWidth" appearance="outline">
 						<input [matDatepicker]="pickerFrom" [max]="minDate" matInput
-							placeholder="{{'birth_date' | translate }}" formControlName="fromDate">
+							placeholder="{{'birth_date' | translate }}" formControlName="birth_date">
 						<mat-datepicker-toggle [for]="pickerFrom" matSuffix></mat-datepicker-toggle>
 						<mat-datepicker #pickerFrom [startAt]="minDate"></mat-datepicker>
 					</mat-form-field>
@@ -280,14 +284,14 @@
 							{{'phone' | translate }}
 						</mat-label>
 
-						<input formControlName="phone" matInput type="tel">
+						<input formControlName="telephone" matInput type="tel">
 					</mat-form-field>
 
 					<mat-form-field class="inputWidth" appearance="outline">
 						<mat-label>
 							{{'mobile' | translate }}
 						</mat-label>
-						<input formControlName="mobile" matInput required type="tel">
+						<input formControlName="phone" matInput required type="tel">
 
 					</mat-form-field>
 					<mat-form-field class="inputWidth" appearance="outline">
@@ -302,7 +306,7 @@
 						<mat-label>
 							{{'cp' | translate }}
 						</mat-label>
-						<input formControlName="postalCode" matInput type="text">
+						<input formControlName="cp" matInput type="text">
 
 					</mat-form-field>
 					<mat-form-field class="vex-flex-form-field flex-auto" appearance="outline">
@@ -361,9 +365,9 @@
 						{{'go_preview' |
 						translate }}
 					</button>
-					<button [disabled]="formPersonalInfo.invalid" color="accent"
-						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button matStepperNext>
-						{{'next' | translate}}
+					<button [disabled]="formPersonalInfo.invalid" color="accent" (click)="save()"
+						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+						{{'save' | translate}}
 					</button>
 				</div>
 
@@ -528,19 +532,19 @@
 						<mat-label>
 							{{'general' |translate}}
 						</mat-label>
-						<textarea formControlName="summary" matInput></textarea>
+						<textarea [(ngModel)]="defaultsObservations.general" formControlName="summary" matInput></textarea>
 					</mat-form-field>
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'observation_school' |translate}}
 						</mat-label>
-						<textarea formControlName="notes" matInput></textarea>
+						<textarea [(ngModel)]="defaultsObservations.notes" formControlName="notes" matInput></textarea>
 					</mat-form-field>
 					<mat-form-field style="width: 100%;" appearance="outline">
 						<mat-label>
 							{{'historical' | translate }}
 						</mat-label>
-						<textarea formControlName="hitorical" matInput></textarea>
+						<textarea [(ngModel)]="defaultsObservations.historical" formControlName="hitorical" matInput></textarea>
 					</mat-form-field>
 				</div>
 			</form>
@@ -550,10 +554,10 @@
 					{{'go_preview' |
 					translate }}
 				</button>
-				<button [disabled]="formSportInfo.invalid || formOtherInfo.invalid" color="accent"
-					style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button matStepperNext>
-					{{'next' | translate}}
-				</button>
+        <button [disabled]="formSportInfo.invalid || formOtherInfo.invalid" color="accent" (click)="save()"
+                style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+          {{'save' | translate}}
+        </button>
 			</div>
 		</mat-step>
 	</mat-vertical-stepper>

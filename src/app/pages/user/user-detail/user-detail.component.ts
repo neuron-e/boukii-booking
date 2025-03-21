@@ -142,7 +142,8 @@ export class UserDetailComponent {
   clientSport: any = [];
   clients: any = [];
   clientSchool: any = [];
-  goals: any = [];
+  @Input() goals: any = [];
+
   mainId: any;
   showDetail: boolean = false;
   detailData: any;
@@ -151,8 +152,8 @@ export class UserDetailComponent {
   isModalAddUser: boolean = false
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
-    private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
-    private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService, public userC: UserComponent) {
+              private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
+              private translateService: TranslateService, private authService: AuthService, private schoolService: SchoolService, public userC: UserComponent) {
 
     this.today = new Date();
     this.minDate = new Date(this.today);
@@ -160,16 +161,19 @@ export class UserDetailComponent {
   }
 
   ngOnInit(): void {
-    this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(
-      data => {
-        if (data) {
-          this.schoolData = data.data;
-          this.getInitialData().pipe(
-            switchMap(() => this.getData(this.idParent))
-          ).subscribe(() => { });
-        }
+    this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(data => {
+      if (data) {
+        this.schoolData = data.data;
+
+        forkJoin({
+          schoolSportDegrees: this.getSchoolSportDegrees(),
+          sports: this.getSports()
+        }).pipe(
+          switchMap(() => this.getInitialData()),
+          switchMap(() => this.getData(this.idParent))
+        ).subscribe(() => { });
       }
-    );
+    });
   }
 
   changeClientData(id: any) {
@@ -200,19 +204,19 @@ export class UserDetailComponent {
     return forkJoin(requestsInitial).pipe(tap((results) => {
       this.formInfoAccount = this.fb.group({
         image: [''],
-        name: ['', Validators.required],
-        surname: ['', Validators.required],
+        first_name: ['', Validators.required],
+        last_name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         username: [''],
         password: [''],
       });
 
       this.formPersonalInfo = this.fb.group({
-        fromDate: [''],
-        phone: [''],
-        mobile: ['', Validators.required],
+        birth_date: [''],
+        phone: ['', Validators.required],
+        telephone: [''],
         address: [''],
-        postalCode: [''],
+        cp: [''],
         lang: [''],
         country: this.myControlCountries,
         province: this.myControlProvinces
@@ -234,144 +238,217 @@ export class UserDetailComponent {
   }
 
   getData(id = null, onChangeUser = false) {
-
     return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
 
-      if (data !== null) {
-        this.mainId = data.clients[0].id;
-        this.mainClient = data;
-        const getId = id === null ? this.mainId : id;
-        this.id = getId;
-        this.defaultsUser = this.userC.defaultsUser
-        this.defaults = this.userC.defaults;
-        if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults[0];
-        else {
-          this.defaultsObservations = {
-            id: null,
-            general: '',
-            notes: '',
-            historical: '',
-            client_id: null,
-            school_id: null
-          };
-        }
-        this.currentImage = this.defaults.image;
-        this.clientSchool = this.userC.clientSchool
-        this.clientSport = this.userC.clientSport
-        this.selectedSport = this.clientSport[0];
+        if (data !== null) {
+          this.mainId = data.clients[0].id;
+          this.mainClient = data;
+          const getId = id === null ? this.mainId : id;
+          this.id = getId;
+          this.defaultsUser = this.userC.defaultsUser
+          this.defaults = this.userC.defaults;
+          this.setInitLanguages();
 
-        this.goals = [];
+          if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults.observations[0];
+          else {
+            this.defaultsObservations = {
+              id: null,
+              general: '',
+              notes: '',
+              historical: '',
+              client_id: null,
+              school_id: null
+            };
+          }
+          this.currentImage = this.defaults.image;
+          this.clientSchool = this.userC.clientSchool
+          this.clientSport = this.userC.clientSport
+          this.selectedSport = this.clientSport[0];
 
-        this.clientSport.forEach((element: any) => {
-          element.level = element.degree;
+          this.goals = [];
 
-        });
+          this.clientSport.forEach((element: any) => {
+            element.level = element.degree;
 
-        this.formInfoAccount = this.fb.group({
-          image: [''],
-          name: ['', Validators.required],
-          surname: ['', Validators.required],
-          email: ['', [Validators.required, Validators.email]],
-          username: [''],
-          password: [''],
-
-        });
-
-        this.formPersonalInfo = this.fb.group({
-          fromDate: [''],
-          phone: [''],
-          mobile: ['', Validators.required],
-          address: [''],
-          postalCode: [''],
-          lang: [''],
-          country: this.myControlCountries,
-          province: this.myControlProvinces
-
-        });
-
-        this.formSportInfo = this.fb.group({
-          sportName: [''],
-        });
-
-        this.formOtherInfo = this.fb.group({
-          summary: [''],
-          notes: [''],
-          hitorical: ['']
-        });
-
-        if (!onChangeUser) {
-
-          this.filteredCountries = this.myControlCountries.valueChanges.pipe(
-            startWith(''),
-            map(value => typeof value === 'string' ? value : value.name),
-            map(name => name ? this._filterCountries(name) : this.countries.slice())
-          );
-
-          this.myControlCountries.valueChanges.subscribe(country => {
-            this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
-            this.filteredProvinces = this._filterProvinces(country?.id);
           });
 
-          /*this.filteredLevel = this.levelForm.valueChanges.pipe(
-            startWith(''),
-            map((value: any) => typeof value === 'string' ? value : value?.annotation),
-            map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
-          );*/
+          this.formInfoAccount.patchValue({
+            image: this.defaults?.image ?? '',
+            first_name: this.defaults?.first_name ?? '',
+            last_name: this.defaults?.last_name ?? '',
+            email: this.defaults?.email ?? '',
+            username: this.defaults?.username ?? '',
+            password: '' // Mantener vacío por seguridad
+          });
 
-          this.filteredLanguages = this.languagesControl.valueChanges.pipe(
-            startWith(''),
-            map(language => (language ? this._filterLanguages(language) : this.userC.languages.slice()))
-          );
+          // ✅ Rellenar el formulario de información personal
+          this.formPersonalInfo.patchValue({
+            birth_date: this.defaults?.birth_date ?? '',
+            phone: this.defaults?.phone ?? '',
+            telephone: this.defaults?.telephone ?? '',
+            address: this.defaults?.address ?? '',
+            cp: this.defaults?.cp ?? '',
+            lang: this.defaults?.lang ?? '',
+            country: this.countries.find((c: any) => c.id === +this.defaults?.country) ?? null,
+            province: this.provinces.find((c: any) => c.id === +this.defaults?.province) ?? null
+          });
+
+          // ✅ Rellenar el formulario de información deportiva
+          this.formSportInfo.patchValue({
+            sportName: this.selectedSport?.sport_name ?? ''
+          });
+
+          // ✅ Rellenar el formulario de otra información
+          this.formOtherInfo.patchValue({
+            summary: this.defaults?.observations[0]?.general ?? '',
+            notes: this.defaults?.observations[0]?.notes ?? '',
+            hitorical: this.defaults?.observations[0]?.historical ?? ''
+          });
+
+          if (!onChangeUser) {
+
+            this.filteredCountries = this.myControlCountries.valueChanges.pipe(
+              startWith(''),
+              map(value => typeof value === 'string' ? value : value.name),
+              map(name => name ? this._filterCountries(name) : this.countries.slice())
+            );
+
+            this.myControlCountries.valueChanges.subscribe(country => {
+              this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
+              this.filteredProvinces = this._filterProvinces(country?.id);
+            });
+
+            /*this.filteredLevel = this.levelForm.valueChanges.pipe(
+              startWith(''),
+              map((value: any) => typeof value === 'string' ? value : value?.annotation),
+              map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
+            );*/
+
+            this.filteredLanguages = this.languagesControl.valueChanges.pipe(
+              startWith(''),
+              map(language => (language ? this._filterLanguages(language) : this.userC.languages.slice()))
+            );
+
+          }
+
+
+          this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
+          this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
+          this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
+          this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
+            this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
+            || this.defaults?.language5_id || this.defaults?.language6_id)));
+
+          this.loading = false;
 
         }
-
-
-        this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
-        this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
-        this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
-        this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
-          this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
-          || this.defaults?.language5_id || this.defaults?.language6_id)));
-
-        this.loading = false;
-
-      }
-      return of(null);
-    }),
+        return of(null);
+      }),
       catchError(error => {
         console.error('Error in getData:', error);
         return of(null); // Handle error and provide fallback
       }))
   }
 
+  calculateGoalsScore(level): number {
+    let ret = 0;
+
+    if (level) {
+      const goalsx = level.degrees_school_sport_goals.filter((g: any) => g.degree_id === level.id);
+      const maxPoints = goalsx.length * 10;
+
+      for (const goal of goalsx) {
+        this.defaults.evaluations.forEach((evaluation: any) => {
+          evaluation.evaluation_fulfilled_goals.forEach((element: any) => {
+            if (element.degrees_school_sport_goals_id === goal.id) {
+              ret += element.score;
+            }
+          });
+        });
+      }
+
+      ret = ret > maxPoints ? maxPoints : ret;
+      return maxPoints > 0 ? Math.round((ret / maxPoints) * 100) : 0;
+    }
+
+    return 0;
+  }
 
   getSchoolSportDegrees() {
-    return
-    this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
-      this.schoolData.id, '', null, '', ['sport', 'degrees.degreesSchoolSportGoals'])
-      .pipe(
-        map((sport) => {
-          this.schoolSports = sport.data;
-          this.schoolSports.forEach((sport: any) => {
-            sport.name = sport.sport.name;
-            sport.icon_selected = sport.sport.icon_selected;
-            sport.icon_unselected = sport.sport.icon_unselected;
-            sport.degrees.forEach((degree: any) => {
-              degree.degrees_school_sport_goals.forEach((goal: any) => {
-                this.goals.push(goal);
-              });
-            });
+    return this.crudService.list('/school-sports', 1, 10000, 'desc', 'id', '&school_id=' +
+      this.schoolData.id, '', null, '', ['sport', 'degrees.degreesSchoolSportGoals']
+    ).pipe(
+      map((sport) => {
+        this.schoolSports = sport.data;
+        this.goals = [];
 
-            this.clientSport.forEach((element: any) => {
-              if (element.sport_id === sport.sport_id) {
-                element.name = sport.name;
-                element.icon_selected = sport.icon_selected;
-                element.icon_unselected = sport.icon_unselected;
-                element.degrees = sport.degrees;
+        this.schoolSports.forEach((sport: any) => {
+          sport.name = sport.sport.name;
+          sport.icon_selected = sport.sport.icon_selected;
+          sport.icon_unselected = sport.sport.icon_unselected;
+
+          sport.degrees.forEach((degree: any) => {
+            degree.degrees_school_sport_goals.forEach((goal: any) => {
+              this.goals.push(goal);
+            });
+          });
+
+          this.clientSport.forEach((element: any) => {
+            if (element.sport_id === sport.sport_id) {
+              element.name = sport.name;
+              element.icon_selected = sport.icon_selected;
+              element.icon_unselected = sport.icon_unselected;
+              element.degrees = sport.degrees;
+            }
+          });
+        });
+
+        this.sportsCurrentData.data = this.clientSport;
+
+        const availableSports: any = [];
+        this.schoolSports.forEach((element: any) => {
+          if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
+            availableSports.push(element);
+          }
+        });
+
+        this.filteredSports = this.sportsControl.valueChanges.pipe(
+          startWith(''),
+          map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
+        );
+        return sport; // Retorna los datos para que `forkJoin` pueda esperar su finalización
+      })
+    );
+  }
+
+  getSports() {
+    return this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        map((data) => {
+          data.data.forEach((element: any) => {
+            this.schoolSports.forEach((sport: any) => {
+              if (element.id === sport.sport_id) {
+                sport.name = element.name;
+                sport.icon_selected = element.icon_selected;
+                sport.icon_unselected = element.icon_unselected;
               }
             });
           });
+
+          this.schoolSports.forEach((element: any) => {
+            this.clientSport.forEach((sport: any) => {
+              if (element.sport_id === sport.sport_id) {
+                sport.name = element.name;
+                sport.icon_selected = element.icon_selected;
+                sport.icon_unselected = element.icon_unselected;
+                sport.degrees = element.degrees;
+              }
+            });
+          });
+
           this.sportsCurrentData.data = this.clientSport;
+
           const availableSports: any = [];
           this.schoolSports.forEach((element: any) => {
             if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
@@ -384,53 +461,9 @@ export class UserDetailComponent {
             map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
           );
 
-
-          //return this.getGoals();
+          return data; // Retorna los datos para que `forkJoin` pueda esperar su finalización
         })
       );
-  }
-
-
-  getSports() {
-    this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id=' + this.schoolData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        data.data.forEach((element: any) => {
-          this.schoolSports.forEach((sport: any) => {
-            if (element.id === sport.sport_id) {
-              sport.name = element.name;
-              sport.icon_selected = element.icon_selected;
-              sport.icon_unselected = element.icon_unselected;
-            }
-          });
-        });
-
-        this.schoolSports.forEach((element: any) => {
-
-          this.clientSport.forEach((sport: any) => {
-            if (element.sport_id === sport.sport_id) {
-              sport.name = element.name;
-              sport.icon_selected = element.icon_selected;
-              sport.icon_unselected = element.icon_unselected;
-              sport.degrees = element.degrees;
-            }
-          });
-        });
-
-
-        this.sportsCurrentData.data = this.clientSport;
-
-        const availableSports: any = [];
-        this.schoolSports.forEach((element: any) => {
-          if (!this.sportsCurrentData.data.find((s: any) => s.sport_id === element.sport_id)) {
-            availableSports.push(element);
-          }
-        });
-        this.filteredSports = this.sportsControl.valueChanges.pipe(
-          startWith(''),
-          map((sport: string | null) => sport ? this._filterSports(sport) : availableSports.slice())
-        );
-      })
   }
 
   getDegrees() {
@@ -674,18 +707,39 @@ export class UserDetailComponent {
     this.defaultsUser.active = event.checked;
   }
 
+  formatDate = (date: Date | string): string => {
+    // Convertir a objeto Date si es un string
+    const validDate = typeof date === 'string' ? new Date(date) : date;
+
+    // Verificar si el objeto Date es válido
+    if (isNaN(validDate.getTime())) {
+      throw new Error('Invalid date format');
+    }
+
+    const day = validDate.getDate().toString().padStart(2, '0');
+    const month = (validDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = validDate.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  };
+
   save() {
     this.setLanguages();
 
     if (this.currentImage === this.defaults.image) {
       delete this.defaults.image;
       delete this.defaultsUser.image;
+    } else {
+      this.defaultsUser.image = this.imagePreviewUrl;
+      this.defaults.image = this.imagePreviewUrl;
     }
 
+    if (this.defaultsUser.password === '') delete this.defaultsUser.password;
     this.crudService.update('/users', this.defaultsUser, this.defaultsUser.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
         this.defaults.user_id = user.data.id;
+        this.defaults.birth_date = this.formatDate(this.defaults.birth_date)
 
         this.crudService.update('/clients', this.defaults, this.id)
           .pipe(takeUntil(this.destroy$))

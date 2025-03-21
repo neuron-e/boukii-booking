@@ -4,7 +4,7 @@
     <div style="align-items: center">
         <span
             style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;font-size: 12px;line-height: 16px;"
-            [style.background]="selectedSport.degree.color">
+            [style.background]="level?.color">
             {{level?.annotation}} /
             {{level?.name}}
         </span>
@@ -59,7 +59,7 @@
             style="color: #8B9099;font-size: 12px;font-weight: 600;line-height: 16px;">
             {{'multimedia' | translate }}
         </span>
-        <div *ngIf="user.getEvaluationsData().length===0"
+<!--        <div *ngIf="user.getEvaluationsData(level).length===0"
             style="display: flex;justify-content: space-between;">
             <div *ngFor="let item of [1,2,3]" style="width: 72px;">
                 <img src="assets/icons/blank.png" class="icon72" alt>
@@ -67,15 +67,15 @@
                     {{"comment_previous" | translate}}
                 </span>
             </div>
-        </div>
+        </div>-->
         <span
-            *ngIf="user.getEvaluationsData().length === 0"
+            *ngIf="user.getEvaluationsData(level).length === 0 || user.getEvaluationsData(level)[0].files?.length === 0"
             style="font-size: 12px; line-height: 16px;">
             {{'no_data' | translate }}
         </span>
         <div
             style="float: left; width: 100%; border-radius: 10px;"
-            *ngFor="let item of user.getEvaluationsData()">
+            *ngFor="let item of user.getEvaluationsData(level)">
             <ng-container
                 style="float: left; width: 25%; border-radius: 10px;"
                 *ngFor="let file of item.files">
@@ -96,13 +96,13 @@
             {{'monitor_comments' | translate }}
         </span>
         <span
-            *ngIf="user.getEvaluationsData().length === 0"
+            *ngIf="user.getEvaluationsData(level).length === 0"
             style="font-size: 12px;line-height: 16px;">
             {{'no_data' | translate }}
         </span>
         <mat-form-field class="flex-auto"
             style="width: 100%"
-            *ngFor="let item of user.getEvaluationsData()">
+            *ngFor="let item of user.getEvaluationsData(level)">
             <input matInput [readonly]=true type="text"
                 [value]="item.observations">
         </mat-form-field>

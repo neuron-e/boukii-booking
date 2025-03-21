@@ -56,7 +56,7 @@
 
   <mat-tab-group (selectedIndexChange)="onTabChange($event)" class="tabsWrapper">
     <mat-tab label="{{'data' | translate}}">
-      <app-user-detail #userDetail [idParent]="id" (idChange)="id=$event;this.getData()"></app-user-detail>
+      <app-user-detail #userDetail [idParent]="id" (idChange)="id=$event;this.getData()" [goals]="sportCard"></app-user-detail>
     </mat-tab>
     <mat-tab label="{{'sports' | translate}}">
       <div>
@@ -90,7 +90,7 @@
             </div>
             <div *ngIf="!loading && selectedSport && sportCard.length>0" class="flex-sections-user flowcardGroup">
               <app-user-detail-sport-card *ngFor="let item of sportCard; index as i" [selectedSport]="selectedSport"
-                [level]="allLevels[i]" [goals]="item" [center]="i === centeredCardIndex">
+                [level]="item.degree" [goals]="item.goals" [center]="i === centeredCardIndex">
               </app-user-detail-sport-card>
             </div>
           </div>
