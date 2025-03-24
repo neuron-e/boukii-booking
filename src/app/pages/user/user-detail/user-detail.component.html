@@ -244,7 +244,7 @@
 						</mat-label>
 						<input formControlName="username"  [(ngModel)]="defaults.username" matInput type="text">
 					</mat-form-field>-->
-					<mat-form-field style="width: 100%;" appearance="outline">
+					<mat-form-field style="width: 100%;" appearance="outline" *ngIf="defaultsUser">
 						<mat-label>
 							{{'text_password' | translate }}
 						</mat-label>
@@ -405,7 +405,7 @@
 					</mat-form-field>
 
 					<!-- Añadir niños con modal -->
-					<mat-table #sportsCurrentTable [dataSource]="sportsCurrentData">
+					<mat-table #sportsCurrentTable [dataSource]="sportsCurrentData" *ngIf="sportsCurrentData.data.length">
 						<caption style="width: 200px">
 							{{'current_sport' | translate
 							}}
@@ -443,8 +443,8 @@
 										aria-label="Number" matInput>
 									<mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
 										<mat-option *ngFor="let level of element?.degrees" [value]="level"
-											(onSelectionChange)="element.level = level"
-											(onSelectionChange)="updateLevel(element, level)">
+											(onSelectionChange)="element.level = level">
+<!--											(onSelectionChange)="updateLevel(element, level)"-->
 											{{level.annotation}} - {{level.name}}
 										</mat-option>
 									</mat-autocomplete>

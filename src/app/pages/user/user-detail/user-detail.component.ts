@@ -161,20 +161,19 @@ export class UserDetailComponent {
   }
 
   ngOnInit(): void {
-    this.schoolService.getSchoolData().pipe(takeUntil(this.destroy$)).subscribe(data => {
-      if (data) {
-        this.schoolData = data.data;
-
-        forkJoin({
-          schoolSportDegrees: this.getSchoolSportDegrees(),
-          sports: this.getSports()
-        }).pipe(
-          switchMap(() => this.getInitialData()),
-          switchMap(() => this.getData(this.idParent))
-        ).subscribe(() => { });
-      }
-    });
+    this.schoolService.getSchoolData().pipe(
+      takeUntil(this.destroy$),
+      switchMap(data => {
+        if (data) {
+          this.schoolData = data.data;
+          return this.getInitialData();
+        }
+        return of(null);
+      }),
+      switchMap(() => this.getData(this.idParent))
+    ).subscribe();
   }
+
 
   changeClientData(id: any) {
     this.loading = true;
@@ -238,108 +237,137 @@ export class UserDetailComponent {
   }
 
   getData(id = null, onChangeUser = false) {
-    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
-
+    return this.authService.getUserData().pipe(
+      takeUntil(this.destroy$),
+      switchMap((data: any) => {
         if (data !== null) {
           this.mainId = data.clients[0].id;
           this.mainClient = data;
           const getId = id === null ? this.mainId : id;
           this.id = getId;
-          this.defaultsUser = this.userC.defaultsUser
-          this.defaults = this.userC.defaults;
-          this.setInitLanguages();
 
-          if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults.observations[0];
-          else {
-            this.defaultsObservations = {
-              id: null,
-              general: '',
-              notes: '',
-              historical: '',
-              client_id: null,
-              school_id: null
-            };
-          }
+          this.defaultsUser = this.userC.defaultsUser;
+          this.defaults = this.userC.defaults; // ✅ Ahora this.defaults está definido
           this.currentImage = this.defaults.image;
           this.clientSchool = this.userC.clientSchool
           this.clientSport = this.userC.clientSport
           this.selectedSport = this.clientSport[0];
 
-          this.goals = [];
+          // Obtener los deportes después de que defaults esté disponible
+          return forkJoin({
+            sports: this.getSports(),
+            schoolSportDegrees: this.getSchoolSportDegrees()
+          }).pipe(
+            tap(({ sports, schoolSportDegrees }) => {
+              this.setInitLanguages();
+              this.processUserData(onChangeUser); // Procesar los datos del usuario
+            })
+          );
+        }
+        return of(null);
+      }),
+      catchError(error => {
+        console.error('Error in getData:', error);
+        return of(null);
+      })
+    );
+  }
 
-          this.clientSport.forEach((element: any) => {
-            element.level = element.degree;
+  private processUserData(onChangeUser: boolean) {
+    if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults.observations[0];
+    else {
+      this.defaultsObservations = {
+        id: null,
+        general: '',
+        notes: '',
+        historical: '',
+        client_id: null,
+        school_id: null
+      };
+    }
 
-          });
+    this.goals = [];
 
-          this.formInfoAccount.patchValue({
-            image: this.defaults?.image ?? '',
-            first_name: this.defaults?.first_name ?? '',
-            last_name: this.defaults?.last_name ?? '',
-            email: this.defaults?.email ?? '',
-            username: this.defaults?.username ?? '',
-            password: '' // Mantener vacío por seguridad
-          });
+    this.clientSport.forEach((element: any) => {
+      element.level = element.degree;
 
-          // ✅ Rellenar el formulario de información personal
-          this.formPersonalInfo.patchValue({
-            birth_date: this.defaults?.birth_date ?? '',
-            phone: this.defaults?.phone ?? '',
-            telephone: this.defaults?.telephone ?? '',
-            address: this.defaults?.address ?? '',
-            cp: this.defaults?.cp ?? '',
-            lang: this.defaults?.lang ?? '',
-            country: this.countries.find((c: any) => c.id === +this.defaults?.country) ?? null,
-            province: this.provinces.find((c: any) => c.id === +this.defaults?.province) ?? null
-          });
+    });
 
-          // ✅ Rellenar el formulario de información deportiva
-          this.formSportInfo.patchValue({
-            sportName: this.selectedSport?.sport_name ?? ''
-          });
+    this.formInfoAccount.patchValue({
+      image: this.defaults?.image ?? '',
+      first_name: this.defaults?.first_name ?? '',
+      last_name: this.defaults?.last_name ?? '',
+      email: this.defaults?.email ?? '',
+      username: this.defaults?.username ?? '',
+      password: '' // Mantener vacío por seguridad
+    });
 
-          // ✅ Rellenar el formulario de otra información
-          this.formOtherInfo.patchValue({
-            summary: this.defaults?.observations[0]?.general ?? '',
-            notes: this.defaults?.observations[0]?.notes ?? '',
-            hitorical: this.defaults?.observations[0]?.historical ?? ''
-          });
+    // ✅ Rellenar el formulario de información personal
+    this.formPersonalInfo.patchValue({
+      birth_date: this.defaults?.birth_date ?? '',
+      phone: this.defaults?.phone ?? '',
+      telephone: this.defaults?.telephone ?? '',
+      address: this.defaults?.address ?? '',
+      cp: this.defaults?.cp ?? '',
+      lang: this.defaults?.lang ?? '',
+      country: this.countries.find((c: any) => c.id === +this.defaults?.country) ?? null,
+      province: this.provinces.find((c: any) => c.id === +this.defaults?.province) ?? null
+    });
 
-          if (!onChangeUser) {
+    // ✅ Rellenar el formulario de información deportiva
+    this.formSportInfo.patchValue({
+      sportName: this.selectedSport?.sport_name ?? ''
+    });
 
-            this.filteredCountries = this.myControlCountries.valueChanges.pipe(
-              startWith(''),
-              map(value => typeof value === 'string' ? value : value.name),
-              map(name => name ? this._filterCountries(name) : this.countries.slice())
-            );
+    // ✅ Rellenar el formulario de otra información
+    this.formOtherInfo.patchValue({
+      summary: this.defaults?.observations[0]?.general ?? '',
+      notes: this.defaults?.observations[0]?.notes ?? '',
+      hitorical: this.defaults?.observations[0]?.historical ?? ''
+    });
 
-            this.myControlCountries.valueChanges.subscribe(country => {
-              this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
-              this.filteredProvinces = this._filterProvinces(country?.id);
-            });
+    if (!onChangeUser) {
 
-            /*this.filteredLevel = this.levelForm.valueChanges.pipe(
-              startWith(''),
-              map((value: any) => typeof value === 'string' ? value : value?.annotation),
-              map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
-            );*/
+      this.filteredCountries = this.myControlCountries.valueChanges.pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(name => name ? this._filterCountries(name) : this.countries.slice())
+      );
 
-            this.filteredLanguages = this.languagesControl.valueChanges.pipe(
-              startWith(''),
-              map(language => (language ? this._filterLanguages(language) : this.userC.languages.slice()))
-            );
+      this.myControlCountries.valueChanges.subscribe(country => {
+        this.myControlProvinces.setValue('');  // Limpia la selección anterior de la provincia
+        this.filteredProvinces = this._filterProvinces(country?.id);
+      });
 
-          }
+      /*this.filteredLevel = this.levelForm.valueChanges.pipe(
+        startWith(''),
+        map((value: any) => typeof value === 'string' ? value : value?.annotation),
+        map(annotation => annotation ? this._filterLevel(annotation) : this.mockLevelData.slice())
+      );*/
+
+      this.filteredLanguages = this.languagesControl.valueChanges.pipe(
+        startWith(''),
+        map(language => (language ? this._filterLanguages(language) : this.userC.languages.slice()))
+      );
+
+    }
 
 
-          this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
-          this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
-          this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
-          this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
-            this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
-            || this.defaults?.language5_id || this.defaults?.language6_id)));
+    this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
+    this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
+    this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
+    this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
+      this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
+      || this.defaults?.language5_id || this.defaults?.language6_id)));
 
-          this.loading = false;
+    this.loading = false;
+
+  }
+
+/*  getData(id = null, onChangeUser = false) {
+    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
+
+        if (data !== null) {
 
         }
         return of(null);
@@ -348,7 +376,7 @@ export class UserDetailComponent {
         console.error('Error in getData:', error);
         return of(null); // Handle error and provide fallback
       }))
-  }
+  }*/
 
   calculateGoalsScore(level): number {
     let ret = 0;
@@ -699,7 +727,10 @@ export class UserDetailComponent {
     this.crudService.update('/client-sports', { client_id: clientSport.id, sport_id: clientSport.sport_id, degree_id: level.id, school_id: this.schoolData.id }, clientSport.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.snackbar.open(this.translateService.instant('snackbar.client.level_updated'), 'OK', { duration: 3000 });
+        this.getData(this.id, true).subscribe(results => {
+          this.snackbar.open(this.translateService.instant('snackbar.client.level_updated'), 'OK', { duration: 3000 });
+        });
+
       })
   }
 
@@ -728,57 +759,65 @@ export class UserDetailComponent {
 
     if (this.currentImage === this.defaults.image) {
       delete this.defaults.image;
-      delete this.defaultsUser.image;
+      if(this.defaultsUser) delete this.defaultsUser.image;
     } else {
-      this.defaultsUser.image = this.imagePreviewUrl;
+      if(this.defaultsUser) this.defaultsUser.image = this.imagePreviewUrl;
       this.defaults.image = this.imagePreviewUrl;
     }
+    this.defaults.birth_date = this.formatDate(this.defaults.birth_date)
+    if (this.defaultsUser && this.defaultsUser.password === '') delete this.defaultsUser.password;
+    // Verificar si defaultsUser está definido antes de actualizarlo
+    if (this.defaultsUser) {
+      this.crudService.update('/users', this.defaultsUser, this.defaultsUser.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => {
+          this.defaults.user_id = user.data.id; // Actualizar el user_id con el ID del usuario actualizado
+          this.updateClientData(); // Llamar a la función para actualizar el cliente después de actualizar el usuario
+        });
+    } else {
+      // Si defaultsUser no existe, solo actualizamos el cliente
+      this.updateClientData();
+    }
 
-    if (this.defaultsUser.password === '') delete this.defaultsUser.password;
-    this.crudService.update('/users', this.defaultsUser, this.defaultsUser.id)
+  }
+
+  updateClientData() {
+    this.crudService.update('/clients', this.defaults, this.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((user) => {
-        this.defaults.user_id = user.data.id;
-        this.defaults.birth_date = this.formatDate(this.defaults.birth_date)
+      .subscribe((client) => {
+        this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
 
-        this.crudService.update('/clients', this.defaults, this.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((client) => {
-            this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
+        this.defaultsObservations.client_id = client.data.id;
+        this.defaultsObservations.school_id = this.schoolData.id;
+        if (this.defaultsObservations.id) {
+          this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((obs) => { });
+        }
 
-            this.defaultsObservations.client_id = client.data.id;
-            this.defaultsObservations.school_id = this.schoolData.id;
-            if (this.defaultsObservations.id) {
-              this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((obs) => { })
+        // Crear o actualizar los deportes del cliente
+        this.sportsData.data.forEach((element: any) => {
+          this.crudService.create('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id })
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => { });
+        });
 
-            }
+        this.sportsCurrentData.data.forEach((element: any) => {
+          this.crudService.update('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id }, element.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => { });
+        });
 
-            this.sportsData.data.forEach((element: any) => {
+        // Después de 2 segundos, actualizamos los datos
+        setTimeout(() => {
+          this.editing = false;
+          this.editSportInfo = false;
+          this.sportsData.data = [];
+          this.getData(this.id, true).subscribe(results => {
 
-              this.crudService.create('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id })
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(() => { })
-            });
-
-            this.sportsCurrentData.data.forEach((element: any) => {
-
-              this.crudService.update('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id }, element.id)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(() => { })
-            });
-
-            setTimeout(() => {
-              //this.router.navigate(['/clients']);
-              this.editing = false;
-              this.editSportInfo = false;
-              this.sportsData.data = [];
-              this.getData(this.id);
-
-            }, 2000);
-          })
-      })
+          });
+        }, 2000);
+      });
   }
 
   onTabChange(event: any) {
