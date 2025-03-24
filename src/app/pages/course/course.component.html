@@ -461,7 +461,7 @@
         <div [style.display]="courseFlux===3 ? 'block' : 'none'" style="display: flex;padding: 20px;flex-direction: column;">
           <div> {{"add_extras_or_notes" |translate}} </div>
           <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
-            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date])"
+            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date])"
                  style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
               {{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
               <mat-checkbox *ngFor="let extra of settingsExtras"
@@ -482,7 +482,7 @@
             </div>
           </ng-container>
           <ng-container *ngIf="course?.course_type === 1 && course?.is_flexible === true">
-            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation.date]) let i = index"
+            <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date]) let i = index"
                  style="display: flex; gap: 16px; padding-top: 20px; flex-direction: column;">
               {{ (course.is_flexible ? date : '') | date:'dd.MM.yyyy' }}
 
