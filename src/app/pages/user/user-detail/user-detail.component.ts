@@ -236,6 +236,38 @@ export class UserDetailComponent {
 
   }
 
+  updateData() {
+    this.loading = true;
+    return this.crudService.get(`/clients/${this.id}`, [
+      'user',
+      'clientSports.degree.degreesSchoolSportGoals',
+      'clientSports.sport',
+      'evaluations.evaluationFulfilledGoals.degreeSchoolSportGoal.degree',
+      'evaluations.degree',
+      'observations'
+    ])
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(client => {
+          this.defaultsUser = client.data.user;
+          this.defaults = client.data;
+          this.currentImage = this.defaults.image;
+          this.clientSchool = this.userC.clientSchool;
+          this.clientSport = this.userC.clientSport;
+          this.selectedSport = this.clientSport[0];
+
+          return forkJoin({
+            sports: this.getSports(),
+            schoolSportDegrees: this.getSchoolSportDegrees()
+          });
+        }),
+        tap(() => {
+          this.setInitLanguages();
+          this.processUserData(true);
+        })
+      ).subscribe();
+  }
+
   getData(id = null, onChangeUser = false) {
     return this.authService.getUserData().pipe(
       takeUntil(this.destroy$),
@@ -356,27 +388,24 @@ export class UserDetailComponent {
     this.myControlStations.setValue(this.stations.find((s: any) => s.id === this.defaults.active_station)?.name);
     this.myControlCountries.setValue(this.countries.find((c: any) => c.id === +this.defaults.country));
     this.myControlProvinces.setValue(this.provinces.find((c: any) => c.id === +this.defaults.province));
-    this.languagesControl.setValue(this.userC.languages.filter((l: any) => l.id === (this.defaults?.language1_id ||
-      this.defaults?.language2_id || this.defaults?.language3_id || this.defaults?.language4_id
-      || this.defaults?.language5_id || this.defaults?.language6_id)));
 
     this.loading = false;
 
   }
 
-/*  getData(id = null, onChangeUser = false) {
-    return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
+  /*  getData(id = null, onChangeUser = false) {
+      return this.authService.getUserData().pipe(takeUntil(this.destroy$), switchMap((data: any) => {
 
-        if (data !== null) {
+          if (data !== null) {
 
-        }
-        return of(null);
-      }),
-      catchError(error => {
-        console.error('Error in getData:', error);
-        return of(null); // Handle error and provide fallback
-      }))
-  }*/
+          }
+          return of(null);
+        }),
+        catchError(error => {
+          console.error('Error in getData:', error);
+          return of(null); // Handle error and provide fallback
+        }))
+    }*/
 
   calculateGoalsScore(level): number {
     let ret = 0;
@@ -554,15 +583,6 @@ export class UserDetailComponent {
     }
   }
 
-  getLanguages() {
-    return this.crudService.list('/languages', 1, 1000)
-      .pipe(takeUntil(this.destroy$), tap((data) => {
-        this.userC.languages = data.data.reverse();
-        this.setInitLanguages();
-      }))
-  }
-
-
   private _filterCountries(name: string): any[] {
     const filterValue = name.toLowerCase();
     return this.countries.filter((country: any) => country.name.toLowerCase().includes(filterValue));
@@ -638,12 +658,7 @@ export class UserDetailComponent {
   }
 
   toggleSelectionLanguages(language: any): void {
-    const index = this.selectedLanguages.findIndex((l: any) => l.code === language.code);
-    if (index >= 0) {
-      this.selectedLanguages.splice(index, 1);
-    } else {
-      this.selectedLanguages.push({ name: language.name, code: language.code, id: language.id });
-    }
+    this.selectedLanguages = language;
   }
 
   getSelectedLanguageNames(): string {
@@ -692,13 +707,19 @@ export class UserDetailComponent {
   }
 
   setInitLanguages() {
+    this.selectedLanguages = this.userC.languages.filter((element: any) =>
+      [
+        this.defaults.language1_id,
+        this.defaults.language2_id,
+        this.defaults.language3_id,
+        this.defaults.language4_id,
+        this.defaults.language5_id,
+        this.defaults.language6_id
+      ].includes(element.id)
+    );
 
-    this.userC.languages.forEach((element: any) => {
-      if (element.id === this.defaults.language1_id || element.id === this.defaults.language2_id || element.id === this.defaults.language3_id
-        || element.id === this.defaults.language4_id || element.id === this.defaults.language5_id || element.id === this.defaults.language6_id) {
-        this.selectedLanguages.push(element);
-      }
-    });
+    // Asegurarnos de que `languagesControl` tenga los valores correctos
+    this.languagesControl.setValue(this.selectedLanguages);
   }
 
   removeSport(idx: number, element: any) {
@@ -783,40 +804,48 @@ export class UserDetailComponent {
 
   updateClientData() {
     this.crudService.update('/clients', this.defaults, this.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((client) => {
-        this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(client => {
+          this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
 
-        this.defaultsObservations.client_id = client.data.id;
-        this.defaultsObservations.school_id = this.schoolData.id;
-        if (this.defaultsObservations.id) {
-          this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((obs) => { });
-        }
+          this.defaultsObservations.client_id = client.data.id;
+          this.defaultsObservations.school_id = this.schoolData.id;
+        }),
+        switchMap(client =>
+          this.defaultsObservations.id
+            ? this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
+            : of(null)
+        ),
+        switchMap(() => {
+          const createSports$ = this.sportsData.data.map(element =>
+            this.crudService.create('/client-sports', {
+              client_id: this.id,
+              sport_id: element.sport_id,
+              degree_id: element.level.id,
+              school_id: this.schoolData.id
+            }).pipe(takeUntil(this.destroy$))
+          );
 
-        // Crear o actualizar los deportes del cliente
-        this.sportsData.data.forEach((element: any) => {
-          this.crudService.create('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => { });
-        });
+          const updateSports$ = this.sportsCurrentData.data.map(element =>
+            this.crudService.update('/client-sports', {
+              client_id: this.id,
+              sport_id: element.sport_id,
+              degree_id: element.level.id,
+              school_id: this.schoolData.id
+            }, element.id).pipe(takeUntil(this.destroy$))
+          );
 
-        this.sportsCurrentData.data.forEach((element: any) => {
-          this.crudService.update('/client-sports', { client_id: client.data.id, sport_id: element.sport_id, degree_id: element.level.id, school_id: this.schoolData.id }, element.id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => { });
-        });
+          return forkJoin([...createSports$, ...updateSports$]);
+        })
+      )
+      .subscribe(() => {
 
-        // Después de 2 segundos, actualizamos los datos
-        setTimeout(() => {
-          this.editing = false;
-          this.editSportInfo = false;
-          this.sportsData.data = [];
-          this.getData(this.id, true).subscribe(results => {
+        this.editing = false;
+        this.editSportInfo = false;
+        this.sportsData.data = [];
+        this.updateData();
 
-          });
-        }, 2000);
       });
   }
 

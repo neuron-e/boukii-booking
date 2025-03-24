@@ -27,7 +27,8 @@
             (click)="id = userLogged.clients[0].id; this.getData()" class="flex items-center"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
             <app-level-user [allLevels]="allLevels"
-              [selectLevel]="allClientLevels.length ? allClientLevels[0].id : allLevels[0].id" [size]="40"
+                            [selectLevel]="userLogged.clients[0]?.sports?.length ? userLogged.clients[0]?.sports[0]?.pivot?.degree_id : 0"
+                            [size]="40"
               [userImage]="userLogged.clients[0]?.image" style="z-index: 0;"></app-level-user>
             <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">
               {{
@@ -40,7 +41,7 @@
           <div *ngFor="let user of clientUsers" [style.background]="id===user.id?'#DEE6EA':''"
             (click)="id=user.id;this.getData()" class="flex items-center"
             style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
-            <app-level-user [allLevels]="allLevels" [selectLevel]="allLevels[0].id" [size]="40"
+            <app-level-user [allLevels]="allLevels" [selectLevel]="user.client_sports[0]?.degree_id || 0" [size]="40"
               [userImage]="user?.image" style="z-index: 0;"></app-level-user>
             <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">
               {{ user?.first_name
