@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit, Optional} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnInit, Optional, Output} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {  MatDialog } from '@angular/material/dialog';
 
@@ -36,6 +36,7 @@ export class BookingDetailV2Component implements OnInit {
   selectedPaymentOption: string = 'Tarjeta';
   isPaid = false;
   @Input() incData: any
+  @Output() closeBooking = new EventEmitter<void>();
   paymentOptions: any[] = [
     { type: 'Tarjeta', value: 4, translation: this.translateService.instant('credit_card') },
     { type: 'Efectivo', value: 1,  translation: this.translateService.instant('payment_cash') },
@@ -72,6 +73,10 @@ export class BookingDetailV2Component implements OnInit {
         }
       }
     );
+  }
+
+  closeBookingDetail() {
+    this.closeBooking.emit();
   }
 
   getDegrees() {

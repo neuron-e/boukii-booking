@@ -232,7 +232,7 @@
         </div>
       </div>
       <div style="width:100%;" *ngIf="selectedBooking">
-        <booking-detail-v2 [incData]="{id: bookingId}"></booking-detail-v2>
+        <booking-detail-v2 [incData]="{id: bookingId}" (closeBooking)="selectedBooking = false"></booking-detail-v2>
       </div>
     </mat-tab>
   </mat-tab-group>

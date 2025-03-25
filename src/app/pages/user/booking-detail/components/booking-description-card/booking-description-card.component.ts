@@ -94,7 +94,7 @@ export class BookingDescriptionCard {
     let price = this.bookingService.calculateDatePrice(this.course, date, true); // Asegúrate de convertir el precio a número
 
     if (this.course && this.course.discounts) {
-      const discounts = JSON.parse(this.course.discounts);
+      const discounts = typeof this.course.discounts === 'string' ? JSON.parse(this.course.discounts) : [];
 
       discounts.forEach(discount => {
         if (discount.date === index + 1) { // Index + 1 porque los índices en arrays comienzan en 0
@@ -119,10 +119,17 @@ export class BookingDescriptionCard {
 
   isDiscounted(date: any, index: number): boolean {
     const price = parseFloat(date.price);
+
     if (this.course && this.course.discounts) {
-      const discounts = JSON.parse(this.course.discounts);
-      return discounts.some(discount => discount.date === index + 1); // Index + 1 porque los índices en arrays comienzan en 0
+      try {
+        const discounts = typeof this.course.discounts === 'string' ? JSON.parse(this.course.discounts) : [];
+        return Array.isArray(discounts) && discounts.some(discount => discount.date === index + 1);
+      } catch (error) {
+        console.error("Error al parsear discounts:", error);
+        return false;
+      }
     }
+
     return false;
   }
 

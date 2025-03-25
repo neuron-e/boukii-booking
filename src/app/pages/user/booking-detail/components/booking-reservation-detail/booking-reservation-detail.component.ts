@@ -30,6 +30,7 @@ export class BookingReservationDetailComponent implements OnInit {
   @Output() payClick = new EventEmitter();
   @Output() addClick = new EventEmitter();
   @Input() activitiesChanged: Observable<void>;  // Recibimos el observable
+  @Output() closeDetail = new EventEmitter<void>();
 
   private activitiesChangedSub: Subscription;
 
@@ -81,6 +82,10 @@ export class BookingReservationDetailComponent implements OnInit {
 
   goTo(route: string) {
     this.router.navigate([route]);
+  }
+
+  emitClose() {
+    this.closeDetail.emit(); // Emitimos el evento cuando se haga clic en la X
   }
 
   sendMailInfo() {

@@ -38,7 +38,9 @@
 			[activitiesChanged]="activitiesChanged$"
       (deleteActivity)="processFullDelete()"
 			(endClick)="endModal=true"
-			(payClick)="bookingService.calculatePendingPrice() === 0 ? finalizeBooking() : payModal=true">
+			(payClick)="bookingService.calculatePendingPrice() === 0 ? finalizeBooking() : payModal=true"
+                                       (closeDetail)="closeBookingDetail()">
+    >
 		</booking-detail-reservation-detail>
 	</div>
 </div>
