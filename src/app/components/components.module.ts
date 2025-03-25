@@ -20,7 +20,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 
@@ -29,6 +29,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   imports: [
     CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
     MatSnackBarModule
+  ],
+  providers: [
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: { verticalPosition: 'top', horizontalPosition: 'center', duration: 3000 }
+    }
   ],
   exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent,]
 })
