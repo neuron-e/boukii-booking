@@ -394,7 +394,7 @@ export class CartComponent implements OnInit {
       // Preparar los datos del booking
       school_id: this.schoolData.id,
       client_main_id: this.user.clients[0].id,
-      price_total: this.totalPrice,
+      price_total: this.totalPrice + this.usedVoucherAmount,
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
       has_boukii_care: this.hasBoukiiCare,
@@ -410,11 +410,16 @@ export class CartComponent implements OnInit {
     };
     this.bookingService.createBooking(bookingData).subscribe(
       (response: any) => {
-        this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
+        if(this.totalPrice > 0) {
+          this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
 
-          .subscribe((result: any) => {
-            window.open(result.data, "_self");
-          })
+            .subscribe((result: any) => {
+              window.open(result.data, "_self");
+            })
+        } else {
+          window.location.href = window.location.origin + window.location.pathname + "?status=success";
+
+        }
       },
       error => {
         console.error('Error al crear la reserva', error);
