@@ -29,7 +29,7 @@
     {{ (course.is_flexible ? 'text_from' : '') | translate }}
     {{ course.minPrice | number: '0.2-2' }}
     {{ course.currency }} /
-    {{ (course.course_type !== 1 && course.is_flexible ? ('mails.course' | translate: { duration: course.minDuration }) : ('price_per_date' | translate)) }}
+    {{ (course.course_type !== 1 && course.is_flexible ? ('mails.course' | translate: { duration: course.minDuration }) : ('mails.course' | translate)) }}
   </span>
         </div>
         <div>

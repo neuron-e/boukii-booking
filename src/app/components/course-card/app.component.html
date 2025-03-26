@@ -17,7 +17,7 @@
       {{ (data.is_flexible ? 'text_from' : '') | translate }}
       {{ (data.course_type !== 1 && data.is_flexible ? getCoursePrivateFlexPrice(data.minDuration) : getCoursePrice()) | number: '0.2-2' }}
       {{ data.currency }} /
-      {{ (data.course_type !== 1 && data.is_flexible ? ('mails.course' | translate: { duration: data.minDuration }) : ('price_per_date' | translate)) }}
+      {{ (data.course_type !== 1 && data.is_flexible ? ('mails.course' | translate: { duration: data.minDuration }) : ('mails.course' | translate)) }}
     </p>
     <p [innerHTML]="getShotrDescription()" class="description">
     </p>

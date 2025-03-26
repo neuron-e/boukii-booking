@@ -804,7 +804,7 @@ export class CourseComponent implements OnInit {
   updatePrice(): void {
     const selectedPax = this.selectedUserMultiple.length || 1;
     let extraPrice = this.getExtraPrice() * selectedPax;
-    if(this.course.course_type == 2) {
+    if(this.course.course_type == 2 && this.course.is_flexible) {
       // Convertir selectedDuration en minutos (si es necesario)
       const selectedDurationInMinutes = this.convertToMinutes(this.selectedDuration);
 
@@ -827,11 +827,15 @@ export class CourseComponent implements OnInit {
       this.course.price = matchingTimeRange && matchingTimeRange[selectedPax]
         ? parseFloat(matchingTimeRange[selectedPax]) + extraPrice
         : 0 + extraPrice;
-    } else if(this.course.course_type == 1 && !this.course.is_flexible) {
-        this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
+
+    }else if(this.course.course_type == 2 && !this.course.is_flexible) {
+      this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
+    }
+    else if(this.course.course_type == 1 && !this.course.is_flexible) {
+      this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
     } else {
-        this.updateCollectivePrice();
-        this.collectivePrice = parseFloat(this.collectivePrice) + this.getExtraPriceCollective();
+      this.updateCollectivePrice();
+      this.collectivePrice = parseFloat(this.collectivePrice) + this.getExtraPriceCollective();
     }
 
   }
