@@ -356,9 +356,12 @@
                          alt="Info">
                     <!-- Tooltip -->
                     <div *ngIf="tooltipVisible[i]" class="tooltip-container">
-                      <div *ngFor="let goal of level.degrees_school_sport_goals">
-                        {{ goal.name }}
-                      </div>
+                      <div class="tooltip-title">{{ 'objectives' | translate }}</div>
+                      <ul>
+                        <li *ngFor="let goal of level.degrees_school_sport_goals">
+                          {{ goal.name }}
+                        </li>
+                      </ul>
                     </div>
                   </div>
 

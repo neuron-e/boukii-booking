@@ -167,20 +167,40 @@
   width: 34px;
   width: 34px;
 }
+
 .tooltip-container {
   position: absolute;
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
   background: lightgrey;
-  color: white;
-  padding: 8px 12px;
+  color: black;
+  padding: 12px;
   border-radius: 6px;
   font-size: 13px;
-  white-space: nowrap;
+  white-space: normal;  /* Cambiar de nowrap a normal para permitir el ajuste de palabras */
+  max-width: 350px;  /* Limitar el ancho máximo del tooltip */
+  width: 350px;  /* Limitar el ancho máximo del tooltip */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
   transition: opacity 0.2s ease-in-out;
-  text-align: center;
+  text-align: left;  /* Alineamos el texto a la izquierda */
+  overflow-wrap: break-word;  /* Aseguramos que las palabras largas se rompan */
+}
+
+/* Título "Objetivos" */
+.tooltip-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-align: center;  /* Centrar el título */
+}
+
+/* Estilo para la lista de objetivos */
+ul {
+  padding-left: 20px;  /* Espacio para los bullets */
+  margin: 0;
+  list-style-type: disc;  /* Bullet points */
+  font-size: 12px;
 }
 
 /* Flecha del tooltip */
@@ -194,6 +214,14 @@
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
 }
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 600px) {
+  .tooltip-container {
+    max-width: 90%;  /* Aumentamos el ancho en móviles */
+  }
+}
+
 
 .custom-checkbox {
   width: 100%;
