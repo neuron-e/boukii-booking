@@ -25,7 +25,7 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
 
   @Input() isOpen: boolean = false;
   @Input() slug: string;
-  @Input() voucher: any;
+  @Input() vouchers: any[] = []; // Changed to array of vouchers
   @Output() onClose = new EventEmitter<any>();
   bonuses: any[];
   code: string;
@@ -54,7 +54,6 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && changes['isOpen'].currentValue) {
-      console.log('El modal se ha abierto');
       this.bonus = null;
     }
   }
@@ -67,7 +66,6 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
         this.bonuses = [...res.data];
       }, error => {      })
     }
-
   }
 
   confirmSelection() {
@@ -79,14 +77,9 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
   closeModal() {
     this.onClose.emit();
   }
-  isInUse(id: number) {
-    let inUse = id == this.voucher?.id;
-    //this.defaults.appliedBonus.forEach(element => {
-    //  if (element.bonus.id === id) {
-    //    inUse = true;
-    //  }
-    //});
 
-    return inUse;
+  isInUse(id: number) {
+    // Check if voucher is already used
+    return this.vouchers.some(v => v.id === id);
   }
 }

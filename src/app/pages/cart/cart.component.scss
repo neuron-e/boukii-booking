@@ -159,6 +159,21 @@
   justify-content: space-between;
   gap: 6px;
 }
+
+.voucher-price-flex {
+  display: flex;
+  flex-direction: column; /* Asegura que los vouchers se apilen verticalmente */
+  width: 100%;
+  align-items: flex-start; /* Alinea los vouchers a la izquierda */
+  gap: 6px;
+}
+
+.voucher-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
 .min-width-price {
   width: 110px;
   text-align: right;

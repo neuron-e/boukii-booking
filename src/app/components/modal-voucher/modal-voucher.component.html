@@ -1,60 +1,45 @@
 <div class="modal" [@fadeInOut] *ngIf="isOpen">
-    <div class="modal-content background-color-full rounded-8"
-        (click)="$event.stopPropagation()">
-        <div
-            class="text-color fw-semibold text-semibig modal-flex-title mb-32">
-            <span style="
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <div class="modal-flex-title mb-32">
+      <span class="text-color fw-semibold text-semibig">
+        {{'text_use_voucher' | translate }}
+      </span>
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+    </div>
 
+    <div class="modal-form">
+      <mat-dialog-content style="width: 100%;">
+        <mat-radio-group class="voucher-list">
+          <ng-container *ngFor="let b of bonuses">
+            <div class="voucher-item">
+              <mat-radio-button *ngIf="!b.payed"
+                                [disabled]="isInUse(b.id)"
+                                (change)="bonus = b"
+                                [value]="b">
+                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance }} CHF
+              </mat-radio-button>
+              <span class="applied-text">
+                {{ isInUse(b.id) ? 'applied' : '' | translate }}
+              </span>
+            </div>
+          </ng-container>
+        </mat-radio-group>
+      </mat-dialog-content>
 
-             font-family: Dinamit;
-             font-weight: 500;
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'text_code' | translate}}</mat-label>
+        <input type="text" matInput [(ngModel)]="code" />
+      </mat-form-field>
+    </div>
 
-             word-wrap: break-word">
-                {{'text_use_voucher' | translate }}
-
-            </span>
-            <img [src]="themeService.close" class="cursor-pointer"
-                (click)="closeModal()" />
-        </div>
-
-        <div class="modal-form">
-            <mat-dialog-content style="width: 100%;">
-                <mat-radio-group>
-                    <ng-container *ngFor="let b of bonuses">
-                        <mat-radio-button *ngIf="!b.payed "
-                            [disabled]="isInUse(b.id)"
-                            class="radio" (change)="bonus = b" [value]="b">
-                            {{ b.code }} - {{'remaining_balance' |
-                            translate}}: {{
-                            b.remaining_balance }} CHF
-                            <span
-                                style="color:#8fd14f">{{ isInUse(b.id) ?
-                                'applied' : '' |
-                                translate}}</span>
-                        </mat-radio-button>
-                    </ng-container>
-                </mat-radio-group>
-                <mat-form-field appearance="outline" style="width:100%">
-                    <mat-label>{{'text_code'
-                        |translate}}</mat-label>
-                    <input type="text" matInput [(ngModel)]="code" />
-                </mat-form-field>
-            </mat-dialog-content>
-        </div>
-
-
-
-      <button (click)="confirmSelection()" *ngIf="bonus"
-              style="margin-left: 40px; min-height: 38px;padding: 10px 12px;background-color: #E91E63;color: white;border-radius: 3px;float: right;margin-top: 20px;"
-              type="button">
-        {{'text_confirm' | translate }}
-      </button>
-
-      <button (click)="searchVoucher()"
-              style="min-height: 38px;padding: 10px 12px;background-color: #E91E63;color: white;border-radius: 3px;float: right;margin-top: 20px;"
-              type="button">
+    <!-- Botones alineados correctamente -->
+    <div class="modal-buttons">
+      <button (click)="searchVoucher()" class="modal-button">
         {{'text_search' | translate }}
       </button>
-
+      <button (click)="confirmSelection()" *ngIf="bonus" class="modal-button confirm">
+        {{'text_confirm' | translate }}
+      </button>
     </div>
+  </div>
 </div>

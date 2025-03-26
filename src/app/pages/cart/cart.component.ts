@@ -18,7 +18,7 @@ export class CartComponent implements OnInit {
   isModalVoucher: boolean = false;
   isModalConditions: boolean = false;
   mobileHidden: boolean = false
-  voucher: any;
+  vouchers: any[] = []; // Changed from single voucher to array
   hasInsurance = false;
   hasBoukiiCare = false;
   hasTva = false;
@@ -372,12 +372,12 @@ export class CartComponent implements OnInit {
       payment_method_id: 2,
       price_base: { name: 'Price Base', quantity: 1, price: this.getBasePrice() },
       bonus: {
-        total: 0,
-        bonuses: this.voucher ? [{
-          'name': this.voucher.code,
+        total: this.usedVoucherAmount,
+        bonuses: this.vouchers.map(voucher => ({
+          'name': voucher.code,
           'quantity': 1,
-          'price': -this.usedVoucherAmount
-        }] : []
+          'price': -parseFloat(voucher.reducePrice)
+        }))
       },
       boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
       cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
@@ -402,7 +402,7 @@ export class CartComponent implements OnInit {
       has_tva: this.hasTva,
       price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),
-      voucher: this.voucher,
+      vouchers: this.vouchers,
       voucherAmount: this.usedVoucherAmount,
       source: 'web',
       basket: JSON.stringify(basket),
@@ -458,10 +458,41 @@ export class CartComponent implements OnInit {
 
   closeModalVoucher(voucher: any) {
     if (voucher) {
-      this.voucher = voucher;
+      // Check if voucher is already added
+      const isVoucherAlreadyAdded = this.vouchers.some(v => v.id === voucher.id);
+
+      if (!isVoucherAlreadyAdded) {
+        // Calculate remaining total after previous vouchers
+        const remainingTotal = this.calculateRemainingTotal();
+        const amountToUse = Math.min(voucher.remaining_balance, remainingTotal);
+        voucher.reducePrice = amountToUse; // Asignar cuánto del voucher se usará
+        voucher.remaining_balance -= amountToUse; // Asignar cuánto del voucher se usará
+        this.vouchers.push(voucher);
+        this.updateTotal();
+      } else {
+        // Show error that voucher is already added
+        this.snackBar.open(
+          this.translateService.instant('Voucher already added'),
+          'Close',
+          { duration: 3000 }
+        );
+      }
     }
     this.isModalVoucher = false;
-    this.updateTotal(); // Actualiza el total cuando se cierra el modal del cupón
+  }
+
+  calculateRemainingTotal(): number {
+    let basePrice = this.getBasePrice();
+    let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
+    let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    let extrasPrice = this.getExtrasPrice();
+    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
+
+    // Subtract already used voucher amounts
+    const usedVoucherTotal = this.vouchers.reduce((total, voucher) =>
+      total + parseFloat(voucher.reducePrice), 0);
+
+    return totalPriceNoTaxes - usedVoucherTotal;
   }
 
   openModalConditions() {
@@ -582,8 +613,8 @@ export class CartComponent implements OnInit {
     }, 0);
   }
 
-  removeVoucher() {
-    this.voucher = null;
+  removeVoucher(voucherToRemove: any) {
+    this.vouchers = this.vouchers.filter(v => v.id !== voucherToRemove.id);
     this.updateTotal();
   }
 
@@ -630,33 +661,48 @@ export class CartComponent implements OnInit {
     let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
     let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
     let extrasPrice = this.getExtrasPrice();
-    let totalPrice = basePrice;
-    let totalPriceNoTaxes = basePrice;
+    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
 
-    if (this.voucher) {
-      let voucherAmount = parseFloat(this.voucher.remaining_balance);
-      if (totalPrice <= voucherAmount) {
-        // Si el total es menor o igual al saldo del cupón
-        this.usedVoucherAmount = totalPrice;
-        totalPrice = 0;
+    let totalPrice = this.tva && !isNaN(this.tva) && this.tva > 0
+      ? totalPriceNoTaxes * (1 + this.tva)
+      : totalPriceNoTaxes;
+
+    let remainingTotal = totalPrice;
+
+    // Primero, ajustar el uso de los vouchers existentes
+    for (const voucher of this.vouchers) {
+      if (voucher.reducePrice > remainingTotal) {
+        // Si el voucher está usando más de lo necesario, reducirlo
+        let difference = voucher.reducePrice - remainingTotal;
+        voucher.reducePrice -= difference;
+        voucher.remaining_balance += difference; // Devolver saldo al voucher
+        remainingTotal = 0;
       } else {
-        // Si el total es mayor al saldo del cupón
-        this.usedVoucherAmount = voucherAmount;
-        totalPrice -= voucherAmount;
+        remainingTotal -= voucher.reducePrice;
       }
-    } else {
-      this.usedVoucherAmount = 0;
     }
 
-    if ((this.tva && !isNaN(this.tva)) || this.tva > 0) {
+    // Si aún queda saldo por cubrir, intentar usar más vouchers
+    if (remainingTotal > 0) {
+      for (const voucher of this.vouchers) {
+        if (remainingTotal <= 0) break; // Salir si ya no queda saldo pendiente
 
-      totalPriceNoTaxes = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice);
-      totalPrice = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) + (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) * this.tva;
-    } else {
-      totalPriceNoTaxes = totalPrice + extrasPrice + insurancePrice + boukiiCarePrice;
-      totalPrice = totalPrice + extrasPrice + insurancePrice + boukiiCarePrice;
+        let availableAmount = voucher.remaining_balance;
+        if (availableAmount > 0) {
+          let amountToUse = Math.min(availableAmount, remainingTotal);
+          voucher.reducePrice += amountToUse;
+          voucher.remaining_balance -= amountToUse;
+          remainingTotal -= amountToUse;
+        }
+      }
     }
-    this.totalPrice = totalPrice;
+
+    // Si un voucher tiene `reducePrice` en 0, removerlo
+    this.vouchers = this.vouchers.filter(voucher => voucher.reducePrice > 0);
+
+    // Actualizar valores finales
+    this.usedVoucherAmount = this.vouchers.reduce((sum, v) => sum + v.reducePrice, 0);
+    this.totalPrice = remainingTotal; // Total a pagar después de vouchers
     this.totalNotaxes = totalPriceNoTaxes;
   }
 
