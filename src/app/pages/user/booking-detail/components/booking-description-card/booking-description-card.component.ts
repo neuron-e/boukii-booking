@@ -94,13 +94,20 @@ export class BookingDescriptionCard {
     let price = this.bookingService.calculateDatePrice(this.course, date, true); // Asegúrate de convertir el precio a número
 
     if (this.course && this.course.discounts) {
-      const discounts = typeof this.course.discounts === 'string' ? JSON.parse(this.course.discounts) : [];
+      try {
+        const discounts = Array.isArray(this.course.discounts)
+          ? this.course.discounts
+          : JSON.parse(this.course.discounts || '[]'); // Si es "", parsea '[]' en su lugar
 
-      discounts.forEach(discount => {
-        if (discount.date === index + 1) { // Index + 1 porque los índices en arrays comienzan en 0
-          price -= (price * (discount.percentage / 100));
-        }
-      });
+        discounts.forEach(discount => {
+          if (discount.date === index + 1) { // Index + 1 porque los índices en arrays comienzan en 0
+            price -= (price * (discount.percentage / 100));
+          }
+        });
+
+      } catch (error) {
+        console.error("Error al parsear los descuentos:", error);
+      }
     }
 
     return price;
