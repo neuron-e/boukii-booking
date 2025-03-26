@@ -274,10 +274,8 @@
 				<div class="modalInputD">
 
 					<mat-form-field class="inputWidth" appearance="outline">
-						<input [matDatepicker]="pickerFrom" [max]="minDate" matInput
-							placeholder="{{'birth_date' | translate }}" formControlName="birth_date">
-						<mat-datepicker-toggle [for]="pickerFrom" matSuffix></mat-datepicker-toggle>
-						<mat-datepicker #pickerFrom [startAt]="minDate"></mat-datepicker>
+            <mat-label>{{'text_birth_date' | translate}}</mat-label>
+            <input type="date" matInput class="flex-auto" formControlName="birth_date" [max]="minDate" required>
 					</mat-form-field>
 					<mat-form-field class="inputWidth" appearance="outline">
 						<mat-label>
