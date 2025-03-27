@@ -95,9 +95,15 @@ export class BookingDescriptionCard {
 
     if (this.course && this.course.discounts) {
       try {
-        const discounts = Array.isArray(this.course.discounts)
-          ? this.course.discounts
-          : JSON.parse(this.course.discounts || '[]'); // Si es "", parsea '[]' en su lugar
+        let discountsData = this.course.discounts;
+
+        // Si discountsData es una cadena con comillas extra ('"[]"'), la limpiamos
+        if (typeof discountsData === 'string') {
+          discountsData = discountsData.replace(/^"|"$/g, ''); // Quita las comillas exteriores
+          discountsData = JSON.parse(discountsData || '[]'); // Si es "" se convierte en []
+        }
+
+        const discounts = Array.isArray(discountsData) ? discountsData : [];
 
         discounts.forEach(discount => {
           if (discount.date === index + 1) { // Index + 1 porque los índices en arrays comienzan en 0
