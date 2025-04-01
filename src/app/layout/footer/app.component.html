@@ -12,20 +12,20 @@
 	<div>
 		<img src="assets/images/boukii.png" alt style="width: 138px;height: fit-content;">
 	</div>
-	<div class="ref">
-		<p>
-			{{"faq" | translate}}
-		</p>
-		<p>
-			{{"privacy_policy" | translate}}
-		</p>
-		<p>
-			{{"terms_conditions" | translate}}
-		</p>
-		<p>
-			{{"contact" | translate}}
-		</p>
-	</div>
+  <div class="ref">
+<!--    <p>
+      <a routerLink="/faq">{{"faq" | translate}}</a>
+    </p>-->
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/privacy">{{"privacy_policy" | translate}}</a>
+    </p>
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/terms">{{"terms_conditions" | translate}}</a>
+    </p>
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/contact-info">{{"contact" | translate}}</a>
+    </p>
+  </div>
 	<div class="ref">
 		<p></p>
 		<p></p>

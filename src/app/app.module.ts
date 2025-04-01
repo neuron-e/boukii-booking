@@ -57,6 +57,10 @@ import { ComponenteSelectModule } from './components/form/select/app.module';
 import { BookingDetailModule } from './pages/user/booking-detail/booking-detail.module';
 import { FluxUploadImgModule } from './components/form/upload-img/app.module';
 import {ActivatedRouteSnapshot} from '@angular/router';
+import { TermsComponent } from './pages/terms/terms.component';
+import { PrivacyComponent } from './pages/privacy/privacy.component';
+import {ContactComponent} from './pages/contact/contact.component';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -76,7 +80,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     FooterComponent,
     MobileModalComponent,
     CourseModalConfirmComponent,
-    UserDetailDialogComponent
+    UserDetailDialogComponent,
+    TermsComponent,
+    PrivacyComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,

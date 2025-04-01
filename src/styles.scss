@@ -1676,3 +1676,71 @@ button {
 .mat-mdc-tab .mdc-tab-indicator__content--underline {
   border-color: #e91e63 !important;
 }
+
+/* Estilos compartidos para las páginas de términos, privacidad y contacto */
+.terms-container,
+.privacy-container,
+.contact-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.terms-header,
+.privacy-header,
+.contact-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 15px;
+}
+
+.terms-header h1,
+.privacy-header h1,
+.contact-header h1 {
+  font-size: 28px;
+  color: #333;
+  margin: 0;
+}
+
+.terms-content,
+.privacy-content,
+.contact-content {
+  line-height: 1.6;
+  color: #444;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.no-content {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.terms-html,
+.privacy-html,
+.contact-html {
+  /* Estilos para el contenido HTML renderizado */
+}
+
+/* Añadir estilos responsivos */
+@media (max-width: 768px) {
+  .terms-container,
+  .privacy-container,
+  .contact-container {
+    padding: 15px;
+  }
+
+  .terms-header h1,
+  .privacy-header h1,
+  .contact-header h1 {
+    font-size: 24px;
+  }
+}

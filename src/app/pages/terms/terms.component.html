@@ -1,0 +1,17 @@
+<div class="terms-container">
+  <div class="terms-header">
+    <h1>{{ 'terms_conditions' | translate }}</h1>
+  </div>
+
+  <div class="terms-content">
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && !termsContent" class="no-content">
+      <p>{{ 'no_terms_available' | translate }}</p>
+    </div>
+
+    <div *ngIf="!loading && termsContent" class="terms-html" [innerHTML]="termsContent"></div>
+  </div>
+</div>
