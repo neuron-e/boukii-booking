@@ -1,6 +1,6 @@
 <div class="header">
 	<div (click)="goBack('')" style="display: flex;">
-		<img src="assets/images/school-logo.png" class="icon36" alt>
+		<img *ngIf="schoolData" src="{{schoolData?.data?.logo}}" class="icon36" alt>
 		<p *ngIf="schoolData" style="line-height: 14px; margin: 0 12px;">
 			<span class="title1">
 				{{schoolData.data.name}}
