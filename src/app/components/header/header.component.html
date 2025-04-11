@@ -1,6 +1,6 @@
 <div class="header-section mb-24">
     <div class="header-left">
-        <img src="assets/images/school-logo.png" class="header-left-img" />
+        <img *ngIf="schoolData?.data?.logo" src="{{schoolData?.data?.logo}}" class="header-left-img" />
         <div class="header-left-text">
             <div class="text-color fw-medium">{{schoolData?.data?.name}}</div>
             <span class="text-color-light text-small">{{schoolData?.data?.description}}</span>
