@@ -27,7 +27,9 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
 @NgModule({
   declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent,],
   imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
+    CommonModule, BrowserModule, BrowserAnimationsModule, ReactiveFormsModule, FormsModule,
+    TranslateModule.forChild(), MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule,
+    MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
     MatSnackBarModule
   ],
   providers: [

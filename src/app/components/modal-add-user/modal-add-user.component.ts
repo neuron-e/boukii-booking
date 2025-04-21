@@ -31,9 +31,11 @@ export class ModalAddUserComponent {
   @Input() slug: string;
   @Output() onClose = new EventEmitter<void>();
   langs: any[] = [
-    { id: 1, lang: "france" },
-    { id: 2, lang: "english" },
-    { id: 3, lang: "spanish" },
+    { id: 1, lang: "english" },
+    { id: 2, lang: "france" },
+    { id: 3, lang: "german" },
+    { id: 4, lang: "italian" },
+    { id: 5, lang: "spanish" },
   ]
   addUserForm: FormGroup;
   filteredLanguages: Observable<any[]>;
@@ -42,8 +44,8 @@ export class ModalAddUserComponent {
   languages = [];
 
   constructor(public themeService: ThemeService, private clientService: ClientService,
-    private authService: AuthService, private fb: FormBuilder, private snackbar: MatSnackBar,
-    private translateService: TranslateService, private crudService: ApiCrudService) {
+              private authService: AuthService, private fb: FormBuilder, private snackbar: MatSnackBar,
+              public translateService: TranslateService, private crudService: ApiCrudService) {
     this.addUserForm = this.fb.group({
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
@@ -82,11 +84,19 @@ export class ModalAddUserComponent {
 
   displayFn(d: any): string {
     const langs: any[] = [
-      { id: 1, lang: "france" },
-      { id: 2, lang: "english" },
-      { id: 3, lang: "spanish" },
+      { id: 1, lang: "english" },
+      { id: 2, lang: "france" },
+      { id: 3, lang: "german" },
+      { id: 4, lang: "italian" },
+      { id: 5, lang: "spanish" },
     ]
-    if (d) return langs.find((a: any) => a.id == d).lang
+    if (d && typeof d == 'number') {
+      debugger;
+      const lang = langs.find((a: any) => a.id == d).lang;
+      if (lang && this.translateService) {
+        return this.translateService.instant(lang)
+      }
+    }
     return ''
   }
 }

@@ -30,13 +30,15 @@ export class ModalNewUserComponent {
 
   loginForm: FormGroup;
   langs: any[] = [
-    { id: 1, lang: "france" },
-    { id: 2, lang: "english" },
-    { id: 3, lang: "spanish" },
+    { id: 1, lang: "english" },
+    { id: 2, lang: "france" },
+    { id: 3, lang: "german" },
+    { id: 4, lang: "italian" },
+    { id: 5, lang: "spanish" },
   ]
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService,
-    private snackbar: MatSnackBar, private translateService: TranslateService) {
+    private snackbar: MatSnackBar, public translateService: TranslateService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -79,12 +81,20 @@ export class ModalNewUserComponent {
     this.onClose.emit();
   }
   displayFn(d: any): string {
-    const langs: any[] = [
-      { id: 1, lang: "france" },
-      { id: 2, lang: "english" },
-      { id: 3, lang: "spanish" },
-    ]
-    if (d) return langs.find((a: any) => a.id == d).lang
+      const langs: any[] = [
+    { id: 1, lang: "english" },
+    { id: 2, lang: "france" },
+    { id: 3, lang: "german" },
+    { id: 4, lang: "italian" },
+    { id: 5, lang: "spanish" },
+  ]
+    if (d && typeof d == 'number') {
+      debugger;
+      const lang = langs.find((a: any) => a.id == d).lang;
+      if (lang && this.translateService) {
+        return this.translateService.instant(lang)
+      }
+    }
     return ''
   }
 }

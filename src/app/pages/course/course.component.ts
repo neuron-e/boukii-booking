@@ -72,6 +72,9 @@ export class CourseComponent implements OnInit {
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
 
+  // Control de la visualización de intervalos
+  expandedIntervals: { [key: string]: boolean } = {};
+
   defaultImage = '../../../assets/images/3.png';
 
   constructor(private router: Router, public themeService: ThemeService, public coursesService: CoursesService,
@@ -121,6 +124,12 @@ export class CourseComponent implements OnInit {
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
       this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
+      if (this.hasIntervals()) {
+        // Por defecto, expandir todos los intervalos
+        this.getIntervalGroups().forEach(interval => {
+          this.expandedIntervals[interval.id] = true;
+        });
+      }
       this.settingsExtras = this.course.course_extras;
       if (this.course.discounts) {
         try {
@@ -164,6 +173,247 @@ export class CourseComponent implements OnInit {
       this.collectivePrice = this.course.price;
     });
 
+  }
+
+  // Determina si debemos mostrar el curso por intervalos
+  shouldDisplayByIntervals(): boolean {
+    return this.hasIntervals() && this.course.course_type == 1;
+  }
+
+  // Determina si debemos mostrar el curso por semanas (flexible pero sin intervalos)
+  shouldDisplayByWeeks(): boolean {
+    return !this.hasIntervals() && this.course.is_flexible && this.course.course_type == 1;
+  }
+
+  // Determina si debemos mostrar el listado simple de fechas (no flexible, sin intervalos)
+  shouldDisplaySimpleDates(): boolean {
+    return !this.hasIntervals() && !this.course.is_flexible && this.course.course_type == 1;
+  }
+
+  // Método para verificar si el curso tiene intervalos configurados
+  hasIntervals(): boolean {
+    if (!this.course || !this.course.settings) return false;
+
+    const settings = typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+
+    return settings.multipleIntervals && settings.intervals && settings.intervals.length > 0;
+  }
+
+  // Alternar el estado de expansión de un intervalo
+  toggleInterval(intervalId: string): void {
+    this.expandedIntervals[intervalId] = !this.expandedIntervals[intervalId];
+  }
+
+  // Verifica si un intervalo está expandido
+  isIntervalExpanded(intervalId: string): boolean {
+    return this.expandedIntervals[intervalId] !== false;
+  }
+
+  // Método para obtener fechas agrupadas por intervalos
+  getIntervalGroups(): any[] {
+    if (!this.hasIntervals() || !this.course.course_dates) {
+      return [];
+    }
+
+    const settings = typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+
+    const intervals = settings.intervals || [];
+    const result = [];
+
+    // Procesar cada intervalo
+    intervals.forEach(interval => {
+      // Filtrar fechas de este intervalo que sean futuras
+      const intervalDates = this.course.course_dates
+        .filter(date => date.interval_id === interval.id && this.compareISOWithToday(date.date))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      if (intervalDates.length > 0) {
+        // Obtener primera y última fecha
+        const firstDate = new Date(intervalDates[0].date);
+        const lastDate = new Date(intervalDates[intervalDates.length - 1].date);
+
+        // Obtener días de la semana únicos
+        const weekdays = this.getUniqueWeekdaysFromDates(intervalDates);
+
+        // Obtener horarios comunes
+        const commonTime = this.getCommonTime(intervalDates);
+
+        result.push({
+          id: interval.id,
+          name: interval.name || 'Intervalo',
+          startDate: firstDate,
+          endDate: lastDate,
+          weekdays: weekdays,
+          time: commonTime,
+          count: intervalDates.length,
+          dates: intervalDates
+        });
+      }
+    });
+
+    return result;
+  }
+
+  // Método para agrupar fechas por semanas cuando es flexible sin intervalos
+  getWeekGroups(): any[] {
+    if (this.hasIntervals() || !this.course.course_dates) {
+      return [];
+    }
+
+    // Filtrar solo fechas futuras
+    const futureDates = this.course.course_dates
+      .filter(date => this.compareISOWithToday(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    if (futureDates.length === 0) {
+      return [];
+    }
+
+    // Agrupar por semanas
+    const weekGroups = [];
+    let currentGroup = null;
+
+    futureDates.forEach(date => {
+      const dateObj = new Date(date.date);
+      // Obtener el lunes de esta semana
+      const mondayOfWeek = new Date(dateObj);
+      mondayOfWeek.setDate(dateObj.getDate() - dateObj.getDay() + (dateObj.getDay() === 0 ? -6 : 1));
+      const mondayString = mondayOfWeek.toISOString().split('T')[0];
+
+      if (!currentGroup || currentGroup.mondayString !== mondayString) {
+        // Crear un nuevo grupo para esta semana
+        currentGroup = {
+          id: 'week_' + mondayString,
+          mondayString: mondayString,
+          startDate: dateObj,
+          endDate: dateObj,
+          dates: [date],
+          weekdays: [dateObj.getDay()]
+        };
+        weekGroups.push(currentGroup);
+      } else {
+        // Añadir a grupo existente
+        currentGroup.dates.push(date);
+        currentGroup.endDate = dateObj;
+        if (!currentGroup.weekdays.includes(dateObj.getDay())) {
+          currentGroup.weekdays.push(dateObj.getDay());
+        }
+      }
+    });
+
+    // Procesar los grupos para el formato final
+    return weekGroups.map(group => {
+      // Calcular la fecha de fin de semana (domingo)
+      const endOfWeek = new Date(group.startDate);
+      endOfWeek.setDate(endOfWeek.getDate() + (7 - (endOfWeek.getDay() || 7)));
+
+      // Verificar si todas las fechas tienen el mismo horario
+      const commonTime = this.getCommonTime(group.dates);
+
+      return {
+        id: group.id,
+        name: this.translateService.instant('week_of') + ' ' + this.formatDate(group.startDate),
+        startDate: group.startDate,
+        endDate: group.dates[group.dates.length - 1].date < endOfWeek ?
+          new Date(group.dates[group.dates.length - 1].date) : endOfWeek,
+        weekdays: group.weekdays.sort(),
+        time: commonTime,
+        count: group.dates.length,
+        dates: group.dates
+      };
+    });
+  }
+
+  // Obtener fechas futuras sin agrupar (para cursos no flexibles sin intervalos)
+  getFutureDates(): any[] {
+    if (!this.course || !this.course.course_dates) {
+      return [];
+    }
+
+    return this.course.course_dates
+      .filter(date => this.compareISOWithToday(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+
+  compareISOWithToday(isoDate: string): boolean {
+    const isoDateObj = new Date(isoDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return isoDateObj >= today;
+  }
+  // Obtener días de la semana únicos de un conjunto de fechas
+  private getUniqueWeekdaysFromDates(dates): number[] {
+    const uniqueDays = new Set<number>();
+
+    dates.forEach(date => {
+      const day = new Date(date.date).getDay();
+      uniqueDays.add(day);
+    });
+
+    return Array.from(uniqueDays).sort();
+  }
+
+  // Verificar si todas las fechas tienen el mismo horario y retornarlo
+  private getCommonTime(dates): string {
+    if (!dates || dates.length === 0) return '';
+
+    const firstStartTime = dates[0].hour_start;
+    const firstEndTime = dates[0].hour_end;
+
+    const allSameTime = dates.every(date =>
+      date.hour_start === firstStartTime && date.hour_end === firstEndTime
+    );
+
+    if (allSameTime) {
+      return `${firstStartTime}h-${firstEndTime}h`;
+    }
+
+    return this.translateService.instant('various_times');
+  }
+
+  // Formatear fecha para visualización
+  private formatDate(date: Date): string {
+    return `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+  }
+
+  // Convertir array de números de días a nombres de días
+  formatWeekdays(days: number[]): string {
+    if (!days || days.length === 0) return '';
+
+    // Si son todos los días
+    if (days.length === 7) {
+      return this.translateService.instant('all_days');
+    }
+
+    // Si son días laborables
+    if (days.length === 5 &&
+      days.includes(1) && days.includes(2) && days.includes(3) &&
+      days.includes(4) && days.includes(5) &&
+      !days.includes(0) && !days.includes(6)) {
+      return this.translateService.instant('weekdays');
+    }
+
+    // Si es fin de semana
+    if (days.length === 2 && days.includes(0) && days.includes(6) &&
+      !days.includes(1) && !days.includes(2) && !days.includes(3) &&
+      !days.includes(4) && !days.includes(5)) {
+      return this.translateService.instant('weekend');
+    }
+
+    // Caso general: listar los días
+    const dayNames = days.map(day => this.Week[day]);
+
+    if (dayNames.length === 1) {
+      return dayNames[0];
+    }
+
+    const lastDay = dayNames.pop();
+    return dayNames.join(', ') + ' ' + this.translateService.instant('and') + ' ' + lastDay;
   }
 
   initializeMonthNames() {
@@ -970,6 +1220,8 @@ export class CourseComponent implements OnInit {
     const maxHourString = maxHourStart.toString().padStart(4, "0");
     return `${maxHourString.slice(0, 2)}:${maxHourString.slice(2)}`;
   }
+
+
   findMinHourStart(): string {
     const maxHourStart = Math.max(
       ...this.course.course_dates.map((date: any) => {

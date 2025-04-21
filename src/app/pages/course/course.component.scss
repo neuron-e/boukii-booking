@@ -581,3 +581,263 @@ ul {
   color: #8b9099;
   word-wrap: break-word;
 }
+
+/* Estilos para la visualización de fechas en detalle de curso */
+
+.dates-detail-container {
+  width: 100%;
+  padding: 8px 0;
+  margin-bottom: 16px;
+}
+
+.dates-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin-bottom: 12px;
+  padding-left: 32px;
+}
+
+/* Estilos para intervalos */
+.intervals-list, .weeks-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 32px;
+}
+
+.interval-card, .week-card {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.interval-card:hover, .week-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interval-header, .week-header {
+  padding: 16px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.interval-header:hover, .week-header:hover {
+  background-color: #f1f3f5;
+}
+
+.interval-title-section, .week-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.interval-name, .week-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin: 0;
+}
+
+.interval-summary, .week-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-dark2);
+}
+
+.interval-dates, .week-dates {
+  font-weight: 500;
+}
+
+.interval-weekdays, .week-weekdays {
+  color: var(--color-dark3);
+  font-style: italic;
+}
+
+.interval-time, .week-time {
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.interval-content, .week-content {
+  padding: 16px;
+  background-color: #ffffff;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para la cuadrícula de fechas */
+.dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.date-item {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease;
+}
+
+.date-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.date-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-dark1);
+}
+
+.month-year {
+  font-size: 12px;
+  color: var(--color-dark3);
+}
+
+.date-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-dark2);
+  text-transform: uppercase;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.date-time {
+  text-align: center;
+  background-color: #e9ecef;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-weight: 500;
+  color: var(--color-dark2);
+}
+
+/* Estilos para fechas simples (modo original) */
+.simple-dates-list {
+  padding-left: 32px;
+  width: 100%;
+}
+
+/* Estilos para cursos privados */
+.private-course-dates {
+  padding-left: 32px;
+  margin-top: 12px;
+}
+
+.week-info-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.weekdays-info {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-dark1);
+}
+
+.duration-info, .hours-info {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--color-dark2);
+}
+
+.duration-label, .hours-label {
+  font-weight: 500;
+}
+
+.duration-value, .hours-value {
+  font-weight: 600;
+}
+
+/* Mensaje para cuando no hay fechas */
+.no-dates {
+  background-color: #f8f9fa;
+  padding: 16px;
+  text-align: center;
+  border-radius: 8px;
+  color: #6c757d;
+  font-style: italic;
+  border: 1px solid #e0e0e0;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .dates-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .interval-header, .week-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .interval-summary, .week-summary {
+    width: 100%;
+  }
+
+  .toggle-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  .interval-card, .week-card {
+    position: relative;
+  }
+
+  .intervals-list, .weeks-list, .simple-dates-list, .private-course-dates {
+    padding-left: 0;
+  }
+
+  .dates-section-title {
+    padding-left: 0;
+  }
+}

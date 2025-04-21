@@ -18,128 +18,245 @@
         <img [src]="course?.image !== null ? course?.image : defaultImage" class="course-image-img"
              style="border-radius: 10px;">
         <span class="last-plaza" *ngIf="course.claim_text">
-					{{course.claim_text | translate}}!
-				</span>
+        {{course.claim_text | translate}}!
+      </span>
       </div>
     </div>
+
     <div *ngIf="course" class="course-content">
+      <!-- Precio y descuentos -->
       <div style="justify-content: space-between;flex-wrap: wrap;gap: 8px;">
         <div style="min-width: 150px;">
-  <span class="price">
-    {{ (course.is_flexible ? 'text_from' : '') | translate }}
-    {{ course.minPrice | number: '0.2-2' }}
-    {{ course.currency }} /
-    {{ (course.course_type !== 1 && course.is_flexible ? ('mails.course' | translate: { duration: course.minDuration }) : ('mails.course' | translate)) }}
-  </span>
+        <span class="price">
+          {{ (course.is_flexible ? 'text_from' : '') | translate }}
+          {{ course.minPrice | number: '0.2-2' }}
+          {{ course.currency }} /
+          {{ (course.course_type !== 1 && course.is_flexible ? ('mails.course' | translate: { duration: course.minDuration }) : ('mails.course' | translate)) }}
+        </span>
         </div>
         <div>
           <div style="display: flex;align-items: center;" *ngFor="let discount of discounts">
             <img src="assets/icons/start_empty.png" alt class="icon24">
             <span style="color: #E91E63;word-wrap: break-word">
-							{{"book"|translate}} {{discount.day}} {{'dates_and_get'|translate}} {{discount.reduccion}}
+            {{"book"|translate}} {{discount.day}} {{'dates_and_get'|translate}} {{discount.reduccion}}
               {{'discount'|translate}}!
-						</span>
+          </span>
           </div>
         </div>
       </div>
+
+      <!-- Rango de fechas general -->
       <div style="gap: 8px;align-items: center;">
         <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
         <div>
-					<span class="descripcion">
-						{{"text_from" | translate}}
-					</span>
+        <span class="descripcion">
+          {{"text_from" | translate}}
+        </span>
           <span class="campo">
-						{{course.date_start | date: 'dd.MM.yyyy' }}
-					</span>
+          {{course.date_start | date: 'dd.MM.yyyy' }}
+        </span>
           <span class="descripcion">
-						{{"text_till" | translate}}
-					</span>
+          {{"text_till" | translate}}
+        </span>
           <span class="campo">
-						{{course.date_end | date: 'dd.MM.yyyy'}}
-					</span>
+          {{course.date_end | date: 'dd.MM.yyyy'}}
+        </span>
         </div>
       </div>
-      <div style="gap: 4px;align-items: self-start;padding-left: 32px;flex-direction: column;width: fit-content;">
-        <ng-container *ngIf="course.course_type == 1">
-          <div *ngFor="let date of course.course_dates" class="campo2">
-						<span style="font-weight: 600;">
-							{{date.date | date: 'dd.MM.yyyy'}}
-						</span>
-            <span style="color: #8B9099;">
-							{{date.hour_start}}h-{{date.hour_end}}h
-						</span>
+
+      <!-- Fechas detalladas según el tipo de curso -->
+      <div class="dates-detail-container">
+        <!-- 1. Para cursos con intervalos -->
+        <ng-container *ngIf="shouldDisplayByIntervals()">
+          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
+
+          <div class="intervals-list">
+            <div *ngIf="getIntervalGroups().length === 0" class="no-dates">
+              {{ 'no_future_dates' | translate }}
+            </div>
+
+            <div *ngFor="let interval of getIntervalGroups()" class="interval-card">
+              <!-- Encabezado del intervalo -->
+              <div class="interval-header" (click)="toggleInterval(interval.id)">
+                <div class="interval-title-section">
+                  <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
+                  <h5 class="interval-name">{{interval.name}}</h5>
+                </div>
+
+                <div class="interval-summary">
+                <span class="interval-dates">
+                  {{interval.startDate | date: 'dd.MM.yyyy'}} - {{interval.endDate | date: 'dd.MM.yyyy'}}
+                </span>
+                  <span class="interval-weekdays">
+                  ({{formatWeekdays(interval.weekdays)}})
+                </span>
+                  <span *ngIf="interval.time" class="interval-time">
+                  {{interval.time}}
+                </span>
+                </div>
+
+                <div class="toggle-icon">
+                  <img [src]="isIntervalExpanded(interval.id) ? 'assets/icons/arrow-up.png' : 'assets/icons/arrow-down.png'"
+                       alt="Expandir/Colapsar">
+                </div>
+              </div>
+
+              <!-- Contenido del intervalo expandible -->
+              <div class="interval-content" *ngIf="isIntervalExpanded(interval.id)">
+                <div class="dates-grid">
+                  <div *ngFor="let date of interval.dates" class="date-item">
+                    <div class="date-day">
+                      <span class="day-number">{{date.date | date: 'dd'}}</span>
+                      <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
+                    </div>
+                    <div class="date-weekday">
+                      {{Week[Date(date.date).getDay()]}}
+                    </div>
+                    <div class="date-time">
+                      {{date.hour_start}}h - {{date.hour_end}}h
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </ng-container>
-        <!--<ng-container *ngIf="course.course_type == 2">
-          <div class="campo2" class="mt-8 course-box-content-list">
-						<span style="font-weight: 600;">
-							{{course.course_dates[0].date | date:
-              'dd.MM.yyyy'}}-{{course.course_dates[course.course_dates.length-1].date
-              | date: 'dd.MM.yyyy'}}
-						</span>
-            <div>
-              {{ getWeekdays(course.settings) }}
+
+        <!-- 2. Para cursos flexibles sin intervalos (agrupados por semanas) -->
+        <ng-container *ngIf="shouldDisplayByWeeks()">
+          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
+
+          <div class="weeks-list">
+            <div *ngIf="getWeekGroups().length === 0" class="no-dates">
+              {{ 'no_future_dates' | translate }}
+            </div>
+
+            <div *ngFor="let week of getWeekGroups()" class="week-card">
+              <!-- Encabezado de la semana -->
+              <div class="week-header" (click)="toggleInterval(week.id)">
+                <div class="week-title-section">
+                  <img src="assets/icons/calendar.png" alt="Calendario" class="icon24">
+                  <h5 class="week-name">{{week.name}}</h5>
+                </div>
+
+                <div class="week-summary">
+                <span class="week-dates">
+                  {{week.startDate | date: 'dd.MM.yyyy'}} - {{week.endDate | date: 'dd.MM.yyyy'}}
+                </span>
+                  <span class="week-weekdays">
+                  ({{formatWeekdays(week.weekdays)}})
+                </span>
+                  <span *ngIf="week.time" class="week-time">
+                  {{week.time}}
+                </span>
+                </div>
+
+                <div class="toggle-icon">
+                  <img [src]="isIntervalExpanded(week.id) ? 'assets/icons/arrow-up.png' : 'assets/icons/arrow-down.png'"
+                       alt="Expandir/Colapsar">
+                </div>
+              </div>
+
+              <!-- Contenido de la semana expandible -->
+              <div class="week-content" *ngIf="isIntervalExpanded(week.id)">
+                <div class="dates-grid">
+                  <div *ngFor="let date of week.dates" class="date-item">
+                    <div class="date-day">
+                      <span class="day-number">{{date.date | date: 'dd'}}</span>
+                      <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
+                    </div>
+                    <div class="date-weekday">
+                      {{Week[Date(date.date).getDay()]}}
+                    </div>
+                    <div class="date-time">
+                      {{date.hour_start}}h - {{date.hour_end}}h
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="mt-8 course-box-content-list">
-            <div>
-              {{'text_from_price' | translate }} {{course.duration}}
+        </ng-container>
+
+        <!-- 3. Para cursos no flexibles sin intervalos (original) -->
+        <ng-container *ngIf="shouldDisplaySimpleDates()">
+          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
+
+          <div class="simple-dates-list">
+            <div *ngIf="getFutureDates().length === 0" class="no-dates">
+              {{ 'no_future_dates' | translate }}
             </div>
-            <span style="color: #8B9099;">
-							{{course.hour_min}}h-{{course.hour_max}}h
-						</span>
+
+            <div class="dates-grid">
+              <div *ngFor="let date of getFutureDates()" class="date-item">
+                <div class="date-day">
+                  <span class="day-number">{{date.date | date: 'dd'}}</span>
+                  <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
+                </div>
+                <div class="date-weekday">
+                  {{Week[Date(date.date).getDay()]}}
+                </div>
+                <div class="date-time">
+                  {{date.hour_start}}h - {{date.hour_end}}h
+                </div>
+              </div>
+            </div>
           </div>
-        </ng-container>-->
+        </ng-container>
+
+        <!-- 4. Para cursos privados (misma estructura original) -->
+        <ng-container *ngIf="course.course_type == 2">
+          <div class="private-course-dates">
+            <div class="week-info-container">
+              <div class="weekdays-info">
+                {{ getWeekdays(course.settings) }}
+              </div>
+
+              <div class="duration-info">
+                <span class="duration-label">{{'text_from_price' | translate}}</span>
+                <span class="duration-value">{{course.duration}}</span>
+              </div>
+
+              <div class="hours-info">
+                <span class="hours-label">{{'schedule' | translate}}:</span>
+                <span class="hours-value">{{course.hour_min}}h - {{course.hour_max}}h</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </div>
+
+      <!-- Número máximo de participantes -->
       <div style="gap: 8px;align-items: center;">
         <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
         <span class="campo2">
-					{{"max_pax" | translate}} {{course.max_participants}}
-				</span>
+        {{"max_pax" | translate}} {{course.max_participants}}
+      </span>
         <span *ngIf="course.age_max<99 && course.age_min>1" class="campo2">
-					,{{course.age_min}}-{{course.age_max}}+ {{"text_years" | translate}}
-				</span>
+        ,{{course.age_min}}-{{course.age_max}}+ {{"text_years" | translate}}
+      </span>
       </div>
+
+      <!-- Sección de resumen -->
       <span class="descripcion2"> {{"summary"|translate|uppercase}} </span>
-      <div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat"> </div>
+      <div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat"></div>
+
+      <!-- Sección de descripción -->
       <span class="descripcion2"> {{"courses.desc"|translate|uppercase}} </span>
-      <div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat"> </div>
+      <div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat"></div>
+
+      <!-- Sección de niveles disponibles -->
       <ng-container *ngIf="course.availableDegrees.length>0">
-				<span class="descripcion2">
-					{{"levels"|translate|uppercase}}
-				</span>
+      <span class="descripcion2">
+        {{"levels"|translate|uppercase}}
+      </span>
         <div style="display: flex;flex-wrap: wrap;gap: 5px;">
-					<span *ngFor="let item of course.availableDegrees" [style.backgroundColor]="item.color"
-                style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;">
-						{{item.name}}
-					</span>
+        <span *ngFor="let item of course.availableDegrees" [style.backgroundColor]="item.color"
+              style="color: white; width: fit-content;padding: 10px;height: 36px;border-radius: 3px;">
+          {{item.name}}
+        </span>
         </div>
       </ng-container>
-
-      <!--      <ng-container *ngIf="course?.options">
-              <span class="descripcion2">
-                {{"text_forfait"|translate|uppercase}}
-              </span>
-              <div style="display: flex;gap: 16px;flex-direction: column;">
-                <mat-checkbox *ngFor="let extra of settingsExtras" style="font-weight: 600;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px;display: flex
-                  ;
-                    align-items: center;">
-                  <div style="display: flex;gap: 8px;padding: 4px 0;
-                  padding-right: 10px;
-                  justify-content: space-between;
-                  align-items: center;">
-                    <div>
-                      <span class="extra_product">{{extra.product}}</span>
-                      <br>
-                      <span class="extra_name">{{extra.name}}</span>
-                    </div>
-                    <span style="word-wrap: break-word">
-                      {{extra.price|number:'0.2-2'}}{{course?.currency}} / {{'date' | translate }}
-                    </span>
-                  </div>
-                </mat-checkbox>
-              </div>
-            </ng-container>-->
     </div>
   </div>
 
