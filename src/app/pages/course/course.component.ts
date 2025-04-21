@@ -74,6 +74,8 @@ export class CourseComponent implements OnInit {
 
   // Control de la visualización de intervalos
   expandedIntervals: { [key: string]: boolean } = {};
+  dateSelectionError: string = '';
+  selectedIntervalId: string | null = null;
 
   defaultImage = '../../../assets/images/3.png';
 
@@ -257,6 +259,29 @@ export class CourseComponent implements OnInit {
 
     return result;
   }
+
+  // Obtener configuraciones del curso
+  getCourseSettings(): any {
+    if (!this.course || !this.course.settings) return {};
+
+    return typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+  }
+
+  // Verificar si los días deben ser consecutivos
+  mustBeConsecutive(): boolean {
+    const settings = this.getCourseSettings();
+    return settings.mustBeConsecutive === true;
+  }
+
+  // Verificar si debe comenzar desde el primer día
+  mustStartFromFirst(): boolean {
+    const settings = this.getCourseSettings();
+    return settings.mustStartFromFirst === true;
+  }
+
+
 
   // Método para agrupar fechas por semanas cuando es flexible sin intervalos
   getWeekGroups(): any[] {
@@ -821,10 +846,140 @@ export class CourseComponent implements OnInit {
     });
   }
 
-  selectDate(checked: boolean, date: any) {
+  // Validar si una selección de fecha es válida según restricciones
+  validateDateSelection(dateStr: string, intervalId: string): boolean {
+    const intervalDates = this.getIntervalDates(intervalId);
+    const selectedIntervalDates = intervalDates
+      .filter(date => this.selectedDates.includes(date.date))
+      .map(date => date.date);
+
+    // Comprobar si debe empezar desde el primer día
+    if (this.mustStartFromFirst() && selectedIntervalDates.length === 0) {
+      // Si es la primera selección, debe ser el primer día del intervalo
+      if (dateStr !== intervalDates[0].date) {
+        this.dateSelectionError = this.translateService.instant('must_start_from_first_day');
+        return false;
+      }
+    }
+
+    // Comprobar si los días deben ser consecutivos
+    if (this.mustBeConsecutive() && selectedIntervalDates.length > 0) {
+      const datesToCheck = [...selectedIntervalDates, dateStr].sort((a, b) =>
+        new Date(a).getTime() - new Date(b).getTime()
+      );
+
+      // Verificar que no hay saltos en las fechas
+      for (let i = 1; i < datesToCheck.length; i++) {
+        const prevDate = new Date(datesToCheck[i-1]);
+        const currDate = new Date(datesToCheck[i]);
+
+        // Calcular la diferencia en días
+        const diffTime = currDate.getTime() - prevDate.getTime();
+        const diffDays = diffTime / (1000 * 3600 * 24);
+
+        if (diffDays > 1) {
+          this.dateSelectionError = this.translateService.instant('dates_must_be_consecutive');
+          return false;
+        }
+      }
+    }
+
+    this.dateSelectionError = '';
+    return true;
+  }
+
+  // Obtener fechas de un intervalo específico
+  getIntervalDates(intervalId: string): any[] {
+    if (!this.course || !this.course.course_dates) return [];
+
+    return this.course.course_dates
+      .filter(date => date.interval_id === intervalId && this.isDateInFuture(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  isDateInFuture(dateStr: string): boolean {
+    const date = new Date(dateStr);
+    date.setHours(0, 0, 0, 0);
+    return date >= this.today;
+  }
+
+
+  validateDateDeselection(dateStr: string, intervalId: string): boolean {
+    if (this.mustBeConsecutive()) {
+      const intervalDates = this.getIntervalDates(intervalId);
+      const selectedIntervalDates = intervalDates
+        .filter(date => this.selectedDates.includes(date.date))
+        .map(date => date.date);
+
+      // Si está quitando una fecha del medio, no permitirlo
+      if (selectedIntervalDates.length > 2) {
+        const sortedDates = [...selectedIntervalDates].sort((a, b) =>
+          new Date(a).getTime() - new Date(b).getTime()
+        );
+
+        // Si no es la primera ni la última fecha, no permitir deseleccionar
+        if (dateStr !== sortedDates[0] && dateStr !== sortedDates[sortedDates.length - 1]) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_middle_date');
+          return false;
+        }
+      }
+    }
+
+    // Si debe empezar por el primer día, no permitir quitar el primer día si hay más días seleccionados
+    if (this.mustStartFromFirst()) {
+      const intervalDates = this.getIntervalDates(intervalId);
+      if (dateStr === intervalDates[0].date) {
+        const hasOtherDates = this.selectedDates.some(d =>
+          d !== dateStr && this.getIntervalForDate(d) === intervalId
+        );
+
+        if (hasOtherDates) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_first_day');
+          return false;
+        }
+      }
+    }
+
+    this.dateSelectionError = '';
+    return true;
+  }
+  // Determinar si un intervalo está habilitado para selección
+  isIntervalEnabled(intervalId: string): boolean {
+    // Si no hay intervalo seleccionado o es el mismo que este, está habilitado
+    return !this.selectedIntervalId || this.selectedIntervalId === intervalId;
+  }
+
+  // Determinar si un intervalo está seleccionado
+  isIntervalSelected(intervalId: string): boolean {
+    return this.selectedIntervalId === intervalId;
+  }
+  isDateSelected(dateStr: string): boolean {
+    return this.selectedDates.includes(dateStr);
+  }
+
+  getIntervalForDate(dateStr: string): string | null {
+    const date = this.course.course_dates.find(d => d.date === dateStr);
+    return date ? date.interval_id : null;
+  }
+
+  selectDate(checked: boolean, date: any, intervalId?: string) {
     const index = this.selectedDates.findIndex((d: any) => d === date);
-    if (index === -1 && checked) this.selectedDates.push(date);
-    else if (!checked) this.selectedDates.splice(index, 1);
+    if (index === -1 && checked) {
+      if (this.hasIntervals() && intervalId) {
+        // Para cursos con intervalos, verificar restricciones
+        const valid = this.validateDateSelection(date, intervalId);
+        if (!valid) return; // Si no es válido, no continuar
+      }
+      this.selectedDates.push(date);
+    }
+    else if (!checked){
+      if (this.hasIntervals() && intervalId) {
+        // Para cursos con intervalos, verificar si puede deseleccionar
+        const valid = this.validateDateDeselection(date, intervalId);
+        if (!valid) return; // Si no es válido, no continuar
+      }
+      this.selectedDates.splice(index, 1);
+    }
     this.updateCollectivePrice();
   }
 
@@ -1048,6 +1203,40 @@ export class CourseComponent implements OnInit {
     });
 
     return totalPrice;
+  }
+
+  // Seleccionar un intervalo para reservar fechas
+  selectInterval(intervalId: string): void {
+    if (this.selectedIntervalId === intervalId) {
+      // Deseleccionar si ya estaba seleccionado
+      this.selectedIntervalId = null;
+      // Limpiar fechas de este intervalo
+      this.clearDatesFromInterval(intervalId);
+    } else {
+      // Si tenía otro intervalo seleccionado, limpiar esas fechas
+      if (this.selectedIntervalId) {
+        this.clearDatesFromInterval(this.selectedIntervalId);
+      }
+
+      this.selectedIntervalId = intervalId;
+      this.dateSelectionError = '';
+    }
+  }
+
+  // Verificar si una fecha está disponible para seleccionar
+  isDateAvailable(dateStr: string, intervalId?: string): boolean {
+    // Si tiene un intervalo seleccionado, solo permitir fechas de ese intervalo
+    if (this.hasIntervals() && this.selectedIntervalId && intervalId !== this.selectedIntervalId) {
+      return false;
+    }
+
+    return this.isDateInFuture(dateStr);
+  }
+
+  // Limpiar fechas de un intervalo específico
+  clearDatesFromInterval(intervalId: string): void {
+    const intervalDates = this.getIntervalDates(intervalId).map(date => date.date);
+    this.selectedDates = this.selectedDates.filter(date => !intervalDates.includes(date));
   }
 
 

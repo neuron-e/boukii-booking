@@ -60,6 +60,7 @@ import {ActivatedRouteSnapshot} from '@angular/router';
 import { TermsComponent } from './pages/terms/terms.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
 import {ContactComponent} from './pages/contact/contact.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -132,7 +133,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatFormFieldModule,
     ComponenteDatePickerModule,
     ComponenteSelectModule,
-    BookingDetailModule
+    BookingDetailModule, MatTooltipModule
   ],
   providers: [SlugResolver],
   bootstrap: [AppComponent]

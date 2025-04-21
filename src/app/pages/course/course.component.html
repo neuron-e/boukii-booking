@@ -496,7 +496,156 @@
             </div>
           </div>
         </div>
-        <div [style.display]="course?.course_type==1 && course.is_flexible && courseFlux===2 ? 'block' : 'none'"  style="padding: 20px;">
+        <!-- Sección de reserva para cursos -->
+        <div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2" class="date-selection-container">
+          <div class="date-selection-title">
+            {{"select_dates_to_book" | translate}}
+          </div>
+
+          <!-- Si hay un error de selección, mostrarlo -->
+          <div *ngIf="dateSelectionError" class="date-selection-error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{dateSelectionError}}</span>
+          </div>
+
+          <!-- Información sobre restricciones -->
+          <div *ngIf="mustBeConsecutive() || mustStartFromFirst()" class="booking-restrictions">
+            <div class="restriction-title">{{ 'important_information' | translate }}:</div>
+            <ul class="restriction-list">
+              <li *ngIf="mustBeConsecutive()">
+                <mat-icon>date_range</mat-icon>
+                <span>{{ 'consecutive_dates_required' | translate }}</span>
+                <mat-icon class="info-tooltip" matTooltip="{{ 'consecutive_dates_info' | translate }}">info</mat-icon>
+              </li>
+              <li *ngIf="mustStartFromFirst()">
+                <mat-icon>play_arrow</mat-icon>
+                <span>{{ 'must_start_first_day' | translate }}</span>
+                <mat-icon class="info-tooltip" matTooltip="{{ 'first_day_info' | translate }}">info</mat-icon>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Opción 1: Curso con intervalos -->
+          <div *ngIf="hasIntervals()" class="interval-selection-container">
+            <!-- Lista de intervalos -->
+            <div class="intervals-list">
+              <div *ngFor="let interval of getIntervalGroups()"
+                   [class.interval-card]="true"
+                   [class.interval-selected]="isIntervalSelected(interval.id)"
+                   [class.interval-disabled]="!isIntervalEnabled(interval.id)">
+                <!-- Encabezado del intervalo -->
+                <div class="interval-header" (click)="isIntervalEnabled(interval.id) && selectInterval(interval.id)">
+                  <div class="interval-title-section">
+                    <mat-icon *ngIf="isIntervalSelected(interval.id)">check_circle</mat-icon>
+                    <mat-icon *ngIf="!isIntervalSelected(interval.id)">radio_button_unchecked</mat-icon>
+                    <h5 class="interval-name">{{interval.name}}</h5>
+                  </div>
+
+                  <div class="interval-summary">
+            <span class="interval-dates">
+              {{interval.startDate | date: 'dd.MM.yyyy'}} - {{interval.endDate | date: 'dd.MM.yyyy'}}
+            </span>
+                    <span class="interval-count">
+              ({{interval.count}} {{ 'dates' | translate }})
+            </span>
+                  </div>
+                </div>
+
+                <!-- Fechas del intervalo (visibles cuando está seleccionado) -->
+                <div class="interval-dates-container" *ngIf="isIntervalSelected(interval.id)">
+                  <div class="date-checkboxes">
+                    <div *ngFor="let date of interval.dates" class="date-checkbox-wrapper"
+                         [class.date-disabled]="!isDateAvailable(date.date, interval.id)"
+                         [class.date-selected]="isDateSelected(date.date)">
+                      <mat-checkbox
+                        (change)="selectDate($event.checked, date.date, interval.id)"
+                        [checked]="isDateSelected(date.date)"
+                        [disabled]="!isDateAvailable(date.date, interval.id)">
+                        <div class="date-checkbox-content">
+                          <span class="date-day">{{date.date | date: 'dd'}}</span>
+                          <span class="date-month-year">{{date.date | date: 'MMM yyyy'}}</span>
+                          <span class="date-time">{{date.hour_start}}h-{{date.hour_end}}h</span>
+                        </div>
+                      </mat-checkbox>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Opción 2: Curso flexible SIN intervalos (agrupado por semanas) -->
+          <div *ngIf="!hasIntervals() && course.is_flexible" class="week-selection-container">
+            <!-- Agrupación por semanas -->
+            <div class="weeks-list">
+              <div *ngFor="let week of getWeekGroups()" class="week-card">
+                <!-- Encabezado de la semana -->
+                <div class="week-header">
+                  <div class="week-title-section">
+                    <mat-icon>date_range</mat-icon>
+                    <h5 class="week-name">{{week.name}}</h5>
+                  </div>
+
+                  <div class="week-summary">
+            <span class="week-dates">
+              {{week.startDate | date: 'dd.MM.yyyy'}} - {{week.endDate | date: 'dd.MM.yyyy'}}
+            </span>
+                    <span class="week-count">
+              ({{week.count}} {{ 'dates' | translate }})
+            </span>
+                  </div>
+                </div>
+
+                <!-- Fechas de la semana -->
+                <div class="week-dates-container">
+                  <div class="date-checkboxes week-dates-grid">
+                    <div *ngFor="let date of week.dates" class="date-checkbox-wrapper">
+                      <mat-checkbox
+                        (change)="selectDate($event.checked, date.date)"
+                        [checked]="isDateSelected(date.date)">
+                        <div class="date-checkbox-content">
+                          <span class="date-day">{{date.date | date: 'dd'}}</span>
+                          <span class="date-month-year">{{date.date | date: 'MMM yyyy'}}</span>
+                          <span class="date-time">{{date.hour_start}}h-{{date.hour_end}}h</span>
+                        </div>
+                      </mat-checkbox>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Opción 3: Visualización original (para mantener compatibilidad) -->
+          <div *ngIf="!hasIntervals() && !course.is_flexible" class="simple-dates-container">
+            <div class="simple-dates-grid">
+              <ng-container *ngFor="let date of getFutureDates()">
+                <mat-checkbox
+                  (change)="selectDate($event.checked, date.date)"
+                  [checked]="isDateSelected(date.date)"
+                  class="simple-date-checkbox">
+                  {{date.date | date: 'dd.MM.yyyy'}}
+                </mat-checkbox>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Resumen de selección -->
+          <div *ngIf="selectedDates.length > 0" class="selected-dates-summary">
+            <div class="summary-title">
+              {{ 'selected_dates' | translate }}:
+            </div>
+            <div class="selected-dates-list">
+              <div *ngFor="let date of selectedDates" class="selected-date-item">
+                <span>{{ date | date: 'dd.MM.yyyy' }}</span>
+                <button mat-icon-button (click)="selectDate(false, date, getIntervalForDate(date))">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+<!--        <div [style.display]="course?.course_type==1 && course.is_flexible && courseFlux===2 ? 'block' : 'none'"  style="padding: 20px;">
           <div>
             {{"select_dates_to_book" | translate}}
           </div>
@@ -508,7 +657,7 @@
               </mat-checkbox>
             </ng-container>
           </div>
-        </div>
+        </div>-->
         <div [style.display]="course?.course_type==2 && courseFlux===2 ? 'block' : 'none'" style="padding: 20px;">
           <ng-container *ngIf="selectedUserMultiple && selectedUserMultiple.length">
             <div class="text-color montserrat mt-12 margin-auto">
