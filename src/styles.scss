@@ -1,3 +1,39 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$boukii-booking-primary: mat.define-palette(mat.$indigo-palette);
+$boukii-booking-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$boukii-booking-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$boukii-booking-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $boukii-booking-primary,
+      accent: $boukii-booking-accent,
+      warn: $boukii-booking-warn,
+    ),
+  )
+);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($boukii-booking-theme);
+
 @import "./styles/core";
 
 :root {
@@ -22,13 +58,45 @@
   --info-bs: #fe61a2;
   --danger-lighter-bs: #f5a86e;
   --red-transparent-bs: #e9484b4f;
-  --white: white;
+  --white: #000;
+  --blue-transparent-bs: #0055ff7c;
+  --gray: #161c28;
+  --gray-transparent-bs: rgba(22, 28, 40, 0.8);
+  --light-gray-transparent: rgba(200, 200, 200, 0.24);
+  --light-gray-transparent-bs: rgba(0, 0, 0, 0.2);
+  --light-gray-transparent-custom: rgba(200, 200, 200, 0.12);
+  --white-transparent: rgba(255, 255, 255, 0.2);
+  --light-gray: #c8c8c8;
+  --primary-bs: #ff3085;
+  --warning-transparent-bs: rgba(250, 153, 23, 0.25);
+  --warning-bs: #fa9917;
+  --success-transparent-bs: rgba(42, 201, 64, 0.25);
+  --sucess-lighter-bs: #8ef49c;
+  --inactif-red: #f47474;
+  --blue-league: #80adff;
+  --red-league: #fbaaab;
+  --success-bs: #2ac940;
+  --secondary-transparent-bs: rgba(240, 36, 120, 0.25);
+  --secondary-bs: #f02478;
+  --info-bs: #fe61a2;
+  --danger-lighter-bs: #f5a86e;
+  --red-transparent-bs: #e9484b4f;
+  --white: #000;
   --blue-transparent-bs: #0055ff7c;
 
+  --background-image-screen: url("./assets/images/bg-dark.jpg");
   --background-image-screen: url("./assets/images/bg-dark.jpg");
   --background-color-screen: rgba(22, 28, 40, 0.8);
   --text-color: #000;
   --text-color-light: #c8c8c8;
+  --text-color-medium: #2b2f37;
+  --background-color-trans: rgba(22, 28, 40, 0.9);
+  --background-color-full: #161c28;
+  --box-shadow-color: rgba(255, 255, 255, 0.15);
+  --background-image-screen: url("./assets/images/bg-dark.jpg");
+  --background-color-screen: rgba(22, 28, 40, 0.8);
+  --text-color: #000; //c8c8c8
+  --text-color-light: #000;
   --text-color-medium: #2b2f37;
   --background-color-trans: rgba(22, 28, 40, 0.9);
   --background-color-full: #161c28;
@@ -40,6 +108,67 @@
   --border-separator: rgba(255, 255, 255, 0.2);
   --level-background: #08090e;
 }
+
+body {
+  --color-dark1: #000000;
+  --color-dark2: #2f3844;
+  --color-dark3: #61656d;
+  --color-dark4: #1b2d44;
+  --color-dark5: #122742;
+  --color-grey1: #8b9099;
+  --color-grey2: #c7d0d3;
+  --color-grey3: #dee6ea;
+  --color-grey4: #eff2f5;
+  --color-grey5: #f8f9fb;
+}
+
+body.dark-mode {
+  --color-dark1: #f8f9fb;
+  --color-dark2: #eff2f5;
+  --color-dark3: #dee6ea;
+  --color-dark4: #c7d0d3;
+  --color-dark5: #8b9099;
+  --color-grey1: #61656d;
+  --color-grey2: #1b2d44;
+  --color-grey3: #61656d;
+  --color-grey4: #2f3844;
+  --color-grey5: #222222;
+}
+
+/* Fonts */
+@font-face {
+  font-family: "Dinamit";
+  src: url("./assets/fonts/Dinamit/Dinamit Bold.otf") format("opentype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Dinamit";
+  src: url("./assets/fonts/Dinamit/Dinamit Regular.otf") format("opentype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Dinamit";
+  src: url("./assets/fonts/Dinamit/Dinamit Medium.otf") format("opentype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Dinamit";
+  src: url("./assets/fonts/Dinamit/Dinamit Light.otf") format("opentype");
+  font-weight: lighter;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+  src: url("https://fonts.gstatic.com/s/montserrat/v26/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.woff2")
+    format("woff2");
+  unicode-range: "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD";
+}
+
 @font-face {
   font-family: "DM Sans";
   font-weight: 100; /* Thin */
@@ -93,31 +222,9 @@
   font-weight: 900; /* Black */
   src: url("./assets/fonts/DM_Sans/DMSans-Black.ttf") format("opentype");
 }
-/* Fonts */
-@font-face {
-  font-family: "Dinamit";
-  src: url("./assets/fonts/Dinamit/Dinamit Bold.otf");
-  font-weight: bold;
+body {
+  background: #f8f9fb;
 }
-
-@font-face {
-  font-family: "Dinamit";
-  src: url("./assets/fonts/Dinamit/Dinamit Regular.otf");
-  font-weight: normal;
-}
-
-@font-face {
-  font-family: "Dinamit";
-  src: url("./assets/fonts/Dinamit/Dinamit Medium.otf");
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: "Dinamit";
-  src: url("./assets/fonts/Dinamit/Dinamit Light.otf");
-  font-weight: lighter;
-}
-
 .main-bs {
   background-image: var(--background-image-screen);
   background-size: cover;
@@ -134,6 +241,30 @@
   color: var(--text-color-light);
 }
 .background-color-trans {
+  background: var(--background-color-trans);
+  box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
+}
+.background-color-full {
+  background: var(--background-color-full);
+  box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
+}
+.main-bs {
+  background-image: var(--background-image-screen);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.background-color-screen {
+  background-color: var(--background-color-screen);
+}
+.text-color {
+  color: var(--text-color);
+}
+.text-color-light {
+  color: var(--text-color-light);
+}
+.background-color-trans {
+  background: var(--background-color-trans);
   box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
 }
 .background-color-full {
@@ -144,36 +275,48 @@
 .btn-back-primary {
   background: var(--primary-bs) !important;
   color: var(--white) !important;
+  background: var(--primary-bs) !important;
+  color: var(--white) !important;
 }
 .btn-back-grey {
+  background: var(--button-grey) !important;
+  color: var(--white);
   background: var(--button-grey) !important;
   color: var(--white);
 }
 .border-primary {
   border: 1px solid var(--primary-bs) !important;
+  border: 1px solid var(--primary-bs) !important;
 }
 
 .cursor-pointer {
+  cursor: pointer !important;
   cursor: pointer !important;
 }
 
 .text-small {
   font-size: 12px;
+  font-size: 12px;
 }
 .text-normal {
+  font-size: 14px;
   font-size: 14px;
 }
 .text-medium {
   font-size: 16px;
+  font-size: 16px;
 }
 .text-semibig {
+  font-size: 18px;
   font-size: 18px;
 }
 .text-vbig {
   font-size: 26px;
+  font-size: 26px;
 }
 
 .text-align-left {
+  text-align: left;
   text-align: left;
 }
 .text-align-center {
@@ -310,7 +453,7 @@ button[disabled] {
   padding: 0;
   box-sizing: border-box;
   outline: 0;
-  font-family: "Dinamit", sans-serif;
+  font-family: "DM Sans";
   font-size: 14px;
   line-height: 1.3;
 }
@@ -318,7 +461,7 @@ button[disabled] {
 body,
 html {
   font-size: 14px;
-  font-family: "Dinamit", sans-serif;
+  font-family: "DM Sans";
 }
 
 @media (max-width: 600px) {
@@ -349,10 +492,6 @@ html {
   }
 }
 
-/*p,
-span {
-  color: var(--light-gray);
-}*/
 /* Excluye los elementos p y span que están dentro de un contenedor con la clase rich-text */
 .rich-text p,
 .rich-text span {
@@ -651,7 +790,6 @@ a {
   width: 18px;
   height: 18px;
   left: 0;
-  top: 0;
   border-radius: 50%;
 }
 .checkbox-circle label:before {
@@ -1304,16 +1442,6 @@ input[type="date"] {
   position: relative;
 }
 
-/* create a new arrow, because we are going to mess up the native one
-see "List of symbols" below if you want another, you could also try to add a font-awesome icon.. */
-input[type="date"]:after {
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  content: "\f073";
-  color: #555;
-  padding: 0 5px;
-}
-
 /* change color of symbol on hover */
 input[type="date"]:hover:after {
   color: #bf1400;
@@ -1422,9 +1550,197 @@ input[type="date"]::-webkit-clear-button {
     padding: 1.5rem 1rem;
   }
 }
+.icon8 {
+  height: 8px;
+  width: 8px;
+  font-size: 8px;
+  min-width: 8px;
+}
+.icon10 {
+  height: 10px;
+  width: 10px;
+  font-size: 10px;
+  min-width: 10px;
+}
+.icon16 {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  min-width: 16px;
+}
+.icon14 {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  min-width: 14px;
+}
+.icon20 {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  min-width: 20px;
+}
+.icon24 {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  min-width: 24px;
+}
+.icon36 {
+  width: 36px;
+  height: 36px;
+  font-size: 36px;
+  min-width: 36px;
+}
+.icon40 {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  min-width: 40px;
+}
+.icon48 {
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+  min-width: 48px;
+}
+.icon60 {
+  width: 60px;
+  height: 60px;
+  font-size: 60px;
+  min-width: 60px;
+}
+.icon72 {
+  width: 72px;
+  height: 72px;
+  font-size: 72px;
+  min-width: 72px;
+}
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not(
+    [data-indeterminate="true"]
+  )
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:checked
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control:enabled:indeterminate
+  ~ .mdc-checkbox__background,
+.mdc-checkbox
+  .mdc-checkbox__native-control[data-indeterminate="true"]:enabled
+  ~ .mdc-checkbox__background {
+  border-radius: 1000px;
+}
 
-@media only screen and (min-width: 1024px) {
-  .lading-padding {
-    border-radius: 16px;
+.mat-mdc-checkbox label,
+.mat-mdc-checkbox .mdc-form-field {
+  width: 100%;
+}
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+p,
+div {
+  color: black;
+  font-family: DM Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  word-wrap: break-word;
+}
+span,
+label,
+button {
+  font-family: DM Sans;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  word-wrap: break-word;
+}
+.modal-content {
+  background-color: white;
+}
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #e91e63 !important;
+}
+
+/* Estilos compartidos para las páginas de términos, privacidad y contacto */
+.terms-container,
+.privacy-container,
+.contact-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.terms-header,
+.privacy-header,
+.contact-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 15px;
+}
+
+.terms-header h1,
+.privacy-header h1,
+.contact-header h1 {
+  font-size: 28px;
+  color: #333;
+  margin: 0;
+}
+
+.terms-content,
+.privacy-content,
+.contact-content {
+  line-height: 1.6;
+  color: #444;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.no-content {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.terms-html,
+.privacy-html,
+.contact-html {
+  /* Estilos para el contenido HTML renderizado */
+}
+
+/* Añadir estilos responsivos */
+@media (max-width: 768px) {
+  .terms-container,
+  .privacy-container,
+  .contact-container {
+    padding: 15px;
+  }
+
+  .terms-header h1,
+  .privacy-header h1,
+  .contact-header h1 {
+    font-size: 24px;
   }
 }

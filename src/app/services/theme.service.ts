@@ -5,27 +5,27 @@ import { Injectable } from '@angular/core';
 })
 export class ThemeService {
   private isDarkMode: boolean = false;
-  modeIcon:string;
-  arrowLeft:string;
-  arrowRight:string;
-  arrowUp:string;
-  cart:string;
-  calendar:string;
-  clock:string;
-  arrowReturn:string;
-  edit:string;
-  logoPay:string;
-  add:string;
-  trash:string;
-  user:string;
-  avatarEmpty:string;
-  close:string;
+  modeIcon: string;
+  arrowLeft: string;
+  arrowRight: string;
+  arrowUp: string;
+  cart: string;
+  calendar: string;
+  clock: string;
+  arrowReturn: string;
+  edit: string;
+  logoPay: string;
+  add: string;
+  trash: string;
+  user: string;
+  avatarEmpty: string;
+  close: string;
 
   constructor() {
-/*    const savedTheme = localStorage.getItem('isDarkMode');
-    if (savedTheme) {
-      this.isDarkMode = JSON.parse(savedTheme);
-    }*/
+    /*    const savedTheme = localStorage.getItem('isDarkMode');
+        if (savedTheme) {
+          this.isDarkMode = JSON.parse(savedTheme);
+        }*/
     this.setThemeConstants();
   }
 
@@ -38,8 +38,8 @@ export class ThemeService {
       /*DARK MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-dark.jpg)');
       root.style.setProperty('--background-color-screen', 'rgba(22, 28, 40, 0.8)');
-      root.style.setProperty('--text-color', '#ffffff');
-      root.style.setProperty('--text-color-light', '#ffffff');
+      root.style.setProperty('--text-color', '#000');
+      root.style.setProperty('--text-color-light', '#000');
       root.style.setProperty('--text-color-medium', '#2b2f37');
       root.style.setProperty('--background-color-trans', 'rgba(22, 28, 40, 0.8)');
       root.style.setProperty('--background-color-full', '#161c28');
@@ -106,8 +106,8 @@ export class ThemeService {
       /*DARK MODE*/
       root.style.setProperty('--background-image-screen', 'url(./assets/images/bg-dark.jpg)');
       root.style.setProperty('--background-color-screen', 'rgba(22, 28, 40, 0.8)');
-      root.style.setProperty('--text-color', '#ffffff');
-      root.style.setProperty('--text-color-light', '#ffffff');
+      root.style.setProperty('--text-color', '#000');
+      root.style.setProperty('--text-color-light', '#000');
       root.style.setProperty('--text-color-medium', '#2b2f37');
       root.style.setProperty('--background-color-trans', 'rgba(22, 28, 40, 0.8)');
       root.style.setProperty('--background-color-full', '#161c28');

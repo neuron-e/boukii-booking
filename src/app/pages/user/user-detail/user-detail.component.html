@@ -1,789 +1,564 @@
-<div class="container py-6" style="max-width: none" *ngIf="!loading">
-  <div class="card overflow-hidden">
-    <div class="h-64 relative overflow-hidden">
-      <img class="w-full h-full object-cover" src="../../../../assets/images/8.png" />
-      <div class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
-
-    </div>
-
-    <div class="z-10 relative -mt-16 px-6 flex items-center"
-      style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;">
-      <img class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white" [src]="defaults.image"
-        style="border: 2px solid rgb(255 255 255) !important;position:static !important;" />
-      <div class="h-16" style="display: flex;flex-direction: column;gap: 12px;">
-        <div class="headline text-white montserrat" style="font-size: 12px;color:#fff !important;line-height: 1.2;">
-          {{getLanguage(defaults.language1_id)}}
-          · {{getCountry(defaults.country)}} ·
-          {{calculateAge(defaults.birth_date)}} &ensp;{{'years' | translate
-          }}</div>
-
-        <div class="headline text-white" style="font-size: 18px;color:#fff !important;line-height: 1.2;">
-          {{defaults.first_name}}
-          {{defaults.last_name}}</div>
-
-        <!-- añadir icono aqui-->
-        <!-- añadir icono aqui-->
-        <!-- añadir icono aqui-->
-      </div>
-    </div>
-  </div>
-
-  <div class="flex-sections-user" *ngIf="!loading && !editing">
-    <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left" [formGroup]="formInfoAccount">
-
-      <div style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
-        class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-        <div class="px-6 py-4 border-b">
-          <h2 class="title m-0">{{'users' | translate }}</h2>
-        </div>
-
-        <div class="px-6 py-4 flex flex-col gap-4" style="cursor:pointer;">
-          <div class="flex items-center" (click)="changeClientData(mainId)">
-            <img
-              [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': mainClient.clients[0]?.image"
-              [ngStyle]="{
-                'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
-              }" alt="Profile Picture" class="avatar ltr:mr-3 rtl:ml-3 flex-none" />
-
-            <div class="flex-auto">
-              <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{
-                mainClient.clients[0]?.first_name }} {{
-                mainClient.clients[0]?.last_name }}</h4>
-            </div>
-          </div>
-          <div *ngFor="let user of clientUsers;" class="flex items-center" style="cursor:pointer;"
-            (click)="changeClientData(user.id)">
-            <img
-              [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
-              alt="Profile Picture" class="avatar ltr:mr-3 rtl:ml-3 flex-none" [ngStyle]="{
-                'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
-              }" />
-            <div class="flex-auto">
-              <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{
-                user?.first_name }} {{ user?.last_name }}</h4>
-              <span class="body-2 m-0 leading-snug" style="width: 10%; float:right"
-                (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trash"
-                  style="color:black;font-size: 15px;"></i></span>
-            </div>
-          </div>
-
-          <div style="cursor:pointer" class="flex items-center">
-            <i class="fa fa-plus" style="color:black; width: 10%"></i>
-            <div class="flex-auto" (click)="addUtilisateur()">
-              <h4 class="body-2 m-0 leading-snug" style="color:black">{{'add_user' | translate }}</h4>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <div class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right" *ngIf="!loading">
-      <div class="flex-auto">
-        <div class="card">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'personal_data' | translate }}
-
-              <i class="fa fa-chevron-down" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="!showInfo"
-                (click)="showInfoEvent(true)"></i>
-              <i class="fa fa-chevron-up" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="showInfo"
-                (click)="showInfoEvent(false)"></i>
-              <i class="fa fa-pencil" style="float:right;cursor:pointer" aria-hidden="true"
-                (click)="showInfoEditEvent(true)"></i>
-            </h2>
-          </div>
-
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" *ngIf="showInfo">
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-align-justify" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'name' | translate }}</p>
-                <p class="m-0 body-1">{{defaults.first_name}}</p>
-              </div>
-
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-align-justify" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'surname' | translate }}</p>
-                <p class="m-0 body-1">{{defaults.last_name}}</p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-calendar" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'birth_date' | translate
-                  }}</p>
-                <p class="m-0 body-1">{{defaults.birth_date | date:
-                  'dd.MM.yyyy'}}
-                </p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-phone" style="color:black; font-size: 24px;margin-right: 10px;" aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'mobile' | translate }}</p>
-                <p class="m-0 body-1">{{defaults.phone}}
-                </p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-envelope" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">Email</p>
-                <p class="m-0 body-1">{{defaults.email}}
-                </p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-language" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'langs' | translate }}</p>
-                <p class="m-0 body-1">{{getSelectedLanguageNames()}}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin: 3% 0 0 0;">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'sports' | translate }}
-              <i class="fa fa-chevron-down" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="!showSportInfo"
-                (click)="showSportInfoEvent(true)"></i>
-              <i class="fa fa-chevron-up" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="showSportInfo"
-                (click)="showSportInfoEvent(false)"></i>
-              <i class="fa fa-pencil" style="float:right;cursor:pointer" aria-hidden="true"
-                (click)="showSportInfoEditEvent(true)"></i>
-            </h2>
-          </div>
-
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" *ngIf="showSportInfo">
-
-            <div *ngFor="let item of clientSport">
-              <div class="py-3 flex items-center">
-                <div
-                  class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                  <img [src]="item.icon_selected" style="border-radius: 10px 0 10px 10px; "
-                    [style.background-color]="item?.level?.color">
-                </div>
-
-                <div *ngIf="!editSportInfo" style="margin: 0 0 0 10px;">
-                  <p class="m-0 caption text-hint">{{'text_sport' | translate
-                    }}</p>
-                  <p class="m-0 body-1">{{item?.name}}
-                  </p>
-                </div>
-              </div>
-
-              <div class="py-3 flex items-center">
-                <div
-                  class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                </div>
-
-                <div *ngIf="!editSportInfo">
-                  <p class="m-0 caption text-hint">{{'text_level' |
-                    translate}}</p>
-                  <div style="padding: 5%;color: #fff;width: 100%;border-radius: 10px 0 10px;width: 250px;"
-                    [style.background-color]="item?.level?.color">
-                    <p class="m-0 body-1" style="text-wrap: pretty;text-align: center;">{{item?.level?.annotation}}
-                      - {{item?.level?.name}}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin: 3% 0 0 0;">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'address' | translate}}
-              <i class="fa fa-chevron-down" style="float:right;cursor:pointer" aria-hidden="true"
-                *ngIf="!showAddressInfo" (click)="showAddressInfoEvent(true)"></i>
-              <i class="fa fa-chevron-up" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="showAddressInfo"
-                (click)="showAddressInfoEvent(false)"></i>
-              <i class="fa fa-pencil" style="float:right;cursor:pointer" aria-hidden="true"
-                (click)="showAddressInfoEditEvent(true)"></i>
-            </h2>
-          </div>
-
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" *ngIf="showAddressInfo">
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-map-marker" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'address' | translate}}</p>
-                <p class="m-0 body-1">{{defaults.address}}</p>
-              </div>
-
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-map-marker" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'cp' | translate}}</p>
-                <p class="m-0 body-1">{{defaults.cp}}</p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-globe" style="color:black; font-size: 24px;margin-right: 10px;" aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'city' | translate }}</p>
-                <p class="m-0 body-1">{{getProvince(defaults.province)}}
-                </p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-globe" style="color:black; font-size: 24px;margin-right: 10px;" aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'province' | translate }}</p>
-                <p class="m-0 body-1">{{getCountry(defaults.country)}}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin: 3% 0 0 0;">
-          <div class="px-6 py-4 border-b">
-            <h2 class="title m-0">{{'other_info' | translate }}
-
-              <i class="fa fa-chevron-down" style="float:right;cursor:pointer" aria-hidden="true"
-                *ngIf="!showPersonalInfo" (click)="showPersonalInfoEvent(true)"></i>
-              <i class="fa fa-chevron-up" style="float:right;cursor:pointer" aria-hidden="true" *ngIf="showPersonalInfo"
-                (click)="showPersonalInfoEvent(false)"></i>
-              <i class="fa fa-pencil" style="float:right;cursor:pointer" aria-hidden="true"
-                (click)="showPersonalInfoEditEvent(true)"></i>
-            </h2>
-          </div>
-
-          <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4" *ngIf="showPersonalInfo">
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-user" style="color:black; font-size: 24px;margin-right: 10px;" aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'username' | translate }}</p>
-                <p class="m-0 body-1">{{defaultsUser?.username ||
-                  'No asigned'}}</p>
-              </div>
-
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-lock" style="color:black; font-size: 24px;margin-right: 10px;" aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">Password</p>
-                <p class="m-0 body-1">*************</p>
-              </div>
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-sticky-note" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'observation_school'|
-                  translate }}</p>
-                <p class="m-0 body-1">{{defaultsObservations.notes ||
-                  'No asigned'}}</p>
-              </div>
-
-            </div>
-
-            <div class="py-3 flex items-center">
-              <div
-                class="w-10 h-10 rounded-full bg-primary-600/10 text-primary-600 ltr:mr-3 rtl:ml-3 flex items-center justify-center">
-                <i class="fa fa-sticky-note" style="color:black; font-size: 24px;margin-right: 10px;"
-                  aria-hidden="true"></i>
-              </div>
-
-              <div>
-                <p class="m-0 caption text-hint">{{'observation_general' |
-                  translate}}</p>
-                <p class="m-0 body-1">{{defaultsObservations.general ||
-                  'No asigned'}}</p>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="mt-6 flex flex-col md:flex-row md:items-start" *ngIf="!loading && editing">
-    <div style="margin-left:0; margin-right: 1.5rem"
-      class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-      <div class="px-6 py-4 border-b">
-        <h2 class="title m-0">{{'users' | translate }}</h2>
-      </div>
-
-      <div class="px-6 py-4 flex flex-col gap-4" style="cursor:pointer;">
-        <div class="flex items-center" (click)="changeClientData(mainId)">
-          <img
-            [src]="mainClient.clients[0]?.image === null || mainClient.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': mainClient.clients[0]?.image"
-            [ngStyle]="{
-              'border': mainId && +mainId === defaults?.id ? '#FF3085 1px solid' : 'none'
-            }" alt="Profile Picture" class="avatar ltr:mr-3 rtl:ml-3 flex-none" />
-
-          <div class="flex-auto">
-            <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{
-              mainClient.clients[0]?.first_name }} {{
-              mainClient.clients[0]?.last_name }}</h4>
-          </div>
-        </div>
-        <div *ngFor="let user of clientUsers;" class="flex items-center" style="cursor:pointer;"
-          (click)="changeClientData(user.id)">
-          <img [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
-            alt="Profile Picture" class="avatar ltr:mr-3 rtl:ml-3 flex-none" [ngStyle]="{
-              'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
-            }" />
-          <div class="flex-auto">
-            <h4 class="body-2 m-0 leading-snug" style="width: 90%; float:left; color:black; margin-left: 2px">{{
-              user?.first_name }} {{ user?.last_name }}</h4>
-            <span class="body-2 m-0 leading-snug" style="width: 10%; float:left"
-              (click)="deleteUserClient(user?.utilizer_id)"><i class="fa fa-trasg"></i></span>
-          </div>
-        </div>
-
-        <div style="cursor:pointer" class="flex items-center">
-          <i class="fa fa-plus" style="color:black; width: 10%"></i>
-          <div class="flex-auto" (click)="addUtilisateur()">
-            <h4 class="body-2 m-0 leading-snug" style="color:black">{{'add_user'
-              | translate }}</h4>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <mat-vertical-stepper #stepper="matHorizontalStepper" [linear]="false" [selectedIndex]="selectedTabIndex"
-      style="width: 100%;">
-
-      <ng-template matStepperIcon="edit">
-        <!--<mat-icon svgIcon="mat:done_all"></mat-icon>-->
-      </ng-template>
-
-      <ng-template matStepperIcon="done">
-        <!--<mat-icon svgIcon="mat:done_all"></mat-icon>-->
-      </ng-template>
-
-      <mat-step [stepControl]="formInfoAccount">
-        <form [formGroup]="formInfoAccount">
-          <ng-template matStepLabel>{{'monitors.creation.info' | translate
-            }}</ng-template>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <div class="image-container">
-              <img [src]="defaults.image !== null ? defaults.image : '../../../../assets/images/no-image.jpg'"
-                alt="Image Preview" style="width: 200px;height: 200px;border-radius: 100%;object-fit: fill;">
-            </div>
-
-            <div class="input-container">
-
-              <input type="file" formControlName="image" placeholder="Select an image" (change)="onFileChanged($event)"
-                id="file" />
-              <label for="file" class="btn-1">
-                <i class="fa fa-camera"></i>
-              </label>
-              <p style="font-size: 12px">{{'image_max' | translate}}</p>
-              <p style="font-size: 12px">{{'image_format' | translate}}</p>
-              <p style="font-size: 12px">{{'image_recomendation' |
-                translate}}</p>
-            </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6" style="margin: 3% 0 0 0;">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'name' | translate }}</mat-label>
-              <input formControlName="name" matInput required type="text" [(ngModel)]="defaults.first_name">
-
-            </mat-form-field>
-
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'surname' | translate }}</mat-label>
-              <input formControlName="surname" matInput required type="text" [(ngModel)]="defaults.last_name">
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>Email</mat-label>
-              <input formControlName="email" matInput required type="mail" [(ngModel)]="defaults.email">
-
-            </mat-form-field>
-
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'username' | translate }}</mat-label>
-              <input formControlName="username" matInput type="text" [(ngModel)]="defaultsUser.username">
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'text_password' | translate }}</mat-label>
-              <input formControlName="password" matInput type="password" [(ngModel)]="defaultsUser.password">
-
-            </mat-form-field>
-          </div>
-
-          <div class="actions flex items-center justify-end gap-2">
-            <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-              translate }}</button>
-            <button [disabled]="formInfoAccount.invalid" color="accent" mat-raised-button matStepperNext>
-              {{'next' | translate}}
-            </button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step [stepControl]="formPersonalInfo">
-        <form [formGroup]="formPersonalInfo">
-          <ng-template matStepLabel>{{'personal_data' | translate
-            }}</ng-template>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6" style="margin: 3% 0 0 0;">
-
-            <mat-form-field class="flex-auto">
-              <input matInput [matDatepicker]="pickerFrom" placeholder="{{'birth_date' | translate }}"
-                formControlName="fromDate" [max]="minDate" readonly [(ngModel)]="defaults.birth_date"
-                (click)="pickerFrom.open()" required>
-              <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-              <mat-datepicker #pickerFrom [startAt]="minDate"></mat-datepicker>
-            </mat-form-field>
-
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'phone' | translate }}</mat-label>
-
-              <input formControlName="phone" matInput type="tel" [(ngModel)]="defaults.telephone">
-            </mat-form-field>
-
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'mobile' | translate }}</mat-label>
-              <input formControlName="mobile" matInput required type="tel" [(ngModel)]="defaults.phone">
-
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'address' | translate }}</mat-label>
-
-              <input formControlName="address" matInput type="text" [(ngModel)]="defaults.address">
-            </mat-form-field>
-
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'cp' | translate }}</mat-label>
-              <input formControlName="postalCode" matInput type="text" [(ngModel)]="defaults.cp">
-
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="vex-flex-form-field flex-auto">
-              <mat-label>{{'country' | translate }}</mat-label>
-              <input type="text" placeholder="{{'Selecciona una opción' | translate}}" matInput
-                [formControl]="myControlCountries" [matAutocomplete]="autoCountry">
-              <mat-autocomplete #autoCountry="matAutocomplete" [displayWith]="displayFnCountry">
-                <mat-option *ngFor="let country of filteredCountries | async" [value]="country"
-                  (onSelectionChange)="defaults.country = country.id">
-                  {{country.name}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field>
-
-            <mat-form-field class="vex-flex-form-field flex-auto">
-              <mat-label>{{'province' | translate }}</mat-label>
-              <input type="text" placeholder="{{'Selecciona una opción' | translate}}" matInput
-                [formControl]="myControlProvinces" [matAutocomplete]="autoProvince">
-              <mat-autocomplete #autoProvince="matAutocomplete" [displayWith]="displayFnProvince">
-                <mat-option *ngFor="let province of filteredProvinces | async" [value]="province"
-                  (onSelectionChange)="defaults.province = province.id">
-                  {{province.name}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field>
-
-            <mat-form-field class="flex-auto" appearance="fill">
-              <mat-label>{{'langs' | translate }}</mat-label>
-              <mat-select [formControl]="languagesControl" multiple>
-                <mat-select-trigger>
-                  <div *ngIf="selectedLanguages.length > 0; else placeholderLangs">
-                    {{ getSelectedLanguageNames() }}
-                  </div>
-                  <ng-template #placeholderLangs>{{'choose_langs' | translate
-                    }}</ng-template>
-                </mat-select-trigger>
-                <mat-option *ngFor="let language of filteredLanguages | async" [value]="language"
-                  (onSelectionChange)="toggleSelectionLanguages(language)">
-                  {{language.name | translate}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="actions flex items-center justify-end gap-2">
-            <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-              translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext>
-              {{'next' |translate}}
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <mat-step [stepControl]="formSportInfo">
-        <form [formGroup]="formSportInfo">
-          <ng-template matStepLabel>{{'sports' |translate}}</ng-template>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6" style="margin: 2% 0 0 0;">
-            <mat-form-field class="flex-auto" appearance="fill">
-              <mat-label>{{'sports' |translate}}</mat-label>
-              <mat-select [formControl]="sportsControl" multiple>
-
-                <mat-select-trigger>
-                  <div *ngIf="sportsControl.value?.length > 0; else placeholder">
-                    {{ getSelectedSportsNames() }}
-                  </div>
-                  <ng-template #placeholder>{{'choose_sports' | translate
-                    }}</ng-template>
-                </mat-select-trigger>
-
-                <mat-option *ngFor="let sport of filteredSports | async" [value]="sport"
-                  (onSelectionChange)="toggleSelection($event, sport)">
-                  {{sport.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-
-            <!-- Añadir niños con modal -->
-            <mat-table #sportsCurrentTable [dataSource]="sportsCurrentData">
-              <caption style="width: 100px"> {{'current_sport' | translate
-                }}</caption>
-
-              <!-- Otros contenedores según tu descripción -->
-
-              <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef> {{'name' | translate
-                  }}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-form-field class="flex-auto" style="margin: 2% 0 0 0;">
-                    <mat-label>{{'name' | translate }}</mat-label>
-                    <input matInput [value]="element.name" type="text" [readonly]="true">
-                  </mat-form-field>
-                </mat-cell>
-              </ng-container>
-
-              <ng-container matColumnDef="level">
-                <mat-header-cell *matHeaderCellDef>{{'level' | translate
-                  }}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-form-field class="flex-auto" style="margin: 2% 0 0 0;">
-                    <mat-label>{{'level' | translate }}</mat-label>
-                    <input type="text" placeholder="Pick one" aria-label="Number" matInput [matAutocomplete]="autoLevel"
-                      [value]="element?.level?.name" [(ngModel)]="element.level" />
-                    <mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
-                      <mat-option *ngFor="let level of element?.degrees" [value]="level"
-                        (onSelectionChange)="element.level = level" (onSelectionChange)="updateLevel(element, level)">
-                        {{level.annotation}} - {{level.name}}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </mat-cell>
-              </ng-container>
-
-              <ng-container matColumnDef="delete">
-                <mat-header-cell *matHeaderCellDef class="delete-column">{{'delete' |
-                  translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let element; let i = index" class="delete-column">
-                  <i class="fa fa-trash cursor-pointer" style="color:black" (click)="removeSport(i, element)"></i>
-                </mat-cell>
-              </ng-container>
-              <!-- Ícono para eliminar
-              <ng-container matColumnDef="delete">
-                <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-icon svgIcon="mat:delete" (click)="removeChild(element)"></mat-icon>
-                </mat-cell>
-              </ng-container> -->
-
-              <mat-header-row *matHeaderRowDef="displayedCurrentColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedCurrentColumns;"></mat-row>
-            </mat-table>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-
-            <!-- Añadir niños con modal -->
-            <mat-table #sportsTable [dataSource]="sportsData" *ngIf="this.sportsData.data.length > 0">
-              <caption style="width: 100px"> {{'sports' | translate }}</caption>
-
-              <!-- Otros contenedores según tu descripción -->
-
-              <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef> {{'name' | translate
-                  }}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-form-field class="flex-auto" style="margin: 2% 0 0 0;">
-                    <mat-label>{{'name' | translate }}</mat-label>
-                    <input matInput [value]="element.name" type="text" [readonly]="true">
-                  </mat-form-field>
-                </mat-cell>
-              </ng-container>
-
-              <ng-container matColumnDef="date">
-                <mat-header-cell *matHeaderCellDef>{{'level' | translate
-                  }}</mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-form-field class="flex-auto" style="margin: 2% 0 0 0;">
-                    <mat-label>{{'level' | translate }}</mat-label>
-                    <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="levelForm"
-                      [matAutocomplete]="autoLevel" [(ngModel)]="element.level" />
-                    <mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
-                      <mat-option *ngFor="let level of element.degrees" [value]="level">
-                        {{level.annotation}} - {{level.name}}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </mat-cell>
-              </ng-container>
-
-              <!-- Ícono para eliminar
-              <ng-container matColumnDef="delete">
-                <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
-                <mat-cell *matCellDef="let element">
-                  <mat-icon svgIcon="mat:delete" (click)="removeChild(element)"></mat-icon>
-                </mat-cell>
-              </ng-container> -->
-
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
-          </div>
-
-          <div class="actions flex items-center justify-end gap-2">
-            <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-              translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext>
-              {{'save' |translate}}
-            </button>
-          </div>
-        </form>
-
-      </mat-step>
-
-      <mat-step [stepControl]="formOtherInfo">
-        <form [formGroup]="formOtherInfo">
-          <ng-template matStepLabel>{{'other_info' | translate }}</ng-template>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'general' |translate}}</mat-label>
-              <textarea formControlName="summary" matInput [(ngModel)]="defaultsObservations.general"></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'observation_school' |translate}}</mat-label>
-              <textarea formControlName="notes" matInput [(ngModel)]="defaultsObservations.notes"></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6">
-            <mat-form-field class="flex-auto">
-              <mat-label>{{'historical' | translate }}</mat-label>
-              <textarea formControlName="hitorical" matInput [(ngModel)]="defaultsObservations.historical"></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="actions flex items-center justify-end gap-2">
-            <button mat-button type="button" (click)="editing = false; selectedTabIndex = 0">{{'go_preview' |
-              translate }}</button>
-            <button [disabled]="formPersonalInfo.invalid" color="accent" mat-raised-button matStepperNext
-              (click)="save()">
-              {{'save' | translate}}
-            </button>
-          </div>
-        </form>
-
-      </mat-step>
-    </mat-vertical-stepper>
-  </div>
+<div *ngIf="!loading" class="flex-sections">
+	<div *ngIf="!editing" [style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'"
+		class="flex-sections-user">
+		<div>
+			<div>
+				<p>
+					{{'text_last_name' | translate }}
+				</p>
+				<p>
+					{{defaults.first_name}}
+				</p>
+			</div>
+
+			<div>
+				<p>
+					{{'text_first_name' | translate }}
+				</p>
+				<p>
+					{{defaults.last_name}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{"text_email" | translate}}
+				</p>
+				<p>{{defaults.email}}</p>
+			</div>
+			<div>
+				<p>
+					{{"text_username" | translate}}
+				</p>
+				<p>
+					{{defaults.username}}
+				</p>
+			</div>
+			<img (click)="showInfoEditEvent(true)" src="assets/icons/edit.png" class="icon24">
+			<div *ngIf="mainId!==id" (click)="deleteUserClient(defaults.id)" class="delete"
+				style="justify-content: flex-end;">
+				<img src="assets/icons/delete.png" alt class="icon20">
+				<span>
+					{{"delete_user" | translate}}
+				</span>
+			</div>
+		</div>
+		<div style="transform: translateY(-0.5px);">
+			<div>
+				<p>
+					{{'text_birth_date' | translate }}
+				</p>
+				<p>
+					{{defaults.birth_date | date: 'dd/MM/YYYY'}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_language' | translate }}
+				</p>
+				<p>
+					{{getSelectedLanguageNames()}}
+				</p>
+			</div>
+
+			<div>
+				<p>
+					{{'text_phone' | translate }}
+				</p>
+				<p>{{defaults.phone}}</p>
+			</div>
+			<div>
+				<p>
+					{{'text_telephone' | translate }}
+				</p>
+				<p>
+					{{defaults.telephone}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_address' | translate }}
+				</p>
+				<p>
+					{{defaults.address}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_cp' | translate }}
+				</p>
+				<p>{{defaults.cp}}</p>
+			</div>
+
+			<div>
+				<p>
+					{{'city' | translate }}
+				</p>
+				<p>
+					{{getProvince(defaults.province)}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'text_province' | translate }}
+				</p>
+				<p>
+					{{getCountry(defaults.country)}}
+				</p>
+			</div>
+
+			<img (click)="showAddressInfoEditEvent(true)" src="assets/icons/edit.png" class="icon24">
+		</div>
+		<div style="transform: translateY(-1px);">
+			<div>
+				<p>
+					{{'text_email' | translate }}
+				</p>
+				<p>{{defaults.email}}</p>
+			</div>
+			<div>
+				<p>
+					{{'text_password' | translate }}
+				</p>
+				<p>************</p>
+			</div>
+			<div>
+				<p>
+					{{'observation_school' | translate }}
+				</p>
+				<p>
+					{{defaultsObservations?.notes || ('not_assigned' | translate)}}
+				</p>
+			</div>
+			<div>
+				<p>
+					{{'observation_general' | translate }}
+				</p>
+				<p>
+					{{defaultsObservations?.general ||
+					('not_assigned' | translate)}}
+				</p>
+			</div>
+
+			<img (click)="showPersonalInfoEditEvent(true)" src="assets/icons/edit.png" class="icon24">
+		</div>
+
+	</div>
+	<div *ngIf="!editing && defaults.client_sports && defaults.client_sports.length>0" class="flex-sections-user level">
+		<div>
+			<div style="width: 100%;flex: none;">
+				<p style="margin-bottom: 20px;">
+					{{"sports" | translate}}
+				</p>
+				<div *ngFor="let sport of defaults.client_sports; index as i">
+					<div style="display: flex; align-items: center;margin-bottom: 20px;">
+						<img [src]="sport.sport.icon_selected" alt="icono" class="icon40">
+						<span style>
+							{{sport.sport.name}}
+						</span>
+<!--						<span style="margin-left: auto;cursor: pointer;
+            color: #E91E63;">
+							{{"view_sports_progress" | translate}}
+						</span>-->
+					</div>
+					<div style="display: flex; align-items: center;gap: 20px;">
+						<app-level-user [allLevels]="userC.allLevels" [selectLevel]="defaults.client_sports[0].degree_id" [size]="40"
+							[userImage]="user?.image"></app-level-user>
+						<div>
+							<div>
+								<span [style.background]="sport.degree.color" style="color: white; padding: 4px 10px;height: 24px;border-radius: 3px;
+                   font-size: 12px;
+                   line-height: 16px;
+                   word-wrap: break-word">
+									{{sport.degree.name}}
+								</span>
+								<span style="font-weight: 600;
+                 margin-left: 8px;
+                 word-wrap: break-word">
+									{{calculateGoalsScore(sport.degree)}}%
+								</span>
+							</div>
+							<div style="margin-top: 8px;">
+								<span *ngIf="calculateGoalsScore(sport.degree)<33" style="font-size: 12px;line-height: 16px;">
+									{{"no_goals_achieved" | translate}}
+								</span>
+								<span *ngIf="calculateGoalsScore(sport.degree)>=33 && calculateGoalsScore(sport.degree)<100"
+									style="font-size: 12px;line-height: 16px;">
+									{{"keep_going" | translate}}
+								</span>
+								<span *ngIf="calculateGoalsScore(sport.degree)===100" style="font-size: 12px;line-height: 16px;">
+									{{"level_completed" | translate}}
+								</span>
+							</div>
+						</div>
+					</div>
+					<mat-divider *ngIf="i<defaults.client_sports.length-1" style="margin: 30px 0;">
+					</mat-divider>
+				</div>
+			</div>
+			<img (click)="showSportInfoEditEvent(true)" src="assets/icons/edit.png" class="icon24">
+		</div>
+	</div>
 </div>
+
+<vex-user-detail-dialog *ngIf="editing" (close)="editing=false" title="Editar Cliente">
+	<mat-vertical-stepper #stepper="matHorizontalStepper" [linear]="false" [selectedIndex]="selectedTabIndex"
+		style="width: 100%;">
+		<ng-template matStepperIcon="edit"></ng-template>
+		<ng-template matStepperIcon="done"></ng-template>
+		<mat-step [stepControl]="formInfoAccount" style="overflow-y: scroll;
+    height: calc(100vh - 450px);">
+			<form [formGroup]="formInfoAccount">
+				<ng-template matStepLabel>
+					{{'monitors.creation.info' | translate
+					}}
+				</ng-template>
+
+        <vex-flux-upload-img [imagePreviewUrl]="defaults.image"
+                             (upload)="formInfoAccount.patchValue({image:$event});
+                             defaults.image=$event;defaultsUser.image=$event;imagePreviewUrl=$event"
+                             [edit]="true" [width]="200" [height]="200" [roundCropper]="true">
+        </vex-flux-upload-img>
+
+				<div class="modalInputD">
+					<mat-form-field appearance="outline" class="inputWidth">
+						<mat-label>
+							{{'name' | translate }}
+						</mat-label>
+						<input formControlName="first_name" [(ngModel)]="defaults.first_name" matInput required type="text">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="inputWidth">
+						<mat-label>
+							{{'surname' | translate }}
+						</mat-label>
+						<input formControlName="last_name" [(ngModel)]="defaults.last_name" matInput required type="text">
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="inputWidth">
+						<mat-label>
+							{{"text_email" | translate}}
+						</mat-label>
+						<input formControlName="email" [(ngModel)]="defaults.email" matInput required type="mail">
+					</mat-form-field>
+<!--					<mat-form-field appearance="outline" class="inputWidth">
+						<mat-label>
+							{{'username' | translate }}
+						</mat-label>
+						<input formControlName="username"  [(ngModel)]="defaults.username" matInput type="text">
+					</mat-form-field>-->
+					<mat-form-field style="width: 100%;" appearance="outline" *ngIf="defaultsUser">
+						<mat-label>
+							{{'text_password' | translate }}
+						</mat-label>
+						<input [(ngModel)]="defaultsUser.password" formControlName="password" matInput type="password">
+					</mat-form-field>
+				</div>
+
+				<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+					<button (click)="editing = false; selectedTabIndex = 0" mat-button type="button"
+						style="border: 1px solid black; color: black; border-radius: 3px;">
+						{{'go_preview' |
+						translate }}
+					</button>
+					<button [disabled]="formInfoAccount.invalid" color="accent" (click)="save()"
+						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+						{{'save' | translate}}
+					</button>
+				</div>
+			</form>
+		</mat-step>
+		<mat-step [stepControl]="formPersonalInfo">
+			<form [formGroup]="formPersonalInfo">
+				<ng-template matStepLabel>
+					{{'personal_data' | translate }}
+				</ng-template>
+
+				<div class="modalInputD">
+
+					<mat-form-field class="inputWidth" appearance="outline">
+            <mat-label>{{'text_birth_date' | translate}}</mat-label>
+            <input type="date" matInput class="flex-auto" formControlName="birth_date" [max]="minDate" required>
+					</mat-form-field>
+					<mat-form-field class="inputWidth" appearance="outline">
+						<mat-label>
+							{{'phone' | translate }}
+						</mat-label>
+
+						<input formControlName="telephone" matInput type="tel">
+					</mat-form-field>
+
+					<mat-form-field class="inputWidth" appearance="outline">
+						<mat-label>
+							{{'mobile' | translate }}
+						</mat-label>
+						<input formControlName="phone" matInput required type="tel">
+
+					</mat-form-field>
+					<mat-form-field class="inputWidth" appearance="outline">
+						<mat-label>
+							{{'address' | translate }}
+						</mat-label>
+
+						<input formControlName="address" matInput type="text">
+					</mat-form-field>
+
+					<mat-form-field class="inputWidth" appearance="outline">
+						<mat-label>
+							{{'cp' | translate }}
+						</mat-label>
+						<input formControlName="cp" matInput type="text">
+
+					</mat-form-field>
+					<mat-form-field class="vex-flex-form-field flex-auto" appearance="outline">
+						<mat-label>
+							{{'country' | translate }}
+						</mat-label>
+						<input [formControl]="myControlCountries" [matAutocomplete]="autoCountry" type="text"
+							placeholder="Selecciona una opción" matInput>
+						<mat-autocomplete #autoCountry="matAutocomplete" [displayWith]="displayFnCountry">
+							<mat-option *ngFor="let country of filteredCountries | async" [value]="country"
+								(onSelectionChange)="defaults.country = country.id">
+								{{country.name}}
+							</mat-option>
+						</mat-autocomplete>
+					</mat-form-field>
+
+					<mat-form-field class="vex-flex-form-field flex-auto" appearance="outline">
+						<mat-label>
+							{{'province' | translate }}
+						</mat-label>
+						<input [formControl]="myControlProvinces" [matAutocomplete]="autoProvince" type="text"
+							placeholder="Selecciona una opción" matInput>
+						<mat-autocomplete #autoProvince="matAutocomplete" [displayWith]="displayFnProvince">
+							<mat-option *ngFor="let province of filteredProvinces | async" [value]="province"
+								(onSelectionChange)="defaults.province = province.id">
+								{{province.name}}
+							</mat-option>
+						</mat-autocomplete>
+					</mat-form-field>
+
+					<mat-form-field class="inputWidth" appearance="outline">
+						<mat-label>
+							{{'langs' | translate }}
+						</mat-label>
+						<mat-select [formControl]="languagesControl" multiple (valueChange)="toggleSelectionLanguages($event)">
+							<mat-select-trigger>
+								<div *ngIf="selectedLanguages.length > 0; else placeholderLangs">
+									{{ getSelectedLanguageNames() }}
+								</div>
+								<ng-template #placeholderLangs>
+									{{'choose_langs' | translate
+									}}
+								</ng-template>
+							</mat-select-trigger>
+							<mat-option *ngFor="let language of filteredLanguages | async" [value]="language">
+								{{language.name}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+
+				<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+					<button (click)="editing = false; selectedTabIndex = 0" mat-button type="button"
+						style="border: 1px solid black; color: black; border-radius: 3px;">
+						{{'go_preview' |
+						translate }}
+					</button>
+					<button [disabled]="formPersonalInfo.invalid" color="accent" (click)="save()"
+						style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+						{{'save' | translate}}
+					</button>
+				</div>
+
+			</form>
+		</mat-step>
+
+		<mat-step [stepControl]="formSportInfo">
+			<form [formGroup]="formSportInfo">
+				<ng-template matStepLabel>
+					{{'sports' |translate}}
+				</ng-template>
+
+				<div class="modalInputD">
+					<mat-form-field style="width: 100%;margin: 5px;" appearance="outline">
+						<mat-label>
+							{{'sports' |translate}}
+						</mat-label>
+						<mat-select [formControl]="sportsControl" multiple>
+
+							<mat-select-trigger>
+								<div *ngIf="sportsControl.value?.length > 0; else placeholder">
+									{{ getSelectedSportsNames() }}
+								</div>
+								<ng-template #placeholder>
+									{{'choose_sports' | translate
+									}}
+								</ng-template>
+							</mat-select-trigger>
+
+							<mat-option *ngFor="let sport of filteredSports | async" [value]="sport"
+								(onSelectionChange)="toggleSelection($event, sport)">
+								{{sport.name}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+
+					<!-- Añadir niños con modal -->
+					<mat-table #sportsCurrentTable [dataSource]="sportsCurrentData" *ngIf="sportsCurrentData.data.length">
+						<caption style="width: 200px">
+							{{'current_sport' | translate
+							}}
+						</caption>
+
+						<!-- Otros contenedores según tu descripción -->
+
+						<ng-container matColumnDef="name">
+							<mat-header-cell *matHeaderCellDef>
+								{{'name' | translate
+								}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element" style="margin: 5px;">
+								<mat-form-field style="width: 100%;margin: 5px;" appearance="outline">
+									<mat-label>
+										{{'name' | translate }}
+									</mat-label>
+									<input [value]="element.name" [readonly]="true" matInput type="text">
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="level">
+							<mat-header-cell *matHeaderCellDef>
+								{{'level' | translate
+								}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element" style="margin: 5px;">
+								<mat-form-field style="width: 100%;" appearance="outline">
+									<mat-label>
+										{{'level' | translate }}
+									</mat-label>
+									<input [matAutocomplete]="autoLevel" [value]="element?.level?.name"
+										[(ngModel)]="element.level" type="text" placeholder="Pick one"
+										aria-label="Number" matInput>
+									<mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
+										<mat-option *ngFor="let level of element?.degrees" [value]="level"
+											(onSelectionChange)="element.level = level">
+<!--											(onSelectionChange)="updateLevel(element, level)"-->
+											{{level.annotation}} - {{level.name}}
+										</mat-option>
+									</mat-autocomplete>
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="delete">
+							<mat-header-cell *matHeaderCellDef class="delete-column">
+								{{'delete' |
+								translate}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element; let i = index" style="margin: 5px;"
+								class="delete-column">
+								<i (click)="removeSport(i, element)" class="fa fa-trash cursor-pointer"
+									style="color:black"></i>
+							</mat-cell>
+						</ng-container>
+						<mat-header-row *matHeaderRowDef="displayedCurrentColumns"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedCurrentColumns;"></mat-row>
+					</mat-table>
+
+					<!-- Añadir niños con modal -->
+					<mat-table #sportsTable *ngIf="this.sportsData.data.length > 0" [dataSource]="sportsData">
+						<caption style="width: 200px">
+							{{'sports' | translate
+							}}
+						</caption>
+
+						<!-- Otros contenedores según tu descripción -->
+
+						<ng-container matColumnDef="name">
+							<mat-header-cell *matHeaderCellDef>
+								{{'name' | translate
+								}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element" style="margin: 5px;">
+								<mat-form-field style="width: 100%;margin: 5px;" appearance="outline">
+									<mat-label>
+										{{'name' | translate }}
+									</mat-label>
+									<input [value]="element.name" [readonly]="true" matInput type="text">
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
+
+						<ng-container matColumnDef="date">
+							<mat-header-cell *matHeaderCellDef>
+								{{'level' | translate
+								}}
+							</mat-header-cell>
+							<mat-cell *matCellDef="let element">
+								<mat-form-field style="width: 100%;margin: 5px;" appearance="outline">
+									<mat-label>
+										{{'level' | translate }}
+									</mat-label>
+									<input [formControl]="levelForm" [matAutocomplete]="autoLevel"
+										[(ngModel)]="element.level" type="text" placeholder="Pick one"
+										aria-label="Number" matInput>
+									<mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
+										<mat-option *ngFor="let level of element.degrees" [value]="level">
+											{{level.annotation}} - {{level.name}}
+										</mat-option>
+									</mat-autocomplete>
+								</mat-form-field>
+							</mat-cell>
+						</ng-container>
+
+						<!-- Ícono para eliminar
+          <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+              <mat-icon svgIcon="mat:delete" (click)="removeChild(element)"></mat-icon>
+            </mat-cell>
+          </ng-container> -->
+
+						<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+						<mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+					</mat-table>
+				</div>
+			</form>
+			<form [formGroup]="formOtherInfo" style="margin-top: 20px;">
+				<div class="modalInputD">
+					<mat-form-field style="width: 100%;" appearance="outline">
+						<mat-label>
+							{{'general' |translate}}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.general" formControlName="summary" matInput></textarea>
+					</mat-form-field>
+					<mat-form-field style="width: 100%;" appearance="outline">
+						<mat-label>
+							{{'observation_school' |translate}}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.notes" formControlName="notes" matInput></textarea>
+					</mat-form-field>
+					<mat-form-field style="width: 100%;" appearance="outline">
+						<mat-label>
+							{{'historical' | translate }}
+						</mat-label>
+						<textarea [(ngModel)]="defaultsObservations.historical" formControlName="hitorical" matInput></textarea>
+					</mat-form-field>
+				</div>
+			</form>
+			<div style="margin: 20px 0;display: flex;width: 100%;justify-content: space-between;">
+				<button (click)="editing = false; selectedTabIndex = 0" mat-button type="button"
+					style="border: 1px solid black; color: black; border-radius: 3px;">
+					{{'go_preview' |
+					translate }}
+				</button>
+        <button [disabled]="formSportInfo.invalid || formOtherInfo.invalid" color="accent" (click)="save()"
+                style="color: white; border-radius: 3px;background: #E91E63;" mat-raised-button>
+          {{'save' | translate}}
+        </button>
+			</div>
+		</mat-step>
+	</mat-vertical-stepper>
+</vex-user-detail-dialog>
+
+<app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser">
+</app-modal-add-user>

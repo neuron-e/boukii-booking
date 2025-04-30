@@ -1,0 +1,38 @@
+<div class="footer">
+	<div style="display: flex;">
+		<img  *ngIf="SchoolData" src="{{SchoolData?.logo}}" class="icon48" alt>
+		<p *ngIf="SchoolData" style="line-height: 14px; margin: 0 12px;">
+			<span class="title1">{{SchoolData.name}}</span>
+			<br>
+			<span class="title2">
+				{{SchoolData.description}}
+			</span>
+		</p>
+	</div>
+	<div>
+		<img src="assets/images/boukii.png" alt style="width: 138px;height: fit-content;">
+	</div>
+  <div class="ref">
+<!--    <p>
+      <a routerLink="/faq">{{"faq" | translate}}</a>
+    </p>-->
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/privacy">{{"privacy_policy" | translate}}</a>
+    </p>
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/terms">{{"terms_conditions" | translate}}</a>
+    </p>
+    <p>
+      <a routerLink="/{{SchoolData?.slug}}/contact">{{"contact" | translate}}</a>
+    </p>
+  </div>
+	<div class="ref">
+		<p></p>
+		<p></p>
+		<p></p>
+		<div style="display: flex; gap: 24px; justify-content: center;">
+			<img src="assets/icons/insta.png" class="icon24">
+			<img src="assets/icons/facebook.png" class="icon24">
+		</div>
+	</div>
+</div>

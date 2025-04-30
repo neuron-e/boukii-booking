@@ -1,17 +1,25 @@
 <div class="flex-circle">
-  <div class="circle-container" [style.width.px]="size" [style.height.px]="size">
-      <!--User image-->
-      <img [src]="userImage" class="level-image" [style.width.px]="imageSize" [style.height.px]="imageSize" />
-      <!--Levels-->
-      <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="viewBox" xmlns="http://www.w3.org/2000/svg">
-        <path *ngFor="let level of allLevels; let i = index"
-              [attr.d]="getCirclePath(i)"
-              [attr.stroke]="getCircleColor(i, selectLevel)"
-              fill="none"
-              [attr.stroke-width]="strokeWidth">
-        </path>
-        <!-- Marker for selected Level-->
-        <circle [attr.cx]="getMarkerPosition().x" [attr.cy]="getMarkerPosition().y" [attr.r]="markerRadius" fill="black" />
-      </svg>
-  </div>
+	<div [style.width.px]="size"
+		[style.height.px]="size"
+		class="circle-container">
+		<img [src]="userImage || 'assets/images/avatar.png'"
+			[style.width.px]="imageSize"
+			[style.height.px]="imageSize"
+			class="level-image">
+		<svg [attr.width]="size"
+			[attr.height]="size"
+			[attr.viewBox]="viewBox"
+			xmlns="http://www.w3.org/2000/svg">
+			<path *ngFor="let level of allLevels; let i = index"
+				[attr.d]="getCirclePath(i)"
+				[attr.stroke]="getCircleColor(i, selectLevel)"
+				[attr.stroke-width]="strokeWidth"
+				fill="none">
+			</path>
+			<circle [attr.cx]="getMarkerPosition().x"
+				[attr.cy]="getMarkerPosition().y"
+				[attr.r]="markerRadius"
+				fill="var(--ion-color-primary)"></circle>
+		</svg>
+	</div>
 </div>

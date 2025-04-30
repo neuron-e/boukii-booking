@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
@@ -11,8 +11,9 @@ import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {ApiCrudService} from '../../services/crud.service';
+import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
+import { ApiCrudService } from 'src/app/services/crud.service';
+import {UtilsService} from '../../services/utils.service';
 
 @Component({
   selector: 'app-course',
@@ -32,171 +33,17 @@ export class CourseComponent implements OnInit {
   today: Date = new Date();
   userLogged: any;
   course: any;
-  courseType: number = 2;
-  dataLevels:any = [
-    {
-      'id': 181,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'Ptit Loup',
-      'annotation': 'PT',
-      'degree_order': 0,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 182,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'JN',
-      'annotation': 'JN',
-      'degree_order': 1,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 183,
-      'league': 'SKV',
-      'level': 'test',
-      'name': 'Débutant Kid Village',
-      'annotation': 'DKV',
-      'degree_order': 2,
-      'color': '#1C482C',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 184,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Prince / Pricesse Bleu',
-      'annotation': 'PB',
-      'degree_order': 3,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 185,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Roi / Reine Bleu',
-      'annotation': 'RB',
-      'degree_order': 4,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 186,
-      'league': 'BLEU',
-      'level': 'test',
-      'name': 'Star Bleu',
-      'annotation': 'SB',
-      'degree_order': 5,
-      'color': '#0E3991',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 187,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R1',
-      'annotation': 'R1',
-      'degree_order': 6,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 188,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R2',
-      'annotation': 'R2',
-      'degree_order': 7,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 189,
-      'league': 'ROUGE',
-      'level': 'test',
-      'name': 'R3',
-      'annotation': 'R3',
-      'degree_order': 8,
-      'color': '#572830',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 190,
-      'league': 'NOIR',
-      'level': 'test',
-      'name': 'Prince / Pricesse Noir',
-      'annotation': 'PN',
-      'degree_order': 9,
-      'color': '#000000',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 191,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Race',
-      'annotation': 'ACA',
-      'degree_order': 10,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 192,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Freestyle',
-      'annotation': 'ACA',
-      'degree_order': 11,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    },
-    {
-      'id': 193,
-      'league': 'Academy',
-      'level': 'test',
-      'name': 'Freeride',
-      'annotation': 'ACA',
-      'degree_order': 12,
-      'color': '#7d7c7c',
-      'active': true,
-      'school_id': 1,
-      'sport_id': 1
-    }
-  ];
+  courseType: number = 1;
+  courseFlux: number = 0
+  confirmModal: boolean = false
+  dataLevels: any
   selectedLevel: any;
   selectedUser: any;
   selectedUserMultiple: any[] = [];
   selectedDateReservation: any;
-  selectedForfait: any
-  isForfaitRequired: boolean = false;
+  selectedForfait: any[] = []
+  tooltipVisible: boolean[] = []; // Ahora es un array en lugar de un objeto
+  selectedForfaits: { [date: string]: any[] } = {};
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -208,105 +55,107 @@ export class CourseComponent implements OnInit {
   weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   currentMonth: number;
   currentYear: number;
-  myHolidayDates: any = [];
   days: any[] = [];
 
   activeDates: string[] = [];
-
   isModalAddUser: boolean = false;
-  isModalLogin: boolean = false;
-  isModalNewUser: boolean = false;
 
   selectedHour: string = '';
-  selectedPaxes: any = 1;
-  selectedDuration: any;
-  availableDurations: any[] = [];
+  selectedDuration: any ;
+  availableDurations: number[] = [];
   availableHours: any[] = [];
-  season: any = [];
-  holidays: any = [];
 
   schoolData: any;
   settings: any;
+  settingsExtras: any
   selectedDates: any = [];
+  selectedCourseDates: any = [];
   collectivePrice: any = 0;
+
+  // Control de la visualización de intervalos
+  expandedIntervals: { [key: string]: boolean } = {};
+  dateSelectionError: string = '';
+  selectedIntervalId: string | null = null;
 
   defaultImage = '../../../assets/images/3.png';
 
-  constructor(private router: Router, public themeService: ThemeService, private coursesService: CoursesService,
-              private crudService: ApiCrudService,
-    private route: ActivatedRoute, private authService: AuthService, private schoolService: SchoolService,
-    private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService,
-              private translateService: TranslateService, private snackbar: MatSnackBar, private sanitizer: DomSanitizer) {
+  constructor(private router: Router, public themeService: ThemeService, public coursesService: CoursesService,
+              private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
+              private datePipe: DatePipe, private cartService: CartService, private bookingService: BookingService,
+              private translateService: TranslateService, private snackbar: MatSnackBar,
+              private crudService: ApiCrudService, private utilService: UtilsService
+  ) {
+    this.checkScreenWidth();
+  }
 
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    if (!(event.target as HTMLElement).closest('.tooltip-container') &&
+      !(event.target as HTMLElement).closest('.icon24')) {
+      this.tooltipVisible = this.tooltipVisible.map(() => false);
+    }
+  }
+
+  SmallScreenModal: boolean = false
+  isSmallScreen: boolean = false;
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.checkScreenWidth();
+  }
+  checkScreenWidth() {
+    this.isSmallScreen = window.innerWidth < 800;
+  }
+
+  showTooltip(index: number) {
+    // Cierra todos los tooltips antes de abrir el nuevo
+    this.tooltipVisible = this.tooltipVisible.map(() => false);
+    this.tooltipVisible[index] = true;
   }
 
   ngOnInit(): void {
-    this.authService.getUserData().subscribe(data => {
-      this.userLogged = data;
-    });
+    this.authService.getUserData().subscribe(data => this.userLogged = data);
     this.schoolService.getSchoolData().subscribe(
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.settings = JSON.parse(data.data.settings);
-          this.crudService
-            .list('/seasons', 1, 10000, 'asc', 'id', '&school_id=' +
-              this.schoolData.id + '&is_active=1').subscribe({
-            next: (res) => {
-              if (res.data.length > 0) {
-                this.season = res.data[0]; // Guardamos la temporada en caché
-                this.holidays = this.season.vacation_days ? JSON.parse(this.season.vacation_days) : [];
-                this.holidays.forEach((element: any) => {
-                  this.myHolidayDates.push(moment(element).toDate());
-                });
-              }
-            },
-            error: (err) => {
-              console.error('Error al obtener la temporada:', err);
-            }
-          });
-
+          this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
         }
       }
     );
     const id = this.route.snapshot.paramMap.get('id');
-
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
-      this.crudService
-        .list('/degrees', 1, 10000, 'asc', 'id', '&school_id=' +
-          this.schoolData.id + '&sport_id='+this.course.sport_id, '', null, '', ['degreesSchoolSportGoals']).subscribe({
-        next: (response) => {
-          if (response.data.length > 0) {
-            this.dataLevels = response.data;
-            this.dataLevels.forEach((degree: any) => {
-              degree.inactive_color = this.lightenColor(degree.color, 30);
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error al obtener la temporada:', err);
+      this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
+      if (this.hasIntervals()) {
+        // Por defecto, expandir todos los intervalos
+        this.getIntervalGroups().forEach(interval => {
+          this.expandedIntervals[interval.id] = true;
+        });
+      }
+      this.settingsExtras = this.course.course_extras;
+      if (this.course.discounts) {
+        try {
+          const discounts = JSON.parse(this.course.discounts);
+        } catch (error) {
         }
-      });
-      this.isForfaitRequired = this.schoolData?.slug === 'ess-charmey' && this.course.options;
-      this.activeDates = this.course.course_dates.map((dateObj: any) =>
-        this.datePipe.transform(dateObj.date, 'yyyy-MM-dd')
-      );
+      } else {
+      }
+      this.getDegrees()
+      this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       if (this.course.course_type == 2) {
         this.availableHours = this.getAvailableHours();
-        if (this.course.is_flexible && this.selectedDateReservation) {
-          this.fetchAvailableDurations(this.selectedHour);
-        } else {
-          this.selectedDuration = this.course.duration;
-        }
-
+        this.selectedHour = this.availableHours[0];
+        if (this.course.is_flexible) {
+          this.availableDurations = this.getAvailableDurations(this.selectedHour);
+          this.selectedDuration =  this.availableDurations[0];
+          this.updatePrice();
+        } else this.selectedDuration = this.course.duration;
         this.initializeMonthNames();
         if (this.course.date_start) {
           if (moment(this.course.date_start).isBefore(moment(), 'day')) {
             const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
             this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
             const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
             this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
           }
@@ -318,40 +167,279 @@ export class CourseComponent implements OnInit {
         else {
           const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
           this.currentMonth = storedMonthStr ? parseInt(storedMonthStr) : new Date().getMonth();
-
           const storedYearStr = localStorage.getItem(this.schoolData.slug + '-year');
           this.currentYear = storedYearStr ? parseInt(storedYearStr) : new Date().getFullYear();
-
-
-
         }
         this.renderCalendar();
-
-      } else {
-        this.collectivePrice = this.course.price;
       }
+      this.collectivePrice = this.course.price;
+    });
+
+  }
+
+  // Determina si debemos mostrar el curso por intervalos
+  shouldDisplayByIntervals(): boolean {
+    return this.hasIntervals() && this.course.course_type == 1;
+  }
+
+  // Determina si debemos mostrar el curso por semanas (flexible pero sin intervalos)
+  shouldDisplayByWeeks(): boolean {
+    return !this.hasIntervals() && this.course.is_flexible && this.course.course_type == 1;
+  }
+
+  // Determina si debemos mostrar el listado simple de fechas (no flexible, sin intervalos)
+  shouldDisplaySimpleDates(): boolean {
+    return !this.hasIntervals() && !this.course.is_flexible && this.course.course_type == 1;
+  }
+
+  // Método para verificar si el curso tiene intervalos configurados
+  hasIntervals(): boolean {
+    if (!this.course || !this.course.settings) return false;
+
+    const settings = typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+
+    return settings.multipleIntervals && settings.intervals && settings.intervals.length > 0;
+  }
+
+  // Alternar el estado de expansión de un intervalo
+  toggleInterval(intervalId: string): void {
+    this.expandedIntervals[intervalId] = !this.expandedIntervals[intervalId];
+  }
+
+  // Verifica si un intervalo está expandido
+  isIntervalExpanded(intervalId: string): boolean {
+    return this.expandedIntervals[intervalId] !== false;
+  }
+
+  // Método para obtener fechas agrupadas por intervalos
+  getIntervalGroups(): any[] {
+    if (!this.hasIntervals() || !this.course.course_dates) {
+      return [];
+    }
+
+    const settings = typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+
+    const intervals = settings.intervals || [];
+    const result = [];
+
+    // Procesar cada intervalo
+    intervals.forEach(interval => {
+      // Filtrar fechas de este intervalo que sean futuras
+      const intervalDates = this.course.course_dates
+        .filter(date => date.interval_id === interval.id && this.compareISOWithToday(date.date))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      if (intervalDates.length > 0) {
+        // Obtener primera y última fecha
+        const firstDate = new Date(intervalDates[0].date);
+        const lastDate = new Date(intervalDates[intervalDates.length - 1].date);
+
+        // Obtener días de la semana únicos
+        const weekdays = this.getUniqueWeekdaysFromDates(intervalDates);
+
+        // Obtener horarios comunes
+        const commonTime = this.getCommonTime(intervalDates);
+
+        result.push({
+          id: interval.id,
+          name: interval.name || 'Intervalo',
+          startDate: firstDate,
+          endDate: lastDate,
+          weekdays: weekdays,
+          time: commonTime,
+          count: intervalDates.length,
+          dates: intervalDates
+        });
+      }
+    });
+
+    return result;
+  }
+
+  // Obtener configuraciones del curso
+  getCourseSettings(): any {
+    if (!this.course || !this.course.settings) return {};
+
+    return typeof this.course.settings === 'string'
+      ? JSON.parse(this.course.settings)
+      : this.course.settings;
+  }
+
+  // Verificar si los días deben ser consecutivos
+  mustBeConsecutive(): boolean {
+    const settings = this.getCourseSettings();
+    return settings.mustBeConsecutive === true;
+  }
+
+  // Verificar si debe comenzar desde el primer día
+  mustStartFromFirst(): boolean {
+    const settings = this.getCourseSettings();
+    return settings.mustStartFromFirst === true;
+  }
+
+
+
+  // Método para agrupar fechas por semanas cuando es flexible sin intervalos
+  getWeekGroups(): any[] {
+    if (this.hasIntervals() || !this.course.course_dates) {
+      return [];
+    }
+
+    // Filtrar solo fechas futuras
+    const futureDates = this.course.course_dates
+      .filter(date => this.compareISOWithToday(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    if (futureDates.length === 0) {
+      return [];
+    }
+
+    // Agrupar por semanas
+    const weekGroups = [];
+    let currentGroup = null;
+
+    futureDates.forEach(date => {
+      const dateObj = new Date(date.date);
+      // Obtener el lunes de esta semana
+      const mondayOfWeek = new Date(dateObj);
+      mondayOfWeek.setDate(dateObj.getDate() - dateObj.getDay() + (dateObj.getDay() === 0 ? -6 : 1));
+      const mondayString = mondayOfWeek.toISOString().split('T')[0];
+
+      if (!currentGroup || currentGroup.mondayString !== mondayString) {
+        // Crear un nuevo grupo para esta semana
+        currentGroup = {
+          id: 'week_' + mondayString,
+          mondayString: mondayString,
+          startDate: dateObj,
+          endDate: dateObj,
+          dates: [date],
+          weekdays: [dateObj.getDay()]
+        };
+        weekGroups.push(currentGroup);
+      } else {
+        // Añadir a grupo existente
+        currentGroup.dates.push(date);
+        currentGroup.endDate = dateObj;
+        if (!currentGroup.weekdays.includes(dateObj.getDay())) {
+          currentGroup.weekdays.push(dateObj.getDay());
+        }
+      }
+    });
+
+    // Procesar los grupos para el formato final
+    return weekGroups.map(group => {
+      // Calcular la fecha de fin de semana (domingo)
+      const endOfWeek = new Date(group.startDate);
+      endOfWeek.setDate(endOfWeek.getDate() + (7 - (endOfWeek.getDay() || 7)));
+
+      // Verificar si todas las fechas tienen el mismo horario
+      const commonTime = this.getCommonTime(group.dates);
+
+      return {
+        id: group.id,
+        name: this.translateService.instant('week_of') + ' ' + this.formatDate(group.startDate),
+        startDate: group.startDate,
+        endDate: group.dates[group.dates.length - 1].date < endOfWeek ?
+          new Date(group.dates[group.dates.length - 1].date) : endOfWeek,
+        weekdays: group.weekdays.sort(),
+        time: commonTime,
+        count: group.dates.length,
+        dates: group.dates
+      };
     });
   }
 
-  openModalLogin() {
-    this.isModalLogin = !this.isModalLogin;
-  }
-
-  toggleForfaitSelection(extra: any) {
-    if (this.selectedForfait === extra) {
-      this.selectedForfait = null; // Deselect if already selected
-    } else {
-      this.selectedForfait = extra; // Select the clicked option
+  // Obtener fechas futuras sin agrupar (para cursos no flexibles sin intervalos)
+  getFutureDates(): any[] {
+    if (!this.course || !this.course.course_dates) {
+      return [];
     }
+
+    return this.course.course_dates
+      .filter(date => this.compareISOWithToday(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
-  /*
-    getSports() {
-      this.crudService.list('/sports', 1, 10000, 'desc', 'id', '&school_id='+this.user.schools[0].id)
-        .subscribe((sport) => {
-          this.sports = sport.data;
-        })
-    }*/
+
+  compareISOWithToday(isoDate: string): boolean {
+    const isoDateObj = new Date(isoDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return isoDateObj >= today;
+  }
+  // Obtener días de la semana únicos de un conjunto de fechas
+  private getUniqueWeekdaysFromDates(dates): number[] {
+    const uniqueDays = new Set<number>();
+
+    dates.forEach(date => {
+      const day = new Date(date.date).getDay();
+      uniqueDays.add(day);
+    });
+
+    return Array.from(uniqueDays).sort();
+  }
+
+  // Verificar si todas las fechas tienen el mismo horario y retornarlo
+  private getCommonTime(dates): string {
+    if (!dates || dates.length === 0) return '';
+
+    const firstStartTime = dates[0].hour_start;
+    const firstEndTime = dates[0].hour_end;
+
+    const allSameTime = dates.every(date =>
+      date.hour_start === firstStartTime && date.hour_end === firstEndTime
+    );
+
+    if (allSameTime) {
+      return `${firstStartTime}h-${firstEndTime}h`;
+    }
+
+    return this.translateService.instant('various_times');
+  }
+
+  // Formatear fecha para visualización
+  private formatDate(date: Date): string {
+    return `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+  }
+
+  // Convertir array de números de días a nombres de días
+  formatWeekdays(days: number[]): string {
+    if (!days || days.length === 0) return '';
+
+    // Si son todos los días
+    if (days.length === 7) {
+      return this.translateService.instant('all_days');
+    }
+
+    // Si son días laborables
+    if (days.length === 5 &&
+      days.includes(1) && days.includes(2) && days.includes(3) &&
+      days.includes(4) && days.includes(5) &&
+      !days.includes(0) && !days.includes(6)) {
+      return this.translateService.instant('weekdays');
+    }
+
+    // Si es fin de semana
+    if (days.length === 2 && days.includes(0) && days.includes(6) &&
+      !days.includes(1) && !days.includes(2) && !days.includes(3) &&
+      !days.includes(4) && !days.includes(5)) {
+      return this.translateService.instant('weekend');
+    }
+
+    // Caso general: listar los días
+    const dayNames = days.map(day => this.Week[day]);
+
+    if (dayNames.length === 1) {
+      return dayNames[0];
+    }
+
+    const lastDay = dayNames.pop();
+    return dayNames.join(', ') + ' ' + this.translateService.instant('and') + ' ' + lastDay;
+  }
 
   initializeMonthNames() {
     this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -380,291 +468,90 @@ export class CourseComponent implements OnInit {
   renderCalendar() {
     const startDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-
     this.days = [];
-    //Start monday
     let adjustedStartDay = startDay - 1;
     if (adjustedStartDay < 0) adjustedStartDay = 6;
-
-    for (let j = 0; j < adjustedStartDay; j++) {
-      this.days.push({ number: '', active: false });
-    }
-
+    for (let j = 0; j < adjustedStartDay; j++) this.days.push({ number: '', active: false });
     for (let i = 1; i <= daysInMonth; i++) {
       const spanDate = new Date(this.currentYear, this.currentMonth, i);
       const isPast = spanDate < new Date();
       const formattedMonth = (this.currentMonth + 1).toString().padStart(2, '0');
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
-      const isActive = !isPast && this.activeDates.includes(dateStr) && this.inUseDatesFilter(spanDate);
+      const isActive = !isPast && this.activeDates.includes(dateStr);
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
-
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
-    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++) {
-      this.days.push({ number: '', active: false });
-    }
-
-  }
-
-  inUseDatesFilter = (d: Date): boolean => {
-    if (!d) return false; // Si la fecha es nula o indefinida, no debería ser seleccionable.
-
-    const formattedDate = moment(d).format('yyyy-MM-dd');
-    const time = moment(d).startOf('day').valueOf(); // .getTime() es igual a .valueOf()
-    const today = moment().startOf('day'); // Fecha actual (sin hora, solo día)
-    // Encuentra si la fecha actual está en myHolidayDates.
-    const isHoliday = this.myHolidayDates.some((x:any) => x.getTime() === time);
-
-    // La fecha debería ser seleccionable si no es un día festivo y está activa (o sea, active no es falso ni 0).
-    return !isHoliday;
+    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++)       this.days.push({ number: '', active: false });
   }
 
   selectDay(day: any) {
     if (day.active) {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
-      const formattedDate = `${this.currentYear}-${this.currentMonth + 1}-${day.number}`;
-
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
-
-      if(this.selectedLevel) {
-        this.fetchAvailableDurations(this.selectedHour);
-      }
-
+      this.getAvailableHours();
+      if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
     }
-  }
-
-  onHourChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-
-    if (target && target.value) {
-      this.selectedHour = target.value;
-      this.fetchAvailableDurations(target.value);
-    } else {
-    }
-  }
-
-  fetchAvailableDurations(hour: string): void {
-    const cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-    const cart = cartStorage ? JSON.parse(cartStorage) : {};
-    const courseId = this.course.id;
-
-    const bookingUsers = this.selectedUserMultiple.map((selectedUser, index) => ({
-      course: this.course,
-      client: selectedUser,
-      school_id: this.schoolData.id,
-      client_id: selectedUser.id,
-      price: index === 0 ? this.course.price : 0,
-      currency: 'CHF',
-      course_id: this.course.id,
-      course_date_id: this.findMatchingCourseDate().id,
-      course_group_id: null,
-      course_subgroup_id: null,
-      date: this.findMatchingCourseDate().date,
-      hour_start: hour,
-      hour_end: this.calculateEndTime(hour, this.selectedDuration?.duration ?? '00:00'),
-      extra: this.selectedForfait,
-      minimumDegreeId: this.selectedLevel ? this.selectedLevel.degree_order : 1,
-    }));
-
-    const courseDateId = this.findMatchingCourseDate().id;
-
-    this.coursesService.getAvailableDurations(courseDateId, hour, bookingUsers).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          const durationsArray = Object.values(response.data);
-
-          if (durationsArray.length > 0) {
-            this.availableDurations = durationsArray
-              .map((duration:any) => ({
-                ...duration,
-                monitors: this.filterMonitorsForOverlap(duration.monitors, cart, courseId, hour, duration.duration),
-              }))
-              .filter((duration:any) => duration.monitors.length > 0); // Eliminar duraciones sin monitores
-
-            if (this.availableDurations.length === 0) {
-              this.availableDurations = [];
-              this.showNoAvailabilityMessage();
-            } else {
-              this.handleDurationSelection();
-            }
-          } else {
-            this.availableDurations = [];
-            this.showNoAvailabilityMessage();
-          }
-        } else {
-          this.handleNoSuccessResponse();
-        }
-      },
-      error: (err: any) => {
-        console.error('Error fetching durations:', err);
-        this.showErrorMessage('Error fetching durations. Please try again.');
-      },
-    });
-  }
-
-
-  filterMonitorsForOverlap(monitors: any[], cart: any, courseId: number, selectedHour: string, duration: string): any[] {
-    return monitors.filter(monitor => {
-      const monitorStartTime = this.parseTime(selectedHour);
-      const monitorEndTime = this.parseTime(this.calculateEndTime(selectedHour, duration));
-
-      const hasOverlap = Object.keys(cart[courseId] || {}).some(userId => {
-        const userBookings = cart[courseId][userId];
-
-        return userBookings.some((booking: any) => {
-          const bookingStartTime = this.parseTime(booking.hour_start);
-          const bookingEndTime = this.parseTime(booking.hour_end);
-
-          return (
-            bookingStartTime < monitorEndTime &&
-            bookingEndTime > monitorStartTime &&
-            booking.monitor_id === monitor.id
-          );
-        });
-      });
-
-      return !hasOverlap;
-    });
-  }
-
-  private parseTime(time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date;
-  }
-
-  // Método para manejar la falta de disponibilidad
-  showNoAvailabilityMessage(): void {
-    this.translateService.get('no_availability_message').subscribe((message: string) => {
-      this.snackbar.open(message, this.translateService.instant('close'), {
-        duration: 3000,
-        panelClass: ['error-snackbar'],
-      });
-    });
-  }
-
-  // Método para manejar respuestas no exitosas
-  handleNoSuccessResponse(): void {
-    this.translateService.get('fetch_durations_failed').subscribe((message: string) => {
-      this.snackbar.open(message, this.translateService.instant('close'), {
-        duration: 3000,
-        panelClass: ['error-snackbar'],
-      });
-    });
-  }
-
-  // Método para mostrar mensajes de error personalizados
-  showErrorMessage(messageKey: string): void {
-    this.translateService.get(messageKey).subscribe((translatedMessage: string) => {
-      this.snackbar.open(translatedMessage, this.translateService.instant('close'), {
-        duration: 3000,
-        panelClass: ['error-snackbar'],
-      });
-    });
-  }
-
-  handleDurationSelection(): void {
-    // Validar si la duración seleccionada está disponible
-    const isSelectedDurationAvailable = this.availableDurations.includes(
-      this.selectedDuration
-    );
-
-    // Si no está disponible, asignar la primera duración disponible
-    if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.availableDurations[0];
-    }
-
-    this.updatePrice();
   }
 
   addBookingToCart() {
-    if (this.isForfaitRequired && !this.selectedForfait) {
-      this.snackbar.open(this.translateService.instant('forfait_error'), 'OK', { duration: 3000 });
-    } else {
-      let bookingUsers: any = [];
-      if (this.course.course_type == 2) {
-        if (this.course.is_flexible) {
-          let course_date = this.findMatchingCourseDate();
-          this.selectedUserMultiple.forEach((selectedUser, index) => {
-            bookingUsers.push({
-              'course': this.course,
-              'client': selectedUser,
-              'school_id': this.schoolData.id,
-              'client_id': selectedUser.id,
-              'price': index === 0 ? this.course.price : 0,
-              'currency': 'CHF',
-              'course_id': this.course.id,
-              'course_date_id': course_date.id,
-              'course_group_id': null,
-              'course_subgroup_id': null,
-              'date': course_date.date,
-              'hour_start': this.selectedHour,
-              'monitor_id': this.selectedDuration.monitors[0].id,
-              'hour_end': this.calculateEndTime(this.selectedHour, this.selectedDuration.duration),
-              'degree_id': this.selectedLevel.id,
-              'extra': this.selectedForfait
-            });
+    let bookingUsers: any = [];
+    if (this.course.course_type == 2) {
+      if (this.course.is_flexible) {
+        let course_date = this.findMatchingCourseDate();
+        this.selectedUserMultiple.forEach((selectedUser, index) => {
+          bookingUsers.push({
+            'course': this.course,
+            'client': selectedUser,
+            'school_id': this.schoolData.id,
+            'client_id': selectedUser.id,
+            'price': index === 0 ? this.course.price : 0,
+            'currency': this.course?.currency || 'CHF',
+            'course_id': this.course.id,
+            'course_date_id': course_date.id,
+            'course_group_id': null,
+            'course_subgroup_id': null,
+            'date': course_date.date,
+            'hour_start': this.selectedHour,
+            'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
+            'extra': this.selectedForfait
           });
-        } else {
-          let course_date = this.findMatchingCourseDate();
-          this.selectedUserMultiple.forEach((selectedUser, index) => {
-            bookingUsers.push({
-              'course': this.course,
-              'client': selectedUser,
-              'school_id': this.schoolData.id,
-              'client_id': selectedUser.id,
-              'price': this.course.price,
-              'currency': 'CHF',
-              'course_id': this.course.id,
-              'course_date_id': course_date.id,
-              'course_group_id': null,
-              'course_subgroup_id': null,
-              'date': course_date.date,
-              'hour_start': this.selectedHour,
-              'monitor_id': this.selectedDuration.monitors[0].id,
-              'hour_end': this.calculateEndTime(this.selectedHour, this.course.duration),
-              'degree_id': this.selectedLevel.id,
-              'extra': this.selectedForfait
-            });
-          });
-        }
+        });
       } else {
-        if (this.course.is_flexible) {
-          this.course.course_dates.forEach((date: any) => {
-
-            if (this.selectedDates.find((d: any) => moment(d).format('DD.MM.yyyy') === moment(date.date).format('DD.MM.yyyy'))) {
-              let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
-              let courseSubgroup = courseGroup.course_subgroups[0];
-              bookingUsers.push({
-                'course': this.course,
-                'client': this.selectedUser,
-                'course_date': date,
-                'group': courseGroup,
-                'subGroup': courseSubgroup,
-                'school_id': this.schoolData.id,
-                'client_id': this.selectedUser.id,
-                'price': this.collectivePrice,
-                'currency': 'CHF',
-                'course_id': this.course.id,
-                'course_date_id': date.id,
-                'course_group_id': courseGroup.id,
-                'course_subgroup_id': courseSubgroup.id,
-                'degree_id': this.selectedLevel.id,
-                'date': date.date,
-                'hour_start': date.hour_start,
-                'hour_end': date.hour_end,
-                'extra': this.selectedForfait
-              })
-            }
-
-          })
-        } else {
-          this.course.course_dates.forEach((date: any) => {
+        let course_date = this.findMatchingCourseDate();
+        this.selectedUserMultiple.forEach((selectedUser, index) => {
+          bookingUsers.push({
+            'course': this.course,
+            'client': selectedUser,
+            'school_id': this.schoolData.id,
+            'client_id': selectedUser.id,
+            'price': this.course.price,
+            'currency': this.course?.currency || 'CHF',
+            'course_id': this.course.id,
+            'course_date_id': course_date.id,
+            'course_group_id': null,
+            'course_subgroup_id': null,
+            'date': course_date.date,
+            'hour_start': this.selectedHour,
+            'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
+            'extra': this.selectedForfait
+          });
+        });
+      }
+    } else {
+      if (this.course.is_flexible) {
+        this.course.course_dates.forEach((date: any) => {
+          // Verifica si la fecha está en las fechas seleccionadas
+          if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
+            // Encuentra el grupo correspondiente al nivel seleccionado
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
+
+            // Encuentra los extras de la fecha
+            const dateExtras = this.selectedForfaits[date.date] || [];  // Verifica si hay extras para esa fecha
+
+            // Agrega los usuarios con los extras correspondientes
             bookingUsers.push({
               'course': this.course,
               'client': this.selectedUser,
@@ -673,127 +560,143 @@ export class CourseComponent implements OnInit {
               'subGroup': courseSubgroup,
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
-              'price': this.course.price,
-              'currency': 'CHF',
+              'price': this.collectivePrice,
+              'currency': this.course?.currency || 'CHF',
               'course_id': this.course.id,
               'course_date_id': date.id,
               'course_group_id': courseGroup.id,
               'course_subgroup_id': courseSubgroup.id,
-              'degree_id': this.selectedLevel.id,
               'date': date.date,
               'hour_start': date.hour_start,
               'hour_end': date.hour_end,
-              'extra': this.selectedForfait
-            })
+              'extra': dateExtras  // Asignando los extras de la fecha
+            });
+          }
+        });
+      } else {
+        this.course.course_dates.forEach((date: any) => {
+          let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
+          let courseSubgroup = courseGroup.course_subgroups[0];
+          bookingUsers.push({
+            'course': this.course,
+            'client': this.selectedUser,
+            'course_date': date,
+            'group': courseGroup,
+            'subGroup': courseSubgroup,
+            'school_id': this.schoolData.id,
+            'client_id': this.selectedUser.id,
+            'price': this.course.price,
+            'currency': this.course?.currency || 'CHF',
+            'course_id': this.course.id,
+            'course_date_id': date.id,
+            'course_group_id': courseGroup.id,
+            'course_subgroup_id': courseSubgroup.id,
+            'date': date.date,
+            'hour_start': date.hour_start,
+            'hour_end': date.hour_end,
+            'extra': this.selectedForfait
           })
-        }
+        })
       }
-
-      this.bookingService.checkOverlap(bookingUsers).subscribe(res => {
+    }
+    this.bookingService.checkOverlap(bookingUsers).subscribe(
+      () => {
         let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
         let cart: any = {};
-
-        if (cartStorage) {
-          cart = JSON.parse(cartStorage);
-        }
-
-        if (!cart[this.course.id]) {
-          cart[this.course.id] = {};
-        }
-
+        if (cartStorage) cart = JSON.parse(cartStorage);
+        if (!cart[this.course.id]) cart[this.course.id] = {};
         if (this.course.course_type === 2) {
           const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
-
           const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-            const keys = Object.keys(cart[this.course.id] || {});
-
-            return keys.some(key => {
-              const userCourseIds = key.split('-');
-              const hasUserOverlap = userCourseIds.includes(id);
-
-              if (hasUserOverlap) {
-                let course_date = this.findMatchingCourseDate();
-                const userBookings = cart[this.course.id][key];
-
-                return userBookings.some((booking: any) => {
-                  const bookingStartTime = this.parseTime(booking.hour_start);
-                  const bookingEndTime = this.parseTime(booking.hour_end);
-                  const newBookingStartTime = this.parseTime(this.selectedHour);
-                  const newBookingEndTime = this.parseTime(
-                    this.calculateEndTime(this.selectedHour, this.selectedDuration?.duration || '00:00')
-                  );
-
-                  // Comprobar solapamiento de horarios
-                  return (
-                    booking.course_date_id === course_date.id && // Mismo course_date_id
-                    bookingStartTime < newBookingEndTime &&
-                    bookingEndTime > newBookingStartTime
-                  );
-                });
-              }
-
-              return false;
+            const idArray = id.split('-');
+            return idArray.some(singleId => {
+              const keys = Object.keys(cart[this.course.id]);
+              return keys.some(key => {
+                const userCourseIds = key.split('-');
+                const hasUserOverlap = userCourseIds.includes(singleId);
+                if (hasUserOverlap) {
+                  let course_date = this.findMatchingCourseDate();
+                  const userBookings = cart[this.course.id][key];
+                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
+                } return false;
+              });
+            });
+          });
+          if (!isAnyUserReserved) {
+            if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
+            cart[this.course.id][selectedUserIds].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+        } else {
+          if (!cart[this.course.id][this.selectedUser.id]) {
+            cart[this.course.id][this.selectedUser.id] = [];
+            cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
+            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
+            this.cartService.carData.next(cart);
+            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
+          } else this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+        }
+      },
+      (error) => {
+        let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+        let cart: any = {};
+        if (cartStorage) cart = JSON.parse(cartStorage);
+        if (!cart[this.course.id]) cart[this.course.id] = {};
+        if (this.course.course_type === 2) {
+          const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
+          const isAnyUserReserved = selectedUserIds.split('-').some(id => {
+            const idArray = id.split('-');
+            return idArray.some(singleId => {
+              const keys = Object.keys(cart[this.course.id]);
+              return keys.some(key => {
+                const userCourseIds = key.split('-');
+                const hasUserOverlap = userCourseIds.includes(singleId);
+                if (hasUserOverlap) {
+                  let course_date = this.findMatchingCourseDate();
+                  const userBookings = cart[this.course.id][key];
+                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
+                }
+                return false;
+              });
             });
           });
 
           if (!isAnyUserReserved) {
-            if (!cart[this.course.id][selectedUserIds]) {
-              cart[this.course.id][selectedUserIds] = [];
-            }
+            if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
             cart[this.course.id][selectedUserIds].push(...bookingUsers);
-
             localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
             this.cartService.carData.next(cart);
             this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-            this.goTo(this.schoolData?.slug + '/cart');
           } else {
-            this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+            this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
           }
         } else {
           if (!cart[this.course.id][this.selectedUser.id]) {
             cart[this.course.id][this.selectedUser.id] = [];
             cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-
             localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
             this.cartService.carData.next(cart);
             this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-
-            this.goTo(this.schoolData?.slug + '/cart');
           } else {
-
             this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
           }
         }
-
-      }, error => {
-        this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
-
-      })
-    }
-
+        this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+      },
+      () => {
+        this.goTo('/' + this.schoolData.slug + '/cart/')
+      }
+    )
   }
 
-  calculateEndTime(startTime: string, duration: string): string {
-    let durationHours = 0;
-    let durationMinutes = 0;
-    if (duration.includes(":")) {
-      [durationHours, durationMinutes] = duration.split(':').map(Number);
-    } else {
-      const hoursMatch = duration.match(/(\d+)h/);
-      const minutesMatch = duration.match(/(\d+)min/);
-      if (hoursMatch) {
-        durationHours = parseInt(hoursMatch[1]);
-      }
-      if (minutesMatch) {
-        durationMinutes = parseInt(minutesMatch[1]);
-      }
-    }
-
+  calculateEndTime(startTime: string, durationMinutes: number): string {
     // Convertir la hora de inicio y la duración a minutos
     const [startHours, startMinutes] = startTime.split(':').map(Number);
 
     const startTotalMinutes = startHours * 60 + startMinutes;
-    const durationTotalMinutes = durationHours * 60 + durationMinutes;
+    const durationTotalMinutes = durationMinutes;
 
     // Calcular la hora de fin en minutos
     const endTotalMinutes = startTotalMinutes + durationTotalMinutes;
@@ -810,7 +713,6 @@ export class CourseComponent implements OnInit {
   }
 
   findMatchingCourseDate(): any {
-    // Convertir selectedDateReservation a un objeto Date
     const [day, month, year] = this.selectedDateReservation.split('/').map(Number);
     const selectedDate = new Date(year, month - 1, day);
 
@@ -853,19 +755,14 @@ export class CourseComponent implements OnInit {
         this.selectedUserMultiple.splice(index, 1);
       } else {
         if (this.selectedUserMultiple.length < this.course.max_participants) {
-          if(this.isAgeAppropriate(this.transformAge(user.birth_date), this.course.age_min, this.course.age_max)) {
-            this.selectedUserMultiple.push(user);
-          } else {
-            this.snackbar.open(this.translateService.instant('text_age_not_appropriate'), 'OK', { duration: 3000 });
-          }
-
+          this.selectedUserMultiple.push(user);
         }
         else {
           this.snackbar.open(this.translateService.instant('text_select_maximum_user') + this.course.max_participants, 'OK', { duration: 3000 });
         }
       }
-      if (this.course.is_flexible && this.selectedDateReservation && this.selectedLevel) {
-        this.fetchAvailableDurations(this.selectedHour);
+      if (this.course.is_flexible) {
+        this.updatePrice();
       }
     }
     else {
@@ -878,10 +775,6 @@ export class CourseComponent implements OnInit {
 
   selectLevel(level: any) {
     this.selectedLevel = level;
-    if(this.course.course_type == 2 && this.selectedHour) {
-      this.fetchAvailableDurations(this.selectedHour);
-    }
-    this.showLevels = false;
   }
 
   showTooltipFilter(index: number) {
@@ -892,41 +785,16 @@ export class CourseComponent implements OnInit {
     this.tooltipsFilter[index] = false;
   }
 
-  /*
-  getFilteredGoals(degree:number): any[] {
-    return this.degreeGoals.filter((goal:any) => goal.sport.id === this.selectedSport && goal.degree.id === degree);
-  }
-  */
 
-  openModalAddUser() {
-    this.isModalAddUser = true;
-  }
-
-  closeModalLogin() {
-    this.isModalLogin = false;
-  }
-
-  closeModalNewUser() {
-    this.isModalNewUser = false;
-  }
-
-  closeModalAddUser() {
-    this.isModalAddUser = false;
-  }
-
-  goTo(url: string) {
-    this.router.navigate([url]);
+  goTo(...urls: string[]) {
+    this.router.navigate(urls);
   }
 
   transformAge(birthDate: string) {
     let fechaNacimientoDate: Date;
-
-    // Verificar el formato de la fecha y ajustar en consecuencia
     if (/\d{4}-\d{2}-\d{2}/.test(birthDate)) {
-      // Si el formato es "2022-01-18"
       fechaNacimientoDate = new Date(birthDate);
     } else if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z/.test(birthDate)) {
-      // Si el formato es "2024-01-17T00:00:00.000000Z"
       const parts = birthDate.split('T')[0].split('-');
       fechaNacimientoDate = new Date(
         parseInt(parts[0], 10),
@@ -934,17 +802,10 @@ export class CourseComponent implements OnInit {
         parseInt(parts[2], 10)
       );
     } else {
-      // Formato no reconocido, manejarlo según tus requisitos
-      console.error('Formato de fecha de nacimiento no válido');
-      return 0; // Retorna 0 en caso de un formato no válido
+      return 0;
     }
-
     const fechaActual = new Date();
-
-    // Calcula la diferencia en milisegundos entre las dos fechas
     const diferencia = fechaActual.getTime() - fechaNacimientoDate.getTime();
-
-    // Convierte la diferencia en milisegundos a años
     return Math.floor(diferencia / (1000 * 60 * 60 * 24 * 365.25));
   }
 
@@ -952,35 +813,191 @@ export class CourseComponent implements OnInit {
     return userAge >= minAge && userAge <= maxAge;
   }
 
-  isGroupAgeAppropriate(users: { birth_date: string }[], minAge: number, maxAge: number): boolean {
-    return users.every(user => {
-      const userAge = this.transformAge(user.birth_date);
-      return userAge >= minAge && userAge <= maxAge;
+  hasMatchingSportLevel(level: any): boolean {
+    const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
+    if (!selectedSport) return true;
+    return selectedSport && selectedSport.pivot.degree_id >= level.id;
+  }
+
+  isUserValidForLevel(user: any, level: any): boolean {
+    return this.isAgeAppropriate(this.transformAge(user.birth_date), level.age_min, level.age_max);
+  }
+
+  findMatchingUser(level: any): boolean {
+    if (this.selectedUser) {
+      // Si hay un selectedUser, valida ese usuario
+      return this.isUserValidForLevel(this.selectedUser, level);
+    } else {
+      // Si no hay selectedUser, busca en selectedUsers
+      return this.selectedUserMultiple.some(user => this.isUserValidForLevel(user, level));
+    }
+  }
+
+  controlSelectedUsers() {
+    return this.selectedUserMultiple.filter((user: any) => {
+      // Verificar que la edad del usuario es apropiada para el nivel
+      const ageAppropriate = this.isAgeAppropriate(user.age, user.minAge, user.maxAge);
+
+      // Verificar si el nivel de deporte coincide con el nivel del grupo
+      const sportLevelMatches = this.hasMatchingSportLevel(user.level);
+
+      // Solo incluir usuarios que cumplan ambas condiciones
+      return ageAppropriate && sportLevelMatches;
     });
   }
 
-  selectDate(date: any) {
+  // Validar si una selección de fecha es válida según restricciones
+  validateDateSelection(dateStr: string, intervalId: string): boolean {
+    const intervalDates = this.getIntervalDates(intervalId);
+    const selectedIntervalDates = intervalDates
+      .filter(date => this.selectedDates.includes(date.date))
+      .map(date => date.date);
+
+    // Comprobar si debe empezar desde el primer día
+    if (this.mustStartFromFirst() && selectedIntervalDates.length === 0) {
+      // Si es la primera selección, debe ser el primer día del intervalo
+      if (dateStr !== intervalDates[0].date) {
+        this.dateSelectionError = this.translateService.instant('must_start_from_first_day');
+        return false;
+      }
+    }
+
+    // Comprobar si los días deben ser consecutivos
+    if (this.mustBeConsecutive() && selectedIntervalDates.length > 0) {
+      const datesToCheck = [...selectedIntervalDates, dateStr].sort((a, b) =>
+        new Date(a).getTime() - new Date(b).getTime()
+      );
+
+      // Verificar que no hay saltos en las fechas
+      for (let i = 1; i < datesToCheck.length; i++) {
+        const prevDate = new Date(datesToCheck[i-1]);
+        const currDate = new Date(datesToCheck[i]);
+
+        // Calcular la diferencia en días
+        const diffTime = currDate.getTime() - prevDate.getTime();
+        const diffDays = diffTime / (1000 * 3600 * 24);
+
+        if (diffDays > 1) {
+          this.dateSelectionError = this.translateService.instant('dates_must_be_consecutive');
+          return false;
+        }
+      }
+    }
+
+    this.dateSelectionError = '';
+    return true;
+  }
+
+  // Obtener fechas de un intervalo específico
+  getIntervalDates(intervalId: string): any[] {
+    if (!this.course || !this.course.course_dates) return [];
+
+    return this.course.course_dates
+      .filter(date => date.interval_id === intervalId && this.isDateInFuture(date.date))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  isDateInFuture(dateStr: string): boolean {
+    const date = new Date(dateStr);
+    date.setHours(0, 0, 0, 0);
+    return date >= this.today;
+  }
+
+
+  validateDateDeselection(dateStr: string, intervalId: string): boolean {
+    if (this.mustBeConsecutive()) {
+      const intervalDates = this.getIntervalDates(intervalId);
+      const selectedIntervalDates = intervalDates
+        .filter(date => this.selectedDates.includes(date.date))
+        .map(date => date.date);
+
+      // Si está quitando una fecha del medio, no permitirlo
+      if (selectedIntervalDates.length > 2) {
+        const sortedDates = [...selectedIntervalDates].sort((a, b) =>
+          new Date(a).getTime() - new Date(b).getTime()
+        );
+
+        // Si no es la primera ni la última fecha, no permitir deseleccionar
+        if (dateStr !== sortedDates[0] && dateStr !== sortedDates[sortedDates.length - 1]) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_middle_date');
+          return false;
+        }
+      }
+    }
+
+    // Si debe empezar por el primer día, no permitir quitar el primer día si hay más días seleccionados
+    if (this.mustStartFromFirst()) {
+      const intervalDates = this.getIntervalDates(intervalId);
+      if (dateStr === intervalDates[0].date) {
+        const hasOtherDates = this.selectedDates.some(d =>
+          d !== dateStr && this.getIntervalForDate(d) === intervalId
+        );
+
+        if (hasOtherDates) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_first_day');
+          return false;
+        }
+      }
+    }
+
+    this.dateSelectionError = '';
+    return true;
+  }
+  // Determinar si un intervalo está habilitado para selección
+  isIntervalEnabled(intervalId: string): boolean {
+    // Si no hay intervalo seleccionado o es el mismo que este, está habilitado
+    return !this.selectedIntervalId || this.selectedIntervalId === intervalId;
+  }
+
+  // Determinar si un intervalo está seleccionado
+  isIntervalSelected(intervalId: string): boolean {
+    return this.selectedIntervalId === intervalId;
+  }
+  isDateSelected(dateStr: string): boolean {
+    return this.selectedDates.includes(dateStr);
+  }
+
+  getIntervalForDate(dateStr: string): string | null {
+    const date = this.course.course_dates.find(d => d.date === dateStr);
+    return date ? date.interval_id : null;
+  }
+
+  selectDate(checked: boolean, date: any, intervalId?: string) {
     const index = this.selectedDates.findIndex((d: any) => d === date);
-    if (index === -1) {
+    if (index === -1 && checked) {
+      if (this.hasIntervals() && intervalId) {
+        // Para cursos con intervalos, verificar restricciones
+        const valid = this.validateDateSelection(date, intervalId);
+        if (!valid) return; // Si no es válido, no continuar
+      }
       this.selectedDates.push(date);
-    } else {
+    }
+    else if (!checked){
+      if (this.hasIntervals() && intervalId) {
+        // Para cursos con intervalos, verificar si puede deseleccionar
+        const valid = this.validateDateDeselection(date, intervalId);
+        if (!valid) return; // Si no es válido, no continuar
+      }
       this.selectedDates.splice(index, 1);
     }
     this.updateCollectivePrice();
   }
-  updateCollectivePrice() {
-    let collectivePrice = this.course.price;
-    if (this.course.discounts) {
-      let discounts = JSON.parse(this.course.discounts);
-      discounts.forEach((discount: any) => {
-        // Verificar si el date coincide con la longitud de las fechas seleccionadas
-        if (this.selectedDates.length === discount.date) {
-          // Aplicar descuento al precio colectivo
-          var discountApplied = collectivePrice * (discount.percentage / 100);
-          collectivePrice = collectivePrice - discountApplied;
-        }
-      });
 
+  discounts: any[] = []
+  updateCollectivePrice() {
+    let collectivePrice = this.course.price * this.selectedDates.length;;
+    if (this.course.discounts) {
+      try {
+        const discounts = JSON.parse(this.course.discounts);
+        this.discounts.forEach((discount: any) => {
+          if (this.selectedDates.length === discount.date) {
+            var discountApplied = collectivePrice * (discount.percentage / 100);
+            collectivePrice = collectivePrice - discountApplied;
+          }
+        });
+      } catch (error) {
+      }
+    } else {
     }
     this.collectivePrice = collectivePrice;
   }
@@ -989,53 +1006,91 @@ export class CourseComponent implements OnInit {
     return Array.from({ length: max }, (v, k) => k + 1);
   }
 
-  filteredPriceRange() {
-    return this.course.price_range.filter((range: any) => {
-      // Verificar si todos los valores son null excepto el campo 'intervalo'
-      const keys = Object.keys(range).filter((key) => key !== 'intervalo');
-      const allNull = keys.every((key) => range[key] === null);
+  filteredPriceRange(formatted: boolean = false) {
+    const selectedPax = this.selectedUserMultiple.length; // Obtener el número de paxes seleccionados
 
-      // Mantener el objeto si no todos los valores son null
-      return !allNull;
-    }).map((range: any) => {
-      const parts = range.intervalo.split(' ');
-      let minutes = 0;
-      for (const part of parts) {
-        if (part.endsWith('h')) {
-          minutes += parseInt(part) * 60;
-        } else if (part.endsWith('m')) {
-          minutes += parseInt(part);
+    return this.course.price_range
+      .filter((range: any) => {
+        // Verificar si todos los valores son null excepto 'intervalo'
+        const keys = Object.keys(range).filter((key) => key !== 'intervalo');
+        return !keys.every((key) => range[key] === null);
+      })
+      .map((range: any) => {
+        // Convertir el intervalo en minutos
+        const parts = range.intervalo.split(' ');
+        let minutes = 0;
+        for (const part of parts) {
+          if (part.endsWith('h')) {
+            minutes += parseInt(part) * 60;
+          } else if (part.endsWith('m')) {
+            minutes += parseInt(part);
+          }
         }
-      }
-      return minutes;
-    }).sort((a: number, b: number) => a - b);
+
+        // Aplicar el número de paxes al cálculo de la duración
+        // Si el número de paxes está disponible, ajustar el cálculo
+        if (selectedPax && range[selectedPax] !== undefined) {
+          minutes *= selectedPax; // Ajustamos el tiempo por el número de paxes
+        }
+
+        return minutes;
+      })
+      .sort((a: number, b: number) => a - b)
+      .map((minutes: number) => {
+        if (!formatted) {
+          return minutes; // Devuelve solo los minutos si formatted es false
+        }
+        // Convertir minutos a formato "1h 0min" o "15min"
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0 && mins > 0) {
+          return `${hours}h ${mins}m`;
+        } else if (hours > 0) {
+          return `${hours}h 0m`;
+        } else {
+          return `${mins}m`;
+        }
+      });
   }
 
-  convertToHoursAndMinutes(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+  convertToMinutes(duration: string): number {
+    let minutes = 0;
+    const regex = /(\d+)h|(\d+)m/g;
+    let match;
+
+    // Extraer horas y minutos
+    while ((match = regex.exec(duration)) !== null) {
+      if (match[1]) minutes += parseInt(match[1]) * 60; // Horas a minutos
+      if (match[2]) minutes += parseInt(match[2]); // Minutos
+    }
+
+    return minutes;
   }
 
   getAvailableDurations(selectedHour: string): any[] {
     const endTime = parseInt(this.course.hour_max);
     const startTime = parseInt(selectedHour.split(':')[0]);
-    const availableTime = endTime - startTime; // Tiempo disponible en horas
+    let durations = this.filteredPriceRange(true);
 
-    let durations = this.filteredPriceRange();
-    this.selectedDuration = this.convertToHoursAndMinutes(durations[0]);
     return durations;
+  }
+
+  getFormattedDuration(duration: number): string {
+    return `${duration} min`;  // Formatea el valor con el sufijo "min"
   }
 
   getAvailableHours(): string[] {
     let hours = [];
-    const hourMin = parseInt(this.course.hour_min);
-    const hourMax = parseInt(this.course.hour_max);
-    const duration = parseInt(this.course.duration);
+    let course_date = this.course.course_dates[0];
+    if(this.selectedDateReservation){
+      course_date = this.findMatchingCourseDate();
+    }
 
+    const hourMin = parseInt(course_date.hour_start);
+    const hourMax = parseInt(course_date.hour_end);
+    const duration = parseInt(this.course.duration);
     if (!this.course.is_flexible) {
-      // Generar intervalos de 5 minutos desde la hora de inicio hasta la hora final,
-      // teniendo en cuenta la duración máxima
       for (let hour = hourMin; hour < hourMax; hour++) {
         for (let minute = 0; minute <= 60 - duration; minute += 5) {
           let formattedHour = hour < 10 ? '0' + hour : '' + hour;
@@ -1044,22 +1099,14 @@ export class CourseComponent implements OnInit {
           hours.push(formattedTime);
         }
       }
-      // Añadir la hora final teniendo en cuenta la duración
       let formattedHourMax = hourMax - 1 < 10 ? '0' + (hourMax - 1) : '' + (hourMax - 1);
       let formattedTimeMax = `${formattedHourMax}:00`;
       hours.push(formattedTimeMax);
     } else {
-      // Obtener los intervalos de tiempo de los price_range y ordenarlos
       let timeIntervals = this.filteredPriceRange();
-
-      // Calcular las diferencias entre intervalos consecutivos
       let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
-
-      // Encontrar el intervalo mínimo en minutos
       let minInterval = Math.min(...differences);
-      let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
-
-      // Calcular las horas disponibles en intervalos de minInterval
+      //let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
       for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
         let hour = Math.floor(minute / 60);
         let min = minute % 60;
@@ -1070,190 +1117,230 @@ export class CourseComponent implements OnInit {
       }
     }
 
-
-    this.selectedHour = hours[0];
-
     return hours;
   }
 
-  // Método para obtener la fecha de inicio
   getStartDate(): string {
     const startDate = this.course?.course_dates
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]?.date;
 
-    return startDate ? moment(startDate).format('DD.MM.yyyy') : '';
+    return startDate ? moment(startDate).format('DD/MM/YYYY') : '';
   }
 
-  // Método para obtener la fecha de fin
   getEndDate(): string {
     const endDate = this.course?.course_dates
       .filter((date: any) => date.active)
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]?.date;
 
-    return endDate ? moment(endDate).format('yyyy-MM-dd') : '';
+    return endDate ? moment(endDate).format('DD/MM/YYYY') : '';
   }
 
   updateAvailableDurations(selectedHour: string): void {
     const selectedHourInt = parseInt(selectedHour.split(':')[0]);
     const selectedMinutesInt = parseInt(selectedHour.split(':')[1]);
     const hourMax = parseInt(this.course.hour_max);
-
-    // Convertir la hora seleccionada y la hora máxima a minutos para comparación
     const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
     const maxTimeInMinutes = hourMax * 60;
 
+    // Filtrar las duraciones disponibles basadas en el tiempo máximo y el tiempo seleccionado
     this.availableDurations = this.filteredPriceRange()
-      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes) // Cambiar esta línea
+      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes);
 
-    // Convertir la duración seleccionada a minutos
-    const selectedDurationMinutes = this.convertHourToMinutes(this.selectedDuration.duration);
-
-    // Comprobar si la duración seleccionada está dentro de las duraciones disponibles
+    // Verificar si la duración seleccionada está disponible en la lista filtrada
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range: any) => range === selectedDurationMinutes); // Cambiar esta línea
+      .some((range: any) => range === this.convertToMinutes(this.selectedDuration)); // Convertimos selectedDuration a minutos para comparar
 
-    // Si no está disponible, establecer la primera duración disponible
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      this.selectedDuration = this.convertToHoursAndMinutes(this.availableDurations[0].duration);
+      // Si la duración seleccionada no está disponible, seleccionamos la primera opción
+      this.selectedDuration = this.convertToDuration(this.availableDurations[0]);
     }
+
+    // Actualizamos el precio basado en la duración seleccionada
     this.updatePrice();
   }
 
-  updatePrice(): void {
-    const selectedDurationInMinutes = this.convertHourToMinutes(this.selectedDuration.duration); // Convertir duración a minutos
-    //const selectedPax = this.selectedPaxes; // Asumiendo que tienes una variable para los pax seleccionados
-    const selectedPax = this.selectedUserMultiple.length;
+  convertToDuration(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
 
-    // Encontrar el price_range que coincida con la duración y el pax seleccionados
-    const matchingTimeRange = this.course.price_range.find((range: any) => {
-      const parts = range.intervalo.split(' ');
-      let rangeMinutes = 0;
-      for (const part of parts) {
-        if (part.endsWith('h')) {
-          rangeMinutes += parseInt(part) * 60;
-        } else if (part.endsWith('m')) {
-          rangeMinutes += parseInt(part);
-        }
-      }
-      return rangeMinutes === selectedDurationInMinutes;
-    });
+    let duration = '';
+    if (hours > 0) {
+      duration += `${hours}h`;
+    }
+    if (remainingMinutes > 0) {
+      duration += ` ${remainingMinutes}m`;
+    }
 
-    // Calcular el precio basado en el rango de tiempo encontrado y el número de pax seleccionado
-    if (matchingTimeRange && matchingTimeRange[selectedPax]) {
-      this.course.price = matchingTimeRange[selectedPax];
+    return duration || '0m'; // Si no hay horas ni minutos, devolvemos "0m"
+  }
+
+  getExtraPrice() {
+    // Verificar si selectedForfait tiene elementos
+    if (this.selectedForfait && this.selectedForfait.length > 0) {
+      // Recorrer cada objeto en selectedForfait y obtener el precio
+      const extraPrice = this.selectedForfait.reduce((total, forfait) => {
+        // Asegurarse de que el precio sea un número (en caso de que esté como string)
+        return total + parseFloat(forfait.price);
+      }, 0);
+
+      // Mostrar el precio total de los extras
+      return extraPrice;  // Puedes devolver el precio total si lo necesitas
     } else {
-      // Si no hay una coincidencia, puedes establecer un precio predeterminado o dejarlo como está
-      this.course.price = 0; // O cualquier valor predeterminado que desees
+      // Si no hay extras seleccionados, mostrar un mensaje
+      return 0;  // Retorna 0 si no hay forfait seleccionado
     }
   }
 
+  getExtraPriceCollective() {
+    // Verificar si selectedForfait tiene elementos
+    let totalPrice = 0;
 
-  convertHourToMinutes(hourString: string): number {
-    const [hours, minutes] = hourString.split(':').map(Number);
-    return hours * 60 + minutes;
+    Object.keys(this.selectedForfaits).forEach(date => {
+      const dateExtras = this.selectedForfaits[date] || [];
+      const dateExtraPrice = dateExtras.reduce((total, extra) => total + parseFloat(extra.price), 0);
+      totalPrice += dateExtraPrice;
+    });
+
+    return totalPrice;
+  }
+
+  // Seleccionar un intervalo para reservar fechas
+  selectInterval(intervalId: string): void {
+    if (this.selectedIntervalId === intervalId) {
+      // Deseleccionar si ya estaba seleccionado
+      this.selectedIntervalId = null;
+      // Limpiar fechas de este intervalo
+      this.clearDatesFromInterval(intervalId);
+    } else {
+      // Si tenía otro intervalo seleccionado, limpiar esas fechas
+      if (this.selectedIntervalId) {
+        this.clearDatesFromInterval(this.selectedIntervalId);
+      }
+
+      this.selectedIntervalId = intervalId;
+      this.dateSelectionError = '';
+    }
+  }
+
+  // Verificar si una fecha está disponible para seleccionar
+  isDateAvailable(dateStr: string, intervalId?: string): boolean {
+    // Si tiene un intervalo seleccionado, solo permitir fechas de ese intervalo
+    if (this.hasIntervals() && this.selectedIntervalId && intervalId !== this.selectedIntervalId) {
+      return false;
+    }
+
+    return this.isDateInFuture(dateStr);
+  }
+
+  // Limpiar fechas de un intervalo específico
+  clearDatesFromInterval(intervalId: string): void {
+    const intervalDates = this.getIntervalDates(intervalId).map(date => date.date);
+    this.selectedDates = this.selectedDates.filter(date => !intervalDates.includes(date));
+  }
+
+
+  updatePrice(): void {
+    const selectedPax = this.selectedUserMultiple.length || 1;
+    let extraPrice = this.getExtraPrice() * selectedPax;
+    if(this.course.course_type == 2 && this.course.is_flexible) {
+      // Convertir selectedDuration en minutos (si es necesario)
+      const selectedDurationInMinutes = this.convertToMinutes(this.selectedDuration);
+
+      const matchingTimeRange = this.course.price_range.find((range: any) => {
+        let rangeMinutes = 0;
+        const regex = /(\d+)h|(\d+)m/g;
+        let match;
+
+        // Extraer horas y minutos del intervalo
+        while ((match = regex.exec(range.intervalo)) !== null) {
+          if (match[1]) rangeMinutes += parseInt(match[1]) * 60; // Horas a minutos
+          if (match[2]) rangeMinutes += parseInt(match[2]); // Minutos
+        }
+
+        return rangeMinutes === selectedDurationInMinutes;
+      });
+
+
+      // Asignar el precio si hay coincidencia en la duración y participantes
+      this.course.price = matchingTimeRange && matchingTimeRange[selectedPax]
+        ? parseFloat(matchingTimeRange[selectedPax]) + extraPrice
+        : 0 + extraPrice;
+
+    }else if(this.course.course_type == 2 && !this.course.is_flexible) {
+      this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
+    }
+    else if(this.course.course_type == 1 && !this.course.is_flexible) {
+      this.course.price = parseFloat(this.course.price) + this.getExtraPrice();
+    } else {
+      this.updateCollectivePrice();
+      this.collectivePrice = parseFloat(this.collectivePrice) + this.getExtraPriceCollective();
+    }
+
   }
 
   calculateAvailableLevels(user: any) {
-    // Suponiendo que tienes una función para transformar la fecha de nacimiento en edad
     const userAge = this.transformAge(user.birth_date);
-
-    // Convertir availableDegrees en un arreglo si es necesario
     const availableDegreesArray = Array.isArray(this.course?.availableDegrees)
       ? this.course?.availableDegrees
       : Object.values(this.course?.availableDegrees || {});
-
-    // Calcula si hay niveles disponibles
     this.hasLevelsAvailable = availableDegreesArray.some((level: any) =>
       level.recommended_age === 1 || this.isAgeAppropriate(userAge, level.age_min, level.age_max)
     );
-
-    // Si no hay niveles disponibles, muestra un mensaje
-    if (!this.hasLevelsAvailable) {
-      // Puedes establecer un mensaje o manejarlo como prefieras
-      console.log("No hay niveles disponibles para este usuario.");
-    }
+    //if (!this.hasLevelsAvailable) {
+    // Puedes establecer un mensaje o manejarlo como prefieras
+    //}
     this.showLevels = true;
   }
 
 
-  hasMatchingSportLevel(level: any): boolean {
-    // Obtén el deporte seleccionado por el usuario
-    const selectedSport = this.selectedUser?.sports?.find((sport: any) => sport.id === level.sport_id);
 
-    if (!selectedSport) {
-      return true;
-    }
-
-    // Verifica si el deporte tiene un grado (degree) que coincide con el nivel actual
-    return selectedSport && selectedSport.pivot.degree_id >= level.id;
-  }
 
   isDateValid(dateToCheck: string, hourStart: string, hourEnd: string): boolean {
     const currentDate = new Date();
     const date = new Date(dateToCheck);
-
-    // Compara la fecha completa incluyendo hora, minutos y segundos
-    if (date < currentDate) {
-      return false;
-    }
-
-    // Extrae la hora y los minutos de dateToCheck
+    if (date < currentDate) return false;
     const checkHour = parseInt(dateToCheck.substring(11, 13));
     const checkMinutes = parseInt(dateToCheck.substring(14, 16));
-
-    // Extrae la hora de hourStart y hourEnd
     const startHour = parseInt(hourStart.substring(0, 2));
     const endHour = parseInt(hourEnd.substring(0, 2));
-
-    // Compara la hora y los minutos con hourStart y hourEnd
     const isStartTimeValid = checkHour < startHour ||
       (checkHour === startHour && checkMinutes < parseInt(hourStart.substring(3, 5)));
-
     const isEndTimeValid = checkHour < endHour ||
       (checkHour === endHour && checkMinutes < parseInt(hourEnd.substring(3, 5)));
-
-    // Si la fecha es igual o posterior y la hora está dentro del rango, devuelve true
     return isStartTimeValid && isEndTimeValid;
   }
 
-  sanitizeHTML(html: string): any {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-  }
-
-
   getDescription(course: any) {
-
     if (course) {
       if (!course.translations || course.translations === null) {
-        return this.sanitizeHTML(course.description);
+        return course.description;
       } else {
-        const translations = JSON.parse(course.translations);
-        return this.sanitizeHTML(translations[this.translateService.currentLang].description);
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].description || course.description;
       }
     }
 
   }
-
   getShotrDescription(course: any) {
-    if (course) {
-      if (!course.translations || course.translations === null) {
-        return this.sanitizeHTML(course.short_description);
-      } else {
-        const translations = JSON.parse(course.translations);
-        return this.sanitizeHTML(translations[this.translateService.currentLang].short_description);
-      }
+    if (!course.translations || course.translations === null) {
+      return course.short_description;
+    } else {
+      const translations = typeof course.translations === 'string' ?
+        JSON.parse(course.translations) : course.translations;
+      return translations[this.translateService.currentLang].short_description || course.short_description;
     }
   }
-
 
   getCourseName(course: any) {
     if (course) {
       if (!course.translations || course.translations === null) {
         return course.name;
       } else {
-        const translations = JSON.parse(course.translations);
-        return translations[this.translateService.currentLang].name;
+        const translations = typeof course.translations === 'string' ?
+          JSON.parse(course.translations) : course.translations;
+        return translations[this.translateService.currentLang].name || course.name;
       }
     }
   }
@@ -1272,7 +1359,7 @@ export class CourseComponent implements OnInit {
   }
 
   getWeekdays(settings: string): string {
-    const settingsObj = JSON.parse(settings);
+    const settingsObj = typeof settings === 'string' ? JSON.parse(settings) : settings;
     const weekDays = settingsObj.weekDays;
     const daysMap: any = {
       "monday": "Lundi",
@@ -1299,6 +1386,153 @@ export class CourseComponent implements OnInit {
     const sport = this.schoolData.sports.find((s: any) => s.id === sportId);
     return sport ? sport.name : null;
   }
+  getWeekDay(): string {
+    const uniqueDays: Set<number> = new Set();
+    this.course.course_dates.forEach((item: any) => {
+      const day = new Date(item.date).getDay();
+      uniqueDays.add(day);
+    });
+    const dayNames: string[] = Array.from(uniqueDays).map(day => this.Week[day]);
+    if (dayNames.length === 0) return "";
+    if (dayNames.length === 1) return dayNames[0];
+    const lastDay = dayNames.pop();
+    return dayNames.join(", ") + " y " + lastDay;
+  }
+  Week: string[] = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"]
 
+  findMaxHourEnd(): string {
+    const maxHourStart = Math.max(
+      ...this.course.course_dates.map((date: any) => {
+        return parseInt(date.hour_end.replace(":", ""));
+      })
+    );
+    const maxHourString = maxHourStart.toString().padStart(4, "0");
+    return `${maxHourString.slice(0, 2)}:${maxHourString.slice(2)}`;
+  }
+
+
+  findMinHourStart(): string {
+    const maxHourStart = Math.max(
+      ...this.course.course_dates.map((date: any) => {
+        return parseInt(date.hour_start.replace(":", ""));
+      })
+    );
+    const minHourString = maxHourStart.toString().padStart(4, "0");
+    return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
+  }
+
+  next() {
+    if (this.courseFlux === 0) {
+    } else if (this.courseFlux === 1) {
+      this.selectLevel(this.selectedLevel)
+      if (!this.course.is_flexible && this.course.course_type !== 2) {
+        this.courseFlux++
+      }
+    } else if (this.courseFlux === 2) {
+    } else if (this.courseFlux === 3) {
+      if(this.course.course_type === 1 && this.course.is_flexible) {
+        this.selectedCourseDates = this.findMatchingCourseDates();
+      } else if(this.course.course_type === 2) {
+        let course_date = this.findMatchingCourseDate();
+        course_date.hour_start = this.selectedHour
+        let duration = this.utilService.parseDurationToMinutes(this.selectedDuration)
+        course_date.hour_end = this.calculateEndTime(this.selectedHour, duration);
+        this.selectedCourseDates = [course_date];
+      } else {
+        this.selectedCourseDates = this.course.course_dates;
+      }
+
+      this.confirmModal = true
+      this.courseFlux--
+    }
+    this.courseFlux++
+  }
+
+  findMatchingCourseDates() {
+    // Filtrar las course_dates que coinciden con las fechas seleccionadas
+    const matchingDates = this.course.course_dates.filter((courseDate: any) => {
+      return this.selectedDates.some((selectedDate: any) =>
+        moment(selectedDate).isSame(moment(courseDate.date), 'day')
+      );
+    });
+
+    return matchingDates;
+  }
+
+  getDaysBetweenDates(startDateString: string, endDateString: string): string[] {
+    const dates: string[] = [];
+    let currentDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate).toISOString().split("T")[0]);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+
+    return dates;
+  }
+
+  getLanguages = () => this.crudService.list('/languages', 1, 1000).subscribe((data) => this.languages = data.data.reverse())
+  getLanguage(id: any) {
+    const lang: any = this.languages.find((c: any) => c.id == +id);
+    return lang ? lang.code.toUpperCase() : 'NDF';
+  }
+  countries = MOCK_COUNTRIES;
+  languages = [];
+  getCountry(id: any) {
+    const country = this.countries.find((c) => c.id == +id);
+    return country ? country.name : 'NDF';
+  }
+  calculateAge(birthDateString: any) {
+    if (birthDateString && birthDateString !== null) {
+      const today = new Date();
+      const birthDate = new Date(birthDateString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+      return age;
+    } else return 0;
+  }
+
+  getDegrees = () => this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.course.school_id + '&sport_id=' + this.course.sport.id).subscribe((data) => {
+    this.dataLevels = []
+    data.data.forEach((element: any) => element.active ? this.dataLevels.push(element) : null);
+  });
+
+  Date = (date: string) => new Date(date)
+
+  toggleForfaitSelection(extra: any) {
+    const index = this.selectedForfait.indexOf(extra);
+    if (index > -1) {
+      this.selectedForfait.splice(index, 1); // Elimina si ya está seleccionado
+    } else {
+      this.selectedForfait.push(extra); // Añade si no está seleccionado
+    }
+    this.updatePrice();
+  }
+  toggleForfaitSelectionCollective(extra: any, date: string): boolean {
+    if (!this.selectedForfaits[date]) {
+      this.selectedForfaits[date] = [];
+    }
+
+    const index = this.selectedForfaits[date].findIndex(e => e.name === extra.name);
+
+    if (index > -1) {
+      // ❌ Se elimina el extra
+      this.selectedForfaits[date].splice(index, 1);
+      this.updatePrice();
+      return false;
+    } else {
+      // ✅ Se agrega el extra
+      this.selectedForfaits[date].push(extra);
+      this.updatePrice();
+      return true;
+    }
+  }
+
+  isExtraSelected(extra: any, date: string): boolean {
+    return this.selectedForfaits[date]?.some(e => e.name === extra.name) ?? false;
+  }
+
+  find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 
 }

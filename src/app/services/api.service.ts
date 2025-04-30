@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from 'src/environments/environment';
-import {ActivatedRoute, ActivatedRouteSnapshot, Router} from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,9 @@ export class ApiService {
 
   constructor(public http: HttpClient, protected route: ActivatedRoute) { }
 
-  getHeaders(slug:string = ''): HttpHeaders {
+  getHeaders(slug: string = ''): HttpHeaders {
     slug = slug || this.extractSlugFromRoute(this.route.snapshot);
-   // const token = JSON.parse(localStorage.getItem('boukiiUserToken') || '');
+    // const token = JSON.parse(localStorage.getItem('boukiiUserToken') || '');
     let headers = new HttpHeaders();
     headers = headers
       .set('content-type', 'application/json')

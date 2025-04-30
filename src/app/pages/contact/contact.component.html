@@ -1,0 +1,17 @@
+<div class="contact-container">
+  <div class="contact-header">
+    <h1>{{ 'contact' | translate }}</h1>
+  </div>
+
+  <div class="contact-content">
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && !contactContent" class="no-content">
+      <p>{{ 'no_contact_available' | translate }}</p>
+    </div>
+
+    <div *ngIf="!loading && contactContent" class="contact-html" [innerHTML]="contactContent"></div>
+  </div>
+</div>

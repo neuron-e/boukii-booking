@@ -5,35 +5,27 @@ import { Component, Input, OnInit } from '@angular/core';
   templateUrl: './level-user.component.html',
   styleUrls: ['./level-user.component.scss'],
 })
-export class LevelUserComponent  implements OnInit {
+export class LevelUserComponent implements OnInit {
 
   @Input() allLevels: any[] = [];
   @Input() selectLevel: number = 0;
   @Input() size: number;
   @Input() userImage: string;
-  applyAngle:number=0;
 
   constructor() { }
 
   ngOnInit() {
-    if(this.selectLevel){
+    if (this.selectLevel) {
       let index = this.allLevels.findIndex(obj => obj.id === this.selectLevel);
       if (index === -1) {
         this.selectLevel = 0;
       }
-      else{
+      else {
         this.selectLevel = index;
       }
     }
-    else{
+    else {
       this.selectLevel = 0;
-    }
-
-    if(this.size < 150){
-      this.applyAngle = (360 / this.allLevels.length) * (150 - this.size) / 800;
-    }
-    else{
-      this.applyAngle = (360 / this.allLevels.length) * (150 - this.size) / 1000;
     }
   }
 
@@ -60,7 +52,7 @@ export class LevelUserComponent  implements OnInit {
     const gapAngleSize = ((this.size / 50) / circleRadius) * (180 / Math.PI);
     const levelAngleSize = circleAngleSize - gapAngleSize;
 
-    const startingOffset = 0;
+    const startingOffset = circleRadius / 20;
     // Marker to the right of level
     const startAngle = (index * circleAngleSize) + startingOffset;
     const endAngle = startAngle + levelAngleSize;
@@ -68,7 +60,7 @@ export class LevelUserComponent  implements OnInit {
     // Start/end position
     const startX = circleRadius * Math.cos(this.degToRad(startAngle - 90));
     const startY = circleRadius * Math.sin(this.degToRad(startAngle - 90));
-    
+
     const endX = circleRadius * Math.cos(this.degToRad(endAngle - 90));
     const endY = circleRadius * Math.sin(this.degToRad(endAngle - 90));
 
@@ -76,23 +68,28 @@ export class LevelUserComponent  implements OnInit {
 
     return `M ${startX} ${startY} A ${circleRadius} ${circleRadius} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
   }
-  
+
   getMarkerPosition() {
     const circleRadius = this.size / 2;
     const circleAngleSize = 360 / this.allLevels.length;
-    const sizeMarker = this.markerRadius / 2;
-  
-    const gapAngleSize = ( (this.size / 20) / circleRadius) * (180 / Math.PI);
+    const sizeMarker = this.markerRadius * 2;
+
+    const gapAngleSize = ((this.size / 20) / circleRadius) * (180 / Math.PI);
     const levelAngleSize = circleAngleSize - gapAngleSize;
-  
+
     // Start angle for the selected level
-    const shiftAdjustment = circleAngleSize; //manually to fit in gap
-    const startAngle = ( (this.selectLevel) * circleAngleSize);
-    const markerAngle = startAngle + levelAngleSize + sizeMarker + this.applyAngle; // middle of the gap
-  
-    const x =   circleRadius * Math.cos(this.degToRad(markerAngle - 90));
+    const shiftAdjustment = circleAngleSize; //manually to fit in gap;
+    const startAngle = ((this.selectLevel + 1) * circleAngleSize) - shiftAdjustment;
+    const markerAngle = startAngle + levelAngleSize + sizeMarker; // middle of the gap
+
+    const x = circleRadius * Math.cos(this.degToRad(markerAngle - 90));
     const y = circleRadius * Math.sin(this.degToRad(markerAngle - 90));
-  
+
+    if (isNaN(x) || isNaN(y)) {
+      //  console.error('getMarkerPosition: Calculated position is NaN');
+      return { x: 0, y: 0 }; // Default safe position
+    }
+
     return { x, y };
   }
 
@@ -104,8 +101,27 @@ export class LevelUserComponent  implements OnInit {
     if (index <= selectLevel) {
       return this.allLevels[index].color;
     } else {
-      return this.allLevels[index].inactive_color;
+      return this.allLevels[index].inactive_color ?
+        this.allLevels[index].inactive_color : this.lightenColor(this.allLevels[index].color, 30);;
     }
+  }
+
+  lightenColor(hexColor: string, percent: number): string {
+    let r: any = parseInt(hexColor.substring(1, 3), 16);
+    let g: any = parseInt(hexColor.substring(3, 5), 16);
+    let b: any = parseInt(hexColor.substring(5, 7), 16);
+
+    // Increase the lightness
+    r = Math.round(r + (255 - r) * percent / 100);
+    g = Math.round(g + (255 - g) * percent / 100);
+    b = Math.round(b + (255 - b) * percent / 100);
+
+    // Convert RGB back to hex
+    r = r.toString(16).padStart(2, '0');
+    g = g.toString(16).padStart(2, '0');
+    b = b.toString(16).padStart(2, '0');
+
+    return '#' + r + g + b;
   }
 
 }

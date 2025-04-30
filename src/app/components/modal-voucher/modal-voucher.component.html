@@ -1,24 +1,45 @@
-<div class="modal" [@fadeInOut] *ngIf="isOpen" (click)="closeModal()">
-    <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
-        <div class="text-color fw-semibold text-semibig modal-flex-title mb-32 pb-12">
-            {{'text_use_voucher' | translate }}
-            <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
-        </div>
+<div class="modal" [@fadeInOut] *ngIf="isOpen">
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <div class="modal-flex-title mb-32">
+      <span class="text-color fw-semibold text-semibig">
+        {{'text_use_voucher' | translate }}
+      </span>
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+    </div>
 
-        <div class="modal-form">
-
-          <mat-radio-group>
-            <ng-container *ngFor="let b of bonuses">
-              <mat-radio-button *ngIf="!b.payed " [disabled]="isInUse(b.id)" class="radio"  (change)="bonus = b" [value]="b">
-                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance  | number:'0.2'}} CHF <span style="color:#8fd14f">{{ isInUse(b.id) ? 'applied' : '' | translate}}</span>
+    <div class="modal-form">
+      <mat-dialog-content style="width: 100%;">
+        <mat-radio-group class="voucher-list">
+          <ng-container *ngFor="let b of bonuses">
+            <div class="voucher-item">
+              <mat-radio-button *ngIf="!b.payed"
+                                [disabled]="isInUse(b.id)"
+                                (change)="bonus = b"
+                                [value]="b">
+                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance }} CHF
               </mat-radio-button>
-            </ng-container>
-          </mat-radio-group>
-        </div>
+              <span class="applied-text">
+                {{ isInUse(b.id) ? 'applied' : '' | translate }}
+              </span>
+            </div>
+          </ng-container>
+        </mat-radio-group>
+      </mat-dialog-content>
 
-        <button (click)="closeModal()" class="btn-back-primary rounded-8 button-style cursor-pointer mt-32 width-100" type="button">
-            {{'text_confirm' | translate }}
-        </button>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'text_code' | translate}}</mat-label>
+        <input type="text" matInput [(ngModel)]="code" />
+      </mat-form-field>
+    </div>
 
+    <!-- Botones alineados correctamente -->
+    <div class="modal-buttons">
+      <button (click)="searchVoucher()" class="modal-button">
+        {{'text_search' | translate }}
+      </button>
+      <button (click)="confirmSelection()" *ngIf="bonus" class="modal-button confirm">
+        {{'text_confirm' | translate }}
+      </button>
     </div>
   </div>
+</div>

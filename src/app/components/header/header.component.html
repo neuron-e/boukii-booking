@@ -1,19 +1,18 @@
 <div class="header-section mb-24">
     <div class="header-left">
-        <img src="assets/images/school-logo.png" class="header-left-img" />
+        <img *ngIf="schoolData?.data?.logo" src="{{schoolData?.data?.logo}}" class="header-left-img" />
         <div class="header-left-text">
             <div class="text-color fw-medium">{{schoolData?.data?.name}}</div>
             <span class="text-color-light text-small">{{schoolData?.data?.description}}</span>
         </div>
     </div>
     <div class="header-right">
-       <!-- <img [src]="themeService.modeIcon" (click)="toggleTheme()" class="icon-mode cursor-pointer" />-->
+        <!-- <img [src]="themeService.modeIcon" (click)="toggleTheme()" class="icon-mode cursor-pointer" />-->
         <div class="header-dropdown">
             <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownLang()">
-              <img [src]="selectedLangFlag" class="selected-lang-flag" style="width: 24px">
-              <span>{{ selectedLang | uppercase }}</span>
-                <img [src]="themeService.arrowUp"
-                    [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
+                <img [src]="selectedLangFlag" class="selected-lang-flag" style="width: 24px">
+                <span>{{ selectedLang | uppercase }}</span>
+                <img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownLang}" />
             </div>
             <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownLang">
                 <div (click)="switchLang('fr')">
@@ -43,7 +42,8 @@
             <div (click)="openModalNewUser()" class="text-color-light cursor-pointer">
                 {{'text_new_client' | translate }}
             </div>
-            <button (click)="openModalLogin()" class="btn-back-primary rounded-8 button-style cursor-pointer" type="button">
+            <button (click)="openModalLogin()" class="btn-back-primary rounded-8 button-style cursor-pointer"
+                type="button">
                 {{'text_already_client' | translate }}
             </button>
         </ng-container>
@@ -51,9 +51,8 @@
         <ng-container *ngIf="userLogged">
             <div class="header-dropdown">
                 <div class="text-color-light cursor-pointer header-dropdown-text" (click)="toggleDropdownUser()">
-                  {{userLogged.clients[0].last_name}}
-                    <img [src]="themeService.arrowUp"
-                        [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
+                    {{userLogged.clients[0].last_name}}
+                    <img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownUser}" />
                 </div>
                 <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownUser">
                     <div (click)="goBack('/user')" class="text-color-light cursor-pointer">

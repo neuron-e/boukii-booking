@@ -1,11 +1,5 @@
-<main class="mh-100vh d-flex main-bs">
-    <div class="content-main" id="content-main">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="background-color-screen lading-padding">
-            <router-outlet></router-outlet>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+<app-header></app-header>
+<div style="padding: 30px;background: #F8F9FB;max-width: 1400px;margin: 0 auto;min-height: calc(100vh - 75px - 260px);">
+  <router-outlet></router-outlet>
+</div>
+<app-footer></app-footer>

@@ -2,29 +2,81 @@
   display: flex;
   align-items: center;
   gap: 4px;
+
+  cursor: pointer;
 }
-.reservation-return img {
-  width: 20px;
-}
-.cart-payment-section {
+.reservation-return2 {
+  margin-top: 42px;
+  margin-bottom: 40px;
+  align-items: center;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 32px;
+  > span {
+    font-size: 24px;
+    font-family: Dinamit;
+    font-weight: 500;
+    line-height: 26px;
+  }
+  > button {
+    margin-left: auto;
+    min-height: 38px;
+    border-radius: 3px;
+    padding: 10px;
+    border: 1px solid black;
+
+    font-weight: 600;
+  }
 }
-.course-box {
+
+.cart-payment {
   display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
+  max-width: 100%;
   gap: 24px;
 }
+.cart-payment-section1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.payment-section2 {
+  min-width: 450px;
+}
+@media (max-width: 900px) {
+  .payment-section2 {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 999999999;
+    left: 0;
+    min-width: 250px;
+
+    .cardcabecera,
+    .paymenthide,
+    .mobile {
+      display: none;
+    }
+    .cardcabecera2 {
+      display: flex;
+    }
+  }
+}
+
+.course-box {
+  display: flex;
+  width: 350px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .course-box-header {
   width: 100%;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border-bottom: 1px solid #dee6ea;
 }
 .course-box-icon {
   display: flex;
@@ -42,8 +94,8 @@
 .course-box-icons {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 74px;
+  gap: 5px;
+  min-width: 60px;
 }
 .course-box-add {
   width: 36px;
@@ -57,6 +109,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  padding: 20px;
 }
 .course-content-list {
   display: flex;
@@ -82,13 +135,15 @@
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  min-height: 24px;
+  gap: 4px;
+  margin-top: 12px;
 }
 .payment-conditions {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-bottom: 10px;
 }
 .button-center {
   display: block;
@@ -103,6 +158,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+}
+
+.voucher-price-flex {
+  display: flex;
+  flex-direction: column; /* Asegura que los vouchers se apilen verticalmente */
+  width: 100%;
+  align-items: flex-start; /* Alinea los vouchers a la izquierda */
+  gap: 6px;
+}
+
+.voucher-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
 }
 .min-width-price {
   width: 110px;
@@ -122,21 +192,49 @@
   margin: 0 auto;
 }
 
-@media (max-width: 850px) {
-  .cart-payment-section {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 48px;
-    flex-wrap: wrap;
-  }
-  .payment-section {
-    width: 100%;
-    max-width: none;
-  }
+.cardcabecera {
+  background-color: #2f3844;
+  height: 60px;
+  padding: 20px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-family: Dinamit;
+  font-weight: 500;
+  line-height: 20px;
 }
-@media (max-width: 500px) {
-  .cart-payment-section {
-    gap: 34px;
-  }
+.cardcabecera2 {
+  background-color: white;
+  justify-content: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding-top: 20px;
+  height: 35px;
+  display: none;
+}
+.extra_add {
+  color: #e91e63;
+}
+.detail {
+  color: #8b9099;
+}
+.detailPrice {
+  margin-left: auto;
+}
+.priceTotal {
+  font-weight: 700;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.5);
+  min-width: 40px;
+}
+.extra_product {
+  font-weight: 600;
+  word-wrap: break-word;
+}
+.extra_name {
+  color: #8b9099;
+  word-wrap: break-word;
 }

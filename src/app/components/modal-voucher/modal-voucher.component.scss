@@ -1,25 +1,24 @@
 .modal {
   width: 100%;
   min-height: 100vh;
-  min-height: 100vh;
   max-height: 100vh;
   z-index: 999;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0,0,0,0.7);
   position: fixed;
   top: 0;
   left: 0;
-  display: flex; /* Enables flexbox */
+  display: flex;
   align-items: center;
   justify-content: center;
   overflow-y: auto;
 }
 .modal-content {
-  max-width: 850px;
+  max-width: 500px; /* Más compacto */
   width: 90%;
   position: relative;
   z-index: 1000;
   margin: auto;
-  padding: 16px 20px;
+  padding: 20px;
   box-sizing: border-box;
 }
 .modal-flex-title {
@@ -33,30 +32,42 @@
 }
 .modal-form {
   display: flex;
+  flex-direction: column;
   width: 100%;
+  gap: 16px;
+}
+.voucher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.voucher-item {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
 }
-.modal-form-block-full {
+.applied-text {
+  color: #8fd14f;
+  font-size: 14px;
+}
+.full-width {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
 }
-.modal-form-block-half {
-  width: calc(50% - 8px);
+.modal-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
-.modal-form-block-third {
-  width: calc(33.33% - 8px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+.modal-button {
+  min-height: 38px;
+  padding: 10px 16px;
+  background-color: #E91E63;
+  color: white;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+}
+.modal-button.confirm {
+  background-color: #4CAF50; /* Verde para confirmar */
 }

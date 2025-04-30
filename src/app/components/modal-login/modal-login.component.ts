@@ -1,12 +1,12 @@
-import {Component, OnInit, EventEmitter, Input, Output, OnDestroy} from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../services/auth.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {TranslateService} from '@ngx-translate/core';
-import {SchoolService} from '../../services/school.service';
-import {Subscription} from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
+import { SchoolService } from '../../services/school.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-modal-login',
@@ -24,20 +24,26 @@ import {Subscription} from 'rxjs';
     ]),
   ]
 })
-export class ModalLoginComponent implements OnInit, OnDestroy  {
+export class ModalLoginComponent implements OnInit, OnDestroy {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
+  @Output() onCloseNewUser = new EventEmitter<void>();
+
   loginForm: FormGroup;
-  mailRecover = '';
-  isForgotPass:boolean=false;
+  forgetForm: FormGroup;
+  isForgotPass: boolean = false;
+  isModalNewUser: boolean = false
   private schoolDataSubscription: Subscription | undefined;
 
   constructor(public themeService: ThemeService, private fb: FormBuilder, private authService: AuthService,
-              private snackbar: MatSnackBar, private translateService: TranslateService, private schoolService: SchoolService) {
+    private snackbar: MatSnackBar, private translateService: TranslateService, private schoolService: SchoolService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
+    });
+    this.forgetForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -56,20 +62,20 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
           }
         })
         .catch(error => {
-          let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';
+          let errorMessage = this.translateService.instant(error.error?.message) || 'error.client.register';
           this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
         });
     }
   }
 
   sendMail() {
-    this.schoolDataSubscription = this.schoolService.getSchoolData().subscribe(
-      data => {
-        if (data) {
-          let schoolData = data;
-          if (this.mailRecover) {
+    if (this.forgetForm.valid) {
+      this.schoolDataSubscription = this.schoolService.getSchoolData().subscribe(
+        data => {
+          if (data) {
+            let schoolData = data;
             let requestData = {
-              email: this.mailRecover,
+              email: this.forgetForm.controls["email"].value,
               type: 2,
               school_id: schoolData.id
             };
@@ -79,19 +85,15 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
                   this.closeModal();
                   this.snackbar.open(this.translateService.instant('email_send'), 'OK', { duration: 3000 });
                 } else {
-                  this.showErrorSnackbar();
+                  let errorMessage = this.translateService.instant('error.client.register');
+                  this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
                 }
               })
-              .catch(error => {
-                this.showErrorSnackbar();
-              });
+              .catch(() => this.showErrorSnackbar());
           }
-        }
-      },
-      error => {
-        this.showErrorSnackbar();
-      }
-    );
+        }, () => this.showErrorSnackbar()
+      );
+    }
   }
 
   private showErrorSnackbar() {
@@ -105,7 +107,7 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
     if (this.schoolDataSubscription) {
       this.schoolDataSubscription.unsubscribe(); // Desuscribirse al cerrar el modal
     }
-    this.isForgotPass=false;
+    this.isForgotPass = false;
     this.onClose.emit();
   }
 
@@ -114,5 +116,8 @@ export class ModalLoginComponent implements OnInit, OnDestroy  {
       this.schoolDataSubscription.unsubscribe(); // Desuscribirse cuando el componente se destruye
     }
   }
-
+  closeModalNewUser() {
+    this.isModalNewUser = false;
+    this.onCloseNewUser.emit();
+  }
 }

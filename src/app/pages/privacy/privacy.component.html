@@ -1,0 +1,17 @@
+<div class="privacy-container">
+  <div class="privacy-header">
+    <h1>{{ 'privacy_policy' | translate }}</h1>
+  </div>
+
+  <div class="privacy-content">
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && !privacyContent" class="no-content">
+      <p>{{ 'no_privacy_available' | translate }}</p>
+    </div>
+
+    <div *ngIf="!loading && privacyContent" class="privacy-html" [innerHTML]="privacyContent"></div>
+  </div>
+</div>

@@ -7,72 +7,159 @@
   margin: 0; /* elimina los márgenes por defecto de h2 */
 }
 
-  [type="file"] {
-    height: 0;
-    overflow: hidden;
-    width: 0;
+[type="file"] {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}
+
+[type="file"] + label {
+  background: #ff3085;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Rubik", sans-serif;
+  font-size: inherit;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  outline: none;
+  padding: 1rem 50px;
+  position: relative;
+  transition: all 0.3s;
+  vertical-align: middle;
+
+  &:hover {
+    background-color: darken(#ff3085, 10%);
   }
 
-  [type="file"] + label {
-    background: #FF3085;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    font-family: 'Rubik', sans-serif;
-    font-size: inherit;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    outline: none;
-    padding: 1rem 50px;
-    position: relative;
-    transition: all 0.3s;
-    vertical-align: middle;
+  &.btn-1 {
+    background-color: #ff3085;
+    box-shadow: 0 6px darken(#ff3085, 10%);
+    transition: none;
 
     &:hover {
-      background-color: darken(#FF3085, 10%);
+      box-shadow: 0 4px darken(#ff3085, 10%);
+      top: 2px;
     }
+  }
+}
+.flex-sections {
+  max-width: none;
+  display: flex;
+  @media only screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
+}
+.flex-sections-user.level {
+  transform: translateX(-0.5px);
+}
+@media only screen and (max-width: 1000px) {
+  .flex-sections-user.level {
+    transform: translateY(-1.5px);
+  }
+}
+.flex-sections-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 50%;
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
+  }
+  > div {
+    display: flex;
+    border: 1px solid #dee6ea;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+    flex-wrap: wrap;
+    position: relative;
+    > div {
+      flex: 0 0 calc(50% - 10px);
+      box-sizing: border-box;
+      > p {
+        margin-bottom: 8px;
+      }
+      > p:first-child {
+        color: #8b9099;
+        font-size: 12px;
 
-    &.btn-1 {
-      background-color: #FF3085;
-      box-shadow: 0 6px darken(#FF3085, 10%);
-      transition: none;
+        font-weight: 600;
+        line-height: 16px;
+      }
+      > p:nth-child(2) {
+        font-size: 12px;
 
-      &:hover {
-        box-shadow: 0 4px darken(#FF3085, 10%);
-        top: 2px;
+        line-height: 16px;
       }
     }
+    > .delete {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-left: auto;
+      span {
+        color: #e70f0f;
+        font-size: 12px;
 
+        line-height: 16px;
+      }
+    }
+    > img.icon24 {
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
   }
+}
 
-.flex-sections-user {
-  display:flex;justify-content:space-between;align-items:flex-start;margin-top:24px;flex-direction:row;gap:40px;
+::ng-deep
+  .mat-mdc-tab-header-pagination-controls-enabled
+  .mat-mdc-tab-header-pagination {
+  z-index: 0;
 }
-.flex-sections-user-left {
-  width:calc(22% - 20px);min-width:calc(22% - 20px);
+::ng-deep .mat-vertical-content-container {
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
+  margin: 0 !important;
 }
-.flex-sections-user-right {
-  width:calc(78% - 20px);min-width:calc(78% - 20px);
+::ng-deep .mat-step-header {
+  border-top: 1px solid #dee6ea;
+  border-bottom: 1px solid #dee6ea;
+  height: 48px !important;
+  padding: 0 24px !important;
+  // INFORMACIÓN DE LA CUENTA
+  color: #e91e63;
+  font-size: 12px;
+  font-family: DM Sans;
+  font-weight: 400;
+  line-height: 16px;
+  word-wrap: break-word;
 }
-
-@media (max-width:1500px) {
-  .flex-sections-user-left {
-    width:calc(30% - 20px);min-width:calc(30% - 20px);
-  }
-  .flex-sections-user-right {
-    width:calc(70% - 20px);min-width:calc(70% - 20px);
+::ng-deep .mat-vertical-stepper-header .mat-step-icon {
+  display: none !important;
+}
+::ng-deep .mat-vertical-content {
+  padding: 20px !important;
+}
+vex-user-detail-dialog {
+  mat-form-field {
+    min-height: 56px;
   }
 }
-@media (max-width:1000px) {
-  .flex-sections-user {
-    display:flex;justify-content:center;align-items:center;margin-top:24px;flex-direction:column;gap:initial;
-  }
-  .flex-sections-user-left {
-    width:100%;margin-bottom:20px;
-  }
-  .flex-sections-user-right {
-    width:100%;
+.modalInputD {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.inputWidth {
+  width: calc(50% - 10px);
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
   }
 }

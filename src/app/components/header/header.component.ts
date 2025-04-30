@@ -1,13 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme.service';
-import {SchoolService} from '../../services/school.service';
-import {AuthService} from '../../services/auth.service';
-import {CartService} from '../../services/cart.service';
+import { SchoolService } from '../../services/school.service';
+import { AuthService } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-header-old',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
@@ -20,13 +20,13 @@ export class HeaderComponent implements OnInit {
   selectedLang = 'fr';
   selectedLangFlag = '/assets/images/fr.png';
 
-  @Input() isModalLogin:boolean=false;
-  @Input() isModalNewUser:boolean=false;
+  @Input() isModalLogin: boolean = false;
+  @Input() isModalNewUser: boolean = false;
   @Output() onCloseLogin = new EventEmitter<void>();
   @Output() onCloseNewUser = new EventEmitter<void>();
 
   constructor(private router: Router, public translate: TranslateService, public themeService: ThemeService, private activatedRoute: ActivatedRoute,
-              private schoolService: SchoolService, private authService: AuthService, private cartService: CartService) { }
+    private schoolService: SchoolService, private authService: AuthService, private cartService: CartService) { }
 
   ngOnInit(): void {
     this.schoolService.fetchSchoolData();
@@ -34,16 +34,16 @@ export class HeaderComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data;
-          let storageSlug = localStorage.getItem(this.schoolData.data.slug+ '-boukiiUser');
-          if(storageSlug) {
-            const slug = localStorage.getItem(this.schoolData.data.slug+'-cart');
+          let storageSlug = localStorage.getItem(this.schoolData.data.slug + '-boukiiUser');
+          if (storageSlug) {
+            const slug = localStorage.getItem(this.schoolData.data.slug + '-cart');
             this.userLogged = JSON.parse(storageSlug);
-            const cart = localStorage.getItem(this.schoolData.data.slug+'-cart');
+            const cart = localStorage.getItem(this.schoolData.data.slug + '-cart');
             this.cart = cart || '';
-            this.selectedLang  = localStorage.getItem(this.schoolData.data.slug+'-lang') || 'fr';
+            this.selectedLang = localStorage.getItem(this.schoolData.data.slug + '-lang') || 'fr';
             this.translate.use(this.selectedLang);
-            this.selectedLangFlag = '/assets/images/'+this.selectedLang+'.png'
-            if (slug!==null) {
+            this.selectedLangFlag = '/assets/images/' + this.selectedLang + '.png'
+            if (slug !== null) {
               this.cart = JSON.parse(slug !== null ? slug : '');
             }
           } else {
@@ -93,18 +93,18 @@ export class HeaderComponent implements OnInit {
     this.authService.user.next(null);
     this.userLogged = null;
     localStorage.clear();
-    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']]);
+    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug']]);
   }
 
   selectLanguage(lang: string) {
     this.isOpenDropdownLang = false;
   }
 
-  switchLang(lang: any){
+  switchLang(lang: any) {
     this.translate.use(lang);
     this.selectedLang = lang;
-    this.selectedLangFlag = '/assets/images/'+lang+'.png'
-    localStorage.setItem(this.schoolData.data.slug+'-lang', lang);
+    this.selectedLangFlag = '/assets/images/' + lang + '.png'
+    localStorage.setItem(this.schoolData.data.slug + '-lang', lang);
     this.toggleDropdownLang();
   }
 
@@ -135,7 +135,7 @@ export class HeaderComponent implements OnInit {
   }
 
   goBack(url: string) {
-    this.router.navigate(['/'+this.activatedRoute.snapshot.params['slug']+ url]);
+    this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug'] + url]);
   }
 
 }

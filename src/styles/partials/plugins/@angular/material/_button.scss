@@ -1,11 +1,17 @@
 :root {
-  .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-fab, .mat-mdc-mini-fab {
+  .mat-mdc-raised-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-fab,
+  .mat-mdc-mini-fab {
     &:not(:disabled):not(.mat-unthemed) {
       @apply text-primary-contrast;
     }
   }
 
-  .mat-mdc-button, .mat-mdc-outlined-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button {
+  .mat-mdc-button,
+  .mat-mdc-outlined-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button {
     @apply rounded-button min-w-[6rem];
   }
 

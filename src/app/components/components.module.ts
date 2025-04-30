@@ -10,23 +10,34 @@ import { ModalVoucherComponent } from './modal-voucher/modal-voucher.component';
 import { ModalNewUserComponent } from './modal-new-user/modal-new-user.component';
 import { ModalLoginComponent } from './modal-login/modal-login.component';
 import { ModalConditionsComponent } from './modal-conditions/modal-conditions.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { ConfirmModalComponent } from './confirm-dialog/confirm-dialog.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatOptionModule} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 
 @NgModule({
-  declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent],
+  declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent,],
   imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, TranslateModule, ReactiveFormsModule, FormsModule, TranslateModule, MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule
+    CommonModule, BrowserModule, BrowserAnimationsModule, ReactiveFormsModule, FormsModule,
+    TranslateModule.forChild(), MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule,
+    MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
+    MatSnackBarModule
   ],
-  exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent, ConfirmModalComponent]
+  providers: [
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: { verticalPosition: 'top', horizontalPosition: 'center', duration: 3000 }
+    }
+  ],
+  exports: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent,]
 })
 export class ComponentsModule { }

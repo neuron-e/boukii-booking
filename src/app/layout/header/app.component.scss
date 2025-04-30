@@ -1,0 +1,78 @@
+.header {
+  height: 75px;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 5%;
+  border-bottom: 1px solid var(--Grey-03, #dee6ea);
+}
+
+.title1 {
+  
+  font-weight: 600;
+  
+}
+.title2 {
+  font-size: 12px;
+  
+  line-height: 16px;
+}
+span {
+  
+  
+  align-content: center;
+  cursor: pointer;
+}
+.dropdown {
+  width: 100%;
+  z-index: 999999999999999;
+  position: absolute;
+  cursor: pointer;
+  top: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+  > div {
+    display: flex;
+    padding: 5px;
+    > span {
+      width: 24px;
+      text-align: -webkit-center;
+    }
+  }
+  > div:hover {
+    background-color: gray;
+  }
+}
+img {
+  cursor: pointer;
+}
+.rotate-arrow {
+  transform: rotate(180deg);
+}
+
+.header-cart-number {
+  position: absolute;
+  top: 0;
+  left: 25px;
+  background-color: #e91e63;
+  color: white;
+  padding: 3px 4px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Sombra del badge */
+}
+@media only screen and (max-width: 500px) {
+  .username,
+  .arrow {
+    display: none;
+  }
+}

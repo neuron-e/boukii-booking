@@ -1,0 +1,41 @@
+.footer {
+  display: flex;
+  min-height: 245px;
+  width: 100%;
+  background-color: #2f3844;
+  padding: 60px calc(5% - 20px);
+  @media (max-width: 768px) {
+    padding: 10px calc(5% - 20px);
+  }
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  > div {
+    margin: 10px 20px;
+  }
+}
+.title1 {
+  font-size: 20.13px;
+  font-weight: 600;
+  line-height: 25.88px;
+}
+.title2 {
+  font-size: 17.25px;
+
+  line-height: 23px;
+}
+span {
+  color: white;
+
+  align-content: center;
+  cursor: pointer;
+}
+.ref {
+  width: 200px;
+  p {
+    color: white;
+  }
+}
+
+img {
+  cursor: pointer;
+}

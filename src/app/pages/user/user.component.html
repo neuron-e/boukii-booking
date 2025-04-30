@@ -1,643 +1,242 @@
-<app-header></app-header>
-
-
-<div (click)="goBack('home')"
-	class="text-color-light montserrat cursor-pointer reservation-return"
-	style="display: flex;align-items: center;gap: 12px;">
-	<img [src]="themeService.arrowReturn">
-	{{'text_continue' | translate }}
+<div (click)="goBack('home')" class="reservation-return">
+  <span style="color: #61656d;">
+    {{'menu.home' | translate }}
+  </span>
+  /
+  <span style="font-weight: 600;">
+    {{'users' | translate }}
+  </span>
 </div>
 
-
-<mat-spinner *ngIf="loading"
-	style="margin: 0 auto"></mat-spinner>
-
-
-<mat-tab-group *ngIf="!loading"
-	(selectedIndexChange)="onTabChange($event)">
-	<mat-tab label="{{'data' | translate}}">
-		<app-user-detail #userDetail
-			[idParent]="id"
-			(idChange)="handleIdChange($event)"></app-user-detail>
-	</mat-tab>
-	<mat-tab label="{{'sports' | translate}}">
-
-
-		<div *ngIf="!loading"
-			class="container py-6"
-			style="max-width: none">
-			<div class="card overflow-hidden">
-				<div class="h-64 relative overflow-hidden">
-					<img class="w-full h-full object-cover"
-						src="../../../../assets/images/8.png">
-					<div class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
-				</div>
-
-
-				<div class="z-10 relative -mt-16 px-6 flex items-center"
-					style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;">
-					<img [src]="defaults.image"
-						class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
-						style="border: 2px solid rgb(255 255 255) !important;position:static !important;">
-					<div class="h-16"
-						style="display: flex;flex-direction: column;gap: 12px;">
-						<div class="headline text-white montserrat"
-							style="font-size: 12px;color:#fff !important;line-height: 1.2;">
-							{{getLanguage(defaults.language1_id)}}
-              · {{getCountry(defaults.country)}} ·
-              {{calculateAge(defaults.birth_date)}} &ensp;{{'years' | translate
-              }}
-						</div>
-
-
-						<div class="headline text-white"
-							style="font-size: 18px;color:#fff !important;line-height: 1.2;">
-							{{defaults.first_name}}
-              {{defaults.last_name}}
-						</div>
-
-
-						<!-- añadir icono aqui -->
-						<!-- añadir icono aqui -->
-						<!-- añadir icono aqui -->
-					</div>
-				</div>
-			</div>
-
-
-			<div class="flex-sections-user">
-
-
-				<div *ngIf="!loading"
-					class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left">
-
-
-					<div style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
-						class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-						<div class="px-6 py-4 border-b">
-							<h2 class="title m-0">
-								{{'users' | translate }}
-							</h2>
-						</div>
-
-
-						<div class="px-6 py-4 flex flex-col gap-4"
-							style="cursor:pointer;">
-							<div (click)="changeClientData(userLogged.clients[0].id)"
-								class="flex items-center"
-								style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-								<img [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
-									[ngStyle]="{
-                    'border': mainId == id ? '#FF3085 1px solid' : 'none'
-                  }"
-									alt="Profile Picture"
-									class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-									style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;">
-
-
-								<div class="body-2 m-0 leading-snug montserrat"
-									style="font-size:13px;color:black">
-									{{
-                  userLogged.clients[0]?.first_name }} {{
-                  userLogged.clients[0]?.last_name }}
-								</div>
-							</div>
-							<div *ngFor="let user of clientUsers"
-								(click)="changeClientData(user.id)"
-								class="flex items-center"
-								style="cursor:pointer;"
-								style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-								<img [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
-									[ngStyle]="{
-                    'border': user.id === id && id !== mainId ? '#FF3085 1px solid' : 'none'
-                  }"
-									alt="Profile Picture"
-									class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-									style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;">
-								<div class="body-2 m-0 leading-snug montserrat"
-									style="font-size:13px;color:black">
-									{{ user?.first_name }} {{
-                  user?.last_name }}
-								</div>
-							</div>
-
-
-							<div style="cursor:pointer"
-								class="flex items-center">
-
-
-							</div>
-
-
-						</div>
-					</div>
-
-
-				</div>
-				<div *ngIf="!loading"
-					class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right">
-					<div class="flex-auto">
-						<div class="card">
-							<div class="px-6 py-4 border-b">
-								<h2 class="title m-0">
-									{{'sport_evolution' | translate }}
-								</h2>
-							</div>
-
-
-							<div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4"
-								style="border-bottom: 1px solid #ededed; padding:5%">
-								<div class="py-3 flex items-center">
-									<div style="float: left; width:100%;">
-										<div *ngFor="let item of clientSport"
-											(click)="selectSportEvo(item)"
-											style="float: left; width:25%;">
-											<img [src]="selectedSport?.sport_id === item.sport_id ? item.icon_selected : item.icon_unselected"
-												[ngStyle]="{
-                        'background': selectedSport?.sport_id === item.sport_id ? '#e91e63' : '#e6e6e6',
-                        'border': selectedSport?.sport_id === item.sport_id ? '#fff' : '#808080'
-                      }"
-												style="float: left;border-radius: 20%;border:1px solid; cursor:pointer;">
-											<p style="width: 100%;float: left;text-wrap: nowrap;">{{item.name}}</p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-
-							<div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4"
-								style="border-bottom: 1px solid #ededed; padding:5%">
-								<div class="py-3 flex items-center">
-									<div style="float: left; width:100%;">
-										<div style="float: left; width:100%;">
-
-
-											<div style="float: left; width:20%;">
-												<img [src]="selectedSport?.icon_selected"
-													[style.background]="selectedSport?.level?.color"
-													[style.border]="selectedSport?.level?.color"
-													style="float: left;border-radius: 20%;border:1px solid">
-											</div>
-											<div style="float: left; width:80%;">
-
-
-												<p style="float: left; width:100%;font-size: 12px;">
-													{{selectedSport?.level?.league}}
-                          - {{selectedSport?.level?.progress}}%
-												</p>
-												<h1 style="float: left; width:100%;font-size: 20px;position: relative;left: -5%;">
-													<i (click)="changeLevel(-1)"
-														class="fa fa-chevron-left"
-														class="icon-sm flex-none"
-														style="float:left;position: relative;left: -30%;cursor:pointer;">
-														<
-													</i>
-													{{selectedSport?.level?.annotation}} /
-                          {{selectedSport?.level?.name}}
-													<i (click)="changeLevel(1)"
-														class="fa fa-chevron-right"
-														class="icon-sm flex-none"
-														style="float:right;position: relative;left: 10%;cursor:pointer;">
-														>
-													</i>
-												</h1>
-
-
-											</div>
-
-
-											<div style="float: left; width:100%;margin: 2% 0 0 0;">
-
-
-												<mat-progress-bar [value]="selectedSport?.level?.progress"
-													[color]="selectedSport?.level?.color"
-													mode="determinate"></mat-progress-bar>
-
-
-											</div>
-
-
-											<div *ngFor="let goal of selectedGoal"
-												style="float: left; width:100%;margin: 30px 0 0 0;">
-
-
-												<div style="float: left; width:3%;margin-right: 2%;">
-													<mat-icon svgIcon="mat:settings"
-														style="color: gray"></mat-icon>
-												</div>
-
-
-												<div style="float: left; width:88%;">
-													<p>{{goal.name}}</p>
-												</div>
-												<div style="float: left; width:5%;margin-left: 2%;">
-													<div [style.backgroundColor]="getDegreeScore(goal.id)>0?getDegreeScore(goal.id)>5?'green':'yellow':'#E6E6E6'"
-														style="width: 25px;
-                        border-radius: 100%;
-                        height: 25px;
-                        margin: 0 auto;">
-													</div>
-												</div>
-											</div>
-										</div>
-
-
-										<!-- <div style="float: left; width:100%;margin-top: 5%" >
-                      <h1 style="float: left; width:100%;font-size: 20px;">{{'historical' | translate }}</h1>
-                      <h2 style="float: left; width:100%;font-size: 20px;" *ngIf="getEvaluationsData().length === 0">{{'no_data' | translate }}</h2>
-
-                    </div> -->
-
-
-										<div style="float: left; width:100%;margin-top: 5%">
-											<h1 style="float: left; width:100%;font-size: 20px;">
-												{{'multimedia'
-                        | translate }}
-											</h1>
-											<h2 *ngIf="getEvaluationsData().length === 0"
-												style="float: left; width:100%;font-size: 20px;">
-												{{'no_data' |
-                        translate }}
-											</h2>
-											<div *ngFor="let item of getEvaluationsData()"
-												style="float: left; width: 100%; border-radius: 10px;">
-												<ng-container *ngFor="let file of item.files"
-													style="float: left; width: 25%; border-radius: 10px;">
-													<img *ngIf="file.type === 'image'"
-														[src]="file.file"
-														style="height: 150px;width: 150px;object-fit: cover;">
-
-
-													<video *ngIf="file.type === 'video'"
-														width="150"
-														heigth="150"
-														controls>
-														<source [src]="file.file"
-															type="video/mp4">
-														<source [src]="file.file"
-															type="video/ogg">
-													</video>
-
-
-												</ng-container>
-											</div>
-
-
-										</div>
-
-
-										<div style="float: left; width:100%;margin-top: 5%">
-											<h1 style="float: left; width:100%;font-size: 20px;">
-												{{'monitor_comments'
-                        | translate }}
-											</h1>
-											<h2 *ngIf="getEvaluationsData().length === 0"
-												style="float: left; width:100%;font-size: 20px;">
-												{{'no_data' |
-                        translate }}
-											</h2>
-											<mat-form-field *ngFor="let item of getEvaluationsData()"
-												class="flex-auto"
-												style="width: 100%">
-												<input [readonly]=true
-													[value]="item.observations"
-													matInput
-													type="text">
-
-
-											</mat-form-field>
-
-
-										</div>
-
-
-									</div>
-
-
-								</div>
-								<div class="py-3 flex items-center">
-
-
-									<div style="float: left; width:100%;">
-										<app-level-user *ngIf="!coloring"
-											[allLevels]="allLevels"
-											[selectLevel]="selectedSport?.level?.id"
-											[size]="200"
-											[userImage]="getGoalImage()"></app-level-user>
-
-
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-			</div>
-
-
-		</div>
-	</mat-tab>
-	<mat-tab label="{{'bookings' | translate }}">
-
-
-		<div *ngIf="!loading"
-			class="container py-6"
-			style="max-width: none">
-			<div class="card overflow-hidden">
-				<div class="h-64 relative overflow-hidden">
-					<img class="w-full h-full object-cover"
-						src="../../../../assets/images/8.png">
-					<div class="absolute bg-black opacity-25 top-0 right-0 bottom-0 left-0 w-full h-full z-0"></div>
-
-
-				</div>
-
-
-				<div class="z-10 relative -mt-16 px-6 flex items-center"
-					style="margin-top: -6rem !important;position: relative;bottom: 80px;display: flex;align-items: center;gap: 24px;padding-left: 1.5rem;padding-right: 1.5rem;">
-					<img [src]="defaults.image"
-						class="avatar h-24 w-24 flex-none align-start sm:block border-2 border-white"
-						style="border: 2px solid rgb(255 255 255) !important;position:static !important;">
-					<div class="h-16"
-						style="display: flex;flex-direction: column;gap: 12px;">
-						<div class="headline text-white montserrat"
-							style="font-size: 12px;color:#fff !important;line-height: 1.2;">
-							{{getLanguage(defaults.language1_id)}}
-              · {{getCountry(defaults.country)}} ·
-              {{calculateAge(defaults.birth_date)}} &ensp;{{'years' | translate
-              }}
-						</div>
-
-
-						<div class="headline text-white"
-							style="font-size: 18px;color:#fff !important;line-height: 1.2;">
-							{{defaults.first_name}}
-              {{defaults.last_name}}
-						</div>
-
-
-						<!-- añadir icono aqui -->
-						<!-- añadir icono aqui -->
-						<!-- añadir icono aqui -->
-					</div>
-				</div>
-
-
-			</div>
-
-
-			<div class="flex-sections-user">
-
-
-				<div *ngIf="!loading && !selectedBooking"
-					class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-left">
-
-
-					<div style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
-						class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
-						<div class="px-6 py-4 border-b">
-							<h2 class="title m-0">
-								{{'users' | translate }}
-							</h2>
-						</div>
-
-
-						<div class="px-6 py-4 flex flex-col gap-4"
-							style="cursor:pointer;">
-							<div (click)="changeClientData(userLogged.clients[0].id)"
-								class="flex items-center"
-								style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-								<img [src]="userLogged.clients[0]?.image === null || userLogged.clients[0]?.image === '' ? '../../../../assets/images/avatar.png': userLogged.clients[0]?.image"
-									[ngStyle]="{
-                    'border': userLogged.clients[0].id && +userLogged.clients[0].id === id ? '#FF3085 1px solid' : 'none'
-                  }"
-									alt="Profile Picture"
-									class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-									style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;">
-
-
-								<div class="body-2 m-0 leading-snug montserrat"
-									style="font-size:13px;color:black">
-									{{
-                  userLogged.clients[0]?.first_name }} {{
-                  userLogged.clients[0]?.last_name }}
-								</div>
-							</div>
-							<div *ngFor="let user of clientUsers"
-								(click)="changeClientData(user.id)"
-								class="flex items-center"
-								style="cursor:pointer;"
-								style="display:flex;width:100%;align-items:center;gap:10px;padding-left: 1.5rem;padding-right: 1.5rem;padding-top: 1rem;padding-bottom: 1rem;">
-								<img [src]="user?.image === null || user?.image === '' ? '../../../../assets/images/avatar.png': user?.image"
-									[ngStyle]="{
-                    'border': user.id === id && id !== userLogged.clients[0].id ? '#FF3085 1px solid' : 'none'
-                  }"
-									alt="Profile Picture"
-									class="avatar ltr:mr-3 rtl:ml-3 flex-none"
-									style="position:static !important;height: 2.5rem !important;width: 2.5rem !important;">
-								<div class="body-2 m-0 leading-snug montserrat"
-									style="font-size:13px;color:black">
-									{{ user?.first_name }} {{
-                  user?.last_name }}
-								</div>
-							</div>
-
-
-							<div style="cursor:pointer"
-								class="flex items-center">
-								<!-- <mat-icon svgIcon="mat:add"></mat-icon>
-                <div class="flex-auto" (click)="addUtilisateur()">
-                  <h4 class="body-2 m-0 leading-snug">{{'add_user' | translate }}</h4>
-                </div> -->
-							</div>
-
-
-						</div>
-					</div>
-
-
-				</div>
-				<div *ngIf="!loading && !selectedBooking"
-					class="mt-6 flex flex-col md:flex-row md:items-start flex-sections-user-right">
-					<div class="flex-auto">
-						<table *ngIf="dataSource"
-							[dataSource]="dataSource"
-							mat-table
-							class="mat-elevation-z8">
-
-
-							<ng-container matColumnDef="icon">
-								<th *matHeaderCellDef
-									mat-header-cell>
-									Tipo
-								</th>
-								<td *matCellDef="let element"
-									mat-cell
-									style="height: 80px; width: 80px">
-									<img [src]="element.sport"
-										class="avatar h-8 w-8 align-middle"
-										style="border-radius: 5px; height: 70%; width: 100%;">
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="dates">
-								<th *matHeaderCellDef
-									mat-header-cell>
-									{{ 'dates' | translate }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									<strong>
-										{{ getMinMaxDates(element.booking_users).minDate |
-                    date: 'dd.MM.yyyy'}}
-										<br>
-										{{
-                    getMinMaxDates(element.booking_users).maxDate| date:
-                    'dd.MM.yyyy' }}
-									</strong>
-									<br>
-									{{getMinMaxHours(element.booking_users).minHour }}h -
-                  {{getMinMaxHours(element.booking_users).maxHour}}h
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="booking_users[0].course.name">
-								<th *matHeaderCellDef
-									mat-header-cell>
-									{{ 'course' | translate
-                  }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									{{getCourseName(element.booking_users[0]?.course) || 'N/A'}}
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="has_boukii_care">
-								<th *matHeaderCellDef
-									class="uppercase"
-									mat-header-cell>
-									{{
-                  'has_boukii_Care' | translate }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									<div *ngIf="element.has_boukii_care"
-										style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-									<div *ngIf="!element.has_boukii_care"
-										style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="has_cancellation_insurance">
-								<th *matHeaderCellDef
-									class="uppercase"
-									mat-header-cell>
-									{{
-                  'text_refund_option' | translate }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									<div *ngIf="element.has_cancellation_insurance"
-										style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-									<div *ngIf="!element.has_cancellation_insurance"
-										style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;"></div>
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="payment_method">
-								<th *matHeaderCellDef
-									mat-header-cell>
-									{{ 'payment_method' |
-                  translate }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									{{getPaymentMethod(element.payment_method_id)}}
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="payment_status">
-								<th *matHeaderCellDef
-									class="uppercase"
-									mat-header-cell>
-									{{
-                  "ispaid" | translate }}
-								</th>
-								<td *matCellDef="let element"
-									[style.color]=" element.isPaid ? '#CEE741' : 'red'"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									{{ (element.isPaid ? 'yes' : 'no')| translate | uppercase }}
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="cancellation_status">
-								<th *matHeaderCellDef
-									class="uppercase"
-									mat-header-cell>
-									{{
-                  "status" | translate }}
-								</th>
-								<td *matCellDef="let element"
-									[style.color]=" element.cancellation_status === 'active'
-                || element.cancellation_status == 'finished' ? '#CEE741' : '#fac710'"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									{{ element.cancellation_status | translate }}
-								</td>
-							</ng-container>
-
-
-							<ng-container matColumnDef="price_total">
-								<th *matHeaderCellDef
-									mat-header-cell>
-									{{ 'price' | translate }}
-								</th>
-								<td *matCellDef="let element"
-									(click)="selectBooking(element.id)"
-									mat-cell>
-									{{element.price_total}}
-                  CHF
-								</td>
-							</ng-container>
-
-
-							<tbody>
-								<tr *matHeaderRowDef="displayedColumns"
-									mat-header-row></tr>
-								<tr *matRowDef="let row; columns: displayedColumns;"
-									mat-row
-									style="cursor: pointer;"></tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-
-
-				<div style="width:100%;">
-					<vex-booking-detail [hidden]="!selectedBooking"
-						[bookingId]="bookingId"
-						[bookingSelectionChanged]="bookingSelectionChanged"
-						(closeBooking)="hideBooking()"></vex-booking-detail>
-				</div>
-
-
-			</div>
-		</div>
-	</mat-tab>
-</mat-tab-group>
+<mat-spinner *ngIf="loading" style="margin: 0 auto">
+</mat-spinner>
+
+<div *ngIf="!loading" class="dimension">
+  <div class="userd">
+    <div class="flex flex-col md:flex-row md:items-start flex-sections-user-left">
+      <div style="margin-left:0; margin-right: 1.5rem;max-width: initial !important;"
+        class="card max-w-unset md:max-w-xs w-full flex-none md:ltr:ml-6 md:rtl:mr-6 mt-6 md:mt-0">
+        <div class="flex flex-col" style="cursor:pointer;">
+          <div style="height: 64px;padding: 10px;">
+            <button (click)="isModalAddUser=true"
+              style="background-color: white; border: 1px solid black; border-radius: 3px;height: 40px;padding: 10px 12px;width: 100%;font-weight: 600; word-wrap: break-word">
+              {{"add_user" | translate}}
+            </button>
+          </div>
+          <div [style.background]="id===userLogged.clients[0].id?'#DEE6EA':''"
+            (click)="id = userLogged.clients[0].id; this.getData()" class="flex items-center"
+            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
+            <app-level-user [allLevels]="allLevels"
+                            [selectLevel]="userLogged.clients[0]?.sports?.length ? userLogged.clients[0]?.sports[0]?.pivot?.degree_id : 0"
+                            [size]="40"
+              [userImage]="userLogged.clients[0]?.image" style="z-index: 0;"></app-level-user>
+            <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">
+              {{
+              userLogged.clients[0]?.first_name }} {{
+              userLogged.clients[0]?.last_name }}
+            </div>
+            <img *ngIf="id===userLogged.clients[0].id" src="assets/icons/arrow-right2.png" alt class="icon24"
+              style="margin-left: auto;">
+          </div>
+          <div *ngFor="let user of clientUsers" [style.background]="id===user.id?'#DEE6EA':''"
+            (click)="id=user.id;this.getData()" class="flex items-center"
+            style="display:flex;width:100%;align-items:center;gap:10px;padding: 20px;border: 1px solid #DEE6EA;">
+            <app-level-user [allLevels]="allLevels" [selectLevel]="user.client_sports[0]?.degree_id || 0" [size]="40"
+              [userImage]="user?.image" style="z-index: 0;"></app-level-user>
+            <div class="body-2 m-0 leading-snug montserrat" style="font-size:13px;color:black">
+              {{ user?.first_name
+              }} {{
+              user?.last_name }}
+            </div>
+            <img *ngIf="id===user.id" src="assets/icons/arrow-right2.png" alt class="icon24" style="margin-left: auto;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)" class="tabsWrapper">
+    <mat-tab label="{{'data' | translate}}">
+      <app-user-detail #userDetail [idParent]="id" (idChange)="id=$event;this.getData()" [goals]="sportCard"></app-user-detail>
+    </mat-tab>
+    <mat-tab label="{{'sports' | translate}}">
+      <div>
+        <div style="display: flex;
+          gap: 20px;
+          margin: 30px 5px;
+          flex-wrap: nowrap;
+          justify-content: space-evenly;
+          overflow-x: auto;">
+          <button *ngFor="let sport of clientSport"
+            [style.color]="selectedSport.sport_id==sport.sport_id?'white':'black'"
+            [style.background]="selectedSport.sport_id==sport.sport_id?'black':'white'" (click)="selectSportEvo(sport)"
+            style="border: 1px solid black;border-radius: 3px;height: 40px;min-width: 150px;word-wrap: break-word">
+            {{sport.name}}
+          </button>
+        </div>
+        <div class="sportCard">
+          <span style="color: #8B9099;
+           font-size: 12px;
+           font-weight: 600;
+           line-height: 16px;
+           word-wrap: break-word">
+            {{'sport_evolution' | translate }}
+          </span>
+          <div #sliderContainer (scroll)="onScroll()" class="flowcard">
+            <div class="arrowflowcard">
+              <img (click)="scrollLeft(-1)" src="assets/icons/arrow-left-1.png" style="cursor: pointer;"
+                class="icon60 flecha">
+              <img (click)="scrollLeft(1)" src="assets/icons/arrow-right-1.png" style="cursor: pointer;"
+                class="icon60 flecha">
+            </div>
+            <div *ngIf="!loading && selectedSport && sportCard.length>0" class="flex-sections-user flowcardGroup">
+              <app-user-detail-sport-card *ngFor="let item of sportCard; index as i" [selectedSport]="selectedSport"
+                [level]="item.degree" [goals]="item.goals" [center]="i === centeredCardIndex">
+              </app-user-detail-sport-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="{{'bookings' | translate }}">
+
+      <div *ngIf="!loading && !selectedBooking" style="max-width: none">
+
+        <div class="flex-auto">
+          <table *ngIf="bookings" [dataSource]="bookings" mat-table class="mat-elevation-z8">
+
+            <ng-container matColumnDef="icon">
+              <th *matHeaderCellDef mat-header-cell>
+                {{"type" | translate}}
+              </th>
+              <td *matCellDef="let element" mat-cell style="height: 80px; width: 80px">
+                <img [src]="element.sport" class="avatar h-8 w-8 align-middle"
+                  style="border-radius: 5px; height: 70%; width: 100%;">
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dates">
+              <th *matHeaderCellDef mat-header-cell>
+                {{ 'dates' |
+                translate }}
+              </th>
+              <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
+                <strong>
+                  {{ getMinMaxDates(element.booking_users).minDate
+                  |
+                  date: 'dd/MM/YYYY'}}
+                  <br>
+                  {{
+                  getMinMaxDates(element.booking_users).maxDate| date:
+                  'dd/MM/YYYY' }}
+                </strong>
+                <br>
+                {{getMinMaxHours(element.booking_users).minHour }}h -
+                {{getMinMaxHours(element.booking_users).maxHour}}h
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="booking_users[0].course.name">
+              <th *matHeaderCellDef mat-header-cell>
+                {{ 'course' |
+                translate
+                }}
+              </th>
+              <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
+                {{getCourseName(element.booking_users[0]?.course) ||
+                'N/A'}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="has_boukii_care">
+              <th *matHeaderCellDef class="uppercase" mat-header-cell>
+                {{
+                'has_boukii_Care' | translate }}
+              </th>
+              <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
+                <div *ngIf="element.has_boukii_care"
+                  style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
+                </div>
+                <div *ngIf="!element.has_boukii_care"
+                  style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="has_cancellation_insurance">
+              <th *matHeaderCellDef class="uppercase" mat-header-cell>
+                {{
+                'text_refund_option' | translate }}
+              </th>
+              <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
+                <div *ngIf="element.has_cancellation_insurance"
+                  style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
+                </div>
+                <div *ngIf="!element.has_cancellation_insurance"
+                  style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="payment_method">
+              <th *matHeaderCellDef mat-header-cell>
+                {{ 'payment_method'
+                |
+                translate }}
+              </th>
+              <td *matCellDef="let element" mat-cell>
+                {{getPaymentMethod(element.payment_method_id)}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="payment_status">
+              <th *matHeaderCellDef class="uppercase" mat-header-cell>
+                {{
+                "ispaid" | translate }}
+              </th>
+              <td *matCellDef="let element" [style.color]=" element ? '#CEE741' : 'red'" mat-cell>
+                <div *ngIf="element"
+                  style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
+                </div>
+                <div *ngIf="!element"
+                  style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="cancelation_status">
+              <th *matHeaderCellDef class="uppercase" mat-header-cell>
+                {{
+                "status" | translate }}
+              </th>
+              <td *matCellDef="let element" mat-cell>
+                {{element.cancellation_status}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="price_total">
+              <th *matHeaderCellDef mat-header-cell>
+                {{ 'price' | translate }}
+              </th>
+              <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
+                {{element.price_total}} CHF
+              </td>
+            </ng-container>
+
+            <tbody>
+              <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+              <tr *matRowDef="let row; columns: displayedColumns;" mat-row style="cursor: pointer;"></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="width:100%;" *ngIf="selectedBooking">
+        <booking-detail-v2 [incData]="{id: bookingId}" (closeBooking)="selectedBooking = false"></booking-detail-v2>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<app-modal-add-user [slug]="schoolData?.slug" [isOpen]="isModalAddUser" (onClose)="isModalAddUser=false">
+</app-modal-add-user>

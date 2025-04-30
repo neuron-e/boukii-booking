@@ -1,203 +1,148 @@
-.filter-calendar-section {
-    width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:40px;
-}
-.filter-section {
-    display:flex;flex-direction:column;width:100%;align-items:flex-start;gap:28px;
-}
-.filter-flex-check {
-    display:flex;align-items:center;gap:20px;flex-wrap: wrap;
-}
-.tooltip-container {
-    padding: 10px;border-radius: 4px;position: absolute;z-index: 1000;bottom: 25px;left: 0;width:200px;max-width:200px;
-}
-.tooltip-container div {
-    padding: 2px 0;
+body {
+  font-family: "DM Sans", sans-serif;
 }
 
-.calendar-section {
-    width:370px;max-width:370px;min-width:370px;
-}
-.calendar {
-    color: white;width: 100%;box-sizing: border-box;padding: 16px;
-}
-.header-calendar {
-    display: flex;align-items:center;justify-content: space-between;margin-bottom: 20px;
-}
-.header-calendar-arrows {
-    display:flex;align-items:center;gap:16px;
-}
-.header-calendar-arrows img {
-    cursor:pointer;width:26px;
-}
-.weekdays, .days {
-    display: flex;flex-wrap: wrap;justify-content: space-between;
-}
-.weekdays span {
-    flex: 1 0 calc(14.28% - 6px);height: 32px;line-height: 32px;text-align: center;margin: 3px;box-sizing: border-box;
-}
-.days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);height: 32px;line-height: 32px;text-align: center;margin: 3px;font-weight:500;box-sizing: border-box;
-}
-.days .day-span-b {
-    display: flex;justify-content: center;width:32px;height:32px;align-items:center;
-}
-.light-opacity {
-    opacity:0.6;
-}
-.very-light-opacity {
-    opacity:0.4;
-}
-.active-collective {
-    opacity: 1;background-color:rgba(217,177,32,0.6);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
-}
-.active-collective-selected {
-    opacity: 1;background-color:rgba(217,177,32,1);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
-}
-.active-private {
-    opacity: 1;background-color:rgba(194,217,69,0.6);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
-}
-.active-private-selected {
-    opacity: 1;background-color:rgba(194,217,69,1);border-radius: 50%;cursor: pointer;transition: all 0.2s ease-in-out;
+.Selector {
+  display: flex;
+  margin-top: 30px;
+  font-size: 16px;
 }
 
-.course-section-title {
-    display:flex;align-items:center;gap:32px;
+.Selector > select {
+  max-width: calc((100% - 60px) / 4);
+  width: 215px;
+  height: 56px;
+  padding: 4px 16px;
+  appearance: none;
+  background-image: url("../../../assets/icons/arrow-down.png");
+  background-repeat: no-repeat;
+  background-position: right 0 top 50%;
+  background-size: contain;
+  border-right: 2px solid #dee6ea;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
 }
 
-.course-boxes-wrapper {
-    display:flex;width:100%;justify-content:space-between;flex-wrap:wrap;
-}
-.course-box {
-    width:calc(50% - 16px);display:flex;justify-content:space-between;margin:8px !important;
-}
-.course-box-header {
-    width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
-}
-.course-box-icon {
-    display:flex;gap:8px;align-items:center;
-}
-.course-box-icon img {
-    width:44px;
-}
-.course-box-title {
-    display:flex;flex-direction:column;gap:2px;
-}
-.min-width-price {
-    min-width:128px;
-}
-.course-box-buttons {
-    display:flex;align-items:center;justify-content:flex-end;gap:4px;
-}
-.course-text-padding {
-    padding:0px 8px 10px 8px;
-}
-.course-box-content {
-    display:flex;align-items:flex-start;gap:18px;margin-bottom: 18px;
-}
-.course-box-content-img {
-    position: relative;width: 40%;min-width:40%;padding-top: 33.34%;overflow: hidden;
-}
-.course-box-content-img-mobile {
-    position: relative;width: 100%;min-width:100%;padding-top: 33.34%;overflow: hidden;
-}
-.course-box-content-img img, .course-box-content-img-mobile img {
-    position: absolute;top: 0;left: 0;width: 100%;height: 100%;object-fit: cover;
-}
-.course-box-content-text {
-    display:flex;align-items:center;gap:4px;
-}
-.course-box-content-text img {
-    width:20px;
-}
-.course-box-content-list {
-    display:flex;align-items:flex-start;gap:6px;flex-direction:column;
+.Selector > img {
+  height: 56px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
-.show-mobile {
-    display:none !important;
-}
-.show-desktop {
-    display:block !important;
+.Selector > select:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
-@media (max-width:950px) {
-    .course-box {
-        width:100%;margin-bottom:12px;
-    }
+.Selector > select:nth-child(4) {
+  border-right: none;
 }
-@media (max-width:850px) {
-    .filter-calendar-section {
-        width:100%;display:flex;justify-content:center;flex-wrap:wrap;
-    }
-    .filter-section {
-        display:flex;flex-direction:column;width:100%;align-items:flex-start;gap:28px;
-    }
-    .calendar-section {
-        width:100%;max-width:370px;min-width:auto;
-    }
+
+.titleSection {
+  font-family: "Dinamit", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
 }
-@media (max-width:650px) {
-    .course-section-title {
-        display:flex;align-items:flex-start;gap:14px;flex-direction:column;justify-content:flex-start;
-    }
+
+.search-button {
+  display: none;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  width: 100%;
 }
-@media (max-width:500px) {
-    .show-mobile {
-        display:block !important;
-    }
-    .show-desktop {
-        display:none !important;
-    }
-    .course-wrapper {
-        width:100%;display:flex;gap:12px;align-items:flex-start;padding:10px 8px;margin-bottom:12px;
-    }
-    .course-box-icon img {
-        width:34px;
-    }
-    .course-box-content {
-        display:flex;align-items:flex-start;gap:4px;flex-direction:column;
-    }
-    .course-box-buttons {
-        display:flex;align-items:center;justify-content:flex-end;gap:4px;flex-direction:column;width:100%;
-    }
-    .course-wrapper-left {
-        width:56%;display:flex;flex-direction:column;align-items:flex-start;gap:16px;
-    }
-    .course-wrapper-right {
-        width:44%;display:flex;flex-direction:column;align-items:flex-end;gap:16px;min-width:128px;
-    }
-    .course-wrapper-image {
-        position: relative; width: 100%; padding-top: 64.71%; overflow: hidden; border-radius: 8px;
-    }
-    .course-wrapper-image img {
-        position: absolute; top: 0; left: 0;object-fit:cover;width:100%;height:100%;border-radius:8px;
-    }
+
+.search-button:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
-@media (max-width:360px) {
-    .calendar {
-        padding:12px 8px;
-    }
-    .header-calendar-arrows {
-        gap:8px;
-    }
-    .weekdays span {
-        flex: 1 0 calc(14.28% - 6px);height: 28px;line-height: 28px;
-    }
-    .days .day-span-a {
-        flex: 1 0 calc(14.28% - 6px);height: 28px;line-height: 28px;
-    }
-    .days .day-span-b {
-        width:28px;height:28px;
-    }
+
+.search-icon {
+  width: 48px;
+  height: 48px;
+  margin-right: 10px;
 }
-@media (max-width:340px) {
-    .weekdays span {
-        flex: 1 0 calc(14.28% - 6px);height: 26px;line-height: 26px;
-    }
-    .days .day-span-a {
-        flex: 1 0 calc(14.28% - 6px);height: 26px;line-height: 26px;
-    }
-    .days .day-span-b {
-        width:26px;height:26px;
-    }
+
+.search-button:focus {
+  outline: none;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px 20px;
+  justify-content: left;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .search-button {
+    display: flex;
+  }
+
+  .Selector {
+    display: none;
+  }
+}
+
+.Section {
+  margin-top: 30px;
+}
+
+.filterMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  > select {
+    border-radius: 8px;
+    border: 2px solid #dee6ea;
+    height: 56px;
+    width: 100%;
+    padding: 4px 16px;
+    appearance: none;
+    background-image: url("../../../assets/icons/arrow-down.png");
+    background-repeat: no-repeat;
+    background-position: right 0 top 50%;
+    background-size: contain;
+    font-size: 16px;
+  }
+  > button {
+    font-family: "DM Sans", sans-serif;
+    margin-top: 14px;
+    height: 40px;
+    width: 100%;
+    background-color: #e91e63;
+    color: white;
+    font-size: 16px;
+
+    border-radius: 8px;
+  }
+}
+
+option {
+  color: black;
+}
+.desktop {
+  display: block;
+}
+
+.mobile {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .desktop {
+    display: none;
+  }
+  .mobile {
+    display: block;
+  }
 }

@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
-import {ApiService} from './api.service';
-import {HttpClient} from '@angular/common/http';
-import {ActivatedRoute} from '@angular/router';
-import {ApiResponse} from '../interface/api-response';
-import {BehaviorSubject, map, Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { ApiResponse } from '../interface/api-response';
+import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SchoolService extends ApiService {
-
+  isModalLogin: boolean = false
+  isModalNewUser: boolean = false
   private schoolDataSubject = new BehaviorSubject<any>(null);
   constructor(http: HttpClient, route: ActivatedRoute) {
     super(http, route);
-    this.fetchSchoolData().subscribe();  // Llamada a fetchSchoolData al iniciar el servicio
+    //this.fetchSchoolData().subscribe();  // Llamada a fetchSchoolData al iniciar el servicio
   }
 
   fetchSchoolData(slug: string = ''): Observable<any> {

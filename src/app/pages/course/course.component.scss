@@ -3,20 +3,17 @@
   display: flex;
   justify-content: space-between;
   gap: 32px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
 }
 .course-section {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  max-width: 800px;
 }
+
 .course-image-wrapper {
   width: 100%;
-  position: relative;
-  box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
-  aspect-ratio: 16 / 9;
-  max-width: 800px;
 }
 .wrapper-back {
   position: absolute;
@@ -36,11 +33,10 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
+  max-width: 1200px;
+  max-height: 50vh;
 }
 .course-image-text {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -53,14 +49,25 @@
 }
 .course-image-icon img {
   width: 34px;
+  width: 34px;
 }
 .course-content {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 10vw;
+  > div {
+    display: flex;
+  }
 }
 .course-content-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  justify-content: space-between;
+  flex-direction: row;
   display: flex;
   align-items: flex-start;
   gap: 28px;
@@ -71,8 +78,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .course-content-title img {
+  width: 26px;
   width: 26px;
 }
 .course-content-list {
@@ -83,16 +94,19 @@
 }
 
 .reservation-section {
-  width: 400px;
-  min-width: 400px;
+  width: 470px;
+  min-width: 470px;
 }
 .reservation-box {
   display: flex;
   width: 100%;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 .reservation-price-flex {
+  height: 60px;
   display: flex;
   width: 100%;
   align-items: center;
@@ -128,7 +142,6 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  width: min-content;
   justify-content: center;
   text-align: center;
 }
@@ -152,15 +165,133 @@
 }
 .reservation-user-add img {
   width: 34px;
+  width: 34px;
 }
+
+.tooltip-container {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  background: lightgrey;
+  color: black;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: normal;  /* Cambiar de nowrap a normal para permitir el ajuste de palabras */
+  max-width: 350px;  /* Limitar el ancho máximo del tooltip */
+  width: 350px;  /* Limitar el ancho máximo del tooltip */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease-in-out;
+  text-align: left;  /* Alineamos el texto a la izquierda */
+  overflow-wrap: break-word;  /* Aseguramos que las palabras largas se rompan */
+}
+
+/* Título "Objetivos" */
+.tooltip-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-align: center;  /* Centrar el título */
+}
+
+/* Estilo para la lista de objetivos */
+ul {
+  padding-left: 20px;  /* Espacio para los bullets */
+  margin: 0;
+  list-style-type: disc;  /* Bullet points */
+  font-size: 12px;
+}
+
+/* Flecha del tooltip */
+.tooltip-container::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 600px) {
+  .tooltip-container {
+    max-width: 90%;  /* Aumentamos el ancho en móviles */
+  }
+}
+
+
+.custom-checkbox {
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid rgba(34, 34, 34, 1);
+  position: relative;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.level-text {
+  font-size: 12px;
+  line-height: 16px;
+}
+.checkbox-container {
+  position: relative;
+  width: 100%;
+}
+
+.info-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/*.tooltip-container {
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%);
+  background-color: grey;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}*/
+
 .levels-section {
   display: flex;
   width: 100%;
   gap: 12px;
   flex-wrap: wrap;
   justify-content: space-between;
+  flex-direction: column;
 }
 .level-wrapper {
+  background-color: var(--level-background);
+  height: 70px;
+  width: calc(50% - 6px);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
   background-color: var(--level-background);
   height: 70px;
   width: calc(50% - 6px);
@@ -187,16 +318,12 @@
   width: 10px;
 }
 
-.calendar-reservation-section {
-  width: 100%;
-  max-width: 370px;
-}
 .calendar {
-  color: white;
   width: 100%;
   box-sizing: border-box;
   padding: 16px;
 }
+
 .header-calendar {
   display: flex;
   align-items: center;
@@ -275,8 +402,16 @@
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  opacity: 1;
+  background-color: rgba(194, 217, 69, 1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 .calendar-reservation-form {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
   display: flex;
   gap: 4px;
   flex-direction: column;
@@ -284,9 +419,12 @@
 .calendar-reservation-form-input {
   width: 150px;
   display: flex;
+  width: 150px;
+  display: flex;
 }
 
 .opacity-full {
+  opacity: 1 !important;
   opacity: 1 !important;
 }
 .tooltip-container-level {
@@ -295,101 +433,637 @@
   position: absolute;
   z-index: 1000;
   bottom: 70px;
-  background-color: white;
+  left: 0;
+  width: 200px;
+  max-width: 200px;
+  padding: 10px;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 70px;
   left: 0;
   width: 200px;
   max-width: 200px;
 }
 .tooltip-container-level div {
   padding: 2px 0;
+  padding: 2px 0;
 }
 
 .show-mobile {
   display: none !important;
+  display: none !important;
 }
 .show-desktop {
   display: block !important;
+  display: block !important;
 }
 
-@media (max-width: 1024px) {
-  .show-mobile {
-    display: block !important;
+@media (max-width: 800px) {
+  .course-reservation-section {
     flex-direction: column;
   }
-  .show-desktop {
-    display: none !important;
-  }
-
-  .course-reservation-section {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 44px;
-    flex-wrap: wrap;
-  }
   .reservation-section {
-    width: 100%;
-    min-width: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    min-width: 0;
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px var(--box-shadow-color);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    button {
+      width: calc(50% - 8px);
+    }
   }
-  .course-content-flex {
-    display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    justify-content: space-between;
+  .reservation-box {
+    flex-wrap: wrap;
     flex-direction: row;
   }
 }
-@media (max-width: 500px) {
-  .reservation-user-box {
-    width: 88px;
-    min-width: 88px;
-    max-width: 88px;
-  }
+
+.descripcion {
+  color: #61656d;
 }
-@media (max-width: 470px) {
-  .course-content-flex {
+
+.descripcion2 {
+  color: #8b9099;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+.price {
+  font-size: 18px;
+  font-family: Dinamit;
+  font-weight: 500;
+  line-height: 23px;
+}
+.campo {
+  font-weight: 600;
+}
+
+.titlexxxx {
+  color: white;
+  font-size: 16px;
+  font-family: Dinamit;
+  font-weight: 500;
+  line-height: 20px;
+  background-color: rgba(47, 56, 68, 1);
+  height: 60px;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  gap: 20px;
+}
+
+.reservation-view {
+  @media (max-width: 800px) {
+    overflow-y: auto;
+    height: 100vh;
     display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    justify-content: flex-start;
     flex-direction: column;
+    width: 95%;
+    margin: auto;
+    .titlexxxx {
+      height: 64px;
+      background: white;
+    }
+    .reservation-view2 {
+      margin-top: auto;
+    }
   }
 }
-@media (max-width: 360px) {
-  .calendar {
-    padding: 12px 8px;
+.last-plaza {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  background-color: #e91e63;
+  border-radius: 3px;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+.campo2 {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+.placeLevel {
+  font-size: 12px;
+  line-height: 16px;
+  word-wrap: break-word;
+  cursor: pointer;
+}
+
+::ng-deep {
+  .mdc-checkbox
+    .mdc-checkbox__native-control:enabled
+    ~ .mdc-checkbox__background
+    .mdc-checkbox__checkmark {
+    display: none !important;
   }
-  .header-calendar-arrows {
+  .mdc-checkbox
+    .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not(
+      [data-indeterminate="true"]
+    )
+    ~ .mdc-checkbox__background {
+    background-color: white !important;
+  }
+}
+
+.extra_product {
+  font-weight: 600;
+  word-wrap: break-word;
+}
+.extra_name {
+  color: #8b9099;
+  word-wrap: break-word;
+}
+
+/* Estilos para la visualización de fechas en detalle de curso */
+
+.dates-detail-container {
+  width: 100%;
+  padding: 8px 0;
+  margin-bottom: 16px;
+}
+
+.dates-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin-bottom: 12px;
+  padding-left: 32px;
+}
+
+/* Estilos para intervalos */
+.intervals-list, .weeks-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 32px;
+}
+
+.interval-card, .week-card {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.interval-card:hover, .week-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interval-header, .week-header {
+  padding: 16px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.interval-header:hover, .week-header:hover {
+  background-color: #f1f3f5;
+}
+
+.interval-title-section, .week-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.interval-name, .week-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin: 0;
+}
+
+.interval-summary, .week-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-dark2);
+}
+
+.interval-dates, .week-dates {
+  font-weight: 500;
+}
+
+.interval-weekdays, .week-weekdays {
+  color: var(--color-dark3);
+  font-style: italic;
+}
+
+.interval-time, .week-time {
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.interval-content, .week-content {
+  padding: 16px;
+  background-color: #ffffff;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para la cuadrícula de fechas */
+.dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.date-item {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease;
+}
+
+.date-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.date-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-dark1);
+}
+
+.month-year {
+  font-size: 12px;
+  color: var(--color-dark3);
+}
+
+.date-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-dark2);
+  text-transform: uppercase;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.date-time {
+  text-align: center;
+  background-color: #e9ecef;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-weight: 500;
+  color: var(--color-dark2);
+}
+
+/* Estilos para fechas simples (modo original) */
+.simple-dates-list {
+  padding-left: 32px;
+  width: 100%;
+}
+
+/* Estilos para cursos privados */
+.private-course-dates {
+  padding-left: 32px;
+  margin-top: 12px;
+}
+
+.week-info-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.weekdays-info {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-dark1);
+}
+
+.duration-info, .hours-info {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--color-dark2);
+}
+
+.duration-label, .hours-label {
+  font-weight: 500;
+}
+
+.duration-value, .hours-value {
+  font-weight: 600;
+}
+
+/* Mensaje para cuando no hay fechas */
+.no-dates {
+  background-color: #f8f9fa;
+  padding: 16px;
+  text-align: center;
+  border-radius: 8px;
+  color: #6c757d;
+  font-style: italic;
+  border: 1px solid #e0e0e0;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .dates-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .interval-header, .week-header {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
   }
-  .weekdays span {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 28px;
-    line-height: 28px;
+
+  .interval-summary, .week-summary {
+    width: 100%;
   }
-  .days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 28px;
-    line-height: 28px;
+
+  .toggle-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
   }
-  .days .day-span-b {
-    width: 28px;
-    height: 28px;
+
+  .interval-card, .week-card {
+    position: relative;
+  }
+
+  .intervals-list, .weeks-list, .simple-dates-list, .private-course-dates {
+    padding-left: 0;
+  }
+
+  .dates-section-title {
+    padding-left: 0;
   }
 }
-@media (max-width: 340px) {
-  .weekdays span {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 26px;
-    line-height: 26px;
-  }
-  .days .day-span-a {
-    flex: 1 0 calc(14.28% - 6px);
-    height: 26px;
-    line-height: 26px;
-  }
-  .days .day-span-b {
-    width: 26px;
-    height: 26px;
-  }
+
+/* Estilos para la selección de fechas */
+
+.date-selection-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.date-selection-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-dark1);
+}
+
+/* Estilos para mensaje de error */
+.date-selection-error {
+  background-color: #ffebee;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d32f2f;
+  font-size: 14px;
+}
+
+.date-selection-error mat-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+/* Estilos para restricciones de reserva */
+.booking-restrictions {
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.restriction-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0d47a1;
+}
+
+.restriction-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.restriction-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.info-tooltip {
+  color: #64b5f6;
+  cursor: pointer;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* Estilos para selección de intervalos */
+.interval-selection-container {
+  margin-top: 16px;
+}
+
+.intervals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.interval-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.interval-card:hover:not(.interval-disabled) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #bbdefb;
+}
+
+.interval-selected {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.interval-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.interval-header {
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.interval-header:hover:not(.interval-disabled) {
+  background-color: #e3f2fd;
+}
+
+.interval-selected .interval-header {
+  background-color: #e3f2fd;
+}
+
+.interval-title-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.interval-title-section mat-icon {
+  color: #2196f3;
+}
+
+.interval-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.interval-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--color-dark2);
+}
+
+.interval-dates {
+  font-weight: 500;
+}
+
+.interval-count {
+  color: var(--color-dark3);
+  font-size: 13px;
+}
+
+/* Estilos para lista de fechas dentro de intervalos */
+.interval-dates-container {
+  padding: 12px 16px;
+  background-color: white;
+  animation: fadeIn 0.3s ease;
+}
+
+.date-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.date-checkbox-wrapper {
+  position: relative;
+  flex: 1 0 calc(33.33% - 12px);
+  min-width: 150px;
+  max-width: 200px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.date-checkbox-wrapper:hover:not(.date-disabled) {
+  border-color: #bbdefb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.date-selected {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.date-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-checkbox-wrapper mat-checkbox {
+  display: flex;
+  width: 100%;
+  padding: 10px;
+}
+
+.date-checkbox-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.date-day {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-dark1);
+}
+
+.date-month-year {
+  font-size: 12px;
+  color: var(--color-dark3);
+  margin-bottom: 4px;
+}
+
+.date-time {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
 }

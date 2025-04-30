@@ -17,9 +17,8 @@ export class CartComponent implements OnInit {
 
   isModalVoucher: boolean = false;
   isModalConditions: boolean = false;
-  voucher: any;
-  vouchers: any;
-  vouchersApplied: any = [];
+  mobileHidden: boolean = false
+  vouchers: any[] = []; // Changed from single voucher to array
   hasInsurance = false;
   hasBoukiiCare = false;
   hasTva = false;
@@ -35,11 +34,165 @@ export class CartComponent implements OnInit {
   tva: any;
   loading = true;
   conditionsAccepted = false;
-
-  conditionsHTMLVeveyse: string = "<div class=\"elementor-widget-container\">\n" +
-    "\t\t\t\t\t\t\t<h1><strong>Conditions Générales de Vente</strong></h1><p><strong>Version du document</strong><br>Ce document constitue la version la plus récente des <strong>Conditions Générales de Vente</strong> de l’ESS Veveyse. Il remplace et annule toutes les versions antérieures. Les conditions énoncées dans ce document sont applicables à toutes les réservations et activités réalisées auprès de l’ESS Veveyse.</p><p>L’inscription à une activité de l’ESS Veveyse signifie que vous acceptez les conditions ci-dessous.<br>L’ESS Veveyse ne pourra être tenue responsable si les remontées mécaniques sont fermées en raison de conditions météorologiques défavorables ou pour toute autre raison.</p><hr><h2>1. <strong>Réservations</strong></h2><p>Les réservations pour les cours se font principalement sur notre site web ou directement sur place. Les réservations par téléphone sont considérées comme une exception et peuvent être facturées à raison de 30 CHF par appel.<br>Les prix indiqués comprennent les prestations des moniteurs de l’ESS Veveyse, mais ne comprennent pas d’autres services (forfait remontées mécaniques, matériel, repas, assurance), sauf indication contraire dans le descriptif du cours.</p><hr><h2>2. <strong>Paiement</strong></h2><p>Le paiement des cours se fait au moment de la réservation.<br>Les options de paiement disponibles incluent :</p><ul><li>Paiement en ligne via notre site</li><li>Cartes de crédit/débit : Mastercard, Visa, American Express, Maestro, Postcard</li><li>Espèces</li><li>Twint</li><li>Bons d’achat, cadeaux si disponibles</li></ul><hr><h2>3. <strong>Moniteurs</strong></h2><p>Nos moniteurs sont tous formés et disposent des autorisations nécessaires pour enseigner les sports d’hiver dans le canton.</p><hr><h2>4. <strong>Conditions des cours</strong></h2><h3>Pour les cours collectifs :</h3><p>a) Les participants doivent se présenter au point de rendez-vous 15 à 20 minutes avant le début du cours. Le moniteur fournira la carte de participation ainsi qu’un dossard.<br>b) L’ESS Veveyse se réserve le droit de réaffecter un élève à une autre classe si son niveau ne correspond pas à celui du groupe initial.<br>c) Les cours collectifs sont maintenus dès lors que trois participants sont inscrits. Si le nombre de participants est insuffisant, l’ESS Veveyse se réserve le droit de regrouper les niveaux, de réduire la durée du cours à une heure au tarif habituel, ou même d’annuler la session si le minimum de participants n’est pas atteint.<br>d) Les retardataires ne seront pas attendus en cours collectifs.<br>e) Les cours ont lieu par tous les temps, et les conditions météorologiques ne justifient pas l’annulation, tant que l’activité est assurée par l’ESS Veveyse.<br>f) Le temps des cours inclut les déplacements et l’attente aux remontées mécaniques.<br>g) Les cours collectifs sont disponibles en français et en anglais.<br>h) Les cours privés sont dispensés dans la langue demandée selon la disponibilité des moniteurs.<br>i) Les cours ne sont ni reportés ni remboursés en cas de retard du participant au rendez-vous.<br>j) <strong>Tarifs de garde en cas de retard de collecte</strong><br>Si les enfants ne sont pas récupérés à la fin de chaque cours, des frais de garde seront appliqués. Ces frais seront facturés par tranches de 15 minutes, au tarif de 15 CHF par tranche. Les parents ou responsables sont invités à respecter les horaires de collecte pour éviter toute facturation supplémentaire.</p><hr><h2>5. <strong>Modifications par le client</strong></h2><p>Les réservations peuvent être modifiées (date/heure) :</p><ul><li>Si plus de 48 heures avant le début du premier cours, sans frais, en fonction des disponibilités.</li><li>Si moins de 48 heures avant ou durant le séjour, des frais administratifs de CHF 30,00 seront appliqués. (*Sauf en cas de souscription à l’<strong>«&nbsp;option remboursement&nbsp;»</strong>).</li></ul><hr><h2>6. <strong>Annulations</strong></h2><h3>a) <strong>Annulations par le client avec et sans option remboursement</strong></h3><p>Si vous choisissez l’<strong>«&nbsp;option remboursement&nbsp;»</strong>, vous bénéficiez de plus de flexibilité en cas d’annulation ou de modification. Selon le délai avant le début du cours, vous pouvez obtenir un remboursement complet ou partiel sous certaines conditions. Si vous n’avez pas souscrit à l’<strong>«&nbsp;option remboursement&nbsp;»</strong>, les conditions sont plus strictes et ne permettent un remboursement que sous certaines conditions spécifiques.</p><table><thead><tr><th>Délai avant le début du cours</th><th><strong>Avec «&nbsp;option remboursement&nbsp;»</strong></th><th><strong>Sans «&nbsp;option remboursement&nbsp;»</strong></th></tr></thead><tbody><tr><td>Jusqu’à 7 jours avant</td><td>Remboursement intégral</td><td>Remboursement intégral</td></tr><tr><td>Jusqu’à 48 heures avant</td><td>Remboursement intégral</td><td>Aucun remboursement, sauf justificatif médical ou autre (accident, maladie, etc.)</td></tr><tr><td>Moins de 48 heures avant</td><td>Remboursement sous condition (justificatif médical, accident, etc.)</td><td>Aucun remboursement</td></tr></tbody></table><ul><li><strong>Avec «&nbsp;option remboursement&nbsp;»</strong> : Vous pouvez annuler ou modifier votre réservation jusqu’à 48 heures avant le début du cours pour un remboursement intégral, et sous certaines conditions après ce délai, en présentant un justificatif médical ou d’accident.</li><li><strong>Sans «&nbsp;option remboursement&nbsp;»</strong> : L’annulation jusqu’à 7 jours avant le cours vous permet d’obtenir un remboursement intégral, mais après ce délai, aucun remboursement n’est possible, sauf en cas de justification médicale ou d’accident.</li></ul><hr><h3><strong>b) Procédure de remboursement</strong></h3><p>Les remboursements seront effectués selon la méthode de paiement utilisée lors de la réservation. Selon votre choix de paiement, le remboursement se fera comme suit :</p><ul><li><strong>En espèces</strong> : Le remboursement sera effectué en liquide, selon les modalités de la transaction.</li><li><strong>Par carte bancaire</strong> : Le remboursement sera effectué sur la carte utilisée pour le paiement initial.</li><li><strong>Via Boukii Pay</strong> : Si le paiement a été effectué via Boukii Pay, le remboursement sera effectué directement sur votre compte Boukii Pay.</li></ul><hr><h2>7. <strong>Annulation des cours par l’ESS Veveyse et en cas de manque de neige</strong></h2><p>Si l’ESS Veveyse annule un cours, nous procéderons soit au remboursement, soit à l’émission d’un bon valable pour la saison suivante.</p><h3>Annulation en cas de manque de neige :</h3><ul><li><strong>Cours collectifs</strong> :<br>Si les conditions de neige ne permettent pas de maintenir les cours collectifs, ces derniers seront transformés en cours Nómada. Si, en raison du nombre insuffisant de participants ou pour toute autre raison, ces cours ne peuvent être maintenus, ils seront annulés et un remboursement intégral sera effectué. L’ESS Veveyse s’engage à rembourser tous les participants dans ce cas, même si l’annulation survient à moins de 48 heures du début du cours.</li><li><strong>Cours privés</strong> :<br>Les <strong>cours privés</strong> ne seront pas transformés en cours Nómada. Toutefois, si les conditions de neige empêchent la réalisation du cours, le client peut demander à déplacer le cours vers une autre station où les cours Nómada se déroulent ce jour-là. Cette demande peut être faite directement par téléphone à l’école. Si le client préfère ne pas déplacer le cours, il pourra bénéficier d’un remboursement intégral.</li></ul><hr><h2>8. <strong>Responsabilité</strong></h2><ul><li>L’ESS Veveyse décline toute responsabilité en cas d’accident.</li><li>L’ESS Veveyse n’est pas responsable de la perte ou du vol de tout matériel (gants, sacs, bâtons, skis, etc.).</li></ul><hr><h2>9. <strong>Litiges</strong></h2><p>En cas de litige, les parties s’engagent à rechercher une solution amiable. Si un accord ne peut être trouvé, seul le droit suisse sera applicable. En cas de recours judiciaire, le tribunal compétent sera situé à Fribourg.</p><hr><h2><strong>10. Conseils aux parents</strong></h2><p>Pour garantir la réussite du cours, il est essentiel de bien préparer votre enfant. Un bon équipement et un esprit enthousiaste contribueront à une expérience positive.</p><ol><li>Préparez votre enfant pour qu’il puisse profiter pleinement de ses cours de ski : habillez-le chaudement, assurez-vous qu’il porte des gants, un équipement adapté, des lunettes de ski et de la crème solaire.</li><li>Le port du casque est fortement recommandé.</li><li>Votre enfant devra porter une carte de participation avec les coordonnées d’un parent.</li><li>Soyez ponctuel pour la remise et la fin des cours.</li><li>L’objectif est que votre enfant progresse à son rythme et prenne du plaisir.</li><li>Faites confiance à nos moniteurs et laissez-les mener les cours sans intervention.</li><li>Informez-nous de toute condition de santé particulière qui pourrait affecter votre enfant.</li><li>Ne vous concentrez pas uniquement sur les niveaux, mais sur l’évolution personnelle de votre enfant.</li></ol><hr><h2>11. <strong>Bases légales</strong></h2><p>Ce contrat est soumis à la législation suisse, y compris la loi fédérale sur le contrat d’assurance (LCA) et le code des obligations (CO).</p><hr><h2>12. <strong>Exclusions de couverture</strong></h2><p>Les exclusions incluent toute situation non mentionnée dans le point 7, ainsi que l’état d’ébriété, les actes intentionnels et les violations délibérées des lois.</p>\t\t\t\t\t\t</div>";
-
-  conditionsHTMLCharmey: string = "<h1>Conditions générales École Suisse de ski</h1>\n" +
+  dataLevels = [
+    {
+      'id': 181,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'Ptit Loup',
+      'annotation': 'PT',
+      'degree_order': 0,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 182,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'JN',
+      'annotation': 'JN',
+      'degree_order': 1,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 183,
+      'league': 'SKV',
+      'level': 'test',
+      'name': 'Débutant Kid Village',
+      'annotation': 'DKV',
+      'degree_order': 2,
+      'color': '#1C482C',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 184,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Prince / Pricesse Bleu',
+      'annotation': 'PB',
+      'degree_order': 3,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 185,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Roi / Reine Bleu',
+      'annotation': 'RB',
+      'degree_order': 4,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 186,
+      'league': 'BLEU',
+      'level': 'test',
+      'name': 'Star Bleu',
+      'annotation': 'SB',
+      'degree_order': 5,
+      'color': '#0E3991',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 187,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R1',
+      'annotation': 'R1',
+      'degree_order': 6,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 188,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R2',
+      'annotation': 'R2',
+      'degree_order': 7,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 189,
+      'league': 'ROUGE',
+      'level': 'test',
+      'name': 'R3',
+      'annotation': 'R3',
+      'degree_order': 8,
+      'color': '#572830',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 190,
+      'league': 'NOIR',
+      'level': 'test',
+      'name': 'Prince / Pricesse Noir',
+      'annotation': 'PN',
+      'degree_order': 9,
+      'color': '#000000',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 191,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Race',
+      'annotation': 'ACA',
+      'degree_order': 10,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 192,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Freestyle',
+      'annotation': 'ACA',
+      'degree_order': 11,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    },
+    {
+      'id': 193,
+      'league': 'Academy',
+      'level': 'test',
+      'name': 'Freeride',
+      'annotation': 'ACA',
+      'degree_order': 12,
+      'color': '#7d7c7c',
+      'active': true,
+      'school_id': 1,
+      'sport_id': 1
+    }
+  ];
+  conditionsHTML: string = "<h1>Conditions générales École Suisse de ski</h1>\n" +
     "\n" +
     "<h2>1. Intervenants</h2>\n" +
     "L’ESS Charmey s’engage à certifier que tous ses moniteurs sont aptes et compétents pour exercer l’enseignement du ski ou autres disciplines assimilées. Tous les moniteurs de l’ESS Charmey ont suivi une formation validée par Swiss Snowsports, Jeunesse et Sport et/ou par l’École Suisse de Ski de Charmey.&nbsp;Toute autre formation équivalente peut être prise en compte lors de l’admission d’un nouveau collaborateur.<br>\n" +
@@ -158,7 +311,8 @@ export class CartComponent implements OnInit {
       data => {
         if (data) {
           this.schoolData = data.data;
-          this.settings = JSON.parse(data.data.settings);
+          this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
+
           this.cancellationInsurance = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);
@@ -184,14 +338,11 @@ export class CartComponent implements OnInit {
               });
             }
           });
-
-
           let storageSlug = localStorage.getItem(this.schoolData.slug + '-boukiiUser');
           if (storageSlug) {
             this.user = JSON.parse(storageSlug);
             this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}'));
           }
-
           this.loading = false;
           this.updateTotal();
         }
@@ -221,12 +372,12 @@ export class CartComponent implements OnInit {
       payment_method_id: 2,
       price_base: { name: 'Price Base', quantity: 1, price: this.getBasePrice() },
       bonus: {
-        total: 0,
-        bonuses: this.voucher ? [{
-          'name': this.voucher.code,
+        total: this.usedVoucherAmount,
+        bonuses: this.vouchers.map(voucher => ({
+          'name': voucher.code,
           'quantity': 1,
-          'price': -this.usedVoucherAmount
-        }] : []
+          'price': -parseFloat(voucher.reducePrice)
+        }))
       },
       boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
       cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
@@ -251,7 +402,7 @@ export class CartComponent implements OnInit {
       has_tva: this.hasTva,
       price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),
-      voucher: this.voucher,
+      vouchers: this.vouchers,
       voucherAmount: this.usedVoucherAmount,
       source: 'web',
       basket: JSON.stringify(basket),
@@ -259,22 +410,21 @@ export class CartComponent implements OnInit {
     };
     this.bookingService.createBooking(bookingData).subscribe(
       (response: any) => {
-        if (this.totalPrice > 0) {
+        if(this.totalPrice > 0) {
           this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
+
             .subscribe((result: any) => {
               window.open(result.data, "_self");
             })
         } else {
-          window.open(location.origin + location.pathname.replace('cart', 'user') + '?status=success', "_self")
-        }
+          window.location.href = window.location.origin + window.location.pathname + "?status=success";
 
+        }
       },
       error => {
         console.error('Error al crear la reserva', error);
         this.loading = false;
-        this.snackBar.open(this.translateService.instant('Payment error: Booking could not be completed'), 'Close', {
-          duration: 3000,
-        });
+        // Manejar error
       }
     );
   }
@@ -307,22 +457,47 @@ export class CartComponent implements OnInit {
     this.router.navigate(urls);
   }
 
-  quitarVouche(){
-    
-  }
   openModalVoucher() {
-    this.crudService.list('/vouchers', 1, 10000, 'desc', 'id', '&school_id=' +
-      this.schoolData.id + '&client_id=' + this.user.clients[0].id + '&payed=0')
-      .subscribe((data: any) => {
-        this.vouchers = data.data;
-        this.isModalVoucher = true;
-      })
+    this.isModalVoucher = true;
   }
 
   closeModalVoucher(voucher: any) {
-    if (voucher) this.voucher = voucher;
+    if (voucher) {
+      // Check if voucher is already added
+      const isVoucherAlreadyAdded = this.vouchers.some(v => v.id === voucher.id);
+
+      if (!isVoucherAlreadyAdded) {
+        // Calculate remaining total after previous vouchers
+        const remainingTotal = this.calculateRemainingTotal();
+        const amountToUse = Math.min(voucher.remaining_balance, remainingTotal);
+        voucher.reducePrice = amountToUse; // Asignar cuánto del voucher se usará
+        voucher.remaining_balance -= amountToUse; // Asignar cuánto del voucher se usará
+        this.vouchers.push(voucher);
+        this.updateTotal();
+      } else {
+        // Show error that voucher is already added
+        this.snackBar.open(
+          this.translateService.instant('Voucher already added'),
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    }
     this.isModalVoucher = false;
-    this.updateTotal(); // Actualiza el total cuando se cierra el modal del cupón
+  }
+
+  calculateRemainingTotal(): number {
+    let basePrice = this.getBasePrice();
+    let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
+    let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    let extrasPrice = this.getExtrasPrice();
+    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
+
+    // Subtract already used voucher amounts
+    const usedVoucherTotal = this.vouchers.reduce((total, voucher) =>
+      total + parseFloat(voucher.reducePrice), 0);
+
+    return totalPriceNoTaxes - usedVoucherTotal;
   }
 
   openModalConditions() {
@@ -422,7 +597,7 @@ export class CartComponent implements OnInit {
   }
 
   getTotalBasePrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price), 0);
+    return details.reduce((total, detail) => total + parseFloat(detail.course.price), 0) / details.length;
   }
 
   getTotalItemPrice(details: any[]): number {
@@ -443,24 +618,22 @@ export class CartComponent implements OnInit {
     }, 0);
   }
 
+  removeVoucher(voucherToRemove: any) {
+    this.vouchers = this.vouchers.filter(v => v.id !== voucherToRemove.id);
+    this.updateTotal();
+  }
+
   getBasePrice() {
     let total = 0;
     this.cart?.forEach(cartItem => {
-
       if (cartItem.details[0].course.course_type == 1) {
         if (!cartItem.details[0].course.is_flexible) {
           total += parseFloat(cartItem.details[0].course.price);
         } else {
-          //TODO: Revisar con flexible
-          total += this.getTotalBasePrice(cartItem.details);
+          total += cartItem.details[0].price;
         }
       } else {
-        if (cartItem.details[0].course.is_flexible) {
-          total += this.getTotalBasePrice(cartItem.details);
-        } else {
-          //TODO: Revisar sin flexible
-          total += this.getTotalBasePrice(cartItem.details);
-        }
+        total += this.getTotalBasePrice(cartItem.details);
       }
     });
     return total;
@@ -493,33 +666,48 @@ export class CartComponent implements OnInit {
     let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
     let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
     let extrasPrice = this.getExtrasPrice();
-    let totalPrice = basePrice;
-    let totalPriceNoTaxes = basePrice;
+    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
 
-    if (this.voucher) {
-      let voucherAmount = parseFloat(this.voucher.remaining_balance);
-      if (totalPrice <= voucherAmount) {
-        // Si el total es menor o igual al saldo del cupón
-        this.usedVoucherAmount = totalPrice;
-        totalPrice = 0;
+    let totalPrice = this.tva && !isNaN(this.tva) && this.tva > 0
+      ? totalPriceNoTaxes * (1 + this.tva)
+      : totalPriceNoTaxes;
+
+    let remainingTotal = totalPrice;
+
+    // Primero, ajustar el uso de los vouchers existentes
+    for (const voucher of this.vouchers) {
+      if (voucher.reducePrice > remainingTotal) {
+        // Si el voucher está usando más de lo necesario, reducirlo
+        let difference = voucher.reducePrice - remainingTotal;
+        voucher.reducePrice -= difference;
+        voucher.remaining_balance += difference; // Devolver saldo al voucher
+        remainingTotal = 0;
       } else {
-        // Si el total es mayor al saldo del cupón
-        this.usedVoucherAmount = voucherAmount;
-        totalPrice -= voucherAmount;
+        remainingTotal -= voucher.reducePrice;
       }
-    } else {
-      this.usedVoucherAmount = 0;
     }
 
-    if ((this.tva && !isNaN(this.tva)) || this.tva > 0) {
+    // Si aún queda saldo por cubrir, intentar usar más vouchers
+    if (remainingTotal > 0) {
+      for (const voucher of this.vouchers) {
+        if (remainingTotal <= 0) break; // Salir si ya no queda saldo pendiente
 
-      totalPriceNoTaxes = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice);
-      totalPrice = (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) + (totalPrice + extrasPrice + insurancePrice + boukiiCarePrice) * this.tva;
-    } else {
-      totalPriceNoTaxes = totalPrice + extrasPrice + insurancePrice + boukiiCarePrice;
-      totalPrice = totalPrice + extrasPrice + insurancePrice + boukiiCarePrice;
+        let availableAmount = voucher.remaining_balance;
+        if (availableAmount > 0) {
+          let amountToUse = Math.min(availableAmount, remainingTotal);
+          voucher.reducePrice += amountToUse;
+          voucher.remaining_balance -= amountToUse;
+          remainingTotal -= amountToUse;
+        }
+      }
     }
-    this.totalPrice = totalPrice;
+
+    // Si un voucher tiene `reducePrice` en 0, removerlo
+    this.vouchers = this.vouchers.filter(voucher => voucher.reducePrice > 0);
+
+    // Actualizar valores finales
+    this.usedVoucherAmount = this.vouchers.reduce((sum, v) => sum + v.reducePrice, 0);
+    this.totalPrice = remainingTotal; // Total a pagar después de vouchers
     this.totalNotaxes = totalPriceNoTaxes;
   }
 
@@ -547,17 +735,19 @@ export class CartComponent implements OnInit {
       this.cart.splice(indexToRemove, 1);
       let cartArray = this.transformArrayToCart(this.cart);
       localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
-      this.updateTotal();
+
       this.cartService.carData.next(cartArray);
     }
+    this.updateTotal();
   }
 
   getCourseName(course: any) {
     if (!course.translations || course.translations === null) {
       return course.name;
     } else {
-      const translations = JSON.parse(course.translations);
-      return translations[this.translateService.currentLang].name;
+      const translations = typeof course.translations === 'string' ?
+        JSON.parse(course.translations) : course.translations;
+      return translations[this.translateService.currentLang].name || course.name;
     }
   }
 
