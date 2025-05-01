@@ -1022,7 +1022,7 @@ export class CourseComponent implements OnInit {
         for (const part of parts) {
           if (part.endsWith('h')) {
             minutes += parseInt(part) * 60;
-          } else if (part.endsWith('m')) {
+          } else if (part.endsWith('m') || part.endsWith('min')) {
             minutes += parseInt(part);
           }
         }
