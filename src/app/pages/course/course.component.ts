@@ -1104,8 +1104,13 @@ export class CourseComponent implements OnInit {
       hours.push(formattedTimeMax);
     } else {
       let timeIntervals = this.filteredPriceRange();
-      let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
-      let minInterval = Math.min(...differences);
+      let minInterval = 30; // valor por defecto
+      if (timeIntervals.length > 1) {
+        let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
+        minInterval = Math.min(...differences);
+      } else if (timeIntervals.length === 1) {
+        minInterval = timeIntervals[0]; // único valor como intervalo
+      }
       //let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
       for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
         let hour = Math.floor(minute / 60);
