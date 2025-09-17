@@ -31,8 +31,24 @@
 		<p></p>
 		<p></p>
 		<div style="display: flex; gap: 24px; justify-content: center;">
-			<img src="assets/icons/insta.png" class="icon24">
-			<img src="assets/icons/facebook.png" class="icon24">
+			<a *ngIf="Socials.facebook" [href]="Socials.facebook" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.facebook' | translate)" [title]="('booking.footer.social.facebook' | translate)">
+				<img src="assets/icons/facebook.png" class="icon24" alt="Facebook">
+			</a>
+			<a *ngIf="Socials.instagram" [href]="Socials.instagram" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.instagram' | translate)" [title]="('booking.footer.social.instagram' | translate)">
+				<img src="assets/icons/insta.png" class="icon24" alt="Instagram">
+			</a>
+			<a *ngIf="Socials.x" [href]="Socials.x" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.x' | translate)" [title]="('booking.footer.social.x' | translate)">
+				<img src="assets/icons/x.png" class="icon24" alt="X">
+			</a>
+			<a *ngIf="Socials.youtube" [href]="Socials.youtube" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.youtube' | translate)" [title]="('booking.footer.social.youtube' | translate)">
+				<div class="icon24 social-icon" style="background: #FF0000; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 12px;">YT</div>
+			</a>
+			<a *ngIf="Socials.tiktok" [href]="Socials.tiktok" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.tiktok' | translate)" [title]="('booking.footer.social.tiktok' | translate)">
+				<div class="icon24 social-icon" style="background: #000; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 12px;">TT</div>
+			</a>
+			<a *ngIf="Socials.linkedin" [href]="Socials.linkedin" target="_blank" rel="noopener" [attr.aria-label]="('booking.footer.social.linkedin' | translate)" [title]="('booking.footer.social.linkedin' | translate)">
+				<div class="icon24 social-icon" style="background: #0077B5; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 12px;">IN</div>
+			</a>
 		</div>
 	</div>
 </div>

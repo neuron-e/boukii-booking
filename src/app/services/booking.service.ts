@@ -51,6 +51,14 @@ export class BookingService extends ApiService {
         price = parseFloat(activity.course.price || 0) * activity.utilizers.length;
       } else {
         price = parseFloat(activity.course.price || 0) * activity.dates.length * activity.utilizers.length;
+
+        // Aplicar descuentos por múltiples fechas si están configurados
+        if (activity.course.discounts && activity.dates.length > 1) {
+          const discountAmount = this.calculateMultiDateDiscount(activity.course, activity.dates.length);
+          if (discountAmount > 0) {
+            price -= (discountAmount * activity.utilizers.length);
+          }
+        }
       }
     } else {
       activity.dates.forEach(date => {
@@ -58,7 +66,7 @@ export class BookingService extends ApiService {
       });
     }
 
-    return price;
+    return Math.max(0, price); // Asegurar que el precio no sea negativo
   }
 
   calculateDatePrice(course: any, date: any, showCancelled = false): number {
@@ -93,6 +101,50 @@ export class BookingService extends ApiService {
     }
 
     return datePrice + extraPrice;
+  }
+
+  calculateMultiDateDiscount(course: any, totalDates: number): number {
+    if (!course.discounts) {
+      return 0;
+    }
+
+    try {
+      let discounts;
+      if (typeof course.discounts === 'string') {
+        discounts = JSON.parse(course.discounts);
+      } else {
+        discounts = course.discounts;
+      }
+
+      if (!discounts || !Array.isArray(discounts)) {
+        return 0;
+      }
+
+      // Buscar el descuento que corresponde al número de fechas seleccionadas
+      const applicableDiscount = discounts.find(discount => discount.date === totalDates);
+
+      if (applicableDiscount) {
+        const basePrice = parseFloat(course.price || 0);
+
+        // Soporte para formato nuevo (type + discount) y viejo (percentage)
+        if (applicableDiscount.type !== undefined) {
+          // Formato nuevo
+          if (applicableDiscount.type === 1) { // Porcentaje
+            return (basePrice * totalDates * applicableDiscount.discount) / 100;
+          } else { // Cantidad fija
+            return applicableDiscount.discount;
+          }
+        } else if (applicableDiscount.percentage !== undefined) {
+          // Formato viejo - mantener compatibilidad
+          return (basePrice * totalDates * applicableDiscount.percentage) / 100;
+        }
+      }
+
+      return 0;
+    } catch (error) {
+      console.error('Error calculating multi-date discount:', error);
+      return 0;
+    }
   }
 
   updateBookingData(partialData: Partial<any>) {

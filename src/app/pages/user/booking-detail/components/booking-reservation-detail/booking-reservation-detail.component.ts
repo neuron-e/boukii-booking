@@ -281,6 +281,40 @@ export class BookingReservationDetailComponent implements OnInit {
       : Math.min(this.bookingData.reduction.discount, this.sumActivityTotal());
   }
 
+  calculateMultiDateDiscounts(): { activity: any, discountAmount: number }[] {
+    const discounts: { activity: any, discountAmount: number }[] = [];
+
+    if (this.activities && Array.isArray(this.activities)) {
+      this.activities.forEach(activity => {
+        if (activity.course?.course_type === 1 &&
+            activity.course?.is_flexible &&
+            activity.course?.discounts &&
+            activity.dates?.length > 1) {
+
+          const discountAmount = this.bookingService.calculateMultiDateDiscount(
+            activity.course,
+            activity.dates.length
+          );
+
+          if (discountAmount > 0) {
+            discounts.push({
+              activity: activity,
+              discountAmount: discountAmount * (activity.utilizers?.length || 1)
+            });
+          }
+        }
+      });
+    }
+
+    return discounts;
+  }
+
+  getTotalMultiDateDiscounts(): number {
+    return this.calculateMultiDateDiscounts().reduce((total, discount) => {
+      return total + discount.discountAmount;
+    }, 0);
+  }
+
   protected readonly isNaN = isNaN;
   protected readonly parseFloat = parseFloat;
   protected readonly Math = Math;

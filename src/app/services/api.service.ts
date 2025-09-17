@@ -30,11 +30,12 @@ export class ApiService {
     let childRoute = route.firstChild;
     while (childRoute) {
       if (childRoute.params['slug']) {
-        this.slug == childRoute.params['slug'];
+        this.slug = childRoute.params['slug'];
         return childRoute.params['slug'];
       }
       childRoute = childRoute.firstChild;
     }
+    return '';
   }
 
   getHeadersLogin(): HttpHeaders {

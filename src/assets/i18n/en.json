@@ -697,6 +697,12 @@
   "privacy_policy": "Privacy policy",
   "terms_conditions": "Terms and conditions",
   "contact": "Contact",
+  "booking.footer.social.facebook": "Facebook",
+  "booking.footer.social.instagram": "Instagram",
+  "booking.footer.social.x": "X (Twitter)",
+  "booking.footer.social.youtube": "YouTube",
+  "booking.footer.social.tiktok": "TikTok",
+  "booking.footer.social.linkedin": "LinkedIn",
   "cart": "Cart",
   "add_reservation": "Add reservation",
   "date_time": "Date and time",
@@ -749,5 +755,11 @@
   "bookings_page_descriptionModal_button": "View activity summary",
   "bookings_page.description.date": "Date and time",
   "objectives": "Goals",
-  "bookings_page.edit_dates.title": "Modify reservation dates"
+  "bookings_page.edit_dates.title": "Modify reservation dates",
+  "communications.accepts_newsletter": "I accept to receive newsletters with course and activity information",
+  "communications.newsletter_description": "You will receive information about new courses, special offers and school news. You can unsubscribe at any time.",
+  "booking_rules_active": "Booking rules active:",
+  "booking_must_start_from_first_day": "You must select the first available date of the course to make a booking.",
+  "booking_dates_must_be_consecutive": "Selected dates must be consecutive without skipping any.",
+  "no_dates_selected": "You must select at least one date to continue."
 }

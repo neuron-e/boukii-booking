@@ -106,10 +106,10 @@
 	</div>
 	<div class="Section">
 		<a [href]="settings.bookingPage?.banner?.link" target="_blank">
-			<img [src]="settings.bookingPage?.banner?.desktopImg||'assets/images/banner.png'" alt class="desktop"
-				style="width: 100%; aspect-ratio: 6 / 1;object-fit: contain; border-radius: 10px">
-			<img [src]="settings.bookingPage?.banner?.mobileImg||'assets/images/banner.png'" alt class="mobile"
-				style="width: 100%; aspect-ratio: 2 / 1;object-fit: contain; border-radius: 10px">
+			<img [src]="settings.bookingPage?.banner?.desktopImg||'assets/images/banner_new.webp'" alt class="desktop"
+				style="width: 100%; aspect-ratio: 6 / 1;object-fit: cover; border-radius: 10px">
+			<img [src]="settings.bookingPage?.banner?.mobileImg||'assets/images/banner_new.webp'" alt class="mobile"
+				style="width: 100%; aspect-ratio: 2 / 1;object-fit: cover; border-radius: 10px">
 		</a>
 	</div>
 	<div class="Section">
@@ -174,7 +174,7 @@
 	<div style="display: flex;justify-content: space-evenly;gap: 10px 1%; flex-wrap: wrap;">
 		<a [href]="sponsor.link" target="_blank" *ngFor="let sponsor of settings?.bookingPage?.sponsors"
 			style="width: fit-content;">
-			<img [src]="sponsor.img||'assets/images/banner.png'"
+			<img [src]="sponsor.img||'assets/images/banner_new.webp'"
 				style="height: 100px;object-fit: contain; border-radius: 10px;">
 		</a>
 	</div>

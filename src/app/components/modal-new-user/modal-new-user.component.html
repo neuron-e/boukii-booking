@@ -85,6 +85,18 @@
         <input matInput type="password" formControlName="confirmPassword" required autocomplete="new-password">
       </mat-form-field>
 
+      <!-- Newsletter Checkbox -->
+      <div style="margin: 16px 0; width: 100%;">
+        <mat-checkbox 
+          formControlName="accepts_newsletter"
+          color="primary">
+          {{ 'communications.accepts_newsletter' | translate }}
+        </mat-checkbox>
+        <p style="font-size: 12px; color: #666; margin-top: 4px; margin-left: 24px;">
+          {{ 'communications.newsletter_description' | translate }}
+        </p>
+      </div>
+
       <button type="submit" [disabled]="loginForm.invalid" class="button-primary">
         {{ 'text_confirm' | translate }}
       </button>

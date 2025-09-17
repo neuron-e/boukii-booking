@@ -49,6 +49,7 @@ export class ModalNewUserComponent {
       phone: ['', Validators.required],
       language1_id: [1, Validators.required],
       language2_id: [''],
+      accepts_newsletter: [false],
       //language3_id: [''],
     }, {
       validators: this.passwordMatchValidator // Validador personalizado para comprobar la coincidencia de contraseñas

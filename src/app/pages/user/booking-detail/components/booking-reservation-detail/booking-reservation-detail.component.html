@@ -195,6 +195,20 @@
               {{activities[0]?.course.currency}}
             </p>
           </span>
+
+          <!-- Descuentos por múltiples fechas -->
+          <span style="width: 100%; float:left" *ngFor="let discount of calculateMultiDateDiscounts()">
+            <p style="float:left">
+              <span style="color: #2FAA41;">
+                {{ "multidate_discount" | translate }}
+                ({{discount.activity.dates.length}} {{ "dates" | translate | lowercase}})
+              </span>
+            </p>
+            <p style="float:right">
+              -{{discount.discountAmount | number:'0.2-2'}}
+              {{activities[0]?.course.currency}}
+            </p>
+          </span>
         </div>
       </div>
       <div class="dateRow">

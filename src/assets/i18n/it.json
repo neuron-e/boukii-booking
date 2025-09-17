@@ -695,6 +695,12 @@
   "privacy_policy": "Informativa sulla privacy",
   "terms_conditions": "Termini e condizioni",
   "contact": "Contatto",
+  "booking.footer.social.facebook": "Facebook",
+  "booking.footer.social.instagram": "Instagram",
+  "booking.footer.social.x": "X (Twitter)",
+  "booking.footer.social.youtube": "YouTube",
+  "booking.footer.social.tiktok": "TikTok",
+  "booking.footer.social.linkedin": "LinkedIn",
   "cart": "Carrello",
   "add_reservation": "Aggiungi prenotazione",
   "date_time": "Date e ora",
@@ -748,5 +754,9 @@
   "bookings_page_descriptionModal_button": "Vedi riepilogo attività",
   "bookings_page.description.date": "Data e ora",
   "bookings_page.edit_dates.title": "Modifica le date di prenotazione",
-  "objectives": "Obiettivi"
+  "objectives": "Obiettivi",
+  "booking_rules_active": "Regole di prenotazione attive:",
+  "booking_must_start_from_first_day": "Devi selezionare la prima data disponibile del corso per effettuare una prenotazione.",
+  "booking_dates_must_be_consecutive": "Le date selezionate devono essere consecutive senza saltarne nessuna.",
+  "no_dates_selected": "Devi selezionare almeno una data per continuare."
 }

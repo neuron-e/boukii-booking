@@ -696,6 +696,12 @@
   "privacy_policy": "Datenschutzrichtlinie",
   "terms_conditions": "Allgemeine Geschäftsbedingungen",
   "contact": "Kontakt",
+  "booking.footer.social.facebook": "Facebook",
+  "booking.footer.social.instagram": "Instagram",
+  "booking.footer.social.x": "X (Twitter)",
+  "booking.footer.social.youtube": "YouTube",
+  "booking.footer.social.tiktok": "TikTok",
+  "booking.footer.social.linkedin": "LinkedIn",
   "cart": "Warenkorb",
   "add_reservation": "Reservierung hinzufügen",
   "date_time": "Datum und uhrzeit",
@@ -749,5 +755,9 @@
   "bookings_page.description.total": "Gesamt",
   "bookings_page.buttons.save&CreateBooking": "Speichern und neue Buchung erstellen",
   "bookings_page_descriptionModal_button": "Aktivitätsübersicht anzeigen",
-  "objectives": "Ziele"
+  "objectives": "Ziele",
+  "booking_rules_active": "Aktive Buchungsregeln:",
+  "booking_must_start_from_first_day": "Sie müssen das erste verfügbare Datum des Kurses auswählen, um eine Buchung vorzunehmen.",
+  "booking_dates_must_be_consecutive": "Die ausgewählten Termine müssen aufeinanderfolgend sein, ohne einen auszulassen.",
+  "no_dates_selected": "Sie müssen mindestens ein Datum auswählen, um fortzufahren."
 }
