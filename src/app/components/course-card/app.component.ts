@@ -345,9 +345,13 @@ export class CourseCardComponent {
   protected readonly JSON = JSON;
 
   compareISOWithToday(isoDate: string): boolean {
-    const isoDateObj = new Date(isoDate);
+    // Parse YYYY-MM-DD as a local date to avoid UTC offset issues
+    if (!isoDate) return false;
+    const parts = isoDate.split('-').map((p: string) => parseInt(p, 10));
+    if (parts.length !== 3 || parts.some(isNaN)) return false;
+    const isoDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return isoDateObj >= today;
+    return isoDateObj.getTime() >= today.getTime();
   }
 }

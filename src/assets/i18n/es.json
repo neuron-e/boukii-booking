@@ -763,5 +763,22 @@
   "booking_rules_active": "Reglas de reserva activas:",
   "booking_must_start_from_first_day": "Debes seleccionar la primera fecha disponible del curso para poder reservar.",
   "booking_dates_must_be_consecutive": "Las fechas seleccionadas deben ser consecutivas sin saltarse ninguna.",
-  "no_dates_selected": "Debes seleccionar al menos una fecha para continuar."
+  "no_dates_selected": "Debes seleccionar al menos una fecha para continuar.",
+  "no_future_dates": "No hay fechas futuras disponibles.",
+  "week_of": "Semana del",
+  "various_times": "Varios horarios",
+  "all_days": "Todos los días",
+  "weekdays": "Días laborables",
+  "weekend": "Fin de semana",
+  "and": "y",
+  "dates": "Fechas",
+  "selected_dates": "Fechas seleccionadas",
+  "important_information": "Información importante",
+  "consecutive_dates_required": "Las fechas deben ser consecutivas.",
+  "consecutive_dates_info": "Solo puedes seleccionar días consecutivos para este curso.",
+  "must_start_first_day": "Debes empezar en el primer día.",
+  "first_day_info": "La primera selección debe ser el primer día disponible.",
+  "dates_must_be_consecutive": "Las fechas seleccionadas deben ser consecutivas.",
+  "cant_remove_middle_date": "No puedes quitar una fecha intermedia si deben ser consecutivas.",
+  "cant_remove_first_day": "No puedes quitar el primer día si hay otros seleccionados."
 }

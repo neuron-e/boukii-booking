@@ -356,20 +356,34 @@ export class CourseComponent implements OnInit {
   // Obtener fechas futuras sin agrupar (para cursos no flexibles sin intervalos)
   getFutureDates(): any[] {
     if (!this.course || !this.course.course_dates) {
+      console.log('DEBUG: No course or course_dates', { course: !!this.course, course_dates: !!this.course?.course_dates });
       return [];
     }
 
-    return this.course.course_dates
+    const futureDates = this.course.course_dates
       .filter(date => this.compareISOWithToday(date.date))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    console.log('DEBUG: Future dates', {
+      totalDates: this.course.course_dates.length,
+      futureDates: futureDates.length,
+      sampleDate: this.course.course_dates[0]?.date,
+      today: new Date().toISOString().split('T')[0]
+    });
+
+    return futureDates;
   }
 
 
   compareISOWithToday(isoDate: string): boolean {
-    const isoDateObj = new Date(isoDate);
+    // Parse YYYY-MM-DD as a local date to avoid UTC offset issues
+    if (!isoDate) return false;
+    const parts = isoDate.split('-').map((p: string) => parseInt(p, 10));
+    if (parts.length !== 3 || parts.some(isNaN)) return false;
+    const isoDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return isoDateObj >= today;
+    return isoDateObj.getTime() >= today.getTime();
   }
   // Obtener días de la semana únicos de un conjunto de fechas
   private getUniqueWeekdaysFromDates(dates): number[] {
@@ -898,9 +912,14 @@ export class CourseComponent implements OnInit {
   }
 
   isDateInFuture(dateStr: string): boolean {
-    const date = new Date(dateStr);
+    if (!dateStr) return false;
+    const parts = dateStr.split('-').map((p: string) => parseInt(p, 10));
+    if (parts.length !== 3 || parts.some(isNaN)) return false;
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
     date.setHours(0, 0, 0, 0);
-    return date >= this.today;
+    const today = new Date(this.today);
+    today.setHours(0, 0, 0, 0);
+    return date.getTime() >= today.getTime();
   }
 
 
@@ -1496,6 +1515,18 @@ export class CourseComponent implements OnInit {
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
       return age;
     } else return 0;
+  }
+
+  // Get the user's degree_id for the course sport (used to render current level)
+  getUserSportDegreeId(user: any): number {
+    try {
+      const sportId = this.course?.sport?.id;
+      if (!user || !Array.isArray(user?.sports) || !sportId) return 0;
+      const entry = user.sports.find((s: any) => (s?.id ?? s?.sport_id) === sportId);
+      return entry?.pivot?.degree_id || 0;
+    } catch {
+      return 0;
+    }
   }
 
   getDegrees = () => this.crudService.list('/degrees', 1, 10000, 'asc', 'degree_order', '&school_id=' + this.course.school_id + '&sport_id=' + this.course.sport.id).subscribe((data) => {

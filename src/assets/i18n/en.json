@@ -761,5 +761,22 @@
   "booking_rules_active": "Booking rules active:",
   "booking_must_start_from_first_day": "You must select the first available date of the course to make a booking.",
   "booking_dates_must_be_consecutive": "Selected dates must be consecutive without skipping any.",
-  "no_dates_selected": "You must select at least one date to continue."
+  "no_dates_selected": "You must select at least one date to continue.",
+  "no_future_dates": "No future dates available.",
+  "week_of": "Week of",
+  "various_times": "Various times",
+  "all_days": "All days",
+  "weekdays": "Weekdays",
+  "weekend": "Weekend",
+  "and": "and",
+  "dates": "Dates",
+  "selected_dates": "Selected dates",
+  "important_information": "Important information",
+  "consecutive_dates_required": "Dates must be consecutive.",
+  "consecutive_dates_info": "You can only select consecutive days for this course.",
+  "must_start_first_day": "You must start on the first day.",
+  "first_day_info": "The first selection must be the first available day.",
+  "dates_must_be_consecutive": "Selected dates must be consecutive.",
+  "cant_remove_middle_date": "You can't remove a middle date when consecutive is required.",
+  "cant_remove_first_day": "You can't remove the first day if others are selected."
 }

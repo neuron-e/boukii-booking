@@ -348,10 +348,11 @@
           </div>
 
           <mat-checkbox (click)="selectUser(userLogged.clients[0],course?.course_type)"
+                        [checked]="course?.course_type === 2 ? selectedUserMultiple.includes(userLogged.clients[0]) : selectedUser === userLogged.clients[0]"
                         style="height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
-                              [selectLevel]="185" [size]="40"
+                              [selectLevel]="getUserSportDegreeId(userLogged.clients[0])" [size]="40"
                               [userImage]="userLogged?.clients[0].image || 'assets/images/avatar.png'"></app-level-user>
               <div class="text-color text-small montserrat reservation-user-title">
                 <div style="text-align: -webkit-left;">
@@ -373,12 +374,13 @@
             </div>
           </mat-checkbox>
           <mat-checkbox *ngFor="let utilizer of userLogged?.clients[0].utilizers"
-                        [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}"
+                         [ngClass]="{'opacity-full': (course?.course_type === 2 && selectedUserMultiple.includes(utilizer)) || (!(course?.course_type === 2) && selectedUser === utilizer)}"
                         (click)="selectUser(utilizer,course?.course_type)"
+                        [checked]="course?.course_type === 2 ? selectedUserMultiple.includes(utilizer) : selectedUser === utilizer"
                         style="height: 64px;width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);">
             <div style="display: flex;gap: 8px;padding: 12px 0;">
               <app-level-user *ngIf="dataLevels && dataLevels.length" [allLevels]="dataLevels"
-                              [selectLevel]="185" [size]="40"
+                              [selectLevel]="getUserSportDegreeId(utilizer)" [size]="40"
                               [userImage]="themeService.avatarEmpty || 'assets/images/avatar.png'"></app-level-user>
               <div class="text-color text-small montserrat reservation-user-title">
                 <div style="text-align: -webkit-left;">
@@ -458,6 +460,7 @@
                     <mat-checkbox
                       [ngStyle]="{'background-color': level.color+'33', 'border': '1px solid '+level.color}"
                       (click)="selectLevel(level)"
+                      [checked]="selectedLevel?.id === level.id"
                       style="width: 100%; border-radius: 3px; border: 1px solid rgba(34, 34, 34, 1);">
                       <div style="display: flex; gap: 8px; padding: 12px 0;">
                         <div [ngStyle]="{'color': level.color}" style="font-size: 12px; line-height: 16px;">
