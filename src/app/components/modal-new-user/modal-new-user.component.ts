@@ -5,6 +5,8 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ClientService } from '../../services/client.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiCrudService } from 'src/app/services/crud.service';
+import { SchoolService } from 'src/app/services/school.service';
 
 @Component({
   selector: 'app-modal-new-user',
@@ -22,7 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
     ]),
   ]
 })
-export class ModalNewUserComponent {
+export class ModalNewUserComponent implements OnInit {
 
   @Input() isOpen: boolean = false;
   @Output() onClose = new EventEmitter<void>();
@@ -37,8 +39,17 @@ export class ModalNewUserComponent {
     { id: 5, lang: "spanish" },
   ]
 
-  constructor(public themeService: ThemeService, private fb: FormBuilder, private clientService: ClientService,
-    private snackbar: MatSnackBar, public translateService: TranslateService) {
+  schoolData: any;
+
+  constructor(
+    public themeService: ThemeService,
+    private fb: FormBuilder,
+    private clientService: ClientService,
+    private crudService: ApiCrudService,
+    private schoolService: SchoolService,
+    private snackbar: MatSnackBar,
+    public translateService: TranslateService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -56,13 +67,54 @@ export class ModalNewUserComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.schoolService.getSchoolData().subscribe(data => {
+      this.schoolData = data?.data ?? null;
+    });
+  }
+
   onSubmit() {
     if (!this.loginForm || this.loginForm.invalid) return;
     const formData = this.loginForm.value;
     this.clientService.createClient(formData).subscribe(
-      () => {
-        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
-        this.onClose.emit();
+      (resp) => {
+        const createdClient = resp?.data;
+        const clientId = createdClient?.id;
+
+        if (clientId && this.schoolData?.id !== undefined) {
+          const schoolId = this.schoolData.id;
+          this.crudService
+            .list('/clients-schools', 1, 1, 'desc', 'id', `&client_id=${clientId}&school_id=${schoolId}`)
+            .subscribe({
+              next: (csRes) => {
+                const relation = csRes?.data?.[0];
+                if (relation && 'id' in relation) {
+                  this.crudService
+                    .update('/clients-schools', { accepts_newsletter: !!formData.accepts_newsletter }, relation.id)
+                    .subscribe({
+                      next: () => {
+                        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
+                        this.onClose.emit();
+                      },
+                      error: () => {
+                        this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
+                        this.onClose.emit();
+                      }
+                    });
+                } else {
+                  this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
+                  this.onClose.emit();
+                }
+              },
+              error: () => {
+                this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
+                this.onClose.emit();
+              }
+            });
+        } else {
+          this.snackbar.open(this.translateService.instant('snackbar.client.create'), 'OK', { duration: 3000 });
+          this.onClose.emit();
+        }
       },
       (error) => {
         let errorMessage = this.translateService.instant(error.error.message) || 'error.client.register';

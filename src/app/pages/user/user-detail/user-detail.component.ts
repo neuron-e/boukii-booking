@@ -810,6 +810,10 @@ export class UserDetailComponent {
   }
 
   updateClientData() {
+    // Ensure newsletter acceptance is handled per clients-schools, not on client entity
+    if (this.defaults && 'accepts_newsletter' in this.defaults) {
+      delete (this.defaults as any).accepts_newsletter;
+    }
     this.crudService.update('/clients', this.defaults, this.id)
       .pipe(
         takeUntil(this.destroy$),
