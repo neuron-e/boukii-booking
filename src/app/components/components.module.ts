@@ -21,6 +21,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 
@@ -30,7 +31,7 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from '@angular/materia
     CommonModule, BrowserModule, BrowserAnimationsModule, ReactiveFormsModule, FormsModule,
     TranslateModule.forChild(), MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule,
     MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
-    MatSnackBarModule
+    MatSnackBarModule, MatCheckboxModule
   ],
   providers: [
     {
