@@ -757,6 +757,7 @@
   "objectives": "Goals",
   "bookings_page.edit_dates.title": "Modify reservation dates",
   "communications.accepts_newsletter": "I accept to receive newsletters with course and activity information",
+  "communications.accepts_newsletter_school": "Subscribe to school newsletter",
   "communications.newsletter_description": "You will receive information about new courses, special offers and school news. You can unsubscribe at any time.",
   "booking_rules_active": "Booking rules active:",
   "booking_must_start_from_first_day": "You must select the first available date of the course to make a booking.",

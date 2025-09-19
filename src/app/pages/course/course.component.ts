@@ -216,6 +216,11 @@ export class CourseComponent implements OnInit {
   // Método para obtener fechas agrupadas por intervalos
   getIntervalGroups(): any[] {
     if (!this.hasIntervals() || !this.course.course_dates) {
+      console.log('DEBUG: getIntervalGroups failed', {
+        hasIntervals: this.hasIntervals(),
+        course_dates: !!this.course?.course_dates,
+        settings: this.course?.settings
+      });
       return [];
     }
 
@@ -286,6 +291,11 @@ export class CourseComponent implements OnInit {
   // Método para agrupar fechas por semanas cuando es flexible sin intervalos
   getWeekGroups(): any[] {
     if (this.hasIntervals() || !this.course.course_dates) {
+      console.log('DEBUG: getWeekGroups failed', {
+        hasIntervals: this.hasIntervals(),
+        course_dates: !!this.course?.course_dates,
+        isFlexible: this.course?.is_flexible
+      });
       return [];
     }
 
@@ -838,6 +848,14 @@ export class CourseComponent implements OnInit {
   }
 
   findMatchingUser(level: any): boolean {
+    console.log('DEBUG: findMatchingUser', {
+      level: level,
+      selectedUser: this.selectedUser,
+      selectedUserMultiple: this.selectedUserMultiple,
+      availableDegrees: this.course?.availableDegrees?.length,
+      dataLevels: this.dataLevels?.length
+    });
+
     if (this.selectedUser) {
       // Si hay un selectedUser, valida ese usuario
       return this.isUserValidForLevel(this.selectedUser, level);
@@ -982,12 +1000,25 @@ export class CourseComponent implements OnInit {
   }
 
   selectDate(checked: boolean, date: any, intervalId?: string) {
+    console.log('DEBUG: selectDate', {
+      checked,
+      date,
+      intervalId,
+      hasIntervals: this.hasIntervals(),
+      selectedDates: this.selectedDates,
+      mustBeConsecutive: this.mustBeConsecutive(),
+      mustStartFromFirst: this.mustStartFromFirst()
+    });
+
     const index = this.selectedDates.findIndex((d: any) => d === date);
     if (index === -1 && checked) {
       if (this.hasIntervals() && intervalId) {
         // Para cursos con intervalos, verificar restricciones
         const valid = this.validateDateSelection(date, intervalId);
-        if (!valid) return; // Si no es válido, no continuar
+        if (!valid) {
+          console.log('DEBUG: Date selection invalid', this.dateSelectionError);
+          return; // Si no es válido, no continuar
+        }
       }
       this.selectedDates.push(date);
     }

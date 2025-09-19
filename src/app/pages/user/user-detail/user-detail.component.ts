@@ -149,7 +149,8 @@ export class UserDetailComponent {
   detailData: any;
   entity = '/booking-users';
   schoolData: any;
-  isModalAddUser: boolean = false
+  isModalAddUser: boolean = false;
+  schoolNewsletterSubscription: boolean = false;
 
   constructor(private fb: UntypedFormBuilder, private cdr: ChangeDetectorRef, private crudService: ApiCrudService, private router: Router,
               private snackbar: MatSnackBar, private dialog: MatDialog, private passwordGen: PasswordService,
@@ -316,6 +317,12 @@ export class UserDetailComponent {
         client_id: null,
         school_id: null
       };
+    }
+
+    // Load newsletter subscription for current school
+    if (this.clientSchool && this.schoolData) {
+      const currentSchoolRelation = this.clientSchool.find(relation => relation.school_id === this.schoolData.id);
+      this.schoolNewsletterSubscription = currentSchoolRelation?.accepts_newsletter || false;
     }
 
     this.goals = [];
@@ -837,6 +844,16 @@ export class UserDetailComponent {
           );
 
           return forkJoin([...createSports$, ...updateSports$]);
+        }),
+        switchMap(() => {
+          // Update newsletter subscription in clients-schools relationship
+          const currentSchoolRelation = this.clientSchool.find(relation => relation.school_id === this.schoolData.id);
+          if (currentSchoolRelation) {
+            return this.crudService.update('/clients-schools', {
+              accepts_newsletter: this.schoolNewsletterSubscription
+            }, currentSchoolRelation.id).pipe(takeUntil(this.destroy$));
+          }
+          return of(null);
         })
       )
       .subscribe(() => {

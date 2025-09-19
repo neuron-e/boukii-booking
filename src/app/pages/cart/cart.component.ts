@@ -565,6 +565,29 @@ export class CartComponent implements OnInit {
     return Array.from(uniqueClientsMap.values());
   }
 
+  // Resolve client's degree_id for a given sport, handling multiple shapes
+  getClientDegreeId(client: any, sportId: number): number {
+    try {
+      if (!client || !sportId) return 0;
+
+      // If client has client_sports array
+      if (Array.isArray(client.client_sports) && client.client_sports.length) {
+        const entry = client.client_sports.find((cs: any) => (cs?.sport_id ?? cs?.id) === sportId);
+        return entry?.degree_id || entry?.degree?.id || 0;
+      }
+
+      // If client has a generic sports array with pivot
+      if (Array.isArray(client.sports) && client.sports.length) {
+        const entry = client.sports.find((s: any) => (s?.sport_id ?? s?.id) === sportId);
+        return entry?.pivot?.degree_id || entry?.degree_id || entry?.degree?.id || 0;
+      }
+
+      return 0;
+    } catch {
+      return 0;
+    }
+  }
+
   getInsurancePrice() {
     return (this.getBasePrice() + this.getExtrasPrice()) * this.cancellationInsurance;
   }

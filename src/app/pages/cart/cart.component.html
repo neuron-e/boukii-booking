@@ -75,7 +75,9 @@
             </div>
             <div *ngFor="let client of getUniqueClients(cartItem.details)"
                  class="text-color-light montserrat list-flex">
-              <app-level-user [allLevels]="dataLevels" [selectLevel]="185" [size]="40"
+              <app-level-user [allLevels]="dataLevels"
+                              [selectLevel]="getClientDegreeId(client, cartItem.details[0]?.course?.sport_id)"
+                              [size]="40"
                               [userImage]="client.image || 'assets/images/avatar.png'"></app-level-user>
               {{ client.first_name + ' ' + client.last_name }}
             </div>

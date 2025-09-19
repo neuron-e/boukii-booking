@@ -26,7 +26,8 @@
           {{'participant'|translate|uppercase}}
         </div>
         <div style="display: flex;gap: 8px;padding: 12px 0;" *ngFor="let selectedUser of selectedUsers">
-          <app-level-user [allLevels]="courseC.dataLevels" [selectLevel]="185" [size]="40"
+          <app-level-user [allLevels]="courseC.dataLevels" [selectLevel]="courseC.getUserSportDegreeId(selectedUser)"
+                          [size]="40"
                           [userImage]="selectedUser.image"></app-level-user>
           <div class="text-color text-small montserrat reservation-user-title">
             <div style="text-align: -webkit-left;">
