@@ -13,23 +13,18 @@
             </div>
             <div class="header-dropdown-content background-color-trans" *ngIf="isOpenDropdownLang">
                 <div (click)="switchLang('fr')">
-                    <img src="/assets/images/fr.png">
                     <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='fr'}">FR</span>
                 </div>
                 <div (click)="switchLang('en')">
-                    <img src="/assets/images/en.png">
                     <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='en'}">EN</span>
                 </div>
                 <div (click)="switchLang('de')">
-                    <img src="/assets/images/de.png">
                     <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='de'}">DE</span>
                 </div>
                 <div (click)="switchLang('es')">
-                    <img src="/assets/images/es.png">
                     <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='es'}">ES</span>
                 </div>
                 <div (click)="switchLang('it')">
-                    <img src="/assets/images/it.png">
                     <span class="text-color-light" [ngClass]="{'fw-semibold': selectedLang=='it'}">IT</span>
                 </div>
             </div>

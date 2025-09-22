@@ -18,7 +18,6 @@ export class HeaderComponent implements OnInit {
   isOpenDropdownLang = false;
   isOpenDropdownUser = false;
   selectedLang = 'fr';
-  selectedLangFlag = '/assets/images/fr.png';
 
   @Input() isModalLogin: boolean = false;
   @Input() isModalNewUser: boolean = false;
@@ -42,7 +41,6 @@ export class HeaderComponent implements OnInit {
             this.cart = cart || '';
             this.selectedLang = localStorage.getItem(this.schoolData.data.slug + '-lang') || 'fr';
             this.translate.use(this.selectedLang);
-            this.selectedLangFlag = '/assets/images/' + this.selectedLang + '.png'
             if (slug !== null) {
               this.cart = JSON.parse(slug !== null ? slug : '');
             }
@@ -103,7 +101,6 @@ export class HeaderComponent implements OnInit {
   switchLang(lang: any) {
     this.translate.use(lang);
     this.selectedLang = lang;
-    this.selectedLangFlag = '/assets/images/' + lang + '.png'
     localStorage.setItem(this.schoolData.data.slug + '-lang', lang);
     this.toggleDropdownLang();
   }

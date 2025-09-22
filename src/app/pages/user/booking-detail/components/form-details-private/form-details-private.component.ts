@@ -552,7 +552,7 @@ export class FormDetailsPrivateComponent implements OnInit {
 
     const rq = {
       sportId: this.course.sport_id,
-      minimumDegreeId: this.sportLevel.id,
+      minimumDegreeId: this.getAppropriateLevelForUtilizers()?.id || this.sportLevel.id,
       startTime,
       endTime,
       date,
@@ -619,5 +619,71 @@ export class FormDetailsPrivateComponent implements OnInit {
 
   cancel() {
     this.dialogRef.close();
+  }
+
+  private getAppropriateLevelForUtilizers(): any {
+    // Get all degrees available for this sport and school
+    const availableDegrees = this.course.degrees || [];
+
+    if (availableDegrees.length === 0) {
+      const message = this.translateService.instant('snackbar.booking.no_levels_available');
+      this.snackbar.open(message, 'OK', { duration: 3000 });
+      return null;
+    }
+
+    // Filter degrees by age of the oldest utilizer
+    const oldestUtilizer = this.utilizers.reduce((oldest, current) => {
+      const oldestAge = this.calculateAge(oldest.birth_date);
+      const currentAge = this.calculateAge(current.birth_date);
+      return currentAge > oldestAge ? current : oldest;
+    });
+
+    const oldestAge = this.calculateAge(oldestUtilizer.birth_date);
+
+    // Filter degrees that are appropriate for the age
+    const appropriateDegrees = availableDegrees.filter(degree => {
+      const minAge = degree.min_age || 0;
+      const maxAge = degree.max_age || 999;
+      return oldestAge >= minAge && oldestAge <= maxAge;
+    });
+
+    if (appropriateDegrees.length === 0) {
+      const message = this.translateService.instant('snackbar.booking.no_levels_for_age', { age: oldestAge });
+      this.snackbar.open(message, 'OK', { duration: 3000 });
+      return null;
+    }
+
+    // Get the appropriate level
+    const selectedLevel = appropriateDegrees.find(degree => degree.id === this.sportLevel.id) || appropriateDegrees[0];
+
+    // Check and warn about level changes
+    this.checkAndWarnLevelChange(selectedLevel);
+
+    return selectedLevel;
+  }
+
+  private calculateAge(birthDate: string): number {
+    if (!birthDate) return 0;
+    const today = moment();
+    const birth = moment(birthDate);
+    return today.diff(birth, 'years');
+  }
+
+  private checkAndWarnLevelChange(newLevel: any): void {
+    // Check if any utilizer doesn't have this level assigned
+    const utilizersNeedingLevelChange = this.utilizers.filter(utilizer => {
+      const userSports = utilizer.client_sports || [];
+      const userSportForThisCourse = userSports.find(sport => sport.sport_id === this.course.sport_id);
+      return !userSportForThisCourse || userSportForThisCourse.degree_id !== newLevel.id;
+    });
+
+    if (utilizersNeedingLevelChange.length > 0) {
+      const utilizerNames = utilizersNeedingLevelChange.map(u => `${u.first_name} ${u.last_name}`).join(', ');
+      const message = this.translateService.instant('snackbar.booking.level_assignment_warning', {
+        utilizers: utilizerNames,
+        level: newLevel.name
+      });
+      this.snackbar.open(message, 'OK', { duration: 5000 });
+    }
   }
 }

@@ -146,7 +146,7 @@
           <span class="price" [ngClass]="{ 'line-through': activity.status == 2 }">
             <span class="discounted-price">
               {{ activity.total | number:'0.2-2' }}
-              {{ activities[0]?.course.currency }}
+              {{ getCurrency() }}
             </span>
           </span>
         </div>
@@ -161,7 +161,7 @@
           <span class="price">
             <span class="discounted-price">
               {{ sumActivityTotal()| number:'0.2-2' }}
-              {{ activities[0]?.course.currency }}
+              {{ getCurrency() }}
             </span>
           </span>
         </div>
@@ -192,7 +192,7 @@
             <p style="float:left">{{'reduction' |translate}}</p>
             <p style="float:right">
               -{{bookingData.price_reduction}}
-              {{activities[0]?.course.currency}}
+              {{getCurrency()}}
             </p>
           </span>
 
@@ -206,7 +206,7 @@
             </p>
             <p style="float:right">
               -{{discount.discountAmount | number:'0.2-2'}}
-              {{activities[0]?.course.currency}}
+              {{getCurrency()}}
             </p>
           </span>
         </div>
@@ -221,7 +221,7 @@
           </span>
           <span class="price" *ngIf="bookingData.has_cancellation_insurance">
             {{bookingData.price_cancellation_insurance| number:'0.2-2'}}
-            {{activities[0]?.course?.currency}}
+            {{getCurrency()}}
           </span>
         </div>
       </div>
@@ -233,7 +233,7 @@
     <ng-container>
       <span class="totalPrice">
         {{ bookingData.price_total  | number:'0.2-2'}}
-        {{ activities[0]?.course?.currency }}
+        {{ getCurrency() }}
       </span>
     </ng-container>
     <ng-container >
@@ -242,13 +242,13 @@
     <ng-container *ngIf="!bookingData.paid && bookingData.price_total - calculateTotalVoucherPrice() > 0">
       <span class="totalPrice" *ngIf="bookingData.price_total - calculateTotalVoucherPrice() != 0">
         {{ bookingData.price_total - calculateTotalVoucherPrice()  | number:'0.2-2' }}
-        {{ activities[0]?.course?.currency }}
+        {{ getCurrency() }}
       </span>
     </ng-container>
     <!--    <ng-container *ngIf="bookingData.paid">
           <span class="totalPrice" *ngIf="bookingData.paid_total - calculateTotalVoucherPrice() != 0">
             {{ bookingData.price_total - calculateTotalVoucherPrice() }}
-            {{ activities[0]?.course?.currency }}
+            {{ getCurrency() }}
           </span>
         </ng-container>-->
   </div>
@@ -269,13 +269,13 @@
             <span class="discounted-price" style="color:#2fca45"
                   *ngIf="bookingData.paid || bookingData.price_total - calculateTotalVoucherPrice() <= 0">
               {{ parseFloat(bookingData.paid_total) + Math.abs(calculateTotalVoucherPrice())  | number:'0.2-2' }}
-              {{ activities[0]?.course?.currency }}
+              {{ getCurrency() }}
             </span>
 
             <span class="discounted-price" style="color:#FB9B1B"
                   *ngIf="!bookingData.paid && bookingData.price_total - calculateTotalVoucherPrice() > 0">
               {{ parseFloat( bookingData.price_total) - Math.abs(calculateTotalVoucherPrice())  | number:'0.2-2'}}
-              {{ activities[0]?.course?.currency }}
+              {{ getCurrency() }}
             </span>
           </span>
         </div>
@@ -310,7 +310,7 @@
                 {{item.bonus.code}}</p>
               <p style="float:right">
                 {{item.bonus.reducePrice}}
-                {{activities[0]?.course?.currency}}
+                {{getCurrency()}}
               </p>
             </span>
           </div>
@@ -326,7 +326,7 @@
               {{ payment.status | translate }} - {{ payment.notes ?? 'Boukii Pay' | translate }}
           </span>
           <span class="price">
-            {{ payment.amount }} {{activities[0]?.course?.currency}}
+            {{ payment.amount }} {{getCurrency()}}
           </span>
         </div>
       </div>

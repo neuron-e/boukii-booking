@@ -129,7 +129,7 @@ export class UserComponent implements OnInit {
         this.defaults = client.data;
         this.evaluations = client.data.evaluations;
         this.evaluationFullfiled = [];
-        this.clientSport = this.defaults.client_sports;
+        this.clientSport = this.defaults.client_sports.filter((sport: any) => sport.school_id === this.schoolData.id);
         this.selectedSport = this.clientSport[0];
         this.goals = [];
         this.clientSport.forEach((element: any) => {
@@ -267,11 +267,11 @@ export class UserComponent implements OnInit {
     }
     let minHour: any = null;
     let maxHour: any = null;
-    if (data[0].course.course_type === 2) {
+    if (data[0] && data[0].course && data[0].course.course_type === 2) {
       minHour = data[0].hour_start;
       maxHour = this.calculateHourEnd(data[0].hour_start, data[0].course.duration);
 
-    } else {
+    } else if (data[0] && data[0].hour_start && data[0].hour_end) {
       minHour = data[0].hour_start;
       maxHour = data[0].hour_end.replace(':00', '');
 
@@ -285,7 +285,7 @@ export class UserComponent implements OnInit {
       });
     }
 
-    minHour = minHour.replace(':00', '');
+    if (minHour) { minHour = minHour.replace(':00', ''); }
 
     return { minHour, maxHour };
   }

@@ -111,7 +111,7 @@
                 {{"type" | translate}}
               </th>
               <td *matCellDef="let element" mat-cell style="height: 80px; width: 80px">
-                <img [src]="element.sport" class="avatar h-8 w-8 align-middle"
+                <img [src]="element?.booking_users?.[0]?.course?.course_type === 1 ? 'https://api.boukii.com/storage/icons/collectif_ski2x.png' : 'https://api.boukii.com/storage/icons/prive_ski2x.png'" class="avatar h-8 w-8 align-middle"
                   style="border-radius: 5px; height: 70%; width: 100%;">
               </td>
             </ng-container>

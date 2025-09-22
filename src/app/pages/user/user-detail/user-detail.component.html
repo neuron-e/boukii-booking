@@ -1,5 +1,5 @@
 <div *ngIf="!loading" class="flex-sections">
-	<div *ngIf="!editing" [style.width]="defaults.client_sports && defaults.client_sports.length>0?'':'100%'"
+	<div *ngIf="!editing" [style.width]="clientSport && clientSport.length>0?'':'100%'"
 		class="flex-sections-user">
 		<div>
 			<div>
@@ -143,13 +143,13 @@
 		</div>
 
 	</div>
-	<div *ngIf="!editing && defaults.client_sports && defaults.client_sports.length>0" class="flex-sections-user level">
+	<div *ngIf="!editing && clientSport && clientSport.length>0" class="flex-sections-user level">
 		<div>
 			<div style="width: 100%;flex: none;">
 				<p style="margin-bottom: 20px;">
 					{{"sports" | translate}}
 				</p>
-				<div *ngFor="let sport of defaults.client_sports; index as i">
+				<div *ngFor="let sport of clientSport; index as i">
 					<div style="display: flex; align-items: center;margin-bottom: 20px;">
 						<img [src]="sport.sport.icon_selected" alt="icono" class="icon40">
 						<span style>
@@ -161,7 +161,7 @@
 						</span>-->
 					</div>
 					<div style="display: flex; align-items: center;gap: 20px;">
-						<app-level-user [allLevels]="userC.allLevels" [selectLevel]="defaults.client_sports[0].degree_id" [size]="40"
+						<app-level-user [allLevels]="userC.allLevels" [selectLevel]="clientSport[0].degree_id" [size]="40"
 							[userImage]="user?.image"></app-level-user>
 						<div>
 							<div>
@@ -191,7 +191,7 @@
 							</div>
 						</div>
 					</div>
-					<mat-divider *ngIf="i<defaults.client_sports.length-1" style="margin: 30px 0;">
+					<mat-divider *ngIf="i<clientSport.length-1" style="margin: 30px 0;">
 					</mat-divider>
 				</div>
 			</div>

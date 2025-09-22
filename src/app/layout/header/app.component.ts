@@ -22,7 +22,6 @@ export class HeaderComponent implements OnInit {
   schoolData: any
   userLogged: any
   cart: any
-  selectedLangFlag: any
 
   async ngOnInit() {
     this.schoolService.fetchSchoolData();
@@ -38,7 +37,6 @@ export class HeaderComponent implements OnInit {
             this.cart = cart || '';
             this.selectedLang = localStorage.getItem(this.schoolData.data.slug + '-lang') || 'fr';
             this.translate.use(this.selectedLang);
-            this.selectedLangFlag = '/assets/images/' + this.selectedLang + '.png'
             if (slug !== null) {
               this.cart = JSON.parse(slug !== null ? slug : '');
             }

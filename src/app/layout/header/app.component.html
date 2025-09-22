@@ -16,38 +16,23 @@
 	<div style="display: flex;margin-left: auto;position: relative;">
 		<div (click)="isOpenDropdownLang=!isOpenDropdownLang"
 			style="display: flex; padding: 10px; gap: 5px;position: relative;">
-			<img src="assets/icons/lang.png" class="icon24">
+			<span class="text-color-light">{{ selectedLang | uppercase }}</span>
 			<img [src]="themeService.arrowUp" [ngClass]="{'rotate-arrow': isOpenDropdownLang}" class="icon24 arrow">
 			<div *ngIf="isOpenDropdownLang" class="dropdown">
 				<div (click)="switchLang('fr')">
-					<img src="/assets/images/fr.png" class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='fr'}" class="text-color-light">
-						FR
-					</span>
+					<span [ngClass]="{'fw-semibold': selectedLang=='fr'}" class="text-color-light">FR</span>
 				</div>
 				<div (click)="switchLang('en')">
-					<img src="/assets/images/en.png" class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='en'}" class="text-color-light">
-						EN
-					</span>
+					<span [ngClass]="{'fw-semibold': selectedLang=='en'}" class="text-color-light">EN</span>
 				</div>
 				<div (click)="switchLang('de')">
-					<img src="/assets/images/de.png" class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='de'}" class="text-color-light">
-						DE
-					</span>
+					<span [ngClass]="{'fw-semibold': selectedLang=='de'}" class="text-color-light">DE</span>
 				</div>
 				<div (click)="switchLang('es')">
-					<img src="/assets/images/es.png" class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='es'}" class="text-color-light">
-						ES
-					</span>
+					<span [ngClass]="{'fw-semibold': selectedLang=='es'}" class="text-color-light">ES</span>
 				</div>
 				<div (click)="switchLang('it')">
-					<img src="/assets/images/it.png" class="icon24">
-					<span [ngClass]="{'fw-semibold': selectedLang=='it'}" class="text-color-light">
-						IT
-					</span>
+					<span [ngClass]="{'fw-semibold': selectedLang=='it'}" class="text-color-light">IT</span>
 				</div>
 			</div>
 		</div>
