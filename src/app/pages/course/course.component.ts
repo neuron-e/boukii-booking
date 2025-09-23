@@ -194,13 +194,9 @@ export class CourseComponent implements OnInit {
 
   // Método para verificar si el curso tiene intervalos configurados
   hasIntervals(): boolean {
-    if (!this.course || !this.course.settings) return false;
-
-    const settings = typeof this.course.settings === 'string'
-      ? JSON.parse(this.course.settings)
-      : this.course.settings;
-
-    return settings.multipleIntervals && settings.intervals && settings.intervals.length > 0;
+    // Para la vista del cliente, ocultamos la lógica de "intervalos"
+    // y agrupamos por semanas, como en la home.
+    return false;
   }
 
   // Alternar el estado de expansión de un intervalo
@@ -233,21 +229,21 @@ export class CourseComponent implements OnInit {
 
     // Procesar cada intervalo
     intervals.forEach(interval => {
-      // Filtrar fechas de este intervalo que sean futuras
-      const intervalDates = this.course.course_dates
-        .filter(date => date.interval_id === interval.id && this.compareISOWithToday(date.date))
+      // Incluir TODAS las fechas del intervalo (pasadas y futuras) y ordenar
+      const intervalDatesAll = this.course.course_dates
+        .filter(date => date.interval_id === interval.id)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-      if (intervalDates.length > 0) {
-        // Obtener primera y última fecha
-        const firstDate = new Date(intervalDates[0].date);
-        const lastDate = new Date(intervalDates[intervalDates.length - 1].date);
+      if (intervalDatesAll.length > 0) {
+        // Obtener primera y última fecha (del conjunto completo)
+        const firstDate = new Date(intervalDatesAll[0].date);
+        const lastDate = new Date(intervalDatesAll[intervalDatesAll.length - 1].date);
 
         // Obtener días de la semana únicos
-        const weekdays = this.getUniqueWeekdaysFromDates(intervalDates);
+        const weekdays = this.getUniqueWeekdaysFromDates(intervalDatesAll);
 
         // Obtener horarios comunes
-        const commonTime = this.getCommonTime(intervalDates);
+        const commonTime = this.getCommonTime(intervalDatesAll);
 
         result.push({
           id: interval.id,
@@ -256,8 +252,8 @@ export class CourseComponent implements OnInit {
           endDate: lastDate,
           weekdays: weekdays,
           time: commonTime,
-          count: intervalDates.length,
-          dates: intervalDates
+          count: intervalDatesAll.length,
+          dates: intervalDatesAll
         });
       }
     });
@@ -299,12 +295,11 @@ export class CourseComponent implements OnInit {
       return [];
     }
 
-    // Filtrar solo fechas futuras
-    const futureDates = this.course.course_dates
-      .filter(date => this.compareISOWithToday(date.date))
+    // Incluir todas las fechas y ordenar (se marcarán como no seleccionables las pasadas)
+    const orderedDates = this.course.course_dates
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    if (futureDates.length === 0) {
+    if (orderedDates.length === 0) {
       return [];
     }
 
@@ -312,7 +307,7 @@ export class CourseComponent implements OnInit {
     const weekGroups = [];
     let currentGroup = null;
 
-    futureDates.forEach(date => {
+    orderedDates.forEach(date => {
       const dateObj = new Date(date.date);
       // Obtener el lunes de esta semana
       const mondayOfWeek = new Date(dateObj);
@@ -363,25 +358,17 @@ export class CourseComponent implements OnInit {
     });
   }
 
-  // Obtener fechas futuras sin agrupar (para cursos no flexibles sin intervalos)
+  // Obtener todas las fechas (pasadas y futuras) sin agrupar (para cursos no flexibles sin intervalos)
   getFutureDates(): any[] {
     if (!this.course || !this.course.course_dates) {
       console.log('DEBUG: No course or course_dates', { course: !!this.course, course_dates: !!this.course?.course_dates });
       return [];
     }
 
-    const futureDates = this.course.course_dates
-      .filter(date => this.compareISOWithToday(date.date))
+    const allDates = this.course.course_dates
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    console.log('DEBUG: Future dates', {
-      totalDates: this.course.course_dates.length,
-      futureDates: futureDates.length,
-      sampleDate: this.course.course_dates[0]?.date,
-      today: new Date().toISOString().split('T')[0]
-    });
-
-    return futureDates;
+    return allDates;
   }
 
 
@@ -889,30 +876,70 @@ export class CourseComponent implements OnInit {
     if (this.mustStartFromFirst() && selectedIntervalDates.length === 0) {
       // Si es la primera selección, debe ser el primer día del intervalo
       if (dateStr !== intervalDates[0].date) {
-        this.dateSelectionError = this.translateService.instant('must_start_from_first_day');
+        this.dateSelectionError = this.translateService.instant('booking_must_start_from_first_day');
         return false;
       }
     }
 
     // Comprobar si los días deben ser consecutivos
     if (this.mustBeConsecutive() && selectedIntervalDates.length > 0) {
-      const datesToCheck = [...selectedIntervalDates, dateStr].sort((a, b) =>
-        new Date(a).getTime() - new Date(b).getTime()
-      );
+      // Usar el orden de las fechas del intervalo del curso (no el calendario)
+      const intervalDates = this.getIntervalDates(intervalId);
+      const intervalDateStrings = intervalDates.map(d => d.date);
 
-      // Verificar que no hay saltos en las fechas
-      for (let i = 1; i < datesToCheck.length; i++) {
-        const prevDate = new Date(datesToCheck[i-1]);
-        const currDate = new Date(datesToCheck[i]);
+      // Índices de las fechas ya seleccionadas dentro del intervalo
+      const selectedIndices = selectedIntervalDates.map(d => intervalDateStrings.indexOf(d)).filter(i => i >= 0);
+      const candidateIndex = intervalDateStrings.indexOf(dateStr);
 
-        // Calcular la diferencia en días
-        const diffTime = currDate.getTime() - prevDate.getTime();
-        const diffDays = diffTime / (1000 * 3600 * 24);
+      // Construimos el conjunto de índices incluyendo la nueva selección
+      const allIndices = [...selectedIndices, candidateIndex].sort((a, b) => a - b);
 
-        if (diffDays > 1) {
-          this.dateSelectionError = this.translateService.instant('dates_must_be_consecutive');
-          return false;
-        }
+      // Los índices deben formar un bloque contiguo (sin huecos)
+      const firstIdx = allIndices[0];
+      const lastIdx = allIndices[allIndices.length - 1];
+      const expectedLength = lastIdx - firstIdx + 1;
+
+      if (expectedLength !== allIndices.length) {
+        this.dateSelectionError = this.translateService.instant('dates_must_be_consecutive');
+        return false;
+      }
+    }
+
+    this.dateSelectionError = '';
+    return true;
+  }
+
+  // Validar selección para cursos SIN intervalos (consecutividad sobre el orden del curso)
+  private validateDateSelectionNoInterval(dateStr: string): boolean {
+    const ordered = (this.course?.course_dates || [])
+      .slice()
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map((d: any) => d.date);
+
+    // Si debe empezar por el primer día y no hay ninguna fecha seleccionada
+    if (this.mustStartFromFirst() && (this.selectedDates?.length || 0) === 0) {
+      const firstAvailable = (this.course?.course_dates || [])
+        .slice()
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .find((d: any) => (d.active === undefined || d.active === true || d.active === 1) && this.isDateInFuture(d.date));
+      if (!firstAvailable || dateStr !== firstAvailable.date) {
+        this.dateSelectionError = this.translateService.instant('booking_must_start_from_first_day');
+        return false;
+      }
+    }
+
+    if (this.mustBeConsecutive() && (this.selectedDates?.length || 0) > 0) {
+      const selectedIndices = this.selectedDates
+        .map((d: string) => ordered.indexOf(d))
+        .filter((i: number) => i >= 0);
+      const candidateIndex = ordered.indexOf(dateStr);
+      const all = [...selectedIndices, candidateIndex].sort((a, b) => a - b);
+      const firstIdx = all[0];
+      const lastIdx = all[all.length - 1];
+      const expectedLength = lastIdx - firstIdx + 1;
+      if (expectedLength !== all.length) {
+        this.dateSelectionError = this.translateService.instant('dates_must_be_consecutive');
+        return false;
       }
     }
 
@@ -980,6 +1007,44 @@ export class CourseComponent implements OnInit {
     this.dateSelectionError = '';
     return true;
   }
+
+  // Validar des-selección para cursos SIN intervalos
+  private validateDateDeselectionNoInterval(dateStr: string): boolean {
+    if (this.mustBeConsecutive()) {
+      const ordered = (this.course?.course_dates || [])
+        .slice()
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((d: any) => d.date);
+      const selectedOrdered = (this.selectedDates || [])
+        .slice()
+        .sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime());
+      if (selectedOrdered.length > 2) {
+        const first = selectedOrdered[0];
+        const last = selectedOrdered[selectedOrdered.length - 1];
+        if (dateStr !== first && dateStr !== last) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_middle_date');
+          return false;
+        }
+      }
+    }
+    // Si debe empezar por el primer día y se intenta quitar el primero con otros seleccionados
+    if (this.mustStartFromFirst()) {
+      const ordered = (this.course?.course_dates || [])
+        .slice()
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((d: any) => d.date);
+      const first = ordered[0];
+      if (dateStr === first) {
+        const hasOther = (this.selectedDates || []).some(d => d !== dateStr);
+        if (hasOther) {
+          this.dateSelectionError = this.translateService.instant('cant_remove_first_day');
+          return false;
+        }
+      }
+    }
+    this.dateSelectionError = '';
+    return true;
+  }
   // Determinar si un intervalo está habilitado para selección
   isIntervalEnabled(intervalId: string): boolean {
     // Si no hay intervalo seleccionado o es el mismo que este, está habilitado
@@ -1019,6 +1084,13 @@ export class CourseComponent implements OnInit {
           console.log('DEBUG: Date selection invalid', this.dateSelectionError);
           return; // Si no es válido, no continuar
         }
+      } else if (!this.hasIntervals()) {
+        // Cursos sin intervalos: aplicar mismas reglas globales
+        const valid = this.validateDateSelectionNoInterval(date);
+        if (!valid) {
+          console.log('DEBUG: Date selection invalid (no interval)', this.dateSelectionError);
+          return;
+        }
       }
       this.selectedDates.push(date);
     }
@@ -1027,6 +1099,9 @@ export class CourseComponent implements OnInit {
         // Para cursos con intervalos, verificar si puede deseleccionar
         const valid = this.validateDateDeselection(date, intervalId);
         if (!valid) return; // Si no es válido, no continuar
+      } else if (!this.hasIntervals()) {
+        const valid = this.validateDateDeselectionNoInterval(date);
+        if (!valid) return;
       }
       this.selectedDates.splice(index, 1);
     }
@@ -1281,10 +1356,54 @@ export class CourseComponent implements OnInit {
   // Verificar si una fecha está disponible para seleccionar
   isDateAvailable(dateStr: string, intervalId?: string): boolean {
     // Si tiene un intervalo seleccionado, solo permitir fechas de ese intervalo
-    if (this.hasIntervals() && this.selectedIntervalId && intervalId !== this.selectedIntervalId) {
+    if (this.hasIntervals() && this.selectedIntervalId && intervalId && intervalId !== this.selectedIntervalId) {
       return false;
     }
 
+    // Verificar que la fecha exista y esté activa (si tiene flag)
+    const dateObj = this.course?.course_dates?.find((d: any) => d.date === dateStr);
+    const isActive = dateObj ? (dateObj.active === undefined || dateObj.active === true || dateObj.active === 1) : false;
+    if (!isActive) return false;
+
+    // Si aplica la regla de empezar por la primera fecha y estamos en un intervalo,
+    // bloquear TODAS las fechas del intervalo si la primera fecha no está disponible.
+    if (this.hasIntervals() && intervalId && this.mustStartFromFirst()) {
+      // Obtener todas las fechas del intervalo (ordenadas)
+      const allIntervalDates = this.course.course_dates
+        .filter((d: any) => d.interval_id === intervalId)
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      const first = allIntervalDates[0];
+      const firstIsActive = first ? (first.active === undefined || first.active === true || first.active === 1) : false;
+      const firstIsFuture = first ? this.isDateInFuture(first.date) : false;
+
+      // Si la primera fecha del intervalo no está disponible (pasada o inactiva), ningún día es seleccionable
+      if (!firstIsActive || !firstIsFuture) return false;
+    }
+
+    // Caso sin intervalos: si "start from first" está activo, sólo permitir seleccionar
+    // si la primera fecha disponible del curso está disponible; y en la primera selección,
+    // permitir únicamente esa primera fecha.
+    if (!this.hasIntervals() && this.mustStartFromFirst()) {
+      const allDatesOrdered = (this.course?.course_dates || [])
+        .slice()
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      const firstAvailable = allDatesOrdered.find((d: any) => {
+        const dActive = d.active === undefined || d.active === true || d.active === 1;
+        return dActive && this.isDateInFuture(d.date);
+      });
+
+      // Si no hay primera fecha disponible, ninguna fecha es seleccionable
+      if (!firstAvailable) return false;
+
+      // Si todavía no hay fechas seleccionadas, sólo habilitar la primera disponible
+      if ((this.selectedDates?.length || 0) === 0) {
+        return dateStr === firstAvailable.date;
+      }
+    }
+
+    // Finalmente, no permitir seleccionar fechas pasadas
     return this.isDateInFuture(dateStr);
   }
 

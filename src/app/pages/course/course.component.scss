@@ -1038,6 +1038,18 @@ ul {
   cursor: not-allowed;
 }
 
+/* Mostrar fechas deshabilitadas con tachado */
+.date-disabled .date-day,
+.date-disabled .date-month-year,
+.date-disabled .date-time {
+  text-decoration: line-through;
+}
+
+/* Para los checkboxes simples (sin tarjeta), aplicar tachado al label */
+.date-disabled .mdc-label {
+  text-decoration: line-through;
+}
+
 .date-checkbox-wrapper mat-checkbox {
   display: flex;
   width: 100%;

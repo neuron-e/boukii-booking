@@ -36,7 +36,19 @@ export class CourseCardComponent {
       ? JSON.parse(this.data.settings)
       : this.data.settings;
 
-    return settings.multipleIntervals && settings.intervals && settings.intervals.length > 0;
+    // Debe existir configuración de intervalos
+    const hasConfiguredIntervals = !!(settings?.multipleIntervals && Array.isArray(settings?.intervals) && settings.intervals.length > 0);
+    if (!hasConfiguredIntervals) return false;
+
+    // Además, debe haber al menos una fecha futura que pertenezca a alguno de los intervalos
+    if (!Array.isArray(this.data.course_dates) || this.data.course_dates.length === 0) return false;
+
+    const intervalIds = new Set((settings.intervals || []).map((i: any) => i.id));
+    const hasMatchingFutureDate = this.data.course_dates.some((d: any) =>
+      intervalIds.has(d.interval_id) && this.compareISOWithToday(d.date)
+    );
+
+    return hasMatchingFutureDate;
   }
 
   // Método para obtener fechas agrupadas por intervalos

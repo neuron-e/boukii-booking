@@ -602,10 +602,13 @@
                 <!-- Fechas de la semana -->
                 <div class="week-dates-container">
                   <div class="date-checkboxes week-dates-grid">
-                    <div *ngFor="let date of week.dates" class="date-checkbox-wrapper">
+                    <div *ngFor="let date of week.dates" class="date-checkbox-wrapper"
+                         [class.date-disabled]="!isDateAvailable(date.date)"
+                         [class.date-selected]="isDateSelected(date.date)">
                       <mat-checkbox
                         (change)="selectDate($event.checked, date.date)"
-                        [checked]="isDateSelected(date.date)">
+                        [checked]="isDateSelected(date.date)"
+                        [disabled]="!isDateAvailable(date.date)">
                         <div class="date-checkbox-content">
                           <span class="date-day">{{date.date | date: 'dd'}}</span>
                           <span class="date-month-year">{{date.date | date: 'MMM yyyy'}}</span>
@@ -626,6 +629,8 @@
                 <mat-checkbox
                   (change)="selectDate($event.checked, date.date)"
                   [checked]="isDateSelected(date.date)"
+                  [ngClass]="{'date-disabled': !isDateAvailable(date.date)}"
+                  [disabled]="!isDateAvailable(date.date)"
                   class="simple-date-checkbox">
                   {{date.date | date: 'dd.MM.yyyy'}}
                 </mat-checkbox>
@@ -802,7 +807,13 @@
         </div>
         <div style="padding: 20px;">
           <button
-            [disabled]="course.course_type===1&&courseFlux===0&&!selectedUser || course.course_type===2&&courseFlux===0&&(selectedUserMultiple.length<1) || !selectedLevel&&courseFlux===1 || course.course_type===2&&courseFlux===2&&!selectedDateReservation"
+            [disabled]="
+              (course.course_type===1 && courseFlux===0 && !selectedUser)
+              || (course.course_type===2 && courseFlux===0 && (selectedUserMultiple.length<1))
+              || (!selectedLevel && courseFlux===1)
+              || (course.course_type===2 && courseFlux===2 && !selectedDateReservation)
+              || (course.course_type===1 && course.is_flexible && courseFlux===2 && selectedDates.length===0)
+            "
             (click)="next()" style="background-color: rgba(233, 30, 99, 1);width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
               color: white;
