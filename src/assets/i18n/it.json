@@ -775,5 +775,8 @@
   "booking_rules_active": "Regole di prenotazione attive:",
   "booking_must_start_from_first_day": "Devi selezionare la prima data disponibile del corso per effettuare una prenotazione.",
   "booking_dates_must_be_consecutive": "Le date selezionate devono essere consecutive senza saltarne nessuna.",
-  "no_dates_selected": "Devi selezionare almeno una data per continuare."
+  "no_dates_selected": "Devi selezionare almeno una data per continuare.",
+  "remove_date": "Rimuovi data",
+  "clear_all": "Cancella tutto",
+  "total_selected": "Totale selezionato"
 }

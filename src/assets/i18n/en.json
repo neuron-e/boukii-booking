@@ -779,5 +779,8 @@
   "first_day_info": "The first selection must be the first available day.",
   "dates_must_be_consecutive": "Selected dates must be consecutive.",
   "cant_remove_middle_date": "You can't remove a middle date when consecutive is required.",
-  "cant_remove_first_day": "You can't remove the first day if others are selected."
+  "cant_remove_first_day": "You can't remove the first day if others are selected.",
+  "remove_date": "Remove date",
+  "clear_all": "Clear all",
+  "total_selected": "Total selected"
 }

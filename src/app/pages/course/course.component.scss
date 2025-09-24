@@ -1078,4 +1078,401 @@ ul {
 .date-time {
   background-color: #f5f5f5;
   padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: var(--color-dark2);
+}
+
+/* ===== ESTILOS MEJORADOS PARA RESUMEN DE FECHAS SELECCIONADAS ===== */
+
+.selected-dates-summary {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fb 100%);
+  border: 1px solid #DEE6EA;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 24px;
+  box-shadow: 0 2px 12px rgba(82, 63, 104, 0.08);
+  animation: slideUp 0.3s ease;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-icon {
+  color: #E91E63;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  flex: 1;
+}
+
+.summary-count {
+  background: #E91E63;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(233, 30, 99, 0.3);
+}
+
+.selected-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.selected-date-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border: 1px solid #DEE6EA;
+  border-radius: 6px;
+  padding: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(82, 63, 104, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.selected-date-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #E91E63;
+}
+
+.selected-date-card:hover {
+  border-color: #E91E63;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.12);
+  transform: translateY(-1px);
+}
+
+.selected-date-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.selected-date-day {
+  font-size: 24px;
+  font-weight: 700;
+  color: #E91E63;
+  min-width: 40px;
+  text-align: center;
+  line-height: 1;
+}
+
+.selected-date-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.selected-date-month {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  text-transform: capitalize;
+}
+
+.selected-date-weekday {
+  font-size: 12px;
+  color: var(--color-dark3);
+  text-transform: capitalize;
+}
+
+.selected-date-remove {
+  color: #f44336;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.selected-date-remove:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  transform: scale(1.1);
+}
+
+.selection-summary-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.clear-all-btn {
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.2);
+}
+
+.selected-total-info {
+  font-size: 14px;
+  color: var(--color-dark2);
+  font-weight: 500;
+}
+
+.total-count {
+  font-weight: 700;
+  color: #E91E63;
+  font-size: 16px;
+}
+
+/* Animation for slide up effect */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .selected-dates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-date-card {
+    padding: 10px;
+  }
+
+  .selected-date-day {
+    font-size: 20px;
+  }
+
+  .selection-summary-actions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .clear-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .selected-total-info {
+    text-align: center;
+  }
+}
+
+/* ===== MEJORAS ADICIONALES PARA EL SELECTOR DE FECHAS ===== */
+
+.date-selection-container {
+  background: white;
+  border: 1px solid #DEE6EA;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(82, 63, 104, 0.08);
+}
+
+.date-selection-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--color-dark1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-selection-title::before {
+  content: '📅';
+  font-size: 20px;
+}
+
+/* Mejoras para los checkboxes de fecha */
+.date-checkbox-wrapper {
+  background: white;
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.date-checkbox-wrapper:hover:not(.date-disabled) {
+  border-color: #E91E63;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.12);
+  transform: translateY(-1px);
+}
+
+.date-selected {
+  border-color: #E91E63;
+  background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.15);
+}
+
+.date-checkbox-content {
+  padding: 8px;
+}
+
+.date-day {
+  font-size: 20px;
+  font-weight: 700;
+  color: #E91E63;
+  margin-bottom: 4px;
+}
+
+.date-month-year {
+  font-size: 12px;
+  color: var(--color-dark2);
+  margin-bottom: 6px;
+  text-transform: capitalize;
+}
+
+.date-time {
+  background: #E91E63;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ===== ESTILOS PARA LA SECCIÓN DE EXTRAS MEJORADA ===== */
+
+.extras-section {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(82, 63, 104, 0.06);
+}
+
+.extras-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin-bottom: 20px;
+}
+
+.extras-title mat-icon {
+  color: #E91E63;
+  font-size: 20px;
+}
+
+.extras-date-section {
+  margin-bottom: 24px;
+}
+
+.extras-date-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark2);
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #f8f9fb;
+  border-radius: 4px;
+  border-left: 4px solid #E91E63;
+}
+
+.extras-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.extra-checkbox {
+  width: 100%;
+  border: 1px solid #DEE6EA;
+  border-radius: 6px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  background: white;
+  box-shadow: 0 1px 3px rgba(82, 63, 104, 0.06);
+}
+
+.extra-checkbox:hover {
+  border-color: #E91E63;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.1);
+  transform: translateY(-1px);
+}
+
+.extra-checkbox.mat-mdc-checkbox-checked {
+  border-color: #E91E63;
+  background: linear-gradient(135deg, #fce4ec 0%, #ffffff 100%);
+}
+
+.extra-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.extra-info {
+  flex: 1;
+}
+
+.extra-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark1);
+  margin-bottom: 4px;
+}
+
+.extra-description {
+  font-size: 12px;
+  color: var(--color-dark3);
+  line-height: 1.4;
+}
+
+.extra-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #E91E63;
+  padding: 8px 12px;
+  background: #fce4ec;
+  border-radius: 16px;
+  white-space: nowrap;
+}
+
+/* Mobile responsive for extras */
+@media (max-width: 768px) {
+  .extra-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .extra-price {
+    align-self: flex-end;
+  }
 }

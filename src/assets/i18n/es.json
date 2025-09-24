@@ -781,5 +781,8 @@
   "first_day_info": "La primera selección debe ser el primer día disponible.",
   "dates_must_be_consecutive": "Las fechas seleccionadas deben ser consecutivas.",
   "cant_remove_middle_date": "No puedes quitar una fecha intermedia si deben ser consecutivas.",
-  "cant_remove_first_day": "No puedes quitar el primer día si hay otros seleccionados."
+  "cant_remove_first_day": "No puedes quitar el primer día si hay otros seleccionados.",
+  "remove_date": "Eliminar fecha",
+  "clear_all": "Limpiar todo",
+  "total_selected": "Total seleccionado"
 }

@@ -68,8 +68,6 @@
       <div class="dates-detail-container">
         <!-- 1. Para cursos con intervalos -->
         <ng-container *ngIf="shouldDisplayByIntervals()">
-          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
-
           <div class="intervals-list">
             <div *ngIf="getIntervalGroups().length === 0" class="no-dates">
               {{ 'no_future_dates' | translate }}
@@ -124,8 +122,6 @@
 
         <!-- 2. Para cursos flexibles sin intervalos (agrupados por semanas) -->
         <ng-container *ngIf="shouldDisplayByWeeks()">
-          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
-
           <div class="weeks-list">
             <div *ngIf="getWeekGroups().length === 0" class="no-dates">
               {{ 'no_future_dates' | translate }}
@@ -180,8 +176,6 @@
 
         <!-- 3. Para cursos no flexibles sin intervalos (original) -->
         <ng-container *ngIf="shouldDisplaySimpleDates()">
-          <h4 class="dates-section-title">{{'dates' | translate}}</h4>
-
           <div class="simple-dates-list">
             <div *ngIf="getFutureDates().length === 0" class="no-dates">
               {{ 'no_future_dates' | translate }}
@@ -638,17 +632,49 @@
             </div>
           </div>
 
-          <!-- Resumen de selección -->
+          <!-- Resumen de selección mejorado -->
           <div *ngIf="selectedDates.length > 0" class="selected-dates-summary">
-            <div class="summary-title">
-              {{ 'selected_dates' | translate }}:
+            <div class="summary-header">
+              <mat-icon class="summary-icon">event_note</mat-icon>
+              <div class="summary-title">
+                {{ 'selected_dates' | translate }}
+              </div>
+              <div class="summary-count">
+                {{selectedDates.length}} {{ selectedDates.length === 1 ? ('date' | translate) : ('dates' | translate) }}
+              </div>
             </div>
-            <div class="selected-dates-list">
-              <div *ngFor="let date of selectedDates" class="selected-date-item">
-                <span>{{ date | date: 'dd.MM.yyyy' }}</span>
-                <button mat-icon-button (click)="selectDate(false, date, getIntervalForDate(date))">
+
+            <div class="selected-dates-grid">
+              <div *ngFor="let date of selectedDates" class="selected-date-card">
+                <div class="selected-date-content">
+                  <div class="selected-date-day">
+                    {{ date | date: 'dd' }}
+                  </div>
+                  <div class="selected-date-details">
+                    <div class="selected-date-month">{{ date | date: 'MMM yyyy' }}</div>
+                    <div class="selected-date-weekday">{{ getWeekday(date) }}</div>
+                  </div>
+                </div>
+                <button mat-icon-button
+                        class="selected-date-remove"
+                        (click)="selectDate(false, date, getIntervalForDate(date))"
+                        matTooltip="{{ 'remove_date' | translate }}">
                   <mat-icon>close</mat-icon>
                 </button>
+              </div>
+            </div>
+
+            <div class="selection-summary-actions">
+              <button mat-stroked-button
+                      color="warn"
+                      (click)="clearAllDates()"
+                      class="clear-all-btn">
+                <mat-icon>clear_all</mat-icon>
+                {{ 'clear_all' | translate }}
+              </button>
+              <div class="selected-total-info">
+                {{ 'total_selected' | translate }}:
+                <span class="total-count">{{ selectedDates.length }}</span>
               </div>
             </div>
           </div>
@@ -735,49 +761,57 @@
             </div>
           </ng-container>
         </div>
-        <div [style.display]="courseFlux===3 ? 'block' : 'none'" style="display: flex;padding: 20px;flex-direction: column;">
-          <div> {{"add_extras_or_notes" |translate}} </div>
+        <div [style.display]="courseFlux===3 ? 'block' : 'none'" class="extras-section">
+          <div class="extras-title">
+            <mat-icon>add_circle_outline</mat-icon>
+            {{"add_extras_or_notes" |translate}}
+          </div>
           <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
             <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date])"
-                 style="display: flex;gap: 16px;padding-top: 20px;flex-direction: column;">
-              {{(course.is_flexible?date:'')|date:'dd.MM.yyyy'}}
-              <mat-checkbox *ngFor="let extra of settingsExtras"
-                            style="width: 100%;border-radius: 3px;border: 1px solid rgba(34, 34, 34, 1);height: 64px"
-                            (click)="toggleForfaitSelection(extra)">
-                <div
-                  style="display: flex;gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
-                  <div>
-                    <span class="extra_product">{{extra.name}}</span>
-                    <br>
-                    <span class="extra_name">{{extra.description}}</span>
+                 class="extras-date-section">
+              <div *ngIf="course.is_flexible" class="extras-date-header">
+                {{date|date:'dd.MM.yyyy'}}
+              </div>
+              <div class="extras-grid">
+                <mat-checkbox *ngFor="let extra of settingsExtras"
+                              class="extra-checkbox"
+                              (click)="toggleForfaitSelection(extra)">
+                  <div class="extra-content">
+                    <div class="extra-info">
+                      <div class="extra-name">{{extra.name}}</div>
+                      <div class="extra-description">{{extra.description}}</div>
+                    </div>
+                    <div class="extra-price">
+                      {{extra.price|number:'0.2-2'}} {{course?.currency}}/{{'date' | translate}}
+                    </div>
                   </div>
-                  <span style="width: 125px;padding: 10px;">
-									{{extra.price|number:'0.2-2'}}{{course?.currency}}/{{'date' | translate}}
-								</span>
-                </div>
-              </mat-checkbox>
+                </mat-checkbox>
+              </div>
             </div>
           </ng-container>
           <ng-container *ngIf="course?.course_type === 1 && course?.is_flexible === true">
             <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date]) let i = index"
-                 style="display: flex; gap: 16px; padding-top: 20px; flex-direction: column;">
-              {{ (course.is_flexible ? date : '') | date:'dd.MM.yyyy' }}
+                 class="extras-date-section">
+              <div class="extras-date-header">
+                {{ (course.is_flexible ? date : '') | date:'dd.MM.yyyy' }}
+              </div>
 
-              <mat-checkbox *ngFor="let extra of settingsExtras"
-                            [checked]="isExtraSelected(extra, date)"
-                            style="width: 100%; border-radius: 3px; border: 1px solid rgba(34, 34, 34, 1); height: 64px"
-                            (change)="toggleForfaitSelectionCollective(extra, date)">
-                <div style="display: flex; gap: 8px; height: 64px; justify-content: space-between; align-items: center;">
-                  <div>
-                    <span class="extra_product">{{ extra.name }}</span>
-                    <br>
-                    <span class="extra_name">{{ extra.description }}</span>
+              <div class="extras-grid">
+                <mat-checkbox *ngFor="let extra of settingsExtras"
+                              [checked]="isExtraSelected(extra, date)"
+                              class="extra-checkbox"
+                              (change)="toggleForfaitSelectionCollective(extra, date)">
+                  <div class="extra-content">
+                    <div class="extra-info">
+                      <div class="extra-name">{{ extra.name }}</div>
+                      <div class="extra-description">{{ extra.description }}</div>
+                    </div>
+                    <div class="extra-price">
+                      {{ extra.price | number:'0.2-2' }} {{ course?.currency }}/{{ 'date' | translate }}
+                    </div>
                   </div>
-                  <span style="width: 125px; padding: 10px;">
-                  {{ extra.price | number:'0.2-2' }}{{ course?.currency }}/{{ 'date' | translate }}
-                 </span>
-                </div>
-              </mat-checkbox>
+                </mat-checkbox>
+              </div>
             </div>
           </ng-container>
           <div style="margin-top: 20px;">

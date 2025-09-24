@@ -127,10 +127,8 @@ export class CourseComponent implements OnInit {
       this.course = res.data;
       this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
       if (this.hasIntervals()) {
-        // Por defecto, expandir todos los intervalos
-        this.getIntervalGroups().forEach(interval => {
-          this.expandedIntervals[interval.id] = true;
-        });
+        // Inicializar intervalos cerrados por defecto
+        // Los intervalos se abrirán al hacer click en ellos
       }
       this.settingsExtras = this.course.course_extras;
       if (this.course.discounts) {
@@ -206,7 +204,7 @@ export class CourseComponent implements OnInit {
 
   // Verifica si un intervalo está expandido
   isIntervalExpanded(intervalId: string): boolean {
-    return this.expandedIntervals[intervalId] !== false;
+    return this.expandedIntervals[intervalId] === true;
   }
 
   // Método para obtener fechas agrupadas por intervalos
@@ -1720,5 +1718,17 @@ export class CourseComponent implements OnInit {
   }
 
   find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
+
+  // Función para obtener el día de la semana de una fecha específica
+  getWeekday(date: string): string {
+    const dateObj = new Date(date);
+    return this.Week[dateObj.getDay()];
+  }
+
+  // Función para limpiar todas las fechas seleccionadas
+  clearAllDates(): void {
+    this.selectedDates = [];
+    this.updatePrice();
+  }
 
 }
