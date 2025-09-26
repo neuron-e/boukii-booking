@@ -77,7 +77,7 @@ export class CourseComponent implements OnInit {
   dateSelectionError: string = '';
   selectedIntervalId: string | null = null;
 
-  defaultImage = '../../../assets/images/3.png';
+  defaultImage = '../../../assets/images/PAGINA-LOGIN-BOUKII-SCHOOLSMALL.jpg';
 
   constructor(private router: Router, public themeService: ThemeService, public coursesService: CoursesService,
               private route: ActivatedRoute, private authService: AuthService, public schoolService: SchoolService,
