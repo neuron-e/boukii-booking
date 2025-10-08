@@ -97,12 +97,9 @@ export class CourseComponent implements OnInit {
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
 
-  // Control de la visualización de intervalos
+  // Control de la visualizaciÃƒÂ³n de intervalos
   expandedIntervals: { [key: string]: boolean } = {};
   dateSelectionError: string = '';
-
-  // Cache para evitar re-renderizado
-  private cachedIntervalGroups: any[] | null = null;
   selectedIntervalId: string | null = null;
 
   defaultImage = '../../../assets/images/PAGINA-LOGIN-BOUKII-SCHOOLSMALL.jpg';
@@ -156,7 +153,7 @@ export class CourseComponent implements OnInit {
       this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
       if (this.hasIntervals()) {
         // Inicializar intervalos cerrados por defecto
-        // Los intervalos se abrirán al hacer click en ellos
+        // Los intervalos se abrirÃƒÂ¡n al hacer click en ellos
       }
       this.settingsExtras = this.course.course_extras;
       if (this.course.discounts) {
@@ -218,7 +215,7 @@ export class CourseComponent implements OnInit {
     return !this.hasIntervals() && !this.course.is_flexible && this.course.course_type == 1;
   }
 
-  // Método para verificar si el curso tiene intervalos configurados
+  // MÃƒÂ©todo para verificar si el curso tiene intervalos configurados
   hasIntervals(): boolean {
     if (!this.course) {
       return false;
@@ -236,7 +233,7 @@ export class CourseComponent implements OnInit {
     return false;
   }
 
-  // Alternar el estado de expansión de un intervalo
+  // Alternar el estado de expansiÃƒÂ³n de un intervalo
   toggleInterval(intervalId: IntervalIdentifier): void {
     const key = this.normalizeIntervalId(intervalId);
     if (!key) {
@@ -245,7 +242,7 @@ export class CourseComponent implements OnInit {
     this.expandedIntervals[key] = !this.expandedIntervals[key];
   }
 
-  // Verifica si un intervalo está expandido
+  // Verifica si un intervalo estÃƒÂ¡ expandido
   isIntervalExpanded(intervalId: IntervalIdentifier): boolean {
     const key = this.normalizeIntervalId(intervalId);
     if (!key) {
@@ -254,13 +251,8 @@ export class CourseComponent implements OnInit {
     return this.expandedIntervals[key] === true;
   }
 
-  // Método para obtener fechas agrupadas por intervalos
+  // MÃƒÂ©todo para obtener fechas agrupadas por intervalos
   getIntervalGroups(): any[] {
-    // Usar cache para evitar re-renderizado
-    if (this.cachedIntervalGroups !== null) {
-      return this.cachedIntervalGroups;
-    }
-
     if (!this.hasIntervals() || !this.course?.course_dates) {
       console.log('DEBUG: getIntervalGroups failed', {
         hasIntervals: this.hasIntervals(),
@@ -360,23 +352,7 @@ export class CourseComponent implements OnInit {
       });
     }
 
-    // Guardar en cache
-    this.cachedIntervalGroups = result;
     return result;
-  }
-
-  // Invalidar cache cuando cambien las fechas
-  private invalidateIntervalGroupsCache(): void {
-    this.cachedIntervalGroups = null;
-  }
-
-  // TrackBy para evitar re-renderizado innecesario
-  trackByIntervalId(index: number, interval: any): any {
-    return interval.id;
-  }
-
-  trackByDate(index: number, date: any): any {
-    return date.date || date;
   }
 
   // Obtener configuraciones del curso
@@ -518,12 +494,20 @@ export class CourseComponent implements OnInit {
     }
 
     if (this.mustBeConsecutive(normalized)) {
-      // IGNORAR consecutive_days_count completamente
-      // Solo indicar que las fechas deben ser consecutivas, sin especificar cantidad
-      rules.push({
-        icon: 'date_range',
-        key: 'booking_dates_must_be_consecutive'
-      });
+      const consecutiveDays = this.getIntervalConsecutiveDaysValue(ruleSource);
+      if (consecutiveDays && consecutiveDays > 0) {
+        rules.push({
+          icon: 'date_range',
+          key: 'booking_interval_rule_exact_consecutive',
+          params: { count: consecutiveDays }
+        });
+      } else {
+        rules.push({
+          icon: 'date_range',
+          key: 'consecutive_dates_required',
+          tooltipKey: 'consecutive_dates_info'
+        });
+      }
     }
 
     if (this.mustStartFromFirst(normalized)) {
@@ -731,29 +715,11 @@ export class CourseComponent implements OnInit {
     return Array.from(new Set(dateStrings)).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   }
 
-  private areDatesConsecutive(dateStrings: string[], availableDates?: string[]): boolean {
+  private areDatesConsecutive(dateStrings: string[]): boolean {
     const sorted = this.sortDateStrings(dateStrings);
     if (sorted.length <= 1) {
       return true;
     }
-
-    // Si se proporcionan las fechas disponibles del intervalo, validar consecutividad dentro de esas fechas
-    if (availableDates && availableDates.length > 0) {
-      const sortedAvailable = this.sortDateStrings(availableDates);
-
-      // Encontrar los índices de las fechas seleccionadas dentro de las disponibles
-      const selectedIndices = sorted.map(date => sortedAvailable.indexOf(date)).filter(idx => idx !== -1);
-
-      // Verificar que los índices sean consecutivos (sin saltos)
-      for (let i = 1; i < selectedIndices.length; i++) {
-        if (selectedIndices[i] !== selectedIndices[i - 1] + 1) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    // Fallback: validar días naturales consecutivos (compatibilidad con código antiguo)
     for (let i = 1; i < sorted.length; i++) {
       if (moment(sorted[i]).diff(moment(sorted[i - 1]), 'days') !== 1) {
         return false;
@@ -818,14 +784,15 @@ export class CourseComponent implements OnInit {
     }
 
     if (this.mustBeConsecutive(intervalId)) {
-      // Obtener las fechas disponibles del intervalo para validar consecutividad dentro del intervalo
-      const intervalDatesArray = availableFutureDates.map(d => d.date);
-      if (!this.areDatesConsecutive(cleanedSelection, intervalDatesArray)) {
+      if (!this.areDatesConsecutive(cleanedSelection)) {
         this.dateSelectionError = this.translateService.instant('booking_dates_must_be_consecutive');
         return false;
       }
-      // IGNORAR consecutive_days_count - no validar cantidad específica
-      // Solo validar que sean consecutivas
+      const expectedCount = interval?.consecutive_days_count;
+      if (expectedCount && expectedCount > 0 && cleanedSelection.length !== expectedCount) {
+        this.dateSelectionError = this.translateService.instant('booking_requires_exact_days', { count: expectedCount });
+        return false;
+      }
     }
 
     this.selectedDates = cleanedSelection;
@@ -870,15 +837,7 @@ export class CourseComponent implements OnInit {
     }
 
     if (this.mustBeConsecutive()) {
-      // Obtener las fechas disponibles del curso para validar consecutividad dentro de esas fechas
-      const availableCourseDates = (this.course?.course_dates || [])
-        .filter((d: any) => {
-          const dActive = d.active === undefined || d.active === true || d.active === 1;
-          return dActive && this.isDateInFuture(d.date);
-        })
-        .map((d: any) => d.date);
-
-      if (!this.areDatesConsecutive(ordered, availableCourseDates)) {
+      if (!this.areDatesConsecutive(ordered)) {
         this.dateSelectionError = this.translateService.instant('booking_dates_must_be_consecutive');
         return false;
       }
@@ -890,7 +849,7 @@ export class CourseComponent implements OnInit {
     return true;
   }
 
-  // Verificar si los días deben ser consecutivos
+  // Verificar si los dÃƒÂ­as deben ser consecutivos
   mustBeConsecutive(intervalId?: string | null): boolean {
     if (intervalId) {
       const interval = this.getIntervalEntity(intervalId);
@@ -914,7 +873,7 @@ export class CourseComponent implements OnInit {
     return settings.mustBeConsecutive === true;
   }
 
-  // Verificar si debe comenzar desde el primer día
+  // Verificar si debe comenzar desde el primer dÃƒÂ­a
   mustStartFromFirst(intervalId?: string | null): boolean {
     if (intervalId) {
       const interval = this.getIntervalEntity(intervalId);
@@ -940,7 +899,7 @@ export class CourseComponent implements OnInit {
 
 
 
-  // Método para agrupar fechas por semanas cuando es flexible sin intervalos
+  // MÃƒÂ©todo para agrupar fechas por semanas cuando es flexible sin intervalos
   getWeekGroups(): any[] {
     if (this.hasIntervals() || !this.course.course_dates) {
       console.log('DEBUG: getWeekGroups failed', {
@@ -951,7 +910,7 @@ export class CourseComponent implements OnInit {
       return [];
     }
 
-    // Incluir todas las fechas y ordenar (se marcarán como no seleccionables las pasadas)
+    // Incluir todas las fechas y ordenar (se marcarÃƒÂ¡n como no seleccionables las pasadas)
     const orderedDates = this.course.course_dates
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -982,7 +941,7 @@ export class CourseComponent implements OnInit {
         };
         weekGroups.push(currentGroup);
       } else {
-        // Añadir a grupo existente
+        // AÃƒÂ±adir a grupo existente
         currentGroup.dates.push(date);
         currentGroup.endDate = dateObj;
         if (!currentGroup.weekdays.includes(dateObj.getDay())) {
@@ -1039,7 +998,7 @@ export class CourseComponent implements OnInit {
     today.setHours(0, 0, 0, 0);
     return isoDateObj.getTime() >= today.getTime();
   }
-  // Obtener días de la semana únicos de un conjunto de fechas
+  // Obtener dÃƒÂ­as de la semana ÃƒÂºnicos de un conjunto de fechas
   private getUniqueWeekdaysFromDates(dates): number[] {
     const uniqueDays = new Set<number>();
 
@@ -1069,21 +1028,21 @@ export class CourseComponent implements OnInit {
     return this.translateService.instant('various_times');
   }
 
-  // Formatear fecha para visualización
+  // Formatear fecha para visualizaciÃƒÂ³n
   private formatDate(date: Date): string {
     return `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
   }
 
-  // Convertir array de números de días a nombres de días
+  // Convertir array de nÃƒÂºmeros de dÃƒÂ­as a nombres de dÃƒÂ­as
   formatWeekdays(days: number[]): string {
     if (!days || days.length === 0) return '';
 
-    // Si son todos los días
+    // Si son todos los dÃƒÂ­as
     if (days.length === 7) {
       return this.translateService.instant('all_days');
     }
 
-    // Si son días laborables
+    // Si son dÃƒÂ­as laborables
     if (days.length === 5 &&
       days.includes(1) && days.includes(2) && days.includes(3) &&
       days.includes(4) && days.includes(5) &&
@@ -1098,7 +1057,7 @@ export class CourseComponent implements OnInit {
       return this.translateService.instant('weekend');
     }
 
-    // Caso general: listar los días
+    // Caso general: listar los dÃƒÂ­as
     const dayNames = days.map(day => this.Week[day]);
 
     if (dayNames.length === 1) {
@@ -1110,7 +1069,7 @@ export class CourseComponent implements OnInit {
   }
 
   initializeMonthNames() {
-    this.monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    this.monthNames = ['Janvier', 'FÃƒÂ©vrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'AoÃƒÂ»t', 'Septembre', 'Octobre', 'Novembre', 'DÃƒÂ©cembre'];
   }
 
   prevMonth() {
@@ -1215,7 +1174,7 @@ export class CourseComponent implements OnInit {
     } else {
       if (this.course.is_flexible) {
         this.course.course_dates.forEach((date: any) => {
-          // Verifica si la fecha está en las fechas seleccionadas
+          // Verifica si la fecha estÃƒÂ¡ en las fechas seleccionadas
           if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
             if (this.hasIntervals()) {
               const activeIntervalId = this.normalizeIntervalId(this.selectedIntervalId);
@@ -1371,7 +1330,7 @@ export class CourseComponent implements OnInit {
   }
 
   calculateEndTime(startTime: string, durationMinutes: number): string {
-    // Convertir la hora de inicio y la duración a minutos
+    // Convertir la hora de inicio y la duraciÃƒÂ³n a minutos
     const [startHours, startMinutes] = startTime.split(':').map(Number);
 
     const startTotalMinutes = startHours * 60 + startMinutes;
@@ -1384,7 +1343,7 @@ export class CourseComponent implements OnInit {
     const endHours = Math.floor(endTotalMinutes / 60);
     const endMinutes = endTotalMinutes % 60;
 
-    // Formatear la hora de fin para tener siempre dos dígitos
+    // Formatear la hora de fin para tener siempre dos dÃƒÂ­gitos
     const formattedEndHours = endHours.toString().padStart(2, '0');
     const formattedEndMinutes = endMinutes.toString().padStart(2, '0');
 
@@ -1400,7 +1359,7 @@ export class CourseComponent implements OnInit {
       // Convertir la fecha de courseDate a objeto Date
       const courseDateObject = new Date(courseDate.date);
 
-      // Compara si las fechas (año, mes y día) son iguales
+      // Compara si las fechas (aÃƒÂ±o, mes y dÃƒÂ­a) son iguales
       return courseDateObject.getFullYear() === selectedDate.getFullYear() &&
         courseDateObject.getMonth() === selectedDate.getMonth() &&
         courseDateObject.getDate() === selectedDate.getDate();
@@ -1504,6 +1463,14 @@ export class CourseComponent implements OnInit {
   }
 
   findMatchingUser(level: any): boolean {
+    console.log('DEBUG: findMatchingUser', {
+      level: level,
+      selectedUser: this.selectedUser,
+      selectedUserMultiple: this.selectedUserMultiple,
+      availableDegrees: this.course?.availableDegrees?.length,
+      dataLevels: this.dataLevels?.length
+    });
+
     if (this.selectedUser) {
       // Si hay un selectedUser, valida ese usuario
       return this.isUserValidForLevel(this.selectedUser, level);
@@ -1526,7 +1493,7 @@ export class CourseComponent implements OnInit {
     });
   }
 
-  // Validar si una selección de fecha es válida según restricciones
+  // Validar si una selecciÃƒÂ³n de fecha es vÃƒÂ¡lida segÃƒÂºn restricciones
   validateDateSelection(dateStr: string, intervalId: string | null): boolean {
     if (!intervalId) {
       return true;
@@ -1581,14 +1548,14 @@ export class CourseComponent implements OnInit {
     return true;
   }
 
-  // Validar selección para cursos SIN intervalos (consecutividad sobre el orden del curso)
+  // Validar selecciÃƒÂ³n para cursos SIN intervalos (consecutividad sobre el orden del curso)
   private validateDateSelectionNoInterval(dateStr: string): boolean {
     const ordered = (this.course?.course_dates || [])
       .slice()
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map((d: any) => d.date);
 
-    // Si debe empezar por el primer día y no hay ninguna fecha seleccionada
+    // Si debe empezar por el primer dÃƒÂ­a y no hay ninguna fecha seleccionada
     if (this.mustStartFromFirst() && (this.selectedDates?.length || 0) === 0) {
       const firstAvailable = (this.course?.course_dates || [])
         .slice()
@@ -1619,7 +1586,7 @@ export class CourseComponent implements OnInit {
     return true;
   }
 
-  // Obtener fechas de un intervalo específico
+  // Obtener fechas de un intervalo especÃƒÂ­fico
   getIntervalDates(intervalId: string | null, options: { includePast?: boolean } = {}): any[] {
     if (!intervalId || !this.course || !this.course.course_dates) return [];
 
@@ -1685,7 +1652,7 @@ export class CourseComponent implements OnInit {
     return true;
   }
 
-  // Validar des-selección para cursos SIN intervalos
+  // Validar des-selecciÃƒÂ³n para cursos SIN intervalos
   private validateDateDeselectionNoInterval(dateStr: string): boolean {
     if (this.mustBeConsecutive()) {
       const ordered = (this.course?.course_dates || [])
@@ -1704,7 +1671,7 @@ export class CourseComponent implements OnInit {
         }
       }
     }
-    // Si debe empezar por el primer día y se intenta quitar el primero con otros seleccionados
+    // Si debe empezar por el primer dÃƒÂ­a y se intenta quitar el primero con otros seleccionados
     if (this.mustStartFromFirst()) {
       const ordered = (this.course?.course_dates || [])
         .slice()
@@ -1722,7 +1689,7 @@ export class CourseComponent implements OnInit {
     this.dateSelectionError = '';
     return true;
   }
-  // Determinar si un intervalo está habilitado para selección
+  // Determinar si un intervalo estÃƒÂ¡ habilitado para selecciÃƒÂ³n
   isIntervalEnabled(intervalId: IntervalIdentifier): boolean {
     const normalized = this.normalizeIntervalId(intervalId);
     if (!normalized) {
@@ -1731,7 +1698,7 @@ export class CourseComponent implements OnInit {
     return !this.selectedIntervalId || this.selectedIntervalId === normalized;
   }
 
-  // Determinar si un intervalo está seleccionado
+  // Determinar si un intervalo estÃƒÂ¡ seleccionado
   isIntervalSelected(intervalId: IntervalIdentifier): boolean {
     const normalized = this.normalizeIntervalId(intervalId);
     if (!normalized) {
@@ -1804,7 +1771,6 @@ export class CourseComponent implements OnInit {
     this.selectedDates = this.sortDateStrings(this.selectedDates);
     this.syncExtrasWithSelectedDates();
     this.updateCollectivePrice();
-    // NO invalidar cache aquí - solo cambiamos selectedDates, no los grupos
   }
 
   discounts: any[] = []
@@ -1831,7 +1797,7 @@ export class CourseComponent implements OnInit {
   }
 
   filteredPriceRange(formatted: boolean = false) {
-    const selectedPax = this.selectedUserMultiple.length; // Obtener el número de paxes seleccionados
+    const selectedPax = this.selectedUserMultiple.length; // Obtener el nÃƒÂºmero de paxes seleccionados
 
     return this.course.price_range
       .filter((range: any) => {
@@ -1851,10 +1817,10 @@ export class CourseComponent implements OnInit {
           }
         }
 
-        // Aplicar el número de paxes al cálculo de la duración
-        // Si el número de paxes está disponible, ajustar el cálculo
+        // Aplicar el nÃƒÂºmero de paxes al cÃƒÂ¡lculo de la duraciÃƒÂ³n
+        // Si el nÃƒÂºmero de paxes estÃƒÂ¡ disponible, ajustar el cÃƒÂ¡lculo
         if (selectedPax && range[selectedPax] !== undefined) {
-          minutes *= selectedPax; // Ajustamos el tiempo por el número de paxes
+          minutes *= selectedPax; // Ajustamos el tiempo por el nÃƒÂºmero de paxes
         }
 
         return minutes;
@@ -1934,9 +1900,9 @@ export class CourseComponent implements OnInit {
         let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
         minInterval = Math.min(...differences);
       } else if (timeIntervals.length === 1) {
-        minInterval = timeIntervals[0]; // único valor como intervalo
+        minInterval = timeIntervals[0]; // ÃƒÂºnico valor como intervalo
       }
-      //let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
+      //let minDuration = Math.min(...timeIntervals); // DuraciÃƒÂ³n mÃƒÂ­nima en minutos
       for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
         let hour = Math.floor(minute / 60);
         let min = minute % 60;
@@ -1973,20 +1939,20 @@ export class CourseComponent implements OnInit {
     const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
     const maxTimeInMinutes = hourMax * 60;
 
-    // Filtrar las duraciones disponibles basadas en el tiempo máximo y el tiempo seleccionado
+    // Filtrar las duraciones disponibles basadas en el tiempo mÃƒÂ¡ximo y el tiempo seleccionado
     this.availableDurations = this.filteredPriceRange()
       .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes);
 
-    // Verificar si la duración seleccionada está disponible en la lista filtrada
+    // Verificar si la duraciÃƒÂ³n seleccionada estÃƒÂ¡ disponible en la lista filtrada
     const isSelectedDurationAvailable = this.availableDurations
       .some((range: any) => range === this.convertToMinutes(this.selectedDuration)); // Convertimos selectedDuration a minutos para comparar
 
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
-      // Si la duración seleccionada no está disponible, seleccionamos la primera opción
+      // Si la duraciÃƒÂ³n seleccionada no estÃƒÂ¡ disponible, seleccionamos la primera opciÃƒÂ³n
       this.selectedDuration = this.convertToDuration(this.availableDurations[0]);
     }
 
-    // Actualizamos el precio basado en la duración seleccionada
+    // Actualizamos el precio basado en la duraciÃƒÂ³n seleccionada
     this.updatePrice();
   }
 
@@ -2010,7 +1976,7 @@ export class CourseComponent implements OnInit {
     if (this.selectedForfait && this.selectedForfait.length > 0) {
       // Recorrer cada objeto en selectedForfait y obtener el precio
       const extraPrice = this.selectedForfait.reduce((total, forfait) => {
-        // Asegurarse de que el precio sea un número (en caso de que esté como string)
+        // Asegurarse de que el precio sea un nÃƒÂºmero (en caso de que estÃƒÂ© como string)
         return total + parseFloat(forfait.price);
       }, 0);
 
@@ -2088,7 +2054,7 @@ export class CourseComponent implements OnInit {
     this.updateCollectivePrice();
   }
 
-  // Verificar si una fecha está disponible para seleccionar
+  // Verificar si una fecha estÃƒÂ¡ disponible para seleccionar
   isDateAvailable(dateStr: string, intervalId?: IntervalIdentifier): boolean {
     const normalizedIntervalId = intervalId !== undefined ? this.normalizeIntervalId(intervalId) : null;
 
@@ -2102,28 +2068,25 @@ export class CourseComponent implements OnInit {
       return false;
     }
 
-    // Verificar si la fecha es futura
-    if (!this.isDateInFuture(dateStr)) {
-      return false;
+    if (this.hasIntervals() && normalizedIntervalId && this.mustStartFromFirst(normalizedIntervalId)) {
+      const allIntervalDates = this.getIntervalDates(normalizedIntervalId, { includePast: true });
+      if (allIntervalDates.length === 0) {
+        return false;
+      }
+      const first = allIntervalDates[0];
+      const firstIsActive = first ? (first.active === undefined || first.active === true || first.active === 1) : false;
+      const firstIsFuture = first ? this.isDateInFuture(first.date) : false;
+
+      if (!firstIsActive || !firstIsFuture) {
+        return false;
+      }
     }
 
-    // Si debe empezar desde la primera fecha y no hay fechas seleccionadas
-    const shouldStartFromFirst = this.hasIntervals() && normalizedIntervalId
-      ? this.mustStartFromFirst(normalizedIntervalId)
-      : this.mustStartFromFirst();
+    if (!this.hasIntervals() && this.mustStartFromFirst()) {
+      const allDatesOrdered = (this.course?.course_dates || [])
+        .slice()
+        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    if (shouldStartFromFirst && (this.selectedDates?.length || 0) === 0) {
-      // Obtener todas las fechas ordenadas del intervalo o curso
-      let allDatesOrdered: any[];
-      if (this.hasIntervals() && normalizedIntervalId) {
-        allDatesOrdered = this.getIntervalDates(normalizedIntervalId, { includePast: true });
-      } else {
-        allDatesOrdered = (this.course?.course_dates || [])
-          .slice()
-          .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      }
-
-      // Encontrar la primera fecha disponible (activa y futura)
       const firstAvailable = allDatesOrdered.find((d: any) => {
         const dActive = d.active === undefined || d.active === true || d.active === 1;
         return dActive && this.isDateInFuture(d.date);
@@ -2133,55 +2096,15 @@ export class CourseComponent implements OnInit {
         return false;
       }
 
-      // Solo permitir seleccionar la primera fecha disponible
-      return dateStr === firstAvailable.date;
+      if ((this.selectedDates?.length || 0) === 0) {
+        return dateStr === firstAvailable.date;
+      }
     }
 
-    // Si debe ser consecutiva y ya hay fechas seleccionadas
-    const shouldBeConsecutive = this.hasIntervals() && normalizedIntervalId
-      ? this.mustBeConsecutive(normalizedIntervalId)
-      : this.mustBeConsecutive();
-
-    if (shouldBeConsecutive && (this.selectedDates?.length || 0) > 0) {
-      // Obtener fechas del intervalo
-      let intervalDateStrings: string[];
-      if (this.hasIntervals() && normalizedIntervalId) {
-        const intervalDates = this.getIntervalDates(normalizedIntervalId);
-        intervalDateStrings = intervalDates.map(d => d.date);
-      } else {
-        intervalDateStrings = (this.course?.course_dates || [])
-          .slice()
-          .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-          .map((d: any) => d.date);
-      }
-
-      // Obtener índices de fechas ya seleccionadas
-      const selectedIndices = this.selectedDates
-        .map((d: string) => intervalDateStrings.indexOf(d))
-        .filter((i: number) => i >= 0)
-        .sort((a: number, b: number) => a - b);
-
-      if (selectedIndices.length === 0) {
-        return true; // No hay restricción si no hay fechas seleccionadas
-      }
-
-      // Índice de la fecha candidata
-      const candidateIndex = intervalDateStrings.indexOf(dateStr);
-      if (candidateIndex < 0) {
-        return false;
-      }
-
-      // Solo permitir fechas inmediatamente antes o después del rango actual
-      const minIndex = selectedIndices[0];
-      const maxIndex = selectedIndices[selectedIndices.length - 1];
-
-      return candidateIndex === minIndex - 1 || candidateIndex === maxIndex + 1;
-    }
-
-    return true;
+    return this.isDateInFuture(dateStr);
   }
 
-  // Limpiar fechas de un intervalo específico
+  // Limpiar fechas de un intervalo especÃƒÂ­fico
   clearDatesFromInterval(intervalId: IntervalIdentifier | null): void {
 
     const normalizedId = this.normalizeIntervalId(intervalId);
@@ -2227,7 +2150,7 @@ export class CourseComponent implements OnInit {
 
 
 
-      // Asignar el precio si hay coincidencia en la duración y participantes
+      // Asignar el precio si hay coincidencia en la duraciÃƒÂ³n y participantes
       this.course.price = matchingTimeRange && matchingTimeRange[selectedPax]
         ? parseFloat(matchingTimeRange[selectedPax]) + extraPrice
         : 0 + extraPrice;
@@ -2399,13 +2322,7 @@ export class CourseComponent implements OnInit {
       if (this.course.course_type === 1 && this.course.is_flexible) {
 
         if (!this.validateFlexibleSelectionBeforeBooking()) {
-          // Validation failed - error message is already set in dateSelectionError and displayed in UI
-          console.error('Validation failed:', this.dateSelectionError);
-          // Scroll to top of extras section to show error
-          const extrasSection = document.querySelector('.extras-section');
-          if (extrasSection) {
-            extrasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+
           return;
 
         }
@@ -2530,9 +2447,9 @@ export class CourseComponent implements OnInit {
   toggleForfaitSelection(extra: any) {
     const index = this.selectedForfait.indexOf(extra);
     if (index > -1) {
-      this.selectedForfait.splice(index, 1); // Elimina si ya está seleccionado
+      this.selectedForfait.splice(index, 1); // Elimina si ya estÃƒÂ¡ seleccionado
     } else {
-      this.selectedForfait.push(extra); // Añade si no está seleccionado
+      this.selectedForfait.push(extra); // AÃƒÂ±ade si no estÃƒÂ¡ seleccionado
     }
     this.updatePrice();
   }
@@ -2562,13 +2479,13 @@ export class CourseComponent implements OnInit {
 
   find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
 
-  // Función para obtener el día de la semana de una fecha específica
+  // FunciÃƒÂ³n para obtener el dÃƒÂ­a de la semana de una fecha especÃƒÂ­fica
   getWeekday(date: string): string {
     const dateObj = new Date(date);
     return this.Week[dateObj.getDay()];
   }
 
-  // Función para limpiar todas las fechas seleccionadas
+  // FunciÃƒÂ³n para limpiar todas las fechas seleccionadas
   clearAllDates(): void {
     this.selectedDates = [];
     this.updatePrice();

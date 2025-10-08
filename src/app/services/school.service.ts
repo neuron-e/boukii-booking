@@ -3,8 +3,8 @@ import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ApiResponse } from '../interface/api-response';
-import { BehaviorSubject, map, Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { BehaviorSubject, map, Observable, of, throwError } from 'rxjs';
+import { catchError, finalize, shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,23 +13,73 @@ export class SchoolService extends ApiService {
   isModalLogin: boolean = false
   isModalNewUser: boolean = false
   private schoolDataSubject = new BehaviorSubject<any>(null);
+  private ongoingSchoolRequest: Observable<any> | null = null;
   constructor(http: HttpClient, route: ActivatedRoute) {
     super(http, route);
     //this.fetchSchoolData().subscribe();  // Llamada a fetchSchoolData al iniciar el servicio
   }
 
   fetchSchoolData(slug: string = ''): Observable<any> {
-    const url = `${this.baseUrl}/slug/school`;
-    const headers = this.getHeaders(slug);
 
-    return this.http.get(url, { headers }).pipe(
+    const resolvedSlug = this.resolveSlug(slug);
+
+    if (!resolvedSlug) {
+
+      return of(null);
+
+    }
+
+    const cached = this.schoolDataSubject.getValue();
+
+    if (cached && cached.data && cached.data.slug === resolvedSlug) {
+
+      return of(cached);
+
+    }
+
+    if (this.ongoingSchoolRequest) {
+
+      return this.ongoingSchoolRequest;
+
+    }
+
+    const url = `${this.baseUrl}/slug/school`;
+
+    const headers = this.getHeaders(resolvedSlug);
+
+    const request$ = this.http.get(url, { headers }).pipe(
+
       map((response: any) => {
+
+        this.slug = resolvedSlug;
+
         this.setSchoolData(response);
+
         return response;
+
       }),
-      catchError((error: any) => throwError(error))
+
+      catchError((error: any) => throwError(() => error)),
+
+      shareReplay(1)
+
     );
+
+    this.ongoingSchoolRequest = request$;
+
+    return request$.pipe(
+
+      finalize(() => {
+
+        this.ongoingSchoolRequest = null;
+
+      })
+
+    );
+
   }
+
+
 
   getSchoolData(): Observable<any> {
     return this.schoolDataSubject.asObservable();
@@ -39,3 +89,7 @@ export class SchoolService extends ApiService {
     this.schoolDataSubject.next(data);
   }
 }
+
+
+
+

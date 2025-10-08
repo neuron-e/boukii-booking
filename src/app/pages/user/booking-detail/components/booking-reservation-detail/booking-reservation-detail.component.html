@@ -7,7 +7,7 @@
       {{ 'booking' | translate }} #{{bookingData.id}}
       <span style="display: inline-block;float: right; text-align: right;">
 									<!-- <img src="assets/img/icons/edit.svg"  (click)="showDetail = false" class="btn-edit" /> -->
-									              <img class="icon24" src="assets/icons/icon/delete-white.png"
+									              <img *ngIf="canCancelBooking" class="icon24" src="assets/icons/icon/delete-white.png"
                                      style="display: inline-flex; cursor: pointer"
                                      (click)="deleteActivity.emit();">
         <img

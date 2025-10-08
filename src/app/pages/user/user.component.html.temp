@@ -108,7 +108,7 @@
 
             <ng-container matColumnDef="icon">
               <th *matHeaderCellDef mat-header-cell>
-                {{'type' | translate}}
+                {{"type" | translate}}
               </th>
               <td *matCellDef="let element" mat-cell style="height: 80px; width: 80px">
                 <img [src]="element.sport" class="avatar h-8 w-8 align-middle"
@@ -118,13 +118,18 @@
 
             <ng-container matColumnDef="dates">
               <th *matHeaderCellDef mat-header-cell>
-                {{ 'dates' | translate }}
+                {{ 'dates' |
+                translate }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
                 <strong>
-                  {{ getMinMaxDates(element.booking_users).minDate | date:'dd/MM/YYYY' }}
+                  {{ getMinMaxDates(element.booking_users).minDate
+                  |
+                  date: 'dd/MM/YYYY'}}
                   <br>
-                  {{ getMinMaxDates(element.booking_users).maxDate | date:'dd/MM/YYYY' }}
+                  {{
+                  getMinMaxDates(element.booking_users).maxDate| date:
+                  'dd/MM/YYYY' }}
                 </strong>
                 <br>
                 {{getMinMaxHours(element.booking_users).minHour }}h -
@@ -134,16 +139,20 @@
 
             <ng-container matColumnDef="booking_users[0].course.name">
               <th *matHeaderCellDef mat-header-cell>
-                {{ 'course' | translate }}
+                {{ 'course' |
+                translate
+                }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
-                {{ getCourseName(element.booking_users[0]?.course) || 'N/A'}}
+                {{getCourseName(element.booking_users[0]?.course) ||
+                'N/A'}}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="has_boukii_care">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>
-                {{ 'has_boukii_Care' | translate }}
+                {{
+                'has_boukii_Care' | translate }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
                 <div *ngIf="element.has_boukii_care"
@@ -157,7 +166,8 @@
 
             <ng-container matColumnDef="has_cancellation_insurance">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>
-                {{ 'text_refund_option' | translate }}
+                {{
+                'text_refund_option' | translate }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
                 <div *ngIf="element.has_cancellation_insurance"
@@ -171,22 +181,25 @@
 
             <ng-container matColumnDef="payment_method">
               <th *matHeaderCellDef mat-header-cell>
-                {{ 'payment_method' | translate }}
+                {{ 'payment_method'
+                |
+                translate }}
               </th>
               <td *matCellDef="let element" mat-cell>
-                {{ getPaymentMethod(element.payment_method_id || element.payment_method) }}
+                {{getPaymentMethod(element.payment_method_id)}}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="payment_status">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>
-                {{ 'ispaid' | translate }}
+                {{
+                "ispaid" | translate }}
               </th>
-              <td *matCellDef="let element" mat-cell>
-                <div *ngIf="element.paid"
+              <td *matCellDef="let element" [style.color]=" element ? '#CEE741' : 'red'" mat-cell>
+                <div *ngIf="element"
                   style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
                 </div>
-                <div *ngIf="!element.paid"
+                <div *ngIf="!element"
                   style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 0 0 5%;">
                 </div>
               </td>
@@ -194,10 +207,11 @@
 
             <ng-container matColumnDef="cancelation_status">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>
-                {{ 'status' | translate }}
+                {{
+                "status" | translate }}
               </th>
               <td *matCellDef="let element" mat-cell>
-                {{ element.cancellation_status }}
+                {{element.cancellation_status}}
               </td>
             </ng-container>
 
@@ -206,7 +220,7 @@
                 {{ 'price' | translate }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
-                {{ element.price_total }} {{ element.price_currency || element.currency || 'CHF' }}
+                {{element.price_total}} CHF
               </td>
             </ng-container>
 
@@ -218,12 +232,7 @@
         </div>
       </div>
       <div style="width:100%;" *ngIf="selectedBooking">
-        <booking-detail-v2
-          [bookingId]="bookingId"
-          [bookingData]="selectedBookingData"
-          (bookingUpdated)="onBookingUpdated($event)"
-          (bookingCancelled)="onBookingCancelled($event)"
-          (closeBooking)="hideBooking()"></booking-detail-v2>
+        <booking-detail-v2 [incData]="{id: bookingId}" (closeBooking)="selectedBooking = false"></booking-detail-v2>
       </div>
     </mat-tab>
   </mat-tab-group>

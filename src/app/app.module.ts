@@ -61,6 +61,7 @@ import { TermsComponent } from './pages/terms/terms.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
 import {ContactComponent} from './pages/contact/contact.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { ErrorInterceptor } from './error-interceptor';
 
 
@@ -134,7 +135,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatFormFieldModule,
     ComponenteDatePickerModule,
     ComponenteSelectModule,
-    BookingDetailModule, MatTooltipModule
+    BookingDetailModule, MatTooltipModule, MatChipsModule
   ],
   providers: [
     SlugResolver,

@@ -36,6 +36,7 @@
 			[bookingData]="bookingData$ | async"
 			[activities]="groupedActivities"
 			[activitiesChanged]="activitiesChanged$"
+			[canCancelBooking]="allowFullCancellation"
       (deleteActivity)="processFullDelete()"
 			(endClick)="endModal=true"
 			(payClick)="bookingService.calculatePendingPrice() === 0 ? finalizeBooking() : payModal=true"

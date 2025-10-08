@@ -1,0 +1,68 @@
+import { Component } from '@angular/core';
+import localeIt from "@angular/common/locales/it";
+import localeEnGb from "@angular/common/locales/en-GB";
+import localeEs from "@angular/common/locales/es";
+import localeDe from "@angular/common/locales/de";
+import localeFr from "@angular/common/locales/fr";
+import {TranslateService} from '@ngx-translate/core';
+import {catchError, take} from 'rxjs/operators';
+import {SchoolService} from './services/school.service';
+import {ActivatedRouteSnapshot} from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  locales: { locale: any, lan: string }[] =
+    [
+      { locale: localeEs, lan: 'es' },
+      { locale: localeIt, lan: 'it-IT' },
+      { locale: localeEnGb, lan: 'en-GB' },
+      { locale: localeDe, lan: 'de' },
+      { locale: localeFr, lan: 'fr' },
+    ]
+
+  constructor( private translateService: TranslateService, private schoolService: SchoolService) {
+    const lang = sessionStorage.getItem('lang');
+    if (lang && lang.length > 0) {
+      this.translateService.setDefaultLang(lang);
+      this.translateService.currentLang = lang;
+    } else {
+      if (this.locales.find((a: any) => a.lan === navigator.language.split('-')[0])) {
+        this.translateService.setDefaultLang(navigator.language.split('-')[0]);
+        this.translateService.currentLang = navigator.language.split('-')[0];
+        sessionStorage.setItem('lang', navigator.language.split("-")[0]);
+      } else {
+        this.translateService.setDefaultLang(this.locales[0].lan);
+        this.translateService.currentLang = this.locales[0].lan;
+      }
+    }
+
+    // Only try to fetch school data if we have a slug in the URL
+    setTimeout(() => {
+      const currentUrl = window.location.pathname;
+      const urlParts = currentUrl.split('/').filter(part => part.length > 0);
+
+      if (urlParts.length > 0 && urlParts[0] !== '404') {
+        const possibleSlug = urlParts[0];
+
+        // Check if schoolData is already loaded
+        this.schoolService.getSchoolData().pipe(take(1)).subscribe(data => {
+          if (!data) {
+            console.log('Fetching school data for slug:', possibleSlug);
+            this.schoolService.fetchSchoolData(possibleSlug).pipe(
+              catchError(err => {
+                console.log('Error fetching school data:', err);
+                return '';
+              })
+            ).subscribe();
+          }
+        });
+      } else {
+        console.log('No valid slug found in URL, skipping school data fetch');
+      }
+    }, 150);
+  }
+}

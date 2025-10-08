@@ -24,7 +24,6 @@ export class BookingReservationDetailComponent implements OnInit {
   @Input() hideBotton = false;
   @Input() bookingData: any;
   @Input() allLevels: any;
-  @Input() canCancelBooking = false;
   @Output() endClick = new EventEmitter();
   @Output() deleteActivity = new EventEmitter();
   @Output() editClick = new EventEmitter();
@@ -134,15 +133,12 @@ export class BookingReservationDetailComponent implements OnInit {
   }
 
   sumActivityTotal(): number {
-    if (!this.activities || !Array.isArray(this.activities)) {
-      return 0;
-    }
     return this.activities.reduce((acc: any, item: any) => {
       // Solo suma si el status es 1
       if (item.status != 2) {
         const numericValue = typeof item.total === 'number'
           ? item.total
-          : parseFloat(item.total.toString().replace(/[^d.-]/g, '')) || 0;
+          : parseFloat(item.total.toString().replace(/[^\d.-]/g, '')) || 0;
 
         return acc + numericValue;
       }
@@ -169,7 +165,7 @@ export class BookingReservationDetailComponent implements OnInit {
 
   recalculateBonusPrice() {
     let remainingPrice = parseFloat(this.bookingData.price_total) - this.calculateTotalVoucherPrice();
-    if (remainingPrice !== 0 && this.bookingData.vouchers && Array.isArray(this.bookingData.vouchers)) {
+    if (remainingPrice !== 0) {
       this.bookingData.vouchers.forEach(voucher => {
         if (!voucher.bonus.is_old) {
           const availableBonus = voucher.bonus.remaining_balance - voucher.bonus.reducePrice;
@@ -319,12 +315,6 @@ export class BookingReservationDetailComponent implements OnInit {
     }, 0);
   }
 
-  getCurrency(): string {
-    if (!this.activities || !Array.isArray(this.activities) || this.activities.length === 0) {
-      return '';
-    }
-    return this.activities[0]?.course?.currency || '';
-  }
   protected readonly isNaN = isNaN;
   protected readonly parseFloat = parseFloat;
   protected readonly Math = Math;

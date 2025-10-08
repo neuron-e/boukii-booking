@@ -57,6 +57,8 @@ export class BookingDescriptionCard {
   @Input() isDetail = false;
   @Input() status = 1;
   @Input() index: number = 1;
+  @Input() canEditBooking = false;
+  @Input() canCancelActivity = false;
   uniqueMonitors: any[] = []; // Monitores únicos
   private _dates: any[] = [];
 
@@ -287,4 +289,25 @@ export class BookingDescriptionCard {
 
 
   protected readonly parseFloat = parseFloat;
+
+  getClientLevel(client: any, sportId?: number | null) {
+    if (!client || sportId === undefined || sportId === null) {
+      return null;
+    }
+
+    if (!Array.isArray(client.client_sports) || client.client_sports.length === 0) {
+      return null;
+    }
+
+    const normalizedSportId = Number(sportId);
+    if (Number.isNaN(normalizedSportId)) {
+      return null;
+    }
+
+    try {
+      return this.utilsService.getClientDegreeByClient(client, normalizedSportId);
+    } catch (error) {
+      return null;
+    }
+  }
 }

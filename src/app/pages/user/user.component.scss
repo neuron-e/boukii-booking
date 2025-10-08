@@ -165,3 +165,40 @@
 .flex-sections-user > app-user-detail-sport-card {
   scroll-snap-align: center;
 }
+.bookings-section {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bookings-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.bookings-empty {
+  padding: 32px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  text-align: center;
+  color: #4b5563;
+}
+
+.bookings-empty mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+  color: #9ca3af;
+}
+
+.bookings-empty h3 {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.bookings-empty p {
+  margin: 0 0 16px;
+}

@@ -737,7 +737,7 @@ export const MOCK_PROVINCES = [
   },
   {
       "id": 2712,
-      "name": "Østfold",
+      "name": "ÃƒÂ˜stfold",
       "country_id": 164,
       "country": {
           "id": 164,

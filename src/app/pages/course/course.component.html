@@ -1,4 +1,4 @@
-<div class="text-color mb-24 montserrat">
+﻿<div class="text-color mb-24 montserrat">
 	<span (click)="goTo(schoolData.slug)" class="text-color-light underline cursor-pointer montserrat">
 		{{'menu.home' | translate}}</span> / {{getCourseName(course)}}
 </div>
@@ -64,7 +64,7 @@
         </div>
       </div>
 
-      <!-- Fechas detalladas según el tipo de curso -->
+      <!-- Fechas detalladas segÃºn el tipo de curso -->
       <div class="dates-detail-container">
         <!-- 1. Para cursos con intervalos -->
         <ng-container *ngIf="shouldDisplayByIntervals()">
@@ -91,10 +91,20 @@
                   <span *ngIf="interval.time" class="interval-time">
                   {{interval.time}}
                 </span>
+                  <span class="interval-mode-badge" [class.package]="interval.bookingMode === 'package'">
+                  {{ interval.bookingMode === 'package' ? ('booking_interval_package' | translate) : ('booking_interval_flexible' | translate) }}
+                </span>
+                </div>
+                <div class="interval-reservable-info" *ngIf="interval.reservableWindowKey">
+                  {{ interval.reservableWindowKey | translate: interval.reservableWindowParams }}
+                </div>
+                <div class="interval-reservable-warning" *ngIf="interval.reservableStatusKey">
+                  {{ interval.reservableStatusKey | translate: interval.reservableStatusParams }}
                 </div>
 
                 <div class="toggle-icon">
-                  <img [src]="isIntervalExpanded(interval.id) ? 'assets/icons/arrow-up.png' : 'assets/icons/arrow-down.png'"
+                  <img src="assets/icons/arrow-down.png"
+                       [class.arrow-rotated]="isIntervalExpanded(interval.id)"
                        alt="Expandir/Colapsar">
                 </div>
               </div>
@@ -148,7 +158,8 @@
                 </div>
 
                 <div class="toggle-icon">
-                  <img [src]="isIntervalExpanded(week.id) ? 'assets/icons/arrow-up.png' : 'assets/icons/arrow-down.png'"
+                  <img src="assets/icons/arrow-down.png"
+                       [class.arrow-rotated]="isIntervalExpanded(week.id)"
                        alt="Expandir/Colapsar">
                 </div>
               </div>
@@ -220,9 +231,9 @@
         </ng-container>
       </div>
 
-      <!-- Número máximo de participantes -->
+      <!-- NÃºmero mÃ¡ximo de participantes -->
       <div style="gap: 8px;align-items: center;">
-        <img src="assets/icons/people.png" alt="Grupo máximo" class="icon24">
+        <img src="assets/icons/people.png" alt="Grupo mÃ¡ximo" class="icon24">
         <span class="campo2">
         {{"max_pax" | translate}} {{course.max_participants}}
       </span>
@@ -231,15 +242,15 @@
       </span>
       </div>
 
-      <!-- Sección de resumen -->
+      <!-- SecciÃ³n de resumen -->
       <span class="descripcion2"> {{"summary"|translate|uppercase}} </span>
       <div [innerHTML]="getShotrDescription(course)" class="show-desktop text-color-light montserrat"></div>
 
-      <!-- Sección de descripción -->
+      <!-- SecciÃ³n de descripciÃ³n -->
       <span class="descripcion2"> {{"courses.desc"|translate|uppercase}} </span>
       <div [innerHTML]="getDescription(course)" class="show-desktop text-color-light montserrat"></div>
 
-      <!-- Sección de niveles disponibles -->
+      <!-- SecciÃ³n de niveles disponibles -->
       <ng-container *ngIf="course.availableDegrees.length>0">
       <span class="descripcion2">
         {{"levels"|translate|uppercase}}
@@ -493,20 +504,20 @@
             </div>
           </div>
         </div>
-        <!-- Sección de reserva para cursos -->
+        <!-- SecciÃ³n de reserva para cursos -->
         <div *ngIf="course?.course_type==1 && course.is_flexible && courseFlux===2" class="date-selection-container">
           <div class="date-selection-title">
             {{"select_dates_to_book" | translate}}
           </div>
 
-          <!-- Si hay un error de selección, mostrarlo -->
+          <!-- Si hay un error de selecciÃ³n, mostrarlo -->
           <div *ngIf="dateSelectionError" class="date-selection-error">
             <mat-icon>error_outline</mat-icon>
             <span>{{dateSelectionError}}</span>
           </div>
 
-          <!-- Información sobre restricciones -->
-          <div *ngIf="mustBeConsecutive() || mustStartFromFirst()" class="booking-restrictions">
+          <!-- InformaciÃ³n sobre restricciones -->
+          <div *ngIf="!hasIntervals() && (mustBeConsecutive() || mustStartFromFirst())" class="booking-restrictions">
             <div class="restriction-title">{{ 'important_information' | translate }}:</div>
             <ul class="restriction-list">
               <li *ngIf="mustBeConsecutive()">
@@ -522,42 +533,82 @@
             </ul>
           </div>
 
-          <!-- Opción 1: Curso con intervalos -->
+          <!-- OpciÃ³n 1: Curso con intervalos -->
           <div *ngIf="hasIntervals()" class="interval-selection-container">
+            <div class="interval-overview">
+              {{ 'booking_multi_interval_help' | translate }}
+            </div>
+            <div class="interval-rules-panel">
+              <ng-container *ngIf="selectedIntervalId && getSelectedIntervalRules().length; else intervalRulesHint">
+                <div class="restriction-title">
+                  {{ 'booking_interval_rules_title' | translate:{ intervalName: getIntervalDisplayName(selectedIntervalId) || ('booking_interval_default_name' | translate) } }}
+                </div>
+                <ul class="restriction-list">
+                  <li *ngFor="let rule of getSelectedIntervalRules()">
+                    <mat-icon>{{ rule.icon }}</mat-icon>
+                    <span>{{ rule.key | translate:(rule.params || {}) }}</span>
+                    <mat-icon *ngIf="rule.tooltipKey" class="info-tooltip" matTooltip="{{ rule.tooltipKey | translate:(rule.tooltipParams || {}) }}">info</mat-icon>
+                  </li>
+                </ul>
+              </ng-container>
+              <ng-template #intervalRulesHint>
+                <div class="restriction-placeholder">
+                  {{ 'booking_interval_rules_placeholder' | translate }}
+                </div>
+              </ng-template>
+            </div>
             <!-- Lista de intervalos -->
             <div class="intervals-list">
-              <div *ngFor="let interval of getIntervalGroups()"
+              <div *ngFor="let interval of getIntervalGroups(); trackBy: trackByIntervalId"
                    [class.interval-card]="true"
                    [class.interval-selected]="isIntervalSelected(interval.id)"
-                   [class.interval-disabled]="!isIntervalEnabled(interval.id)">
+                   [class.interval-disabled]="!interval.isReservableNow">
                 <!-- Encabezado del intervalo -->
-                <div class="interval-header" (click)="isIntervalEnabled(interval.id) && selectInterval(interval.id)">
+                <div class="interval-header"
+                     [class.cursor-not-allowed]="!interval.isReservableNow"
+                     [attr.title]="!interval.isReservableNow ? (interval.reservableStatusKey | translate:interval.reservableStatusParams) : null"
+                     (click)="interval.isReservableNow && selectInterval(interval.id)">
                   <div class="interval-title-section">
                     <mat-icon *ngIf="isIntervalSelected(interval.id)">check_circle</mat-icon>
-                    <mat-icon *ngIf="!isIntervalSelected(interval.id)">radio_button_unchecked</mat-icon>
+                    <mat-icon *ngIf="!isIntervalSelected(interval.id) && interval.isReservableNow">radio_button_unchecked</mat-icon>
+                    <mat-icon *ngIf="!interval.isReservableNow" class="disabled-icon">block</mat-icon>
                     <h5 class="interval-name">{{interval.name}}</h5>
                   </div>
 
                   <div class="interval-summary">
-            <span class="interval-dates">
-              {{interval.startDate | date: 'dd.MM.yyyy'}} - {{interval.endDate | date: 'dd.MM.yyyy'}}
-            </span>
+                    <span class="interval-dates">
+                      {{interval.startDate | date: 'dd.MM.yyyy'}} - {{interval.endDate | date: 'dd.MM.yyyy'}}
+                    </span>
                     <span class="interval-count">
-              ({{interval.count}} {{ 'dates' | translate }})
-            </span>
+                      ({{interval.count}} {{ 'dates' | translate }})
+                    </span>
+                    <span class="interval-mode-badge" [class.package]="interval.bookingMode === 'package'">
+                      {{ interval.bookingMode === 'package' ? ('booking_interval_package' | translate) : ('booking_interval_flexible' | translate) }}
+                    </span>
+                  </div>
+
+                  <div class="interval-additional-info" *ngIf="interval.reservableWindowKey || interval.reservableStatusKey">
+                    <div class="interval-reservable-info" *ngIf="interval.reservableWindowKey">
+                      <mat-icon>schedule</mat-icon>
+                      <span>{{ interval.reservableWindowKey | translate: interval.reservableWindowParams }}</span>
+                    </div>
+                    <div class="interval-reservable-warning" *ngIf="interval.reservableStatusKey">
+                      <mat-icon>info</mat-icon>
+                      <span>{{ interval.reservableStatusKey | translate: interval.reservableStatusParams }}</span>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Fechas del intervalo (visibles cuando está seleccionado) -->
+                <!-- Fechas del intervalo (visibles cuando estÃ¡ seleccionado) -->
                 <div class="interval-dates-container" *ngIf="isIntervalSelected(interval.id)">
                   <div class="date-checkboxes">
-                    <div *ngFor="let date of interval.dates" class="date-checkbox-wrapper"
-                         [class.date-disabled]="!isDateAvailable(date.date, interval.id)"
+                    <div *ngFor="let date of interval.dates; trackBy: trackByDate" class="date-checkbox-wrapper"
+                         [class.date-disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package'"
                          [class.date-selected]="isDateSelected(date.date)">
                       <mat-checkbox
                         (change)="selectDate($event.checked, date.date, interval.id)"
                         [checked]="isDateSelected(date.date)"
-                        [disabled]="!isDateAvailable(date.date, interval.id)">
+                        [disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package'">
                         <div class="date-checkbox-content">
                           <span class="date-day">{{date.date | date: 'dd'}}</span>
                           <span class="date-month-year">{{date.date | date: 'MMM yyyy'}}</span>
@@ -571,9 +622,9 @@
             </div>
           </div>
 
-          <!-- Opción 2: Curso flexible SIN intervalos (agrupado por semanas) -->
+          <!-- OpciÃ³n 2: Curso flexible SIN intervalos (agrupado por semanas) -->
           <div *ngIf="!hasIntervals() && course.is_flexible" class="week-selection-container">
-            <!-- Agrupación por semanas -->
+            <!-- AgrupaciÃ³n por semanas -->
             <div class="weeks-list">
               <div *ngFor="let week of getWeekGroups()" class="week-card">
                 <!-- Encabezado de la semana -->
@@ -616,7 +667,7 @@
             </div>
           </div>
 
-          <!-- Opción 3: Visualización original (para mantener compatibilidad) -->
+          <!-- OpciÃ³n 3: VisualizaciÃ³n original (para mantener compatibilidad) -->
           <div *ngIf="!hasIntervals() && !course.is_flexible" class="simple-dates-container">
             <div class="simple-dates-grid">
               <ng-container *ngFor="let date of getFutureDates()">
@@ -632,7 +683,7 @@
             </div>
           </div>
 
-          <!-- Resumen de selección mejorado -->
+          <!-- Resumen de selecciÃ³n mejorado -->
           <div *ngIf="selectedDates.length > 0" class="selected-dates-summary">
             <div class="summary-header">
               <mat-icon class="summary-icon">event_note</mat-icon>
@@ -766,6 +817,13 @@
             <mat-icon>add_circle_outline</mat-icon>
             {{"add_extras_or_notes" |translate}}
           </div>
+
+          <!-- Error message for date selection validation -->
+          <div *ngIf="dateSelectionError" class="date-selection-error" style="margin-bottom: 20px;">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{dateSelectionError}}</span>
+          </div>
+
           <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
             <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date])"
                  class="extras-date-section">
@@ -876,3 +934,4 @@
                           [collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
                           (next)="addBookingToCart()">
 </app-course-modal-confirm>
+
