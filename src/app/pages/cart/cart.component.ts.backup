@@ -314,7 +314,7 @@ export class CartComponent implements OnInit {
           this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
 
           this.cancellationInsurance = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
-    // BOUKII CARE DESACTIVADO -           this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
+          this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
           this.tva = parseFloat(this.settings?.taxes?.tva);
           this.hasTva = this.tva && !isNaN(this.tva) || this.tva > 0
 
@@ -379,7 +379,7 @@ export class CartComponent implements OnInit {
           'price': -parseFloat(voucher.reducePrice)
         }))
       },
-    // BOUKII CARE DESACTIVADO -       boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
+      boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
       cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
       extras: { total: this.getExtras().length, extras: extras },
       tva: { name: 'TVA', quantity: 1, price: (this.tva && !isNaN(this.tva)) || this.tva > 0 ? this.totalNotaxes * this.tva : 0 },
@@ -397,8 +397,8 @@ export class CartComponent implements OnInit {
       price_total: this.totalPrice + this.usedVoucherAmount,
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
-    // BOUKII CARE DESACTIVADO -       has_boukii_care: this.hasBoukiiCare,
-    // BOUKII CARE DESACTIVADO -       price_boukii_care: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0,
+      has_boukii_care: this.hasBoukiiCare,
+      price_boukii_care: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0,
       has_tva: this.hasTva,
       price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),

@@ -56,7 +56,7 @@ export class UserComponent implements OnInit {
   bookings: any = [];
 
   displayedColumns: string[] = ['icon', 'booking_users[0].course.name', 'dates', 'has_cancellation_insurance',
-    'has_boukii_care', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
+    // BOUKII CARE DESACTIVADO -     'has_boukii_care', 'payment_method', 'payment_status', 'cancelation_status', 'price_total'];
   mainId: any;
   private readonly bookingIncludes: string[] = [
     'bookingUsers.course.sport',

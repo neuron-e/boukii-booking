@@ -114,8 +114,8 @@ export class BookingDetailComponent implements OnInit {
     price_total: null,
     has_cancellation_insurance: false,
     price_cancellation_insurance: 0,
-    // BOUKII CARE DESACTIVADO -     has_boukii_care: false,
-    // BOUKII CARE DESACTIVADO -     price_boukii_care: 0,
+    has_boukii_care: false,
+    price_boukii_care: 0,
     currency: null,
     paid_total: null,
     paid: null,
@@ -285,7 +285,7 @@ export class BookingDetailComponent implements OnInit {
       this.school = school.data;
       this.settings = typeof school.data.settings === 'string' ? JSON.parse(school.data.settings) : school.data.settings;
       this.cancellationInsurance =  parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
-    // BOUKII CARE DESACTIVADO -       this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
+      this.boukiiCarePrice = parseInt(this.settings?.taxes?.boukii_care_price);
       this.tva = parseFloat(this.settings?.taxes?.tva);
       this.cancelationNoOp = this.settings?.cancellations?.without_cancellation_insurance;
       this.cancelationOp = this.settings?.cancellations?.with_cancellation_insurance;
@@ -535,7 +535,7 @@ export class BookingDetailComponent implements OnInit {
             price_base: {name: 'Price Base', quantity: 1, price: this.getBasePrice()},
             bonus: {total: this.bonus.length, bonuses: bonuses},
             reduction: {name: 'Reduction', quantity: 1, price: -(this.reduction)},
-    // BOUKII CARE DESACTIVADO -             boukii_care: {name: 'Boukii Care', quantity: 1, price: parseFloat(this.booking.price_boukii_care)},
+            boukii_care: {name: 'Boukii Care', quantity: 1, price: parseFloat(this.booking.price_boukii_care)},
             cancellation_insurance: {name: 'Cancellation Insurance', quantity: 1, price: parseFloat(this.booking.price_cancellation_insurance)},
             extras: {total: this.courseExtra.length, extras: extras},
             price_total: parseFloat(this.booking.price_total),
@@ -1157,7 +1157,7 @@ export class BookingDetailComponent implements OnInit {
               price = price + (price * this.tva);
             }
 
-    // BOUKII CARE DESACTIVADO -             if(this.booking.has_boukii_care) {
+            if(this.booking.has_boukii_care) {
               // coger valores de reglajes
               price = price  + (this.boukiiCarePrice * 1 * this.bookingsToCreate[index].courseDates.length);
             }
@@ -1227,11 +1227,11 @@ export class BookingDetailComponent implements OnInit {
     if(event.source.checked) {
       this.boukiiCare = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
       this.calculateFinalPrice();
-    // BOUKII CARE DESACTIVADO -       this.defaults.has_boukii_care = event.source.checked;
-    // BOUKII CARE DESACTIVADO -       this.defaults.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
-    // BOUKII CARE DESACTIVADO -       this.booking.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
+      this.defaults.has_boukii_care = event.source.checked;
+      this.defaults.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
+      this.booking.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
 
-    // BOUKII CARE DESACTIVADO -       this.crudService.update('/bookings', {price_boukii_care: this.booking.price_boukii_care, has_boukii_care: true}, this.id)
+      this.crudService.update('/bookings', {price_boukii_care: this.booking.price_boukii_care, has_boukii_care: true}, this.id)
         .subscribe(() => {
           this.snackbar.open(this.translateService.instant('b_care_added'), 'OK', {duration: 3000});
 
@@ -1240,11 +1240,11 @@ export class BookingDetailComponent implements OnInit {
     } else {
       this.boukiiCare = 0;
       this.calculateFinalPrice();
-    // BOUKII CARE DESACTIVADO -       this.defaults.has_boukii_care = event.source.checked;
-    // BOUKII CARE DESACTIVADO -       this.defaults.price_boukii_care = 0;
-    // BOUKII CARE DESACTIVADO -       this.booking.price_boukii_care = 0;
+      this.defaults.has_boukii_care = event.source.checked;
+      this.defaults.price_boukii_care = 0;
+      this.booking.price_boukii_care = 0;
 
-    // BOUKII CARE DESACTIVADO -       this.crudService.update('/bookings', {price_boukii_care: 0, has_boukii_care: false}, this.id)
+      this.crudService.update('/bookings', {price_boukii_care: 0, has_boukii_care: false}, this.id)
         .subscribe(() => {
           this.snackbar.open(this.translateService.instant('b_care_added'), 'OK', {duration: 3000});
 
@@ -1310,12 +1310,12 @@ export class BookingDetailComponent implements OnInit {
       this.tvaPrice = parseFloat(this.booking.price_cancellation_insurance);
     }
 
-    // BOUKII CARE DESACTIVADO -     if(this.booking.has_boukii_care && this.boukiiCarePrice > 0) {
+    if(this.booking.has_boukii_care && this.boukiiCarePrice > 0) {
       // coger valores de reglajes
       price = price  + (this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates());
-    // BOUKII CARE DESACTIVADO -     } else if (this.booking.has_boukii_care) {
-    // BOUKII CARE DESACTIVADO -       price = price + parseFloat(this.booking.price_boukii_care);
-    // BOUKII CARE DESACTIVADO -       this.tvaPrice = parseFloat(this.booking.price_boukii_care);
+    } else if (this.booking.has_boukii_care) {
+      price = price + parseFloat(this.booking.price_boukii_care);
+      this.tvaPrice = parseFloat(this.booking.price_boukii_care);
     }
 
     // añadir desde reglajes el tva

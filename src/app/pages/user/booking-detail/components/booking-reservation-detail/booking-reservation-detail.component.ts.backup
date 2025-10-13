@@ -37,7 +37,7 @@ export class BookingReservationDetailComponent implements OnInit {
 
   cancellationInsurancePercent: number;
   price_tva: number;
-    // BOUKII CARE DESACTIVADO -   price_boukii_care: number;
+  price_boukii_care: number;
   school: any;
   settings: any;
 
@@ -62,7 +62,7 @@ export class BookingReservationDetailComponent implements OnInit {
           this.school = data.data;
           this.settings = typeof this.school.settings === 'string' ? JSON.parse(this.school.settings) : this.school.settings;
           this.cancellationInsurancePercent = parseFloat(this.settings?.taxes?.cancellation_insurance_percent);
-    // BOUKII CARE DESACTIVADO -           this.price_boukii_care = parseInt(this.settings?.taxes?.boukii_care_price, 10);
+          this.price_boukii_care = parseInt(this.settings?.taxes?.boukii_care_price, 10);
           this.price_tva = parseFloat(this.settings?.taxes?.tva);
           this.loadExistingVouchers();
           //this.bookingData = this.bookingService.getBookingData() || this.initializeBookingData();
@@ -205,7 +205,7 @@ export class BookingReservationDetailComponent implements OnInit {
     const basePrice = this.sumActivityTotal()
       + parseFloat(this.bookingData.price_cancellation_insurance)
       - parseFloat(this.bookingData.price_reduction)
-    // BOUKII CARE DESACTIVADO -       + parseFloat(this.bookingData.price_boukii_care);
+      + parseFloat(this.bookingData.price_boukii_care);
 
     this.bookingData.price_tva = basePrice * this.price_tva;
   }
@@ -214,7 +214,7 @@ export class BookingReservationDetailComponent implements OnInit {
     this.recalculateTva();
     return this.sumActivityTotal() + parseFloat(this.bookingData.price_cancellation_insurance)
       - parseFloat(this.bookingData.price_reduction)
-    // BOUKII CARE DESACTIVADO -       + parseFloat(this.bookingData.price_boukii_care)
+      + parseFloat(this.bookingData.price_boukii_care)
       + parseFloat(this.bookingData.price_tva);
   }
 

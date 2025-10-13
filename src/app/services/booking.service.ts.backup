@@ -172,7 +172,7 @@ export class BookingService extends ApiService {
           // Obtener los valores desde bookingData
           let reduction = bookingData.price_reduction || 0;
           let cancellationInsurance = bookingData.price_cancellation_insurance || 0;
-    // BOUKII CARE DESACTIVADO -           let boukiiCare =bookingData.price_boukii_care || 0;
+          let boukiiCare =bookingData.price_boukii_care || 0;
           let tva = bookingData.price_tva || 0;
 
           // Calcular el valor total de los vouchers
@@ -254,12 +254,12 @@ export class BookingService extends ApiService {
       user_id: 0,
       price_total: 0,
       has_cancellation_insurance: false,
-    // BOUKII CARE DESACTIVADO -       has_boukii_care: false,
+      has_boukii_care: false,
       has_reduction: false,
       has_tva: false,
       price_cancellation_insurance: 0,
       price_reduction: 0,
-    // BOUKII CARE DESACTIVADO -       price_boukii_care: 0,
+      price_boukii_care: 0,
       price_tva: 0,
       source: 'admin',
       payment_method_id: null,

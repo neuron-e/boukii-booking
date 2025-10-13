@@ -358,14 +358,14 @@
                 *ngIf="booking.has_cancellation_insurance"
                 class="text-border"></mat-divider>
               <span style="width: 100%; float:left"
-<!-- BOUKII CARE DESACTIVADO -                 *ngIf="booking.has_boukii_care"> -->
+                *ngIf="booking.has_boukii_care">
                 <p style="float:left">Boukii Care</p>
-<!-- BOUKII CARE DESACTIVADO -                 <p style="float:right">{{booking.price_boukii_care}} -->
+                <p style="float:right">{{booking.price_boukii_care}}
                   {{bookingsToCreate.length > 0 ?
                   bookingsToCreate[0].courseDates[0].currency : ''}}</p>
               </span>
               <mat-divider style="float: left;width: 100%;"
-<!-- BOUKII CARE DESACTIVADO -                 *ngIf="booking.has_boukii_care" -->
+                *ngIf="booking.has_boukii_care"
                 class="text-border"></mat-divider>
               <span style="width: 100%; float:left" *ngIf="this.tva">
                 <p style="float:left">{{'tva' | translate | uppercase }}</p>
