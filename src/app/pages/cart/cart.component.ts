@@ -7,6 +7,8 @@ import { CartService } from '../../services/cart.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiCrudService } from 'src/app/services/crud.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DiscountCodeService } from '../../services/discount-code.service';
+import { DiscountCodeValidationResponse } from '../../interface/discount-code';
 
 @Component({
   selector: 'app-cart',
@@ -17,14 +19,17 @@ export class CartComponent implements OnInit {
 
   isModalVoucher: boolean = false;
   isModalConditions: boolean = false;
+  isDiscountCodeModalOpen: boolean = false;
   mobileHidden: boolean = false
   vouchers: any[] = []; // Changed from single voucher to array
+  appliedDiscountCode: DiscountCodeValidationResponse | null = null;
   hasInsurance = false;
   hasBoukiiCare = false;
   hasTva = false;
   totalPrice: number = 0;
   totalNotaxes: number = 0;
   usedVoucherAmount: number = 0;
+  discountCodeAmount: number = 0;
   user: any;
   cart: any[];
   schoolData: any;
@@ -304,7 +309,8 @@ export class CartComponent implements OnInit {
   constructor(private router: Router, public themeService: ThemeService, private schoolService: SchoolService,
     private bookingService: BookingService, private activatedRoute: ActivatedRoute,
     private cartService: CartService, private translateService: TranslateService,
-    private crudService: ApiCrudService, private snackBar: MatSnackBar) { }
+    private crudService: ApiCrudService, private snackBar: MatSnackBar,
+    private discountCodeService: DiscountCodeService) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -357,31 +363,33 @@ export class CartComponent implements OnInit {
   sendBooking() {
     this.loading = true;
 
-    const extras: any = [];
+    const extras: any[] = [];
 
     this.getExtras().forEach((element: any) => {
-      extras.push(
-        {
-          name: element.id,
-          quantity: 1,
-          price: element.price + ((element.price * element.tva) / 100)
-        }
-      )
+      extras.push({
+        name: element.id,
+        quantity: 1,
+        price: element.price + ((element.price * element.tva) / 100)
+      });
     });
-    const basket = {
+
+    const discountInfo = this.appliedDiscountCode?.discount_code || null;
+    const discountAmount = this.discountCodeAmount || 0;
+    const grossPriceTotal = this.totalPrice + this.usedVoucherAmount + discountAmount;
+
+    const basket: any = {
       payment_method_id: 2,
       price_base: { name: 'Price Base', quantity: 1, price: this.getBasePrice() },
       bonus: {
         total: this.usedVoucherAmount,
         bonuses: this.vouchers.map(voucher => ({
-          'name': voucher.code,
-          'quantity': 1,
-          'price': -parseFloat(voucher.reducePrice)
+          name: voucher.code,
+          quantity: 1,
+          price: -parseFloat(voucher.reducePrice)
         }))
       },
-    // BOUKII CARE DESACTIVADO -       boukii_care: { name: 'Boukii Care', quantity: 1, price: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0 },
       cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
-      extras: { total: this.getExtras().length, extras: extras },
+      extras: { total: this.getExtras().length, extras },
       tva: { name: 'TVA', quantity: 1, price: (this.tva && !isNaN(this.tva)) || this.tva > 0 ? this.totalNotaxes * this.tva : 0 },
       price_total: this.totalPrice,
       paid_total: 0,
@@ -389,42 +397,47 @@ export class CartComponent implements OnInit {
       redirectUrl: location.origin + location.pathname.replace('cart', 'user')
     };
 
+    if (discountInfo) {
+      basket.discount_code = {
+        code: discountInfo.code,
+        amount: discountAmount
+      };
+    }
 
     const bookingData = {
-      // Preparar los datos del booking
       school_id: this.schoolData.id,
       client_main_id: this.user.clients[0].id,
-      price_total: this.totalPrice + this.usedVoucherAmount,
+      price_total: grossPriceTotal,
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
-    // BOUKII CARE DESACTIVADO -       has_boukii_care: this.hasBoukiiCare,
-    // BOUKII CARE DESACTIVADO -       price_boukii_care: this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0,
       has_tva: this.hasTva,
       price_tva: this.hasTva ? this.totalNotaxes * this.tva : 0,
       cart: this.getCleanedCartDetails(),
       vouchers: this.vouchers,
       voucherAmount: this.usedVoucherAmount,
+      discount_code_id: discountInfo?.id ?? null,
+      discount_code_amount: discountAmount,
       source: 'web',
       basket: JSON.stringify(basket),
       status: 3
     };
+
+    this.bookingService.setBookingData(bookingData);
+
     this.bookingService.createBooking(bookingData).subscribe(
       (response: any) => {
-        if(this.totalPrice > 0) {
+        if (this.totalPrice > 0) {
           this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
-
             .subscribe((result: any) => {
-              window.open(result.data, "_self");
-            })
+              window.open(result.data, '_self');
+            });
         } else {
-          window.location.href = window.location.origin + window.location.pathname + "?status=success";
-
+          window.location.href = window.location.origin + window.location.pathname + '?status=success';
         }
       },
       error => {
         console.error('Error al crear la reserva', error);
         this.loading = false;
-        // Manejar error
       }
     );
   }
@@ -728,10 +741,23 @@ export class CartComponent implements OnInit {
     // Si un voucher tiene `reducePrice` en 0, removerlo
     this.vouchers = this.vouchers.filter(voucher => voucher.reducePrice > 0);
 
+    // Aplicar descuento de código promocional después de vouchers
+    if (this.discountCodeAmount > 0) {
+      remainingTotal = Math.max(0, remainingTotal - this.discountCodeAmount);
+    }
+
     // Actualizar valores finales
     this.usedVoucherAmount = this.vouchers.reduce((sum, v) => sum + v.reducePrice, 0);
-    this.totalPrice = remainingTotal; // Total a pagar después de vouchers
+    this.totalPrice = remainingTotal; // Total a pagar despu�s de vouchers y discount code
     this.totalNotaxes = totalPriceNoTaxes;
+
+    const grossTotal = this.totalPrice + this.usedVoucherAmount + this.discountCodeAmount;
+    this.bookingService.setBookingData({
+      price_total: grossTotal,
+      vouchers: this.vouchers,
+      discount_code_amount: this.discountCodeAmount,
+      discount_code_id: this.appliedDiscountCode?.discount_code?.id ?? null
+    });
   }
 
   getBoukiiCarePrice() {
@@ -777,6 +803,59 @@ export class CartComponent implements OnInit {
   getSportName(sportId: number): string | null {
     const sport = this.schoolData.sports.find((s: any) => s.id === sportId);
     return sport ? sport.name : null;
+  }
+
+  // ===== Discount Code Methods =====
+
+  openDiscountModal(): void {
+    this.isDiscountCodeModalOpen = true;
+  }
+
+  closeDiscountModal(): void {
+    this.isDiscountCodeModalOpen = false;
+  }
+
+  applyDiscountCode(validationResult: DiscountCodeValidationResponse): void {
+    if (validationResult && validationResult.valid) {
+      this.appliedDiscountCode = validationResult;
+      this.discountCodeAmount = validationResult.discount_amount;
+
+      this.bookingService.setBookingData({
+        price_total: this.totalPrice + this.usedVoucherAmount + validationResult.discount_amount,
+        vouchers: this.vouchers,
+        discount_code_amount: validationResult.discount_amount,
+        discount_code_id: validationResult.discount_code?.id ?? null,
+        });
+
+      this.updateTotal();
+
+      this.snackBar.open(
+        this.translateService.instant('text_code_valid') + ': -CHF ' + validationResult.discount_amount.toFixed(2),
+        'Close',
+        { duration: 3000 }
+      );
+    }
+  }
+  }
+
+  removeDiscountCode(): void {
+    this.appliedDiscountCode = null;
+    this.discountCodeAmount = 0;
+
+    this.bookingService.setBookingData({
+      price_total: this.totalPrice + this.usedVoucherAmount,
+      vouchers: this.vouchers,
+      discount_code_amount: 0,
+      discount_code_id: null,
+    });
+
+    this.updateTotal();
+
+    this.snackBar.open(
+      this.translateService.instant('text_code_removed'),
+      'Close',
+      { duration: 2000 }
+    );
   }
 
 }

@@ -996,12 +996,27 @@ export class BookingDetailComponent implements OnInit {
       return ret;
     }
 
+    return ret;
+  }
+
+  getLanguage(id: any) {
+    const lang: any = this.languages.find((c: any) => c.id == +id);
+    return lang ? lang.code.toUpperCase() : 'NDF';
+  }
+
+  getCountry(id: any) {
+    const country = this.countries.find((c) => c.id == id);
+    return country ? country.name : 'NDF';
+  }
+
+  onCloseBooking() {
+    this.closeBooking.emit();
   }
 
   deleteBooking() {
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
-      width: '1000px',  // Asegurarse de que no haya un ancho máximo
-      panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
+      width: '1000px',
+      panelClass: 'full-screen-dialog',
       data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'),
         message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
         + `<span style="#F53D7C;font-size: 20px;">` + this.booking.paid_total + ' ' +  this.booking.currency + `</span>`
@@ -1019,11 +1034,10 @@ export class BookingDetailComponent implements OnInit {
             .subscribe(() => {
               this.crudService.post('/slug/bookings/refunds/'+this.id, {amount: this.booking.paid_total})
                 .subscribe(() => {
-                  this.crudService.update('/bookings', {status: 2}, this.booking.id)
+                  this.crudService.update('/bookings', {status: 2}, this.id)
                     .subscribe(() => {
                       this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
                       .subscribe(() => {
-
                         this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
                         this.getData();
                       })
@@ -1036,11 +1050,10 @@ export class BookingDetailComponent implements OnInit {
           .subscribe(() => {
             this.crudService.update('/bookings', {paid_total: this.booking.price_total}, this.booking.id)
             .subscribe(() => {
-              this.crudService.update('/bookings', {status: 2}, this.booking.id)
+              this.crudService.update('/bookings', {status: 2}, this.id)
                 .subscribe(() => {
                   this.crudService.post('/slug/bookings/cancel', {bookingUsers: this.bookingUsers.map((b: any) => b.id)})
                   .subscribe(() => {
-
                     this.snackbar.open(this.translateService.instant('snackbar.booking_detail.update'), 'OK', {duration: 1000});
                     this.getData();
                   })
@@ -1052,33 +1065,18 @@ export class BookingDetailComponent implements OnInit {
         this.bookingUsers.forEach((element: any) => {
           this.crudService.update('/booking-users', {status: 2}, element.id)
           .subscribe(() => {
-
-            /*this.bookingExtras.forEach(element => {
-              this.crudService.delete('/booking-user-extras', element.id)
-                .subscribe(() => {
-
-                })
-            });
-
-            this.courseExtra.forEach(element => {
-              this.crudService.delete('/course-extras', element.id)
-                .subscribe(() => {
-
-                })
-            });*/
           })
         });
       }
     });
-
   }
 
   deletePartialBooking(index: number, book: any) {
     this.loading = true;
 
     const dialogRef = this.dialog.open(ConfirmModalComponent, {
-      width: '1000px',  // Asegurarse de que no haya un ancho máximo
-      panelClass: 'full-screen-dialog',  // Si necesitas estilos adicionales,
+      width: '1000px',
+      panelClass: 'full-screen-dialog',
       data: {title: this.translateService.instant('bookings_page.cancelations.no_refund'), message: this.translateService.instant('bookings_page.cancelations.no_refund_text') + ': '
       + '<span style="#F53D7C;font-size: 20px;">' + book.price_total + ' ' +  this.booking.currency + '</span>'}});
 
@@ -1126,55 +1124,23 @@ export class BookingDetailComponent implements OnInit {
           })
         }
 
-
         setTimeout(() => {
           if (this.bookingsToCreate.length === 0) {
             this.crudService.update('/bookings', {status: 2}, this.id)
             .subscribe(() => {
               this.getData(true);
-
             })
-
           } else {
             let price = parseFloat(this.booking.price_total);
-            /*const bookingExtras = this.bookingExtras.filter((b) => b.booking_user_id === book.courseDates.id);
-            const courseExtras = this.courseExtra.filter((b) => b.booking_user_id === book.courseDates.id);
-
-            bookingExtras.forEach(element => {
-              this.crudService.delete('/booking-user-extras', element.id)
-                .subscribe(() => {
-
-                })
-            });
-
-            courseExtras.forEach(element => {
-              this.crudService.delete('/course-extras', element.id)
-                .subscribe(() => {
-
-                })
-            });*/
             if (this.tva && !isNaN(this.tva)) {
               price = price + (price * this.tva);
-            }
-
-    // BOUKII CARE DESACTIVADO -             if(this.booking.has_boukii_care) {
-              // coger valores de reglajes
-              price = price  + (this.boukiiCarePrice * 1 * this.bookingsToCreate[index].courseDates.length);
             }
 
             this.crudService.update('/bookings', {status: 3, paid_total: price}, this.id)
             .subscribe(() => {
               this.bookingsToCreate.splice(index, 1);
               this.getData(true);
-
             })
-
-            /*this.crudService.update('/bookings', {status: 3}, this.id)
-            .subscribe(() => {
-              this.bookingsToCreate.splice(index, 1);
-              this.getData(true);
-
-            })*/
           }
         }, 1000);
       }
@@ -1182,8 +1148,8 @@ export class BookingDetailComponent implements OnInit {
   }
 
   generateRandomNumber() {
-    const min = 10000000; // límite inferior para un número de 5 cifras
-    const max = 99999999; // límite superior para un número de 5 cifras
+    const min = 10000000;
+    const max = 99999999;
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
@@ -1212,11 +1178,9 @@ export class BookingDetailComponent implements OnInit {
       this.defaults.has_cancellation_insurance = event.source.checked;
       this.defaults.price_cancellation_insurance = 0;
       this.booking.price_cancellation_insurance = 0;
-
       this.crudService.update('/bookings', {price_cancellation_insurance: 0, has_cancellation_insurance: false}, this.id)
         .subscribe(() => {
           this.snackbar.open(this.translateService.instant('op_rem_added'), 'OK', {duration: 3000});
-
         })
       this.calculateFinalPrice();
       return 0;
@@ -1227,57 +1191,25 @@ export class BookingDetailComponent implements OnInit {
     if(event.source.checked) {
       this.boukiiCare = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
       this.calculateFinalPrice();
-    // BOUKII CARE DESACTIVADO -       this.defaults.has_boukii_care = event.source.checked;
-    // BOUKII CARE DESACTIVADO -       this.defaults.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
-    // BOUKII CARE DESACTIVADO -       this.booking.price_boukii_care = this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates();
-
-    // BOUKII CARE DESACTIVADO -       this.crudService.update('/bookings', {price_boukii_care: this.booking.price_boukii_care, has_boukii_care: true}, this.id)
-        .subscribe(() => {
-          this.snackbar.open(this.translateService.instant('b_care_added'), 'OK', {duration: 3000});
-
-        })
       return this.getBasePrice() + this.boukiiCarePrice;
     } else {
       this.boukiiCare = 0;
       this.calculateFinalPrice();
-    // BOUKII CARE DESACTIVADO -       this.defaults.has_boukii_care = event.source.checked;
-    // BOUKII CARE DESACTIVADO -       this.defaults.price_boukii_care = 0;
-    // BOUKII CARE DESACTIVADO -       this.booking.price_boukii_care = 0;
-
-    // BOUKII CARE DESACTIVADO -       this.crudService.update('/bookings', {price_boukii_care: 0, has_boukii_care: false}, this.id)
-        .subscribe(() => {
-          this.snackbar.open(this.translateService.instant('b_care_added'), 'OK', {duration: 3000});
-
-        })
       return 0;
     }
-  }
-
-  getLanguage(id: any) {
-    const lang: any = this.languages.find((c: any) => c.id == +id);
-    return lang ? lang.code.toUpperCase() : 'NDF';
   }
 
   getLanguages() {
     this.crudService.list('/languages', 1, 1000)
       .subscribe((data) => {
         this.languages = data.data.reverse();
-
       })
-  }
-
-  getCountry(id: any) {
-    const country = this.countries.find((c) => c.id == id);
-    return country ? country.name : 'NDF';
   }
 
   calculateFinalPrice() {
     let price = this.getBasePrice();
 
-    //forfait primero
-
     this.courseExtra.forEach((element: any) => {
-
         price = price + (+element.price);
     });
 
@@ -1288,7 +1220,6 @@ export class BookingDetailComponent implements OnInit {
     if (this.bonus !== null && price > 0) {
       this.bonus.forEach((element: any) => {
         if (price > 0) {
-
           if (element.bonus.remaining_balance > price) {
             price = price - price;
           }  else {
@@ -1297,7 +1228,6 @@ export class BookingDetailComponent implements OnInit {
             } else{
               price = price - element.bonus.remaining_balance;
             }
-
           }
         }
       });
@@ -1310,15 +1240,6 @@ export class BookingDetailComponent implements OnInit {
       this.tvaPrice = parseFloat(this.booking.price_cancellation_insurance);
     }
 
-    // BOUKII CARE DESACTIVADO -     if(this.booking.has_boukii_care && this.boukiiCarePrice > 0) {
-      // coger valores de reglajes
-      price = price  + (this.boukiiCarePrice * this.getBookingPaxes() * this.getBookingDates());
-    // BOUKII CARE DESACTIVADO -     } else if (this.booking.has_boukii_care) {
-    // BOUKII CARE DESACTIVADO -       price = price + parseFloat(this.booking.price_boukii_care);
-    // BOUKII CARE DESACTIVADO -       this.tvaPrice = parseFloat(this.booking.price_boukii_care);
-    }
-
-    // añadir desde reglajes el tva
     if (this.booking.status === 2) {
       this.finalPrice = parseFloat(this.booking.price_total);
       if (this.booking.has_tva) {
@@ -1331,7 +1252,6 @@ export class BookingDetailComponent implements OnInit {
       } else if (this.booking.has_tva) {
         this.tvaPrice = parseFloat(this.booking.price_tva);
         this.finalPrice = price + this.tvaPrice;
-
       } else {
         this.finalPrice = price;
       }
@@ -1340,7 +1260,6 @@ export class BookingDetailComponent implements OnInit {
     this.finalPriceNoTaxes = price;
 
     if (this.booking.paid_total) {
-
       this.bookingPendingPrice = this.finalPrice - parseFloat(this.booking.paid_total);
     } else {
       this.bookingPendingPrice = this.finalPrice;
@@ -1352,30 +1271,23 @@ export class BookingDetailComponent implements OnInit {
     this.calculateFinalPrice();
   }
 
-
   getMonitorLang(id: number): any {
     if (id && id !== null) {
-
       const monitor = this.monitors.find((m: any) => m.id === id);
-
       return +monitor?.language1_id;
     }
   }
 
   getMonitorProvince(id: number): any {
     if (id && id !== null) {
-
       const monitor = this.monitors.find((m: any) => m.id === id);
-
       return +monitor?.province;
     }
   }
 
   getMonitorBirth(id: number) {
     if (id && id !== null) {
-
       const monitor = this.monitors.find((m: any) => m.id === id);
-
       return monitor?.birth_date;
     }
   }
@@ -1392,11 +1304,9 @@ export class BookingDetailComponent implements OnInit {
     return parseFloat(value);
   }
 
-
   getCourseExtraForfaitPrice(data: any) {
     let ret = 0;
     this.courseExtra.forEach((c: any) => {
-
       if (c.course_id === data.course_id) {
         ret = ret + parseFloat(c.price);
         data.forfait = c;
@@ -1414,7 +1324,6 @@ export class BookingDetailComponent implements OnInit {
     this.bookingsToCreate.forEach((element: any) => {
       ret = ret + element.courseDates.length;
     });
-
     return ret;
   }
 
@@ -1427,16 +1336,11 @@ export class BookingDetailComponent implements OnInit {
     courseDates.forEach((element: any) => {
       ret = ret + parseFloat(element.price);
     });
-
     return ret;
   }
 
   parseFloatValue(value: any) {
     return parseFloat(value);
-  }
-
-  onCloseBooking() {
-    this.closeBooking.emit();
   }
 
   getCourseName(course: any) {
@@ -1450,4 +1354,5 @@ export class BookingDetailComponent implements OnInit {
       }
     }
   }
-}
+
+  }

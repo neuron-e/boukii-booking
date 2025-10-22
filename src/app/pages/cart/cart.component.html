@@ -272,6 +272,30 @@
         </span>
       </div>
 
+      <!-- Discount Code Section -->
+      <div *ngIf="!appliedDiscountCode && calculateRemainingTotal() != 0" (click)="openDiscountModal()" style="display: flex;align-items: center;height: 40px;cursor: pointer;">
+        <img src="assets/icons/add_red.png" class="icon24" style="margin: 0 8px;">
+        <span class="extra_add" style="margin-left: 4px;">
+          {{'text_apply_discount_code' | translate }}
+        </span>
+      </div>
+
+      <!-- Applied Discount Code -->
+      <div *ngIf="appliedDiscountCode" class="payment-price-flex mt-8">
+        <div class="text-color uppercase">
+          <img [src]="themeService.trash" (click)="removeDiscountCode()"
+               style="display: inline-flex !important;"
+               class="course-box-delete cursor-pointer">
+          {{'text_code_discount' | translate }} - {{appliedDiscountCode.discount_code.code}}
+        </div>
+        <div class="text-color min-width-price">
+          <span class="text-color fw-bold">
+            -{{discountCodeAmount|number:'0.2-2'}}
+          </span>
+          {{ cart[0].details[0].course.currency }}
+        </div>
+      </div>
+
       <div *ngIf="hasTva" class="payment-price-flex mt-8"
            style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
         <div class="bdetail">
@@ -352,3 +376,10 @@
                       [data]="'conditions_html' | translate" (onClose)="closeModalConditions()"></app-modal-conditions>
 <app-modal-conditions *ngIf="schoolData?.slug == 'ess-charmey'" [isOpen]="isModalConditions" [data]="conditionsHTML"
                       (onClose)="closeModalConditions()"></app-modal-conditions>
+<app-modal-discount-code
+  [isOpen]="isDiscountCodeModalOpen"
+  [slug]="schoolData?.slug"
+  [cartTotal]="totalPrice + discountCodeAmount"
+  (onClose)="closeDiscountModal()"
+  (onApply)="applyDiscountCode($event)">
+</app-modal-discount-code>

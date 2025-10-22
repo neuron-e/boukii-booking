@@ -141,19 +141,19 @@
               </td>
             </ng-container>
 
-<!-- BOUKII CARE DESACTIVADO -             <ng-container matColumnDef="has_boukii_care"> -->
+<!-- BOUKII CARE DESACTIVADO -             <ng-container matColumnDef="has_boukii_care">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>
                 {{ 'has_boukii_Care' | translate }}
               </th>
               <td *matCellDef="let element" (click)="selectBooking(element.id)" mat-cell>
-<!-- BOUKII CARE DESACTIVADO -                 <div *ngIf="element.has_boukii_care" -->
+                <div *ngIf="element.has_boukii_care"
                   style="background-color: #CEE741;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
                 </div>
-<!-- BOUKII CARE DESACTIVADO -                 <div *ngIf="!element.has_boukii_care" -->
+                <div *ngIf="!element.has_boukii_care"
                   style="background-color: #E6E6E6;width: 25px;border-radius: 100%;height: 25px;margin: 0 auto;">
                 </div>
               </td>
-            </ng-container>
+            </ng-container> -->
 
             <ng-container matColumnDef="has_cancellation_insurance">
               <th *matHeaderCellDef class="uppercase" mat-header-cell>

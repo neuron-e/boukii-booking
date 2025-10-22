@@ -1,0 +1,329 @@
+<div class="modal" [@fadeInOut] *ngIf="isOpen">
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <mat-icon class="gift-icon">card_giftcard</mat-icon>
+        <div class="header-text">
+          <span class="modal-title text-color fw-semibold">
+            {{'text_buy_gift_voucher' | translate}}
+          </span>
+          <span class="modal-subtitle text-color-secondary">
+            {{'text_step' | translate}} {{getStepNumber()}} {{'text_of' | translate}} 4 - {{getStepTitle() | translate}}
+          </span>
+        </div>
+      </div>
+      <img [src]="themeService.close" class="cursor-pointer close-btn" (click)="closeModal()" />
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width]="(getStepNumber() / 4 * 100) + '%'"></div>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="modal-body">
+
+      <!-- ===== PASO 1: SELECCIÓN DE MONTO ===== -->
+      <div *ngIf="currentStep === 'amount'" class="step-content" [@slideIn]>
+        <div class="section-title">
+          <mat-icon>attach_money</mat-icon>
+          <span>{{'text_select_amount' | translate}}</span>
+        </div>
+
+        <!-- Montos Predefinidos -->
+        <div class="amount-grid">
+          <div *ngFor="let option of amountOptions"
+               class="amount-card"
+               [class.selected]="amountMode === 'preset' && giftVoucher.amount === option.value"
+               [class.popular]="option.popular"
+               (click)="selectPresetAmount(option.value)">
+            <div class="popular-badge" *ngIf="option.popular">
+              <span>{{'text_popular' | translate}}</span>
+            </div>
+            <span class="amount-value">{{option.label}}</span>
+          </div>
+
+          <!-- Monto Personalizado -->
+          <div class="amount-card custom"
+               [class.selected]="amountMode === 'custom'"
+               (click)="activateCustomAmount()">
+            <mat-icon>edit</mat-icon>
+            <span>{{'text_custom_amount' | translate}}</span>
+          </div>
+        </div>
+
+        <!-- Input de Monto Personalizado -->
+        <div *ngIf="amountMode === 'custom'" class="custom-amount-input">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'text_enter_amount' | translate}}</mat-label>
+            <input type="number"
+                   matInput
+                   [(ngModel)]="customAmount"
+                   (ngModelChange)="updateCustomAmount()"
+                   min="10"
+                   max="1000"
+                   step="10"
+                   placeholder="100" />
+            <span matPrefix>CHF&nbsp;</span>
+          </mat-form-field>
+        </div>
+
+        <!-- Mensaje de Error -->
+        <div *ngIf="errorMessage && currentStep === 'amount'" class="error-message">
+          <mat-icon class="error-icon">error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <!-- ===== PASO 2: PERSONALIZACIÓN ===== -->
+      <div *ngIf="currentStep === 'personalize'" class="step-content" [@slideIn]>
+        <div class="section-title">
+          <mat-icon>palette</mat-icon>
+          <span>{{'text_personalize_voucher' | translate}}</span>
+        </div>
+
+        <!-- Selección de Template -->
+        <div class="subsection">
+          <label class="subsection-label">{{'text_select_template' | translate}}</label>
+          <div class="template-grid">
+            <div *ngFor="let template of templates"
+                 class="template-card"
+                 [class.selected]="selectedTemplate.key === template.key"
+                 [style.background-color]="template.defaultBackgroundColor"
+                 [style.color]="template.defaultTextColor"
+                 (click)="selectTemplate(template)">
+              <mat-icon>{{template.icon}}</mat-icon>
+              <span class="template-name">{{template.name}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colores Personalizados -->
+        <div class="subsection">
+          <label class="subsection-label">{{'text_customize_colors' | translate}}</label>
+          <div class="color-pickers">
+            <div class="color-picker-group">
+              <label>{{'text_background_color' | translate}}</label>
+              <input type="color"
+                     [(ngModel)]="giftVoucher.background_color"
+                     (ngModelChange)="updateBackgroundColor($event)"
+                     class="color-input" />
+              <span class="color-value">{{giftVoucher.background_color}}</span>
+            </div>
+            <div class="color-picker-group">
+              <label>{{'text_text_color' | translate}}</label>
+              <input type="color"
+                     [(ngModel)]="giftVoucher.text_color"
+                     (ngModelChange)="updateTextColor($event)"
+                     class="color-input" />
+              <span class="color-value">{{giftVoucher.text_color}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview del Bono -->
+        <div class="subsection">
+          <label class="subsection-label">{{'text_preview' | translate}}</label>
+          <div class="voucher-preview"
+               [style.background-color]="giftVoucher.background_color"
+               [style.color]="giftVoucher.text_color">
+            <mat-icon>card_giftcard</mat-icon>
+            <div class="preview-amount">{{formatAmount(giftVoucher.amount)}}</div>
+            <div class="preview-text">{{selectedTemplate.name}} {{'text_voucher' | translate}}</div>
+          </div>
+        </div>
+
+        <!-- Mensaje Personal -->
+        <div class="subsection">
+          <label class="subsection-label">{{'text_personal_message' | translate}} ({{'text_optional' | translate}})</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'text_write_message' | translate}}</mat-label>
+            <textarea matInput
+                      [(ngModel)]="giftVoucher.personal_message"
+                      rows="4"
+                      maxlength="500"
+                      placeholder="¡Feliz cumpleaños! Espero que disfrutes este regalo..."></textarea>
+            <mat-hint align="end">{{giftVoucher.personal_message?.length || 0}}/500</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ===== PASO 3: DATOS DEL DESTINATARIO ===== -->
+      <div *ngIf="currentStep === 'recipient'" class="step-content" [@slideIn]>
+        <div class="section-title">
+          <mat-icon>person</mat-icon>
+          <span>{{'text_recipient_info' | translate}}</span>
+        </div>
+
+        <!-- Nombre del Remitente -->
+        <mat-form-field appearance="outline" class="full-width mb-16">
+          <mat-label>{{'text_your_name' | translate}} ({{'text_optional' | translate}})</mat-label>
+          <input type="text"
+                 matInput
+                 [(ngModel)]="giftVoucher.sender_name"
+                 maxlength="100"
+                 placeholder="Tu nombre" />
+        </mat-form-field>
+
+        <!-- Nombre del Destinatario -->
+        <mat-form-field appearance="outline" class="full-width mb-16">
+          <mat-label>{{'text_recipient_name' | translate}} ({{'text_optional' | translate}})</mat-label>
+          <input type="text"
+                 matInput
+                 [(ngModel)]="giftVoucher.recipient_name"
+                 maxlength="100"
+                 placeholder="Nombre del destinatario" />
+        </mat-form-field>
+
+        <!-- Email del Destinatario -->
+        <mat-form-field appearance="outline" class="full-width mb-16">
+          <mat-label>{{'text_recipient_email' | translate}} *</mat-label>
+          <input type="email"
+                 matInput
+                 [(ngModel)]="giftVoucher.recipient_email"
+                 required
+                 placeholder="destinatario@example.com" />
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <!-- Fecha de Envío -->
+        <mat-form-field appearance="outline" class="full-width mb-16">
+          <mat-label>{{'text_delivery_date' | translate}} ({{'text_optional' | translate}})</mat-label>
+          <input type="date"
+                 matInput
+                 [(ngModel)]="giftVoucher.delivery_date"
+                 [min]="minDate" />
+          <mat-hint>{{'text_delivery_date_hint' | translate}}</mat-hint>
+        </mat-form-field>
+
+        <!-- Mensaje de Error -->
+        <div *ngIf="errorMessage && currentStep === 'recipient'" class="error-message">
+          <mat-icon class="error-icon">error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <!-- ===== PASO 4: RESUMEN ===== -->
+      <div *ngIf="currentStep === 'summary'" class="step-content" [@slideIn]>
+        <div class="section-title">
+          <mat-icon>receipt</mat-icon>
+          <span>{{'text_summary' | translate}}</span>
+        </div>
+
+        <div class="summary-container">
+          <!-- Monto -->
+          <div class="summary-row highlight">
+            <span class="summary-label">{{'text_voucher_amount' | translate}}:</span>
+            <span class="summary-value amount">{{formatAmount(giftVoucher.amount)}}</span>
+          </div>
+
+          <!-- Template -->
+          <div class="summary-row">
+            <span class="summary-label">{{'text_template' | translate}}:</span>
+            <span class="summary-value">{{selectedTemplate.name}}</span>
+          </div>
+
+          <!-- Destinatario -->
+          <div class="summary-row">
+            <span class="summary-label">{{'text_recipient' | translate}}:</span>
+            <span class="summary-value">
+              {{giftVoucher.recipient_name || giftVoucher.recipient_email}}
+            </span>
+          </div>
+
+          <!-- Email -->
+          <div class="summary-row">
+            <span class="summary-label">{{'text_email' | translate}}:</span>
+            <span class="summary-value">{{giftVoucher.recipient_email}}</span>
+          </div>
+
+          <!-- Remitente -->
+          <div class="summary-row" *ngIf="giftVoucher.sender_name">
+            <span class="summary-label">{{'text_from' | translate}}:</span>
+            <span class="summary-value">{{giftVoucher.sender_name}}</span>
+          </div>
+
+          <!-- Fecha de Envío -->
+          <div class="summary-row" *ngIf="giftVoucher.delivery_date">
+            <span class="summary-label">{{'text_delivery_date' | translate}}:</span>
+            <span class="summary-value">{{giftVoucher.delivery_date | date:'dd/MM/yyyy'}}</span>
+          </div>
+
+          <!-- Mensaje -->
+          <div class="summary-row message" *ngIf="giftVoucher.personal_message">
+            <span class="summary-label">{{'text_message' | translate}}:</span>
+            <span class="summary-value italic">"{{giftVoucher.personal_message}}"</span>
+          </div>
+
+          <!-- Preview -->
+          <div class="summary-preview">
+            <div class="voucher-preview small"
+                 [style.background-color]="giftVoucher.background_color"
+                 [style.color]="giftVoucher.text_color">
+              <mat-icon>card_giftcard</mat-icon>
+              <div class="preview-amount">{{formatAmount(giftVoucher.amount)}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje de Error -->
+        <div *ngIf="errorMessage && currentStep === 'summary'" class="error-message">
+          <mat-icon class="error-icon">error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="isProcessing" class="loading-container">
+          <mat-spinner [diameter]="40"></mat-spinner>
+          <span class="loading-text">{{'text_processing' | translate}}...</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer con Botones -->
+    <div class="modal-footer">
+      <button *ngIf="currentStep !== 'amount'"
+              (click)="goBack()"
+              class="modal-button secondary"
+              [disabled]="isProcessing">
+        <mat-icon>arrow_back</mat-icon>
+        {{'text_back' | translate}}
+      </button>
+
+      <button *ngIf="currentStep === 'amount'"
+              (click)="goToPersonalize()"
+              class="modal-button primary"
+              [disabled]="!canProceed()">
+        {{'text_continue' | translate}}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+
+      <button *ngIf="currentStep === 'personalize'"
+              (click)="goToRecipient()"
+              class="modal-button primary">
+        {{'text_continue' | translate}}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+
+      <button *ngIf="currentStep === 'recipient'"
+              (click)="goToSummary()"
+              class="modal-button primary"
+              [disabled]="!canProceed()">
+        {{'text_continue' | translate}}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+
+      <button *ngIf="currentStep === 'summary'"
+              (click)="completePurchase()"
+              class="modal-button confirm"
+              [disabled]="!canProceed() || isProcessing">
+        <mat-icon>payment</mat-icon>
+        {{'text_proceed_to_payment' | translate}}
+      </button>
+    </div>
+
+  </div>
+</div>

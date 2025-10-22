@@ -1,0 +1,99 @@
+<div class="modal" [@fadeInOut] *ngIf="isOpen">
+  <div class="modal-content background-color-full rounded-8" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-flex-title mb-32">
+      <span class="text-color fw-semibold text-semibig">
+        {{'text_apply_discount_code' | translate}}
+      </span>
+      <img [src]="themeService.close" class="cursor-pointer" (click)="closeModal()" />
+    </div>
+
+    <!-- Formulario -->
+    <div class="modal-form">
+      <mat-dialog-content style="width: 100%;">
+
+        <!-- Input de código -->
+        <mat-form-field appearance="outline" class="full-width mb-16">
+          <mat-label>{{'text_discount_code' | translate}}</mat-label>
+          <input
+            type="text"
+            matInput
+            [(ngModel)]="code"
+            (keyup.enter)="validateCode()"
+            [disabled]="isValidating"
+            placeholder="VERANO2025"
+            style="text-transform: uppercase;" />
+        </mat-form-field>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage" class="error-message mb-16">
+          <mat-icon class="error-icon">error</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Resultado de validación exitosa -->
+        <div *ngIf="validationResult && validationResult.valid" class="success-box mb-16">
+          <div class="success-header">
+            <mat-icon class="success-icon">check_circle</mat-icon>
+            <span class="success-title">{{'text_code_valid' | translate}}</span>
+          </div>
+
+          <div class="discount-details">
+            <!-- Código -->
+            <div class="detail-row">
+              <span class="detail-label">{{'text_code' | translate}}:</span>
+              <span class="detail-value">{{ validationResult.discount_code.code }}</span>
+            </div>
+
+            <!-- Descripción (si existe) -->
+            <div class="detail-row" *ngIf="validationResult.discount_code.description">
+              <span class="detail-label">{{'text_description' | translate}}:</span>
+              <span class="detail-value">{{ validationResult.discount_code.description }}</span>
+            </div>
+
+            <!-- Tipo de descuento -->
+            <div class="detail-row">
+              <span class="detail-label">{{'text_discount_type' | translate}}:</span>
+              <span class="detail-value">{{ getDiscountTypeLabel() }}</span>
+            </div>
+
+            <!-- Descuento aplicado -->
+            <div class="detail-row discount-amount">
+              <span class="detail-label">{{'text_discount_amount' | translate}}:</span>
+              <span class="detail-value highlight">-CHF {{ validationResult.discount_amount | number:'1.2-2' }}</span>
+            </div>
+
+            <!-- Fecha de expiración (si existe) -->
+            <div class="detail-row" *ngIf="validationResult.discount_code.valid_to">
+              <span class="detail-label">{{'text_valid_until' | translate}}:</span>
+              <span class="detail-value">{{ validationResult.discount_code.valid_to | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading spinner -->
+        <div *ngIf="isValidating" class="loading-container">
+          <mat-spinner [diameter]="40"></mat-spinner>
+          <span class="loading-text">{{'text_validating' | translate}}...</span>
+        </div>
+
+      </mat-dialog-content>
+    </div>
+
+    <!-- Botones -->
+    <div class="modal-buttons">
+      <button
+        (click)="validateCode()"
+        class="modal-button"
+        [disabled]="isValidating || !code || code.trim() === ''">
+        {{'text_validate_code' | translate}}
+      </button>
+      <button
+        (click)="applyCode()"
+        *ngIf="validationResult && validationResult.valid"
+        class="modal-button confirm">
+        {{'text_apply' | translate}}
+      </button>
+    </div>
+  </div>
+</div>

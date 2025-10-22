@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { ApiCrudService } from 'src/app/services/crud.service';
+import { GiftVoucherService } from '../../services/gift-voucher.service';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +35,7 @@ export class HomeComponent implements OnInit {
   selectedTypeProximosCourse: string = this.typeProximosCourse[0]
 
   FilterModal: boolean = false
+  isGiftVoucherModalOpen: boolean = false;
   schoolData: any = null;
   sports: any[];
   season: any
@@ -72,7 +74,7 @@ export class HomeComponent implements OnInit {
 
   constructor(public router: Router, public themeService: ThemeService, private coursesService: CoursesService, public translateService: TranslateService,
     private schoolService: SchoolService, private crudService: ApiCrudService,
-    private fb: UntypedFormBuilder) {
+    private fb: UntypedFormBuilder, private giftVoucherService: GiftVoucherService) {
   }
 
 
@@ -211,4 +213,31 @@ export class HomeComponent implements OnInit {
   }
 
   find = (table: any[], value: string, variable: string, variable2?: string) => table.find((a: any) => variable2 ? a[variable][variable2] === value : a[variable] === value)
+
+  openGiftVoucherModal(): void {
+    this.isGiftVoucherModalOpen = true;
+  }
+
+  closeGiftVoucherModal(): void {
+    this.isGiftVoucherModalOpen = false;
+  }
+
+  handleGiftVoucherPurchase(event: any): void {
+    const giftVoucher = event.giftVoucher;
+    const amount = event.amount;
+
+    console.log('Gift Voucher creado:', giftVoucher);
+
+    // TODO: Integrar con Payrexx
+    // Redirigir a pasarela de pago con:
+    // - amount: giftVoucher.amount
+    // - reference_id: giftVoucher.id
+    // - purpose: `Gift Voucher ${giftVoucher.id}`
+
+    // Por ahora, mostrar confirmación
+    alert(`Bono regalo creado exitosamente!\nID: ${giftVoucher.id}\nMonto: CHF ${amount}`);
+
+    // Aquí deberías redirigir a Payrexx
+    // this.paymentService.createGateway(...).subscribe(...)
+  }
 }

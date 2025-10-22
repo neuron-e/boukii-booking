@@ -63,6 +63,8 @@ import {ContactComponent} from './pages/contact/contact.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { ErrorInterceptor } from './error-interceptor';
+import { ModalDiscountCodeComponent } from './components/modal-discount-code/modal-discount-code.component';
+import { ModalBuyGiftVoucherComponent } from './components/modal-buy-gift-voucher/modal-buy-gift-voucher.component';
 
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -86,7 +88,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     UserDetailDialogComponent,
     TermsComponent,
     PrivacyComponent,
-    ContactComponent
+    ContactComponent,
+    ModalDiscountCodeComponent,
+    ModalBuyGiftVoucherComponent
   ],
   imports: [
     BrowserModule,
