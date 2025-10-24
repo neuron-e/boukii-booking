@@ -476,19 +476,26 @@ export class CartComponent implements OnInit {
 
   closeModalVoucher(voucher: any) {
     if (voucher) {
-      // Check if voucher is already added
       const isVoucherAlreadyAdded = this.vouchers.some(v => v.id === voucher.id);
 
       if (!isVoucherAlreadyAdded) {
-        // Calculate remaining total after previous vouchers
         const remainingTotal = this.calculateRemainingTotal();
-        const amountToUse = Math.min(voucher.remaining_balance, remainingTotal);
-        voucher.reducePrice = amountToUse; // Asignar cuánto del voucher se usará
-        voucher.remaining_balance -= amountToUse; // Asignar cuánto del voucher se usará
-        this.vouchers.push(voucher);
+        const originalBalance = parseFloat(voucher?.remaining_balance ?? 0);
+        const safeBalance = isNaN(originalBalance) ? 0 : originalBalance;
+        const amountToUse = Math.max(0, Math.min(safeBalance, remainingTotal));
+        const remainingAfter = Number((safeBalance - amountToUse).toFixed(2));
+
+        const appliedVoucher = {
+          ...voucher,
+          reducePrice: amountToUse,
+          original_balance: safeBalance,
+          remaining_balance: remainingAfter,
+          remaining_balance_after: remainingAfter
+        };
+
+        this.vouchers.push(appliedVoucher);
         this.updateTotal();
       } else {
-        // Show error that voucher is already added
         this.snackBar.open(
           this.translateService.instant('Voucher already added'),
           'Close',
@@ -836,7 +843,6 @@ export class CartComponent implements OnInit {
       );
     }
   }
-  }
 
   removeDiscountCode(): void {
     this.appliedDiscountCode = null;
@@ -859,3 +865,4 @@ export class CartComponent implements OnInit {
   }
 
 }
+

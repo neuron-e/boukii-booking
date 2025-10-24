@@ -1,4 +1,4 @@
-﻿import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
@@ -1809,21 +1809,25 @@ export class CourseComponent implements OnInit {
 
   discounts: any[] = []
   updateCollectivePrice() {
-    let collectivePrice = this.course.price * this.selectedDates.length;;
-    if (this.course.discounts) {
-      try {
-        const discounts = JSON.parse(this.course.discounts);
-        this.discounts.forEach((discount: any) => {
-          if (this.selectedDates.length === discount.date) {
-            var discountApplied = collectivePrice * (discount.percentage / 100);
-            collectivePrice = collectivePrice - discountApplied;
-          }
-        });
-      } catch (error) {
-      }
-    } else {
+    const basePrice = parseFloat(this.course?.price || 0);
+    const selectedCount = this.selectedDates?.length || 0;
+
+    let collectivePrice = basePrice * selectedCount;
+
+    if (selectedCount > 0) {
+      const dateEntries = this.selectedDates.map(dateStr => {
+        const intervalId = this.getIntervalForDate(dateStr);
+        return {
+          date: dateStr,
+          course_interval_id: intervalId !== null && intervalId !== undefined ? Number(intervalId) : null
+        };
+      });
+
+      const discountAmount = this.bookingService.calculateMultiDateDiscount(this.course, dateEntries);
+      collectivePrice -= discountAmount;
     }
-    this.collectivePrice = collectivePrice;
+
+    this.collectivePrice = Math.max(0, Number(collectivePrice.toFixed(2)));
   }
 
   generateNumberArray(max: number): number[] {

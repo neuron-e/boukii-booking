@@ -14,7 +14,16 @@ export class ClientService extends ApiService {
   }
 
   getClientVoucher(code:string, clientId:number) {
-    const url = this.baseUrl + '/slug/client/'+clientId+'/voucher/'+code;
+    return this.findVoucherByCode(code, clientId);
+  }
+
+  findVoucherByCode(code: string, clientId?: number | null) {
+    const trimmedCode = (code || '').trim();
+    const encodedCode = encodeURIComponent(trimmedCode);
+    const query = clientId !== null && clientId !== undefined
+      ? `?client_id=${clientId}`
+      : '';
+    const url = `${this.baseUrl}/slug/vouchers/code/${encodedCode}${query}`;
     return this.http.get<ApiResponse>(url, { headers: this.getHeaders() });
   }
 

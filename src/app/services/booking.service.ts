@@ -52,12 +52,10 @@ export class BookingService extends ApiService {
       } else {
         price = parseFloat(activity.course.price || 0) * activity.dates.length * activity.utilizers.length;
 
-        // Aplicar descuentos por múltiples fechas si están configurados
-        if (activity.course.discounts && activity.dates.length > 1) {
-          const discountAmount = this.calculateMultiDateDiscount(activity.course, activity.dates.length);
-          if (discountAmount > 0) {
-            price -= (discountAmount * activity.utilizers.length);
-          }
+        // Aplicar descuentos considerando los intervalos
+        const discountAmount = this.calculateMultiDateDiscount(activity.course, activity.dates);
+        if (discountAmount > 0) {
+          price -= (discountAmount * activity.utilizers.length);
         }
       }
     } else {
@@ -103,48 +101,204 @@ export class BookingService extends ApiService {
     return datePrice + extraPrice;
   }
 
-  calculateMultiDateDiscount(course: any, totalDates: number): number {
-    if (!course.discounts) {
+  calculateMultiDateDiscount(course: any, selectedDates: any[]): number {
+    if (!course || !Array.isArray(selectedDates) || selectedDates.length === 0) {
       return 0;
     }
 
-    try {
-      let discounts;
-      if (typeof course.discounts === 'string') {
-        discounts = JSON.parse(course.discounts);
-      } else {
-        discounts = course.discounts;
+    const basePrice = parseFloat(course.price || 0);
+    if (!basePrice) {
+      return 0;
+    }
+
+    const { globalRules, intervalRules } = this.getIntervalDiscountRules(course);
+    if (globalRules.size === 0 && intervalRules.size === 0) {
+      return 0;
+    }
+
+    const counters: Record<string, number> = {};
+
+    const dateEntries = selectedDates
+      .map(date => {
+        const normalizedDate = typeof date === 'string' ? date : (date?.date ?? date);
+        return {
+          date: normalizedDate,
+          intervalId: this.resolveIntervalId(date)
+        };
+      })
+      .filter(entry => !!entry.date)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    let discountTotal = 0;
+
+    for (const entry of dateEntries) {
+      const intervalKey = entry.intervalId !== null && entry.intervalId !== undefined
+        ? entry.intervalId.toString()
+        : 'global';
+      counters[intervalKey] = (counters[intervalKey] ?? 0) + 1;
+      const dayIndex = counters[intervalKey];
+      const discountedPrice = this.applyIntervalDiscount(
+        basePrice,
+        entry.intervalId,
+        dayIndex,
+        globalRules,
+        intervalRules
+      );
+      discountTotal += (basePrice - discountedPrice);
+    }
+
+    return Number(discountTotal.toFixed(2));
+  }
+
+  private getIntervalDiscountRules(course: any): {
+    globalRules: Map<number, { type: 'percentage' | 'fixed'; value: number }>;
+    intervalRules: Map<number, Map<number, { type: 'percentage' | 'fixed'; value: number }>>;
+  } {
+    const globalRules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
+    for (const rule of this.parseGlobalDiscounts(course?.discounts)) {
+      globalRules.set(rule.day, { type: rule.type, value: rule.value });
+    }
+
+    const intervalRules = new Map<number, Map<number, { type: 'percentage' | 'fixed'; value: number }>>();
+    const intervals = Array.isArray(course?.course_intervals)
+      ? course.course_intervals
+      : (Array.isArray(course?.courseIntervals) ? course.courseIntervals : []);
+
+    intervals.forEach((interval: any) => {
+      if (!interval || interval.id === undefined || interval.id === null) {
+        return;
       }
 
-      if (!discounts || !Array.isArray(discounts)) {
-        return 0;
-      }
-
-      // Buscar el descuento que corresponde al número de fechas seleccionadas
-      const applicableDiscount = discounts.find(discount => discount.date === totalDates);
-
-      if (applicableDiscount) {
-        const basePrice = parseFloat(course.price || 0);
-
-        // Soporte para formato nuevo (type + discount) y viejo (percentage)
-        if (applicableDiscount.type !== undefined) {
-          // Formato nuevo
-          if (applicableDiscount.type === 1) { // Porcentaje
-            return (basePrice * totalDates * applicableDiscount.discount) / 100;
-          } else { // Cantidad fija
-            return applicableDiscount.discount;
+      const rules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
+      if (Array.isArray(interval?.discounts)) {
+        interval.discounts.forEach((discount: any) => {
+          const day = Number(discount?.days ?? discount?.min_days ?? 0);
+          if (!day || day < 1) {
+            return;
           }
-        } else if (applicableDiscount.percentage !== undefined) {
-          // Formato viejo - mantener compatibilidad
-          return (basePrice * totalDates * applicableDiscount.percentage) / 100;
-        }
+          const type = (discount?.type === 'fixed' || discount?.type === 'fixed_amount' || discount?.discount_type === 'fixed_amount')
+            ? 'fixed'
+            : 'percentage';
+          const value = Number(discount?.value ?? discount?.discount_value ?? 0) || 0;
+          rules.set(day, { type, value });
+        });
       }
 
-      return 0;
-    } catch (error) {
-      console.error('Error calculating multi-date discount:', error);
-      return 0;
+      if (rules.size > 0) {
+        intervalRules.set(Number(interval.id), rules);
+      }
+    });
+
+    return { globalRules, intervalRules };
+  }
+
+  private parseGlobalDiscounts(rawDiscounts: any): Array<{ day: number; type: 'percentage' | 'fixed'; value: number }> {
+    if (!rawDiscounts) {
+      return [];
     }
+
+    let discountsArray: any[] = [];
+
+    if (typeof rawDiscounts === 'string') {
+      try {
+        const parsed = JSON.parse(rawDiscounts);
+        if (Array.isArray(parsed)) {
+          discountsArray = parsed;
+        }
+      } catch (error) {
+        console.warn('Could not parse course discounts JSON', error);
+        discountsArray = [];
+      }
+    } else if (Array.isArray(rawDiscounts)) {
+      discountsArray = rawDiscounts;
+    } else {
+      return [];
+    }
+
+    return discountsArray
+      .map(discount => {
+        const day = Number(discount?.date ?? discount?.day);
+        if (!day || day < 1) {
+          return null;
+        }
+
+        let type: 'percentage' | 'fixed' = 'percentage';
+        let value = 0;
+
+        if (discount?.type !== undefined) {
+          if (discount.type === 2 || discount.type === 'fixed' || discount.type === 'fixed_amount') {
+            type = 'fixed';
+          } else {
+            type = 'percentage';
+          }
+          value = Number(discount?.discount ?? 0) || 0;
+        } else if (discount?.percentage !== undefined) {
+          type = 'percentage';
+          value = Number(discount.percentage) || 0;
+        } else if (discount?.discount !== undefined) {
+          type = 'percentage';
+          value = Number(discount.discount) || 0;
+        } else if (discount?.reduccion !== undefined) {
+          type = 'percentage';
+          value = Number(discount.reduccion) || 0;
+        } else {
+          return null;
+        }
+
+        return { day, type, value };
+      })
+      .filter(rule => rule !== null) as Array<{ day: number; type: 'percentage' | 'fixed'; value: number }>;
+  }
+
+  private applyIntervalDiscount(
+    basePrice: number,
+    intervalId: number | null | undefined,
+    dayIndex: number,
+    globalRules: Map<number, { type: 'percentage' | 'fixed'; value: number }>,
+    intervalRules: Map<number, Map<number, { type: 'percentage' | 'fixed'; value: number }>>
+  ): number {
+    let rule: { type: 'percentage' | 'fixed'; value: number } | undefined;
+
+    if (intervalId !== null && intervalId !== undefined) {
+      const intervalRule = intervalRules.get(Number(intervalId));
+      if (intervalRule) {
+        rule = intervalRule.get(dayIndex);
+      }
+    }
+
+    if (!rule) {
+      rule = globalRules.get(dayIndex);
+    }
+
+    if (!rule) {
+      return basePrice;
+    }
+
+    if (rule.type === 'percentage') {
+      return Math.max(0, basePrice - (basePrice * rule.value / 100));
+    }
+
+    return Math.max(0, basePrice - rule.value);
+  }
+
+  private resolveIntervalId(date: any): number | null {
+    if (!date) {
+      return null;
+    }
+
+    if (date?.course_interval_id !== undefined && date?.course_interval_id !== null) {
+      return Number(date.course_interval_id);
+    }
+
+    if (date?.interval_id !== undefined && date?.interval_id !== null) {
+      return Number(date.interval_id);
+    }
+
+    if (date?.courseDate?.course_interval_id !== undefined && date.courseDate.course_interval_id !== null) {
+      return Number(date.courseDate.course_interval_id);
+    }
+
+    return null;
   }
 
   updateBookingData(partialData: Partial<any>) {

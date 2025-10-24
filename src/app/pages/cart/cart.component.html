@@ -236,16 +236,26 @@
 
       <div *ngIf="vouchers.length > 0" class="voucher-price-flex mt-8">
         <div *ngFor="let voucher of vouchers" class="voucher-item payment-price-flex">
-          <div class="text-color uppercase">
+          <div class="text-color uppercase voucher-info">
             <img [src]="themeService.trash" (click)="removeVoucher(voucher);"
                  style="display: inline-flex !important;"
                  class="course-box-delete cursor-pointer">
-            {{'text_voucher' | translate }} - {{voucher.code}}
+            <div>
+              <div>
+                {{'text_voucher' | translate }} - {{voucher.code}}
+                <span class="voucher-badge" *ngIf="voucher.is_generic">{{'text_generic_voucher' | translate }}</span>
+              </div>
+              <div class="voucher-remaining">
+                {{'remaining_balance' | translate }}:
+                {{ (voucher.remaining_balance ?? 0)|number:'0.2-2' }}
+                {{ cart[0].details[0].course.currency }}
+              </div>
+            </div>
           </div>
           <div class="text-color min-width-price">
-      <span class="text-color fw-bold">
-        -{{voucher.reducePrice|number:'0.2-2'}}
-      </span>
+            <span class="text-color fw-bold">
+              -{{voucher.reducePrice|number:'0.2-2'}}
+            </span>
             {{ cart[0].details[0].course.currency }}
           </div>
         </div>
@@ -383,3 +393,5 @@
   (onClose)="closeDiscountModal()"
   (onApply)="applyDiscountCode($event)">
 </app-modal-discount-code>
+
+

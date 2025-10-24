@@ -292,12 +292,11 @@ export class BookingReservationDetailComponent implements OnInit {
       this.activities.forEach(activity => {
         if (activity.course?.course_type === 1 &&
             activity.course?.is_flexible &&
-            activity.course?.discounts &&
             activity.dates?.length > 1) {
 
           const discountAmount = this.bookingService.calculateMultiDateDiscount(
             activity.course,
-            activity.dates.length
+            activity.dates
           );
 
           if (discountAmount > 0) {

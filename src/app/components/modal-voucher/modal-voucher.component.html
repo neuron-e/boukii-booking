@@ -12,17 +12,36 @@
         <mat-radio-group class="voucher-list">
           <ng-container *ngFor="let b of bonuses">
             <div class="voucher-item">
-              <mat-radio-button *ngIf="!b.payed"
-                                [disabled]="isInUse(b.id)"
-                                (change)="bonus = b"
-                                [value]="b">
-                {{ b.code }} - {{'remaining_balance' | translate}}: {{ b.remaining_balance }} CHF
+              <mat-radio-button
+                *ngIf="!b.payed"
+                [disabled]="isInUse(b.id) || b.remaining_balance <= 0"
+                (change)="bonus = b"
+                [value]="b">
+                <div class="voucher-header">
+                  <span class="voucher-code">{{ b.code }}</span>
+                  <span class="voucher-badge" *ngIf="b.is_generic">
+                    {{ 'text_generic_voucher' | translate }}
+                  </span>
+                </div>
+                <div class="voucher-meta">
+                  <span>
+                    {{ 'text_voucher_amount' | translate }}:
+                    {{ b.quantity | number:'0.2-2' }} CHF
+                  </span>
+                  <span>
+                    {{ 'remaining_balance' | translate }}:
+                    {{ b.remaining_balance | number:'0.2-2' }} CHF
+                  </span>
+                </div>
               </mat-radio-button>
-              <span class="applied-text">
-                {{ isInUse(b.id) ? 'applied' : '' | translate }}
+              <span class="applied-text" *ngIf="isInUse(b.id)">
+                {{ 'applied' | translate }}
               </span>
             </div>
           </ng-container>
+          <div *ngIf="!bonuses?.length" class="empty-state">
+            {{ 'text_select_client_voucher' | translate }}
+          </div>
         </mat-radio-group>
       </mat-dialog-content>
 
