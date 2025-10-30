@@ -134,19 +134,27 @@ export class GiftVoucherPurchaseComponent implements OnInit, OnDestroy {
     this.giftVoucherService.purchasePublic(purchaseData).subscribe({
       next: (response: GiftVoucherPurchaseResponse) => {
         if (response?.success) {
-          const voucherId = response.data?.gift_voucher?.id;
-          const voucherCode = response.data?.voucher_code;
+          // Check if payment URL is provided (Payrexx integration)
+          if (response.data?.payment_url) {
+            // Redirect to Payrexx payment gateway
+            window.location.href = response.data.payment_url;
+          } else {
+            // Fallback: navigate to success page (for direct/test purchases)
+            const voucherId = response.data?.gift_voucher?.id;
+            const voucherCode = response.data?.voucher_code;
 
-          this.router.navigate(['/gift-vouchers/success'], {
-            queryParams: {
-              voucher_id: voucherId,
-              code: voucherCode
-            }
-          });
+            this.router.navigate(['/gift-vouchers/success'], {
+              queryParams: {
+                voucher_id: voucherId,
+                code: voucherCode
+              }
+            });
+            this.loading = false;
+          }
         } else {
           this.error = response?.message || this.translate.instant('gift_vouchers.error_purchase');
+          this.loading = false;
         }
-        this.loading = false;
       },
       error: (err) => {
         console.error('Error purchasing voucher:', err);

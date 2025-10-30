@@ -213,7 +213,7 @@ export class GiftVoucherPurchaseComponent implements OnInit {
     };
 
     // Call the public API endpoint to create purchase
-    this.giftVoucherService.purchaseVoucherPublic(formData).subscribe({
+    this.giftVoucherService.purchasePublic(formData).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           // Redirect to Payrexx payment URL
