@@ -1,0 +1,204 @@
+﻿<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h1 class="mb-4">{{ 'gift_vouchers.title' | translate }}</h1>
+      <p class="text-muted mb-4">{{ 'gift_vouchers.subtitle' | translate }}</p>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = null"></button>
+      </div>
+
+      <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+        <!-- Selector de monto -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">{{ 'gift_vouchers.amount' | translate }}</label>
+          <div class="amount-selector">
+            <button *ngFor="let amount of predefinedAmounts"
+                    type="button"
+                    class="btn btn-outline-primary me-2 mb-2"
+                    [class.active]="selectedAmount === amount"
+                    (click)="selectAmount(amount)">
+              {{ amount | number:'1.0-0' }} {{ selectedCurrency }}
+            </button>
+            <button type="button"
+                    class="btn btn-outline-primary mb-2"
+                    [class.active]="selectedAmount === null"
+                    (click)="selectCustomAmount()">
+              {{ 'gift_vouchers.custom_amount' | translate }}
+            </button>
+          </div>
+
+          <input *ngIf="selectedAmount === null"
+                 type="number"
+                 class="form-control mt-2"
+                 formControlName="amount"
+                 [placeholder]="'gift_vouchers.custom_amount_placeholder' | translate"
+                 min="10"
+                 max="1000">
+          <div *ngIf="hasError('amount')" class="text-danger small mt-1">
+            {{ getErrorMessage('amount') }}
+          </div>
+        </div>
+
+        <!-- Escuela -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">{{ 'gift_vouchers.select_school' | translate }}</label>
+          <select class="form-select" formControlName="school_id" [class.is-invalid]="hasError('school_id')">
+            <option [ngValue]="null">{{ 'common.select' | translate }}</option>
+            <option *ngFor="let school of schools" [value]="school.id">
+              {{ school.name }}{{ school.currency ? ' (' + school.currency + ')' : '' }}
+            </option>
+          </select>
+          <div *ngIf="hasError('school_id')" class="text-danger small mt-1">
+            {{ getErrorMessage('school_id') }}
+          </div>
+        </div>
+
+        <!-- Datos del comprador -->
+        <div class="mb-4">
+          <h5 class="fw-bold mb-3">{{ 'gift_vouchers.buyer_section' | translate }}</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{ 'gift_vouchers.buyer_name' | translate }}</label>
+              <input type="text"
+                     class="form-control"
+                     formControlName="buyer_name"
+                     [class.is-invalid]="hasError('buyer_name')"
+                     [placeholder]="'gift_vouchers.buyer_name_placeholder' | translate">
+              <div *ngIf="hasError('buyer_name')" class="text-danger small mt-1">
+                {{ getErrorMessage('buyer_name') }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{ 'gift_vouchers.buyer_email' | translate }}</label>
+              <input type="email"
+                     class="form-control"
+                     formControlName="buyer_email"
+                     [class.is-invalid]="hasError('buyer_email')"
+                     [placeholder]="'gift_vouchers.buyer_email_placeholder' | translate">
+              <div *ngIf="hasError('buyer_email')" class="text-danger small mt-1">
+                {{ getErrorMessage('buyer_email') }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{ 'gift_vouchers.buyer_phone' | translate }}</label>
+              <input type="tel"
+                     class="form-control"
+                     formControlName="buyer_phone"
+                     [placeholder]="'gift_vouchers.buyer_phone_placeholder' | translate">
+            </div>
+          </div>
+          <small class="text-muted">{{ 'gift_vouchers.buyer_details_helper' | translate }}</small>
+        </div>
+
+        <!-- Destinatario -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">{{ 'gift_vouchers.recipient_name' | translate }}</label>
+            <input type="text"
+                   class="form-control"
+                   formControlName="recipient_name"
+                   [class.is-invalid]="hasError('recipient_name')"
+                   [placeholder]="'gift_vouchers.recipient_name_placeholder' | translate">
+            <div *ngIf="hasError('recipient_name')" class="text-danger small mt-1">
+              {{ getErrorMessage('recipient_name') }}
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">{{ 'gift_vouchers.recipient_email' | translate }}</label>
+            <input type="email"
+                   class="form-control"
+                   formControlName="recipient_email"
+                   [class.is-invalid]="hasError('recipient_email')"
+                   [placeholder]="'gift_vouchers.recipient_email_placeholder' | translate">
+            <div *ngIf="hasError('recipient_email')" class="text-danger small mt-1">
+              {{ getErrorMessage('recipient_email') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <label class="form-label">{{ 'gift_vouchers.recipient_phone' | translate }}</label>
+            <input type="tel"
+                   class="form-control"
+                   formControlName="recipient_phone"
+                   [placeholder]="'gift_vouchers.recipient_phone_placeholder' | translate">
+          </div>
+        </div>
+        <small class="text-muted d-block mb-3">
+          {{ 'gift_vouchers.recipient_details_helper' | translate }}
+        </small>
+
+        <!-- Mensaje personal -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">{{ 'gift_vouchers.personal_message' | translate }}</label>
+          <textarea class="form-control"
+                    formControlName="personal_message"
+                    rows="3"
+                    maxlength="500"
+                    [placeholder]="'gift_vouchers.personal_message_placeholder' | translate"></textarea>
+          <small class="text-muted">{{ messageLength }}/500</small>
+        </div>
+
+        <!-- Preview del voucher -->
+        <div class="voucher-preview mb-4" *ngIf="purchaseForm.get('amount')?.value">
+          <h5 class="mb-3">{{ 'gift_vouchers.preview' | translate }}</h5>
+          <div class="card voucher-card">
+            <div class="card-body text-center">
+              <div class="voucher-icon mb-3">
+                <i class="bi bi-gift fs-1"></i>
+              </div>
+              <h2 class="display-4 mb-3">{{ purchaseForm.get('amount')?.value | number:'1.0-0' }} {{ selectedCurrency }}</h2>
+              <div class="voucher-details">
+                <p class="mb-1">
+                  <strong>{{ 'gift_vouchers.from' | translate }}:</strong>
+                  {{ purchaseForm.get('buyer_name')?.value || '___' }}
+                </p>
+                <p class="mb-1">
+                  <strong>{{ 'gift_vouchers.to' | translate }}:</strong>
+                  {{ purchaseForm.get('recipient_name')?.value || '___' }}
+                </p>
+                <p class="fst-italic mt-3" *ngIf="purchaseForm.get('personal_message')?.value">
+                  "{{ purchaseForm.get('personal_message')?.value }}"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit"
+                class="btn btn-primary btn-lg w-100"
+                [disabled]="loading || purchaseForm.invalid">
+          <span *ngIf="!loading">
+            <i class="bi bi-credit-card me-2"></i>
+            {{ 'gift_vouchers.purchase_button' | translate }}
+          </span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ 'common.loading' | translate }}
+          </span>
+        </button>
+
+        <!-- Additional info -->
+        <div class="mt-3 text-center">
+          <small class="text-muted">
+            {{ 'gift_vouchers.payment_info' | translate }}
+          </small>
+        </div>
+      </form>
+
+      <!-- Verification link -->
+      <div class="mt-4 text-center">
+        <a [routerLink]="['/gift-vouchers/verify']" class="btn btn-link">
+          {{ 'gift_vouchers.verify_link' | translate }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

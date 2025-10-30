@@ -1,0 +1,113 @@
+.cancel-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.cancel-icon {
+  i {
+    font-size: 5rem;
+    animation: shake 0.6s ease-out;
+  }
+}
+
+.info-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(13, 110, 253, 0.05);
+  border-radius: 8px;
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  span {
+    font-size: 1rem;
+    color: #666;
+  }
+}
+
+.help-section {
+  h4 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+.action-buttons {
+  margin-top: 2rem;
+
+  .btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+.contact-section {
+  a {
+    color: var(--bs-primary, #0d6efd);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .cancel-icon {
+    i {
+      font-size: 4rem;
+    }
+  }
+
+  .action-buttons {
+    .btn {
+      width: 100%;
+      margin: 0.5rem 0 !important;
+    }
+  }
+}

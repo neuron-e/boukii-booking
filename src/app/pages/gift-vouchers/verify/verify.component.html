@@ -1,0 +1,100 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <h1 class="mb-4 text-center">{{ 'gift_vouchers.verify_title' | translate }}</h1>
+      <p class="text-muted text-center mb-4">{{ 'gift_vouchers.verify_subtitle' | translate }}</p>
+
+      <!-- Formulario de verificación -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label fw-bold">{{ 'gift_vouchers.verify_code' | translate }}</label>
+            <input type="text"
+                   class="form-control form-control-lg text-center"
+                   [(ngModel)]="code"
+                   [placeholder]="'gift_vouchers.verify_code_placeholder' | translate"
+                   (keyup.enter)="verify()"
+                   [disabled]="loading">
+          </div>
+
+          <button type="button"
+                  class="btn btn-primary btn-lg w-100"
+                  (click)="verify()"
+                  [disabled]="loading || !code">
+            <span *ngIf="!loading">
+              <i class="bi bi-search me-2"></i>
+              {{ 'gift_vouchers.verify_button' | translate }}
+            </span>
+            <span *ngIf="loading">
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ 'common.loading' | translate }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ error }}
+      </div>
+
+      <!-- Resultado de verificación -->
+      <div *ngIf="result && !loading" class="verification-result">
+        <!-- Válido -->
+        <div *ngIf="result.valid" class="card border-success">
+          <div class="card-body text-center">
+            <div class="success-icon mb-3">
+              <i class="bi bi-check-circle-fill text-success"></i>
+            </div>
+            <h3 class="text-success mb-3">{{ 'gift_vouchers.valid' | translate }}</h3>
+
+            <div class="voucher-info">
+              <div class="info-item" *ngIf="result.balance !== undefined">
+                <span class="label">{{ 'gift_vouchers.balance' | translate }}:</span>
+                <span class="value">{{ result.balance }}€</span>
+              </div>
+
+              <div class="info-item" *ngIf="result.expires_at">
+                <span class="label">{{ 'gift_vouchers.expires_at' | translate }}:</span>
+                <span class="value">{{ formatDate(result.expires_at) }}</span>
+              </div>
+
+              <div class="info-item" *ngIf="result.status">
+                <span class="label">{{ 'gift_vouchers.status' | translate }}:</span>
+                <span class="value">{{ result.status }}</span>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-outline-primary mt-3" (click)="reset()">
+              {{ 'gift_vouchers.verify_another' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Inválido -->
+        <div *ngIf="!result.valid" class="card border-danger">
+          <div class="card-body text-center">
+            <div class="error-icon mb-3">
+              <i class="bi bi-x-circle-fill text-danger"></i>
+            </div>
+            <h3 class="text-danger mb-3">{{ 'gift_vouchers.invalid' | translate }}</h3>
+            <p class="text-muted">{{ 'gift_vouchers.invalid_description' | translate }}</p>
+
+            <button type="button" class="btn btn-outline-primary mt-3" (click)="reset()">
+              {{ 'gift_vouchers.try_again' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Link a compra -->
+      <div class="mt-4 text-center">
+        <a [routerLink]="['/gift-vouchers/purchase']" class="btn btn-link">
+          <i class="bi bi-arrow-left me-2"></i>
+          {{ 'gift_vouchers.purchase_link' | translate }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

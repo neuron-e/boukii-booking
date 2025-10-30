@@ -1,0 +1,154 @@
+.success-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.success-icon {
+  i {
+    font-size: 5rem;
+    animation: scaleIn 0.6s ease-out;
+  }
+}
+
+.voucher-code {
+  .code-display {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--bs-primary, #0d6efd);
+    padding: 1rem;
+    background: rgba(13, 110, 253, 0.1);
+    border-radius: 12px;
+    border: 2px dashed var(--bs-primary, #0d6efd);
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: rgba(13, 110, 253, 0.05);
+  border-radius: 8px;
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  span {
+    font-size: 1rem;
+    color: #666;
+  }
+}
+
+.next-steps {
+  margin-top: 2rem;
+
+  h4 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  .step-card {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    height: 100%;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    i {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.action-buttons {
+  margin-top: 2rem;
+
+  .btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .success-icon {
+    i {
+      font-size: 4rem;
+    }
+  }
+
+  .voucher-code {
+    .code-display {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+    }
+  }
+
+  .action-buttons {
+    .btn {
+      width: 100%;
+      margin: 0.5rem 0 !important;
+    }
+  }
+
+  .next-steps {
+    .step-card {
+      i {
+        font-size: 2rem;
+      }
+    }
+  }
+}

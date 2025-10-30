@@ -1,0 +1,141 @@
+.form-control-lg {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 1rem;
+  border-radius: 8px;
+
+  &:focus {
+    border-color: var(--bs-primary, #0d6efd);
+    box-shadow: 0 0 0 0.3rem rgba(13, 110, 253, 0.25);
+  }
+}
+
+.verification-result {
+  animation: fadeIn 0.5s ease-in;
+
+  .card {
+    border-width: 2px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .success-icon,
+  .error-icon {
+    i {
+      font-size: 4rem;
+      animation: scaleIn 0.5s ease-in;
+    }
+  }
+
+  .voucher-info {
+    margin: 2rem 0;
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 8px;
+
+      .label {
+        font-weight: 600;
+        color: #666;
+      }
+
+      .value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--bs-primary, #0d6efd);
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.btn-primary {
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in;
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+
+  .card-body {
+    padding: 2rem;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .form-control-lg {
+    font-size: 1.25rem;
+  }
+
+  .verification-result {
+    .success-icon,
+    .error-icon {
+      i {
+        font-size: 3rem;
+      }
+    }
+
+    .voucher-info {
+      .info-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+
+        .value {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}
