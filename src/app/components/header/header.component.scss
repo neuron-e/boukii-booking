@@ -25,6 +25,22 @@
   align-items: center;
   gap: 16px;
 }
+.gift-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--primary-bs);
+  color: var(--primary-bs);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.gift-link:hover {
+  background-color: var(--primary-bs);
+  color: #fff;
+}
 .icon-mode {
   width: 36px;
   border-radius: 16px;
@@ -116,3 +132,11 @@
     gap: 16px;
   }
 }
+
+@media (max-width: 700px) {
+  .gift-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

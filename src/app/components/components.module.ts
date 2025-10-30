@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
+import { RouterModule } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { LevelUserComponent } from './level-user/level-user.component';
 import { ModalAddUserComponent } from './modal-add-user/modal-add-user.component';
@@ -28,7 +29,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 @NgModule({
   declarations: [HeaderComponent, LevelUserComponent, ModalAddUserComponent, ModalVoucherComponent, ModalNewUserComponent, ModalLoginComponent, ModalConditionsComponent,],
   imports: [
-    CommonModule, BrowserModule, BrowserAnimationsModule, ReactiveFormsModule, FormsModule,
+    CommonModule,
+    RouterModule,
+    BrowserModule, BrowserAnimationsModule, ReactiveFormsModule, FormsModule,
     TranslateModule.forChild(), MatDialogModule, MatDividerModule, MatButtonModule, MatFormFieldModule,
     MatInputModule, MatAutocompleteModule, MatFormFieldModule, MatOptionModule, MatSelectModule, MatRadioModule,
     MatSnackBarModule, MatCheckboxModule

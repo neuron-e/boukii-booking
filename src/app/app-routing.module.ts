@@ -13,6 +13,10 @@ import {PrivacyComponent} from './pages/privacy/privacy.component';
 
 const routes: Routes = [
   { path: '404', canActivate: [SlugGuard], component: PageNotFoundComponent },
+  {
+    path: 'gift-vouchers',
+    loadChildren: () => import('./pages/gift-vouchers/gift-vouchers.module').then(m => m.GiftVouchersModule)
+  },
   { path: ':slug', component: HomeComponent, resolve: { schoolData: SlugResolver }},
   { path: ':slug/course/:id', component: CourseComponent, resolve: { schoolData: SlugResolver } },
   { path: ':slug/cart', component: CartComponent, resolve: { schoolData: SlugResolver } },

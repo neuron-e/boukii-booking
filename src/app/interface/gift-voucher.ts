@@ -18,11 +18,17 @@ export interface GiftVoucher {
   amount: number;
   personal_message?: string;
   sender_name?: string;
+  buyer_name?: string;
+  buyer_email?: string;
+  buyer_phone?: string;
+  buyer_locale?: string;
   template?: GiftVoucherTemplate;
   background_color?: string;
   text_color?: string;
   recipient_email: string;
   recipient_name?: string;
+  recipient_phone?: string;
+  recipient_locale?: string;
   delivery_date?: string | null;
   is_delivered?: boolean;
   delivered_at?: string | null;
@@ -49,10 +55,16 @@ export interface CreateGiftVoucherRequest {
   recipient_name?: string;
   personal_message?: string;
   sender_name?: string;
+  buyer_name?: string;
+  buyer_email?: string;
+  buyer_phone?: string;
+  buyer_locale?: string;
   template?: GiftVoucherTemplate;
   background_color?: string;
   text_color?: string;
   delivery_date?: string;
+  recipient_phone?: string;
+  recipient_locale?: string;
 }
 
 /**
@@ -62,8 +74,14 @@ export interface GiftVoucherResponse {
   id: number;
   amount: number;
   sender_name: string | null;
+  buyer_name: string | null;
+  buyer_email: string | null;
+  buyer_phone: string | null;
+  buyer_locale: string | null;
   recipient_email: string;
   recipient_name: string | null;
+  recipient_phone: string | null;
+  recipient_locale: string | null;
   template: string | null;
   personal_message: string | null;
   background_color: string | null;
@@ -254,3 +272,45 @@ export const GIFT_VOUCHER_AMOUNT_OPTIONS: GiftVoucherAmountOption[] = [
   { value: 250, label: 'CHF 250' },
   { value: 500, label: 'CHF 500' }
 ];
+
+/**
+ * Request para compra pública de gift voucher (sin autenticación)
+ */
+export interface GiftVoucherPurchaseRequest {
+  amount: number;
+  currency: string;
+  school_id: number;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone?: string;
+  buyer_locale?: string;
+  recipient_name: string;
+  recipient_email: string;
+  recipient_phone?: string;
+  recipient_locale?: string;
+  personal_message?: string;
+  template?: string;
+}
+
+/**
+ * Response de compra pública
+ */
+export interface GiftVoucherPurchaseResponse {
+  success: boolean;
+  message: string;
+  data: {
+    gift_voucher: GiftVoucher;
+    voucher_code: string;
+    payment_url?: string | null;
+  };
+}
+
+/**
+ * Response de verificación pública
+ */
+export interface GiftVoucherVerifyResponse {
+  valid: boolean;
+  balance?: number;
+  expires_at?: string;
+  status?: string;
+}

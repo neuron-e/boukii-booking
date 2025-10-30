@@ -85,6 +85,24 @@ export class SchoolService extends ApiService {
     return this.schoolDataSubject.asObservable();
   }
 
+  getSchools(): Observable<any[]> {
+    const url = `${this.baseUrl}/api/public/schools`;
+
+    return this.http.get<ApiResponse | any[]>(url).pipe(
+      map((response: ApiResponse | any) => {
+        if (response && typeof response === 'object' && 'data' in response) {
+          return (response as ApiResponse).data as any[];
+        }
+
+        return Array.isArray(response) ? response : [];
+      }),
+      catchError((error: any) => {
+        console.error('Error fetching schools', error);
+        return of([]);
+      })
+    );
+  }
+
   private setSchoolData(data: any) {
     this.schoolDataSubject.next(data);
   }

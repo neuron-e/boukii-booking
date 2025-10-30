@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -10,13 +10,16 @@ import {
   GiftVoucherSummary,
   RedeemGiftVoucherRequest,
   GiftVoucherTemplateInfo,
-  GIFT_VOUCHER_TEMPLATES
+  GIFT_VOUCHER_TEMPLATES,
+  GiftVoucherPurchaseRequest,
+  GiftVoucherPurchaseResponse,
+  GiftVoucherVerifyResponse
 } from '../interface/gift-voucher';
 
 /**
  * Service: GiftVoucherService
  *
- * Servicio para gestionar bonos regalo en la aplicación Boukii.
+ * Servicio para gestionar bonos regalo en la aplicaciÃ³n Boukii.
  * Permite crear, comprar, enviar y canjear bonos regalo.
  *
  * @author Claude Code
@@ -47,7 +50,7 @@ export class GiftVoucherService extends ApiService {
    * Crea un nuevo bono regalo (compra)
    *
    * @param giftVoucherData - Datos del bono regalo a crear
-   * @returns Observable con la respuesta de creación
+   * @returns Observable con la respuesta de creaciÃ³n
    *
    * @example
    * ```typescript
@@ -56,7 +59,7 @@ export class GiftVoucherService extends ApiService {
    *   recipient_email: 'destinatario@example.com',
    *   recipient_name: 'John Doe',
    *   sender_name: 'Jane Smith',
-   *   personal_message: '¡Feliz cumpleaños! Disfruta este regalo.',
+   *   personal_message: 'Â¡Feliz cumpleaÃ±os! Disfruta este regalo.',
    *   template: 'birthday',
    *   school_id: 1,
    *   delivery_date: '2025-12-25'
@@ -129,7 +132,7 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Obtiene los detalles de un bono regalo específico
+   * Obtiene los detalles de un bono regalo especÃ­fico
    *
    * @param giftVoucherId - ID del bono regalo
    * @returns Observable con los detalles del bono
@@ -159,7 +162,7 @@ export class GiftVoucherService extends ApiService {
    * this.giftVoucherService.getGiftVoucherSummary(15).subscribe(
    *   response => {
    *     const summary: GiftVoucherSummary = response.data;
-   *     console.log('¿Puede canjearse?', summary.can_be_redeemed);
+   *     console.log('Â¿Puede canjearse?', summary.can_be_redeemed);
    *   }
    * );
    * ```
@@ -170,7 +173,7 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Canjea un bono regalo convirtiéndolo en voucher para el usuario
+   * Canjea un bono regalo convirtiÃ©ndolo en voucher para el usuario
    *
    * @param giftVoucherId - ID del bono regalo a canjear
    * @param clientId - ID del cliente que canjea el bono
@@ -193,10 +196,10 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Envía un bono regalo por email al destinatario
+   * EnvÃ­a un bono regalo por email al destinatario
    *
    * @param giftVoucherId - ID del bono regalo a enviar
-   * @returns Observable con el resultado del envío
+   * @returns Observable con el resultado del envÃ­o
    *
    * @example
    * ```typescript
@@ -271,7 +274,7 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Obtiene los templates con información completa (frontend)
+   * Obtiene los templates con informaciÃ³n completa (frontend)
    * Incluye colores predeterminados e iconos
    *
    * @returns Array de templates con metadata
@@ -288,7 +291,7 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Obtiene información de un template específico
+   * Obtiene informaciÃ³n de un template especÃ­fico
    *
    * @param templateKey - Clave del template
    * @returns Template info o null si no existe
@@ -307,9 +310,9 @@ export class GiftVoucherService extends ApiService {
    * Valida un monto de bono regalo
    *
    * @param amount - Monto a validar
-   * @param minAmount - Monto mínimo (default: 10)
-   * @param maxAmount - Monto máximo (default: 1000)
-   * @returns Objeto con validación y mensaje
+   * @param minAmount - Monto mÃ­nimo (default: 10)
+   * @param maxAmount - Monto mÃ¡ximo (default: 1000)
+   * @returns Objeto con validaciÃ³n y mensaje
    *
    * @example
    * ```typescript
@@ -323,21 +326,21 @@ export class GiftVoucherService extends ApiService {
     if (amount < minAmount) {
       return {
         valid: false,
-        message: `El monto mínimo es CHF ${minAmount}`
+        message: `El monto mÃ­nimo es CHF ${minAmount}`
       };
     }
 
     if (amount > maxAmount) {
       return {
         valid: false,
-        message: `El monto máximo es CHF ${maxAmount}`
+        message: `El monto mÃ¡ximo es CHF ${maxAmount}`
       };
     }
 
     if (amount % 1 !== 0 && (amount * 100) % 1 !== 0) {
       return {
         valid: false,
-        message: 'El monto debe tener máximo 2 decimales'
+        message: 'El monto debe tener mÃ¡ximo 2 decimales'
       };
     }
 
@@ -351,12 +354,12 @@ export class GiftVoucherService extends ApiService {
    * Valida un email
    *
    * @param email - Email a validar
-   * @returns true si es válido
+   * @returns true si es vÃ¡lido
    *
    * @example
    * ```typescript
    * if (this.giftVoucherService.validateEmail('test@example.com')) {
-   *   console.log('Email válido');
+   *   console.log('Email vÃ¡lido');
    * }
    * ```
    */
@@ -366,15 +369,15 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Valida un código hexadecimal de color
+   * Valida un cÃ³digo hexadecimal de color
    *
    * @param color - Color en formato hex (#RRGGBB)
-   * @returns true si es válido
+   * @returns true si es vÃ¡lido
    *
    * @example
    * ```typescript
    * if (this.giftVoucherService.validateColor('#FF5733')) {
-   *   console.log('Color válido');
+   *   console.log('Color vÃ¡lido');
    * }
    * ```
    */
@@ -384,18 +387,24 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
-   * Formatea un monto para mostrar
-   *
-   * @param amount - Monto a formatear
-   * @returns String formateado (ej: "CHF 150.00")
-   *
-   * @example
-   * ```typescript
-   * const formatted = this.giftVoucherService.formatAmount(150);
-   * console.log(formatted); // "CHF 150.00"
-   * ```
+   * Formatea un monto para mostrar.
    */
   formatAmount(amount: number): string {
     return `CHF ${amount.toFixed(2)}`;
+  }
+
+  /**
+   * Compra pública de gift voucher (sin autenticación).
+   */
+  purchasePublic(data: GiftVoucherPurchaseRequest): Observable<GiftVoucherPurchaseResponse> {
+    const url = this.baseUrl + '/api/public/gift-vouchers/purchase';
+    return this.http.post<GiftVoucherPurchaseResponse>(url, data);
+  }
+
+  /**
+   */
+  verifyPublic(code: string): Observable<GiftVoucherVerifyResponse> {
+    const url = `${this.baseUrl}/api/public/gift-vouchers/verify/${code}`;
+    return this.http.get<GiftVoucherVerifyResponse>(url);
   }
 }

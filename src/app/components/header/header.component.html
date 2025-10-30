@@ -32,6 +32,10 @@
             </div>
         </div>
 
+        <a class="btn gift-link" [routerLink]="['/gift-vouchers/purchase']">
+          {{ 'gift_vouchers.nav_cta' | translate }}
+        </a>
+
         <ng-container *ngIf="!userLogged">
             <div (click)="openModalNewUser()" class="text-color-light cursor-pointer">
                 {{'text_new_client' | translate }}
