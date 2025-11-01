@@ -879,5 +879,10 @@
   "gift_vouchers.error_same_email": "L’e-mail del destinatario deve essere diversa da quella dell’acquirente",
   "gift_vouchers.error_invalid_field": "Campo non valido",
   "gift_vouchers.error_purchase": "Non è stato possibile completare l’acquisto. Riprova più tardi.",
-  "gift_vouchers.error_loading_schools": "Impossibile caricare le scuole in questo momento."
+  "gift_vouchers.error_loading_schools": "Impossibile caricare le scuole in questo momento.",
+  "discount_save": "Risparmia",
+  "discount_available": "Sconti disponibili",
+  "discount_add": "Aggiungi",
+  "discount_more_days": "giorni in più",
+  "discount_save_up_to": "Risparmia fino a"
 }

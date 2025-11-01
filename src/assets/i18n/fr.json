@@ -874,5 +874,10 @@
   "gift_vouchers.error_same_email": "L’e-mail du destinataire doit être différent de celui de l’acheteur",
   "gift_vouchers.error_invalid_field": "Champ invalide",
   "gift_vouchers.error_purchase": "Impossible de finaliser l’achat. Veuillez réessayer plus tard.",
-  "gift_vouchers.error_loading_schools": "Impossible de charger les écoles pour le moment."
+  "gift_vouchers.error_loading_schools": "Impossible de charger les écoles pour le moment.",
+  "discount_save": "Économisez",
+  "discount_available": "Réductions disponibles",
+  "discount_add": "Ajoutez",
+  "discount_more_days": "jours de plus",
+  "discount_save_up_to": "Économisez jusqu'à"
 }

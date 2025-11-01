@@ -20,6 +20,11 @@
         <span class="last-plaza" *ngIf="course.claim_text">
         {{course.claim_text | translate}}!
       </span>
+        <!-- Badge de descuentos disponibles -->
+        <div *ngIf="hasDiscountsConfigured()" style="position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, #FF6B6B 0%, #E91E63 100%); color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4); display: flex; align-items: center; gap: 6px; animation: pulse 2s infinite;">
+          <span style="font-size: 16px;">🏷️</span>
+          <span>{{'discount_available' | translate}}</span>
+        </div>
       </div>
     </div>
 
@@ -296,9 +301,36 @@
             {{ course?.currency }}
           </div>
           <div *ngIf="course.is_flexible" class="text-medium text-color" style="text-align: -webkit-center;">
-            <span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
+            <!-- Precio con descuento aplicado -->
+            <div *ngIf="hasActiveDiscount" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <span style="text-decoration: line-through; font-size: 12px; color: #999;">
+                {{originalPrice|number:'0.2-2'}} {{ course?.currency }}
+              </span>
+              <span class="text-color text-medium fw-bold" style="color: #E91E63;">
+                {{collectivePrice|number:'0.2-2'}}
+              </span>
+              <span style="font-size: 11px; color: #4CAF50; font-weight: 600;">
+                {{'discount_save' | translate}} {{appliedDiscountAmount|number:'0.2-2'}} {{ course?.currency }}
+              </span>
+            </div>
+            <!-- Precio sin descuento -->
+            <span *ngIf="!hasActiveDiscount" class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
             {{ course?.currency }} /{{'date' |
             translate }}
+          </div>
+        </div>
+        <!-- Mensaje incentivador si hay descuentos disponibles -->
+        <div *ngIf="course.is_flexible && hasDiscountsConfigured() && getNextDiscount()"
+             style="margin-top: 12px; padding: 8px 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 6px; text-align: center;">
+          <div style="color: white; font-size: 12px; font-weight: 600; line-height: 1.4;">
+            <span style="font-size: 16px;">🎁</span>
+            {{'discount_add' | translate}} {{getNextDiscount().days - (selectedDates?.length || 0)}}
+            {{'discount_more_days' | translate}}
+            <span style="display: block; margin-top: 4px; font-size: 13px;">
+              {{'discount_save_up_to' | translate}}
+              <strong *ngIf="getNextDiscount().type === 'percentage'">{{getNextDiscount().value}}%</strong>
+              <strong *ngIf="getNextDiscount().type === 'fixed'">{{getNextDiscount().value}} {{ course?.currency }}</strong>
+            </span>
           </div>
         </div>
         <button (click)="SmallScreenModal=true" style="
@@ -893,8 +925,34 @@
             {{course.currency}}
           </div>
           <div *ngIf="course.is_flexible && course.course_type!==2" class="text-medium text-color">
-            <span class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
-            {{course.currency}}
+            <!-- Precio con descuento aplicado -->
+            <div *ngIf="hasActiveDiscount" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+              <span style="text-decoration: line-through; font-size: 13px; color: #999;">
+                {{originalPrice|number:'0.2-2'}} {{course.currency}}
+              </span>
+              <span class="text-color text-medium fw-bold" style="color: #E91E63; font-size: 18px;">
+                {{collectivePrice|number:'0.2-2'}} {{course.currency}}
+              </span>
+              <span style="font-size: 12px; color: #4CAF50; font-weight: 600;">
+                {{'discount_save' | translate}} {{appliedDiscountAmount|number:'0.2-2'}} {{course.currency}}
+              </span>
+            </div>
+            <!-- Precio sin descuento -->
+            <span *ngIf="!hasActiveDiscount" class="text-color text-medium fw-bold">{{collectivePrice|number:'0.2-2'}}</span>
+            <span *ngIf="!hasActiveDiscount">{{course.currency}}</span>
+          </div>
+        </div>
+        <!-- Mensaje incentivador si hay descuentos disponibles -->
+        <div *ngIf="course.is_flexible && hasDiscountsConfigured() && getNextDiscount()"
+             style="margin: 16px 20px; padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
+          <div style="color: white; font-size: 13px; font-weight: 600; line-height: 1.5;">
+            <div style="font-size: 18px; margin-bottom: 6px;">🎁</div>
+            <div>{{'discount_add' | translate}} <strong style="font-size: 16px;">{{getNextDiscount().days - (selectedDates?.length || 0)}}</strong> {{'discount_more_days' | translate}}</div>
+            <div style="margin-top: 8px; font-size: 14px; padding: 6px 12px; background: rgba(255,255,255,0.2); border-radius: 4px; display: inline-block;">
+              {{'discount_save_up_to' | translate}}
+              <strong style="font-size: 15px;" *ngIf="getNextDiscount().type === 'percentage'">{{getNextDiscount().value}}%</strong>
+              <strong style="font-size: 15px;" *ngIf="getNextDiscount().type === 'fixed'">{{getNextDiscount().value}} {{course?.currency}}</strong>
+            </div>
           </div>
         </div>
         <div style="padding: 20px;">

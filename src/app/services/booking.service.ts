@@ -111,6 +111,12 @@ export class BookingService extends ApiService {
       return 0;
     }
 
+    // Usar nueva estructura si use_interval_discounts está activo
+    if (course?.use_interval_discounts && course?.interval_discounts) {
+      return this.calculateMultiDateDiscountNew(course, selectedDates, basePrice);
+    }
+
+    // Método legacy
     const { globalRules, intervalRules } = this.getIntervalDiscountRules(course);
     if (globalRules.size === 0 && intervalRules.size === 0) {
       return 0;
@@ -150,46 +156,213 @@ export class BookingService extends ApiService {
     return Number(discountTotal.toFixed(2));
   }
 
+  private calculateMultiDateDiscountNew(course: any, selectedDates: any[], basePrice: number): number {
+    const intervalDiscountsData = this.parseIntervalDiscounts(course.interval_discounts);
+    if (intervalDiscountsData.size === 0) {
+      return 0;
+    }
+
+    // Construir un mapa de fechas a claves de intervalo
+    const dateToIntervalMap = new Map<string, string>();
+    Object.keys(JSON.parse(typeof course.interval_discounts === 'string' ? course.interval_discounts : JSON.stringify(course.interval_discounts))).forEach(intervalKey => {
+      const [startDate, endDate] = intervalKey.split('_');
+      // Asignar cada fecha seleccionada a su intervalo
+      selectedDates.forEach(date => {
+        const normalizedDate = typeof date === 'string' ? date : (date?.date ?? date);
+        if (normalizedDate && this.isDateInRange(normalizedDate, startDate, endDate)) {
+          dateToIntervalMap.set(normalizedDate, intervalKey);
+        }
+      });
+    });
+
+    // Contar fechas por intervalo
+    const counters: Record<string, number> = {};
+    const dateEntries = selectedDates
+      .map(date => {
+        const normalizedDate = typeof date === 'string' ? date : (date?.date ?? date);
+        return {
+          date: normalizedDate,
+          intervalKey: dateToIntervalMap.get(normalizedDate) || null
+        };
+      })
+      .filter(entry => !!entry.date)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    let discountTotal = 0;
+
+    for (const entry of dateEntries) {
+      if (!entry.intervalKey) {
+        continue; // Sin descuento para esta fecha
+      }
+
+      const key = entry.intervalKey;
+      counters[key] = (counters[key] ?? 0) + 1;
+      const dayIndex = counters[key];
+
+      // Obtener descuentos para este intervalo
+      const discounts = intervalDiscountsData.get(entry.intervalKey);
+      if (!discounts) {
+        continue;
+      }
+
+      // Buscar el descuento aplicable para este índice de día
+      const applicableDiscount = discounts
+        .filter(d => dayIndex >= d.day)
+        .sort((a, b) => b.day - a.day)[0];
+
+      if (!applicableDiscount) {
+        continue;
+      }
+
+      // Aplicar descuento
+      let discountedPrice = basePrice;
+      if (applicableDiscount.type === 'percentage') {
+        discountedPrice = basePrice - (basePrice * applicableDiscount.value / 100);
+      } else {
+        discountedPrice = basePrice - applicableDiscount.value;
+      }
+
+      discountTotal += (basePrice - Math.max(0, discountedPrice));
+    }
+
+    return Number(discountTotal.toFixed(2));
+  }
+
+  private isDateInRange(date: string, startDate: string, endDate: string): boolean {
+    const dateMoment = moment(date);
+    const startMoment = moment(startDate);
+    const endMoment = moment(endDate);
+    return dateMoment.isSameOrAfter(startMoment) && dateMoment.isSameOrBefore(endMoment);
+  }
+
   private getIntervalDiscountRules(course: any): {
     globalRules: Map<number, { type: 'percentage' | 'fixed'; value: number }>;
     intervalRules: Map<number, Map<number, { type: 'percentage' | 'fixed'; value: number }>>;
   } {
     const globalRules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
-    for (const rule of this.parseGlobalDiscounts(course?.discounts)) {
-      globalRules.set(rule.day, { type: rule.type, value: rule.value });
+
+    // Si no se usan descuentos por intervalo, cargar descuentos globales
+    if (!course?.use_interval_discounts) {
+      for (const rule of this.parseGlobalDiscounts(course?.discounts)) {
+        globalRules.set(rule.day, { type: rule.type, value: rule.value });
+      }
     }
 
     const intervalRules = new Map<number, Map<number, { type: 'percentage' | 'fixed'; value: number }>>();
-    const intervals = Array.isArray(course?.course_intervals)
-      ? course.course_intervals
-      : (Array.isArray(course?.courseIntervals) ? course.courseIntervals : []);
 
-    intervals.forEach((interval: any) => {
-      if (!interval || interval.id === undefined || interval.id === null) {
+    // Si se usan descuentos por intervalo, cargar desde interval_discounts
+    if (course?.use_interval_discounts && course?.interval_discounts) {
+      const intervalDiscountsData = this.parseIntervalDiscounts(course.interval_discounts);
+
+      intervalDiscountsData.forEach((discounts, intervalKey) => {
+        const rules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
+        discounts.forEach(discount => {
+          rules.set(discount.day, { type: discount.type, value: discount.value });
+        });
+        if (rules.size > 0) {
+          intervalRules.set(this.intervalKeyToId(intervalKey), rules);
+        }
+      });
+    } else {
+      // Método legacy: usar course_intervals
+      const intervals = Array.isArray(course?.course_intervals)
+        ? course.course_intervals
+        : (Array.isArray(course?.courseIntervals) ? course.courseIntervals : []);
+
+      intervals.forEach((interval: any) => {
+        if (!interval || interval.id === undefined || interval.id === null) {
+          return;
+        }
+
+        const rules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
+        if (Array.isArray(interval?.discounts)) {
+          interval.discounts.forEach((discount: any) => {
+            const day = Number(discount?.days ?? discount?.min_days ?? 0);
+            if (!day || day < 1) {
+              return;
+            }
+            const type = (discount?.type === 'fixed' || discount?.type === 'fixed_amount' || discount?.discount_type === 'fixed_amount')
+              ? 'fixed'
+              : 'percentage';
+            const value = Number(discount?.value ?? discount?.discount_value ?? 0) || 0;
+            rules.set(day, { type, value });
+          });
+        }
+
+        if (rules.size > 0) {
+          intervalRules.set(Number(interval.id), rules);
+        }
+      });
+    }
+
+    return { globalRules, intervalRules };
+  }
+
+  private parseIntervalDiscounts(rawIntervalDiscounts: any): Map<string, Array<{ day: number; type: 'percentage' | 'fixed'; value: number }>> {
+    const result = new Map<string, Array<{ day: number; type: 'percentage' | 'fixed'; value: number }>>();
+
+    if (!rawIntervalDiscounts) {
+      return result;
+    }
+
+    let intervalDiscountsObj: any = {};
+
+    if (typeof rawIntervalDiscounts === 'string') {
+      try {
+        intervalDiscountsObj = JSON.parse(rawIntervalDiscounts);
+      } catch (error) {
+        console.warn('Could not parse interval_discounts JSON', error);
+        return result;
+      }
+    } else if (typeof rawIntervalDiscounts === 'object') {
+      intervalDiscountsObj = rawIntervalDiscounts;
+    }
+
+    // intervalDiscountsObj tiene formato: {"2024-06-01_2024-06-30": [{"date":5,"discount":10,"type":1}]}
+    Object.keys(intervalDiscountsObj).forEach(intervalKey => {
+      const discountsArray = intervalDiscountsObj[intervalKey];
+      if (!Array.isArray(discountsArray)) {
         return;
       }
 
-      const rules = new Map<number, { type: 'percentage' | 'fixed'; value: number }>();
-      if (Array.isArray(interval?.discounts)) {
-        interval.discounts.forEach((discount: any) => {
-          const day = Number(discount?.days ?? discount?.min_days ?? 0);
+      const parsedDiscounts = discountsArray
+        .map(discount => {
+          const day = Number(discount?.date ?? discount?.day ?? 0);
           if (!day || day < 1) {
-            return;
+            return null;
           }
-          const type = (discount?.type === 'fixed' || discount?.type === 'fixed_amount' || discount?.discount_type === 'fixed_amount')
-            ? 'fixed'
-            : 'percentage';
-          const value = Number(discount?.value ?? discount?.discount_value ?? 0) || 0;
-          rules.set(day, { type, value });
-        });
-      }
 
-      if (rules.size > 0) {
-        intervalRules.set(Number(interval.id), rules);
+          let type: 'percentage' | 'fixed' = 'percentage';
+          let value = 0;
+
+          if (discount?.type === 2 || discount?.type === 'fixed' || discount?.type === 'fixed_amount') {
+            type = 'fixed';
+          } else {
+            type = 'percentage';
+          }
+          value = Number(discount?.discount ?? discount?.value ?? 0) || 0;
+
+          return { day, type, value };
+        })
+        .filter(rule => rule !== null) as Array<{ day: number; type: 'percentage' | 'fixed'; value: number }>;
+
+      if (parsedDiscounts.length > 0) {
+        result.set(intervalKey, parsedDiscounts);
       }
     });
 
-    return { globalRules, intervalRules };
+    return result;
+  }
+
+  private intervalKeyToId(intervalKey: string): number {
+    // Crear un ID numérico basado en la clave del intervalo
+    // Por ejemplo "2024-06-01_2024-06-30" -> hash numérico
+    let hash = 0;
+    for (let i = 0; i < intervalKey.length; i++) {
+      hash = ((hash << 5) - hash) + intervalKey.charCodeAt(i);
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
   }
 
   private parseGlobalDiscounts(rawDiscounts: any): Array<{ day: number; type: 'percentage' | 'fixed'; value: number }> {

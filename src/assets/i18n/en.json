@@ -883,5 +883,10 @@
   "gift_vouchers.error_same_email": "Recipient email must be different from buyer email",
   "gift_vouchers.error_invalid_field": "Invalid field",
   "gift_vouchers.error_purchase": "We could not process the purchase. Please try again later.",
-  "gift_vouchers.error_loading_schools": "Unable to load schools. Try again in a moment."
+  "gift_vouchers.error_loading_schools": "Unable to load schools. Try again in a moment.",
+  "discount_save": "Save",
+  "discount_available": "Discounts available",
+  "discount_add": "Add",
+  "discount_more_days": "more days",
+  "discount_save_up_to": "Save up to"
 }

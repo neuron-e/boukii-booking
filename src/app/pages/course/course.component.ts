@@ -97,6 +97,11 @@ export class CourseComponent implements OnInit {
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
 
+  // Variables para descuentos visuales
+  appliedDiscountAmount: number = 0;
+  originalPrice: number = 0;
+  hasActiveDiscount: boolean = false;
+
   // Control de la visualización de intervalos
   expandedIntervals: { [key: string]: boolean } = {};
   dateSelectionError: string = '';
@@ -1808,11 +1813,88 @@ export class CourseComponent implements OnInit {
   }
 
   discounts: any[] = []
+
+  // Obtener información sobre descuentos disponibles
+  getAvailableDiscounts(): any[] {
+    if (!this.course?.discounts && !this.course?.interval_discounts) {
+      return [];
+    }
+
+    try {
+      // Si usa descuentos globales
+      if (!this.course?.use_interval_discounts && this.course?.discounts) {
+        const discountsStr = typeof this.course.discounts === 'string'
+          ? this.course.discounts
+          : JSON.stringify(this.course.discounts);
+        const discounts = JSON.parse(discountsStr);
+
+        if (Array.isArray(discounts)) {
+          return discounts.map(d => ({
+            days: d.date || d.days,
+            value: d.discount || d.value,
+            type: d.type === 2 ? 'fixed' : 'percentage'
+          })).sort((a, b) => a.days - b.days);
+        }
+      }
+
+      // Si usa descuentos por intervalo
+      if (this.course?.use_interval_discounts && this.course?.interval_discounts) {
+        const intervalDiscountsStr = typeof this.course.interval_discounts === 'string'
+          ? this.course.interval_discounts
+          : JSON.stringify(this.course.interval_discounts);
+        const intervalDiscounts = JSON.parse(intervalDiscountsStr);
+
+        // Retornar todos los descuentos de todos los intervalos
+        const allDiscounts: any[] = [];
+        Object.keys(intervalDiscounts).forEach(intervalKey => {
+          const discounts = intervalDiscounts[intervalKey];
+          if (Array.isArray(discounts)) {
+            discounts.forEach(d => {
+              allDiscounts.push({
+                days: d.date || d.days,
+                value: d.discount || d.value,
+                type: d.type === 2 ? 'fixed' : 'percentage',
+                interval: intervalKey
+              });
+            });
+          }
+        });
+
+        return allDiscounts.sort((a, b) => a.days - b.days);
+      }
+    } catch (error) {
+      console.error('Error parsing discounts:', error);
+    }
+
+    return [];
+  }
+
+  // Obtener el próximo descuento alcanzable
+  getNextDiscount(): any | null {
+    const availableDiscounts = this.getAvailableDiscounts();
+    if (availableDiscounts.length === 0) {
+      return null;
+    }
+
+    const currentDays = this.selectedDates?.length || 0;
+    const nextDiscount = availableDiscounts.find(d => d.days > currentDays);
+
+    return nextDiscount || null;
+  }
+
+  // Verificar si hay descuentos configurados para este curso
+  hasDiscountsConfigured(): boolean {
+    return this.getAvailableDiscounts().length > 0;
+  }
+
   updateCollectivePrice() {
     const basePrice = parseFloat(this.course?.price || 0);
     const selectedCount = this.selectedDates?.length || 0;
 
     let collectivePrice = basePrice * selectedCount;
+    this.originalPrice = collectivePrice; // Guardar precio original
+    this.appliedDiscountAmount = 0; // Reset
+    this.hasActiveDiscount = false; // Reset
 
     if (selectedCount > 0) {
       const dateEntries = this.selectedDates.map(dateStr => {
@@ -1824,7 +1906,12 @@ export class CourseComponent implements OnInit {
       });
 
       const discountAmount = this.bookingService.calculateMultiDateDiscount(this.course, dateEntries);
-      collectivePrice -= discountAmount;
+
+      if (discountAmount > 0) {
+        this.appliedDiscountAmount = discountAmount;
+        this.hasActiveDiscount = true;
+        collectivePrice -= discountAmount;
+      }
     }
 
     this.collectivePrice = Math.max(0, Number(collectivePrice.toFixed(2)));

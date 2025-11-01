@@ -877,5 +877,10 @@
   "gift_vouchers.error_same_email": "Die E-Mail des Empfängers muss sich von der des Käufers unterscheiden",
   "gift_vouchers.error_invalid_field": "Ungültiges Feld",
   "gift_vouchers.error_purchase": "Der Kauf konnte nicht abgeschlossen werden. Bitte später erneut versuchen.",
-  "gift_vouchers.error_loading_schools": "Schulen konnten nicht geladen werden. Bitte später erneut versuchen."
+  "gift_vouchers.error_loading_schools": "Schulen konnten nicht geladen werden. Bitte später erneut versuchen.",
+  "discount_save": "Sparen Sie",
+  "discount_available": "Rabatte verfügbar",
+  "discount_add": "Fügen Sie",
+  "discount_more_days": "weitere Tage hinzu",
+  "discount_save_up_to": "Sparen Sie bis zu"
 }
