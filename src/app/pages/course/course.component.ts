@@ -393,6 +393,44 @@ export class CourseComponent implements OnInit {
       : this.course.settings;
   }
 
+  private getGlobalReservableWindow(): IntervalReservableWindow {
+    const settings = this.getCourseSettings();
+
+    const startCandidate =
+      this.course?.date_start_res ??
+      (this.course as any)?.bookable_start_date ??
+      settings?.date_start_res ??
+      settings?.globalReservableStartDate ??
+      settings?.reservableStartDate ??
+      null;
+
+    const endCandidate =
+      this.course?.date_end_res ??
+      (this.course as any)?.bookable_end_date ??
+      settings?.date_end_res ??
+      settings?.globalReservableEndDate ??
+      settings?.reservableEndDate ??
+      null;
+
+    return {
+      start: this.parseReservableDate(startCandidate),
+      end: this.parseReservableDate(endCandidate)
+    };
+  }
+
+  private shouldUseGlobalReservableWindow(): boolean {
+    if (!this.course) {
+      return false;
+    }
+
+    if (this.course?.intervals_config_mode === 'independent') {
+      return false;
+    }
+
+    const globalWindow = this.getGlobalReservableWindow();
+    return Boolean(globalWindow.start || globalWindow.end);
+  }
+
   private normalizeIntervalId(value: IntervalIdentifier | null | undefined): string | null {
     if (value === null || value === undefined) {
       return null;
@@ -422,7 +460,7 @@ export class CourseComponent implements OnInit {
       return null;
     }
 
-    if (Array.isArray(this.course?.course_intervals)) {
+    if (this.course?.intervals_config_mode === 'independent' && Array.isArray(this.course?.course_intervals)) {
       const found = this.course.course_intervals.find((interval: any) =>
         this.normalizeIntervalId(interval?.id) === normalizedId
       );
@@ -703,7 +741,15 @@ export class CourseComponent implements OnInit {
   }
 
   private getIntervalReservableInfoFromRaw(raw: any): IntervalReservableInfo {
-    const window = this.extractReservableWindow(raw);
+    const globalWindow = this.getGlobalReservableWindow();
+    const forceGlobalWindow = this.shouldUseGlobalReservableWindow();
+
+    let window = forceGlobalWindow ? globalWindow : this.extractReservableWindow(raw);
+
+    if (!forceGlobalWindow && (!window.start && !window.end) && (globalWindow.start || globalWindow.end)) {
+      window = globalWindow;
+    }
+
     const evaluation = this.evaluateReservableWindow(window);
     const windowMessage = this.buildReservableWindowMessage(window);
 
