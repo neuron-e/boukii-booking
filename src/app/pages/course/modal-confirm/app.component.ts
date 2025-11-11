@@ -17,6 +17,10 @@ export class CourseModalConfirmComponent {
   @Input() selectedForfait: any
   @Input() selectedForfaits: { [key: string]: any[] } = {};  // Asegúrate de que esto sea un objeto que contenga arrays.
   @Input() collectivePrice: number = 0
+  @Input() originalPrice: number = 0
+  @Input() appliedDiscountAmount: number = 0
+  @Input() hasActiveDiscount: boolean = false
+  @Input() discountsByInterval: { intervalId: string; intervalName: string; discountAmount: number; discountPercentage: number }[] = []
 
   @Output() onClose = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
@@ -90,6 +94,43 @@ export class CourseModalConfirmComponent {
     } else {
       return activeDays.join(', ');
     }
+  }
+
+  // Agrupar fechas seleccionadas por intervalo
+  getDatesByInterval(): any[] {
+    if (!this.course?.is_flexible || !this.selectedDates || this.selectedDates.length === 0) {
+      return [];
+    }
+
+    const intervals = new Map<string, any>();
+
+    this.selectedDates.forEach((date: any) => {
+      const intervalId = date.course_interval_id || 'default';
+      const intervalIdStr = String(intervalId);
+
+      if (!intervals.has(intervalIdStr)) {
+        // Buscar nombre del intervalo
+        const settings = this.courseC.getCourseSettings();
+        let intervalName = 'Intervalo ' + intervalIdStr;
+
+        if (settings?.intervals) {
+          const intervalConfig = settings.intervals.find((i: any) => String(i.id) === intervalIdStr);
+          if (intervalConfig && intervalConfig.name) {
+            intervalName = intervalConfig.name;
+          }
+        }
+
+        intervals.set(intervalIdStr, {
+          id: intervalIdStr,
+          name: intervalName,
+          dates: []
+        });
+      }
+
+      intervals.get(intervalIdStr).dates.push(date);
+    });
+
+    return Array.from(intervals.values());
   }
 
   protected readonly Object = Object;

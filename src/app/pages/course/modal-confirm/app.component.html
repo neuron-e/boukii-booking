@@ -82,14 +82,33 @@
           </div>
         </ng-container>
         <ng-container *ngIf="course.course_type == 1 && course.is_flexible">
-          <div *ngFor="let date of selectedDates" class="campo2">
-                        <span style="font-weight: 600;">
-                            {{date.date | date: 'dd.MM.yyyy'}}
-                        </span>
-            <span style="color: #8B9099;">
-                            {{date.hour_start}}h-{{date.hour_end}}h
-                        </span>
-          </div>
+          <!-- Agrupar por intervalos si hay múltiples intervalos -->
+          <ng-container *ngIf="getDatesByInterval().length > 1">
+            <div *ngFor="let interval of getDatesByInterval()" style="margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 13px; color: #E91E63; margin-bottom: 8px; border-bottom: 1px solid #DEE6EA; padding-bottom: 4px;">
+                📅 {{interval.name}}
+              </div>
+              <div *ngFor="let date of interval.dates" class="campo2">
+                <span style="font-weight: 600;">
+                  {{date.date | date: 'dd.MM.yyyy'}}
+                </span>
+                <span style="color: #8B9099;">
+                  {{date.hour_start}}h-{{date.hour_end}}h
+                </span>
+              </div>
+            </div>
+          </ng-container>
+          <!-- Si solo hay un intervalo, mostrar sin agrupación -->
+          <ng-container *ngIf="getDatesByInterval().length <= 1">
+            <div *ngFor="let date of selectedDates" class="campo2">
+              <span style="font-weight: 600;">
+                {{date.date | date: 'dd.MM.yyyy'}}
+              </span>
+              <span style="color: #8B9099;">
+                {{date.hour_start}}h-{{date.hour_end}}h
+              </span>
+            </div>
+          </ng-container>
         </ng-container>
         <ng-container *ngIf="course.course_type == 2">
           <div *ngFor="let date of selectedDates" class="campo2">
@@ -144,23 +163,67 @@
         border-top: 2px solid rgba(222, 230, 234, 1);
         border-bottom: 2px solid rgba(222, 230, 234, 1);
         display: flex;
-        justify-content: space-between;">
-      <div>
-        {{'text_price' | translate }}
-      </div>
-      <!-- Primer bloque: colectivo flexible -->
-      <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 1">
-        {{ collectivePrice | number:'0.2-2' }} {{ course.currency }}
+        flex-direction: column;
+        gap: 12px;">
+
+      <!-- Precio original si hay descuento -->
+      <div *ngIf="hasActiveDiscount && course?.is_flexible && course.course_type == 1"
+           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="color: #8B9099; font-size: 14px;">
+          {{'original_price' | translate }}
+        </div>
+        <div style="color: #8B9099; text-decoration: line-through; font-size: 14px;">
+          {{ originalPrice | number:'0.2-2' }} {{ course.currency }}
+        </div>
       </div>
 
-      <!-- Segundo bloque: colectivo fijo o curso privado -->
-      <div class="blackL" *ngIf="!course?.is_flexible">
-        {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
+      <!-- Descuento aplicado por intervalo -->
+      <div *ngIf="hasActiveDiscount && course?.is_flexible && course.course_type == 1 && discountsByInterval.length > 0"
+           style="margin-bottom: 12px;">
+        <div *ngFor="let intervalDiscount of discountsByInterval"
+             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-left: 8px; border-left: 3px solid #4CAF50;">
+          <div style="color: #4CAF50; font-size: 13px; font-weight: 500;">
+            {{ intervalDiscount.intervalName }}
+            <span *ngIf="intervalDiscount.discountPercentage > 0" style="font-size: 12px; opacity: 0.8;">
+              (-{{intervalDiscount.discountPercentage}}%)
+            </span>
+          </div>
+          <div style="color: #4CAF50; font-weight: 600; font-size: 13px;">
+            -{{intervalDiscount.discountAmount | number:'0.2-2'}} {{course.currency}}
+          </div>
+        </div>
       </div>
 
-      <!-- Segundo bloque: colectivo fijo o curso privado -->
-      <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 2">
-        {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
+      <!-- Descuento total aplicado -->
+      <div *ngIf="hasActiveDiscount && course?.is_flexible && course.course_type == 1"
+           style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #DEE6EA;">
+        <div style="color: #4CAF50; font-size: 14px; font-weight: 600;">
+          {{'discount_applied' | translate }}
+        </div>
+        <div style="color: #4CAF50; font-weight: 600; font-size: 14px;">
+          -{{ appliedDiscountAmount | number:'0.2-2' }} {{ course.currency }}
+        </div>
+      </div>
+
+      <!-- Precio final -->
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 600; font-size: 16px;">
+          {{'text_price' | translate }}
+        </div>
+        <!-- Primer bloque: colectivo flexible -->
+        <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 1">
+          {{ collectivePrice | number:'0.2-2' }} {{ course.currency }}
+        </div>
+
+        <!-- Segundo bloque: colectivo fijo o curso privado -->
+        <div class="blackL" *ngIf="!course?.is_flexible">
+          {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
+        </div>
+
+        <!-- Segundo bloque: colectivo fijo o curso privado -->
+        <div class="blackL" *ngIf="course?.is_flexible && course.course_type == 2">
+          {{ course?.price | number:'0.2-2' }} {{ course.currency }}/{{ (selectedDuration ? selectedDuration : 'mails.course') | translate }}
+        </div>
       </div>
 
     </div>

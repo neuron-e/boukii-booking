@@ -9,6 +9,8 @@ import { ApiCrudService } from 'src/app/services/crud.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiscountCodeService } from '../../services/discount-code.service';
 import { DiscountCodeValidationResponse } from '../../interface/discount-code';
+import { CoursesService } from '../../services/courses.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -30,6 +32,10 @@ export class CartComponent implements OnInit {
   totalNotaxes: number = 0;
   usedVoucherAmount: number = 0;
   discountCodeAmount: number = 0;
+  intervalDiscounts: Map<string, any> = new Map(); // Store discount breakdown per cart item
+  basePriceValue: number = 0;
+  totalIntervalDiscounts: number = 0;
+  originalBasePrice: number = 0;
   user: any;
   cart: any[];
   schoolData: any;
@@ -310,7 +316,7 @@ export class CartComponent implements OnInit {
     private bookingService: BookingService, private activatedRoute: ActivatedRoute,
     private cartService: CartService, private translateService: TranslateService,
     private crudService: ApiCrudService, private snackBar: MatSnackBar,
-    private discountCodeService: DiscountCodeService) { }
+    private discountCodeService: DiscountCodeService, private coursesService: CoursesService) { }
 
   ngOnInit(): void {
     this.schoolService.getSchoolData().subscribe(
@@ -349,8 +355,7 @@ export class CartComponent implements OnInit {
             this.user = JSON.parse(storageSlug);
             this.cart = this.transformCartToArray(JSON.parse(localStorage.getItem(this.schoolData.slug + '-cart') ?? '{}'));
           }
-          this.loading = false;
-          this.updateTotal();
+          this.ensureCourseMetadata();
         }
       }
     );
@@ -373,13 +378,30 @@ export class CartComponent implements OnInit {
       });
     });
 
+    const basePrice = this.refreshBasePriceTotals();
     const discountInfo = this.appliedDiscountCode?.discount_code || null;
     const discountAmount = this.discountCodeAmount || 0;
-    const grossPriceTotal = this.totalPrice + this.usedVoucherAmount + discountAmount;
+    const intervalDiscountAmount = this.totalIntervalDiscounts;
+    const grossPriceTotal = this.totalPrice + this.usedVoucherAmount + discountAmount + intervalDiscountAmount;
+    const originalBasePrice = this.originalBasePrice || (basePrice + intervalDiscountAmount);
+
+    // Prepare interval discounts for basket
+    const intervalDiscountsArray: any[] = [];
+    this.intervalDiscounts.forEach((discountInfo, cartKey) => {
+      if (discountInfo.breakdown && discountInfo.breakdown.length > 0) {
+        discountInfo.breakdown.forEach((discount: any) => {
+          intervalDiscountsArray.push({
+            name: `Interval Discount - ${discount.intervalName}`,
+            quantity: 1,
+            price: -discount.discountAmount
+          });
+        });
+      }
+    });
 
     const basket: any = {
       payment_method_id: 2,
-      price_base: { name: 'Price Base', quantity: 1, price: this.getBasePrice() },
+      price_base: { name: 'Price Base', quantity: 1, price: originalBasePrice },
       bonus: {
         total: this.usedVoucherAmount,
         bonuses: this.vouchers.map(voucher => ({
@@ -387,6 +409,10 @@ export class CartComponent implements OnInit {
           quantity: 1,
           price: -parseFloat(voucher.reducePrice)
         }))
+      },
+      interval_discounts: {
+        total: intervalDiscountAmount,
+        discounts: intervalDiscountsArray
       },
       cancellation_insurance: { name: 'Cancellation Insurance', quantity: 1, price: this.hasInsurance ? this.getInsurancePrice() : 0 },
       extras: { total: this.getExtras().length, extras },
@@ -507,11 +533,11 @@ export class CartComponent implements OnInit {
   }
 
   calculateRemainingTotal(): number {
-    let basePrice = this.getBasePrice();
-    let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
-    let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
-    let extrasPrice = this.getExtrasPrice();
-    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
+    const basePrice = this.basePriceValue;
+    const insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
+    const boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    const extrasPrice = this.getExtrasPrice();
+    const totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
 
     // Subtract already used voucher amounts
     const usedVoucherTotal = this.vouchers.reduce((total, voucher) =>
@@ -526,6 +552,251 @@ export class CartComponent implements OnInit {
 
   closeModalConditions() {
     this.isModalConditions = false;
+  }
+
+  private ensureCourseMetadata(): void {
+    if (!this.cart || this.cart.length === 0) {
+      this.loading = false;
+      this.updateTotal();
+      return;
+    }
+
+    const missingCourseIds = Array.from(new Set(
+      this.cart
+        .filter(cartItem => this.courseNeedsEnrichment(cartItem?.details?.[0]?.course))
+        .map(cartItem => cartItem.courseId)
+        .filter((id: any) => id !== undefined && id !== null)
+    ));
+
+    if (missingCourseIds.length === 0) {
+      this.enrichCartDetailsWithFallbacks();
+      this.loading = false;
+      this.updateTotal();
+      return;
+    }
+
+    forkJoin(missingCourseIds.map(courseId => this.coursesService.getCourse(courseId))).subscribe({
+      next: responses => {
+        responses.forEach(response => {
+          const courseData = response?.data ?? response;
+          if (courseData) {
+            this.mergeCourseDataIntoCart(courseData);
+          }
+        });
+        this.enrichCartDetailsWithFallbacks();
+        this.loading = false;
+        this.updateTotal();
+      },
+      error: () => {
+        this.enrichCartDetailsWithFallbacks();
+        this.loading = false;
+        this.updateTotal();
+      }
+    });
+  }
+
+  private courseNeedsEnrichment(course: any): boolean {
+    return !!(course && this.isCollectiveCourse(course) && course.is_flexible);
+  }
+
+  private safeParseSettings(rawSettings: any, fallback: any = null): any {
+    if (!rawSettings) {
+      return fallback ?? null;
+    }
+
+    if (typeof rawSettings === 'string') {
+      try {
+        return JSON.parse(rawSettings);
+      } catch {
+        return fallback ?? null;
+      }
+    }
+
+    return rawSettings || fallback || null;
+  }
+
+  private getCourseIntervalSettings(course: any): any {
+    let settings = this.safeParseSettings(course?.settings);
+    if (Array.isArray(settings?.intervals) && settings.intervals.length > 0) {
+      return settings;
+    }
+
+    const intervalsSource = Array.isArray(course?.course_intervals)
+      ? course.course_intervals
+      : (Array.isArray(course?.courseIntervals) ? course.courseIntervals : null);
+
+    if (intervalsSource && intervalsSource.length > 0) {
+      settings = {
+        intervals: intervalsSource.map((interval: any) => ({
+          id: interval?.id ?? interval?.interval_id ?? null,
+          name: interval?.name || ('Intervalo ' + (interval?.id ?? '')),
+          discounts: Array.isArray(interval?.discounts)
+            ? interval.discounts.map((discount: any) => ({
+                dates: discount?.dates ?? discount?.days ?? discount?.date ?? discount?.min_days ?? discount?.count ?? 0,
+                type: discount?.type ?? discount?.discount_type ?? 'percentage',
+                value: discount?.value ?? discount?.discount ?? discount?.discount_amount ?? 0
+              }))
+            : []
+        }))
+      };
+    }
+
+    return settings;
+  }
+
+  private mergeCourseDataIntoCart(courseData: any): void {
+    if (!courseData) {
+      return;
+    }
+
+    const courseId = String(courseData.id);
+    const normalizedSettings = this.safeParseSettings(courseData.settings);
+    const courseDatesMap = new Map<string, any>();
+    if (Array.isArray(courseData.course_dates)) {
+      courseData.course_dates.forEach((courseDate: any) => {
+        courseDatesMap.set(String(courseDate.id), courseDate);
+      });
+    }
+
+    this.cart?.forEach(cartItem => {
+      if (String(cartItem.courseId) !== courseId) {
+        return;
+      }
+
+      cartItem.details?.forEach((detail: any) => {
+        // Preserve interval configuration from cart if it exists
+        const cartSettings = this.safeParseSettings(detail.course?.settings);
+        const hasCartIntervals = Array.isArray(cartSettings?.intervals) && cartSettings.intervals.length > 0;
+
+        // Merge settings, preserving cart intervals if they exist
+        let mergedSettings = normalizedSettings ?? detail.course?.settings;
+        if (hasCartIntervals && normalizedSettings) {
+          mergedSettings = {
+            ...normalizedSettings,
+            intervals: cartSettings.intervals  // Preserve cart intervals
+          };
+        } else if (hasCartIntervals && !normalizedSettings) {
+          mergedSettings = cartSettings;
+        }
+
+        detail.course = {
+          ...detail.course,
+          price: courseData.price ?? detail.course?.price,
+          currency: courseData.currency ?? detail.course?.currency,
+          sport: detail.course?.sport || courseData.sport || null,
+          settings: mergedSettings,
+          interval_discounts: courseData.interval_discounts ?? detail.course?.interval_discounts,
+          use_interval_discounts: courseData.use_interval_discounts ?? detail.course?.use_interval_discounts,
+          course_dates: courseData.course_dates ?? detail.course?.course_dates,
+          course_intervals: courseData.course_intervals ?? detail.course?.course_intervals
+        };
+
+        if (detail.course_date) {
+          this.populateDetailIntervalFromMap(detail, courseDatesMap);
+        } else if (detail.course_date_id) {
+          const mappedDate = courseDatesMap.get(String(detail.course_date_id));
+          if (mappedDate) {
+            detail.course_date = { ...mappedDate };
+          }
+        }
+      });
+    });
+  }
+
+  private populateDetailIntervalFromMap(detail: any, courseDatesMap: Map<string, any>): void {
+    if (!detail?.course_date || courseDatesMap.size === 0) {
+      return;
+    }
+
+    const courseDateId = detail.course_date.id ?? detail.course_date_id;
+    if (!courseDateId) {
+      return;
+    }
+
+    const mappedDate = courseDatesMap.get(String(courseDateId));
+    if (mappedDate?.course_interval_id !== undefined && mappedDate?.course_interval_id !== null) {
+      detail.course_date.course_interval_id = mappedDate.course_interval_id;
+    }
+  }
+
+  private enrichCartDetailsWithFallbacks(): void {
+    this.cart?.forEach(cartItem => {
+      cartItem.details?.forEach((detail: any) => {
+        if (detail.course_date) {
+          if (detail.course_date.course_interval_id === undefined || detail.course_date.course_interval_id === null) {
+            detail.course_date.course_interval_id =
+              detail.course_interval_id ??
+              detail.interval_id ??
+              detail.courseIntervalId ??
+              null;
+          }
+        } else if (detail.course_interval_id || detail.interval_id) {
+          detail.course_date = {
+            id: detail.course_date_id ?? detail.courseDateId ?? null,
+            date: detail.date,
+            hour_start: detail.hour_start,
+            hour_end: detail.hour_end,
+            course_interval_id: detail.course_interval_id ?? detail.interval_id ?? null
+          };
+        }
+      });
+    });
+  }
+
+  private resolveDetailIntervalId(detail: any, course: any): string | null {
+    const directId =
+      detail?.course_date?.course_interval_id ??
+      detail?.course_interval_id ??
+      detail?.courseIntervalId ??
+      detail?.interval_id ??
+      detail?.intervalId;
+
+    if (directId !== undefined && directId !== null && directId !== '') {
+      return String(directId);
+    }
+
+    const courseDates = course?.course_dates;
+    if (Array.isArray(courseDates) && courseDates.length > 0) {
+      const detailCourseDateId = detail?.course_date?.id ?? detail?.course_date_id ?? detail?.courseDateId;
+      const detailDate = detail?.date;
+      const match = courseDates.find((courseDate: any) => {
+        if (detailCourseDateId) {
+          return String(courseDate.id) === String(detailCourseDateId);
+        }
+        if (detailDate && courseDate.date) {
+          return courseDate.date === detailDate;
+        }
+        return false;
+      });
+      if (match?.course_interval_id !== undefined && match?.course_interval_id !== null) {
+        return String(match.course_interval_id);
+      }
+    }
+
+    return null;
+  }
+
+  private refreshBasePriceTotals(): number {
+    const basePrice = this.getBasePrice();
+    this.basePriceValue = basePrice;
+    this.totalIntervalDiscounts = this.getTotalCartDiscounts();
+    this.originalBasePrice = this.basePriceValue + this.totalIntervalDiscounts;
+    return basePrice;
+  }
+
+  private buildCartKey(cartItem: any): string {
+    return `${cartItem.courseId}-${cartItem.userId}`;
+  }
+
+  private isCollectiveCourse(course: any): boolean {
+    return Number(course?.course_type) === 1;
+  }
+
+  getIntervalDiscountInfo(cartItem: any): any | null {
+    if (!cartItem) {
+      return null;
+    }
+    return this.intervalDiscounts.get(this.buildCartKey(cartItem)) || null;
   }
 
   transformCartToArray(cart: any): any[] {
@@ -609,7 +880,7 @@ export class CartComponent implements OnInit {
   }
 
   getInsurancePrice() {
-    return (this.getBasePrice() + this.getExtrasPrice()) * this.cancellationInsurance;
+    return (this.basePriceValue + this.getExtrasPrice()) * this.cancellationInsurance;
   }
 
   getExtrasPrice() {
@@ -668,18 +939,44 @@ export class CartComponent implements OnInit {
 
   getBasePrice() {
     let total = 0;
+    // Clear previous discount calculations
+    this.intervalDiscounts.clear();
+
     this.cart?.forEach(cartItem => {
-      if (cartItem.details[0].course.course_type == 1) {
-        if (!cartItem.details[0].course.is_flexible) {
-          total += parseFloat(cartItem.details[0].course.price);
+      const cartKey = this.buildCartKey(cartItem);
+      const course = cartItem.details[0]?.course;
+
+      if (course?.course_type == 1) {
+        if (!course.is_flexible) {
+          total += parseFloat(course.price);
         } else {
-          total += cartItem.details[0].price;
+          // For flexible collective courses, calculate with discounts
+          const basePrice = parseFloat(course.price || 0) * cartItem.details.length;
+
+          // Calculate discounts
+          const discountInfo = this.calculateCartItemDiscounts(cartItem);
+          const normalizedOriginal = Number((discountInfo?.originalPrice ?? basePrice ?? 0).toFixed(2));
+          const normalizedFinal = Number(
+            Math.max(
+              discountInfo?.finalPrice ?? (normalizedOriginal - (discountInfo?.totalDiscount || 0)),
+              0
+            ).toFixed(2)
+          );
+
+          this.intervalDiscounts.set(cartKey, {
+            ...discountInfo,
+            originalPrice: normalizedOriginal,
+            finalPrice: normalizedFinal
+          });
+
+          // Apply discount
+          total += normalizedFinal;
         }
       } else {
         total += this.getTotalBasePrice(cartItem.details);
       }
     });
-    return total;
+    return Number(total.toFixed(2));
   }
 
   getTotalCoursesPrice() {
@@ -705,11 +1002,11 @@ export class CartComponent implements OnInit {
   }
 
   updateTotal() {
-    let basePrice = this.getBasePrice();
-    let insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
-    let boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
-    let extrasPrice = this.getExtrasPrice();
-    let totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
+    const basePrice = this.refreshBasePriceTotals();
+    const insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
+    const boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    const extrasPrice = this.getExtrasPrice();
+    const totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
 
     let totalPrice = this.tva && !isNaN(this.tva) && this.tva > 0
       ? totalPriceNoTaxes * (1 + this.tva)
@@ -755,7 +1052,7 @@ export class CartComponent implements OnInit {
 
     // Actualizar valores finales
     this.usedVoucherAmount = this.vouchers.reduce((sum, v) => sum + v.reducePrice, 0);
-    this.totalPrice = remainingTotal; // Total a pagar despuÈs de vouchers y discount code
+    this.totalPrice = remainingTotal; // Total a pagar despuÔøΩs de vouchers y discount code
     this.totalNotaxes = totalPriceNoTaxes;
 
     const grossTotal = this.totalPrice + this.usedVoucherAmount + this.discountCodeAmount;
@@ -810,6 +1107,165 @@ export class CartComponent implements OnInit {
   getSportName(sportId: number): string | null {
     const sport = this.schoolData.sports.find((s: any) => s.id === sportId);
     return sport ? sport.name : null;
+  }
+
+  // ===== Interval Methods =====
+
+  /**
+   * Group cart item dates by interval
+   * Returns array of intervals with their dates, or empty array if not applicable
+   */
+  getCartItemDatesByInterval(cartItem: any): any[] {
+    if (!cartItem?.details || cartItem.details.length === 0) {
+      return [];
+    }
+
+    const course = cartItem.details[0]?.course;
+    if (!course?.is_flexible || !this.isCollectiveCourse(course)) {
+      return [];
+    }
+
+    const settings = this.getCourseIntervalSettings(course);
+    const hasConfiguredIntervals = Array.isArray(settings?.intervals) && settings.intervals.length > 0;
+
+    // Si no hay intervalos configurados, no mostrar agrupaci√≥n
+    if (!hasConfiguredIntervals) {
+      return [];
+    }
+
+    const discountInfo = this.getIntervalDiscountInfo(cartItem);
+    const discountMap = new Map<string, number>();
+    const discountPercentMap = new Map<string, number>();
+    if (discountInfo?.breakdown?.length) {
+      discountInfo.breakdown.forEach((item: any) => {
+        const key = String(item.intervalId);
+        discountMap.set(key, item.discountAmount);
+        discountPercentMap.set(key, item.discountPercentage || 0);
+      });
+    }
+
+    // Group dates by interval (even if interval metadata missing, fallback to generic names)
+    const intervals = new Map<string, any>();
+
+    cartItem.details.forEach((detail: any) => {
+      const intervalIdStr = this.resolveDetailIntervalId(detail, course);
+      if (!intervalIdStr) {
+        return;
+      }
+
+      if (!intervals.has(intervalIdStr)) {
+        let intervalName = 'Intervalo ' + intervalIdStr;
+        if (hasConfiguredIntervals) {
+          const intervalConfig = settings.intervals.find((i: any) => String(i.id) === intervalIdStr);
+          intervalName = intervalConfig?.name || intervalName;
+        }
+
+        intervals.set(intervalIdStr, {
+          id: intervalIdStr,
+          name: intervalName,
+          dates: [],
+          count: 0,
+          discountAmount: discountMap.get(intervalIdStr) || 0,
+          discountPercentage: discountPercentMap.get(intervalIdStr) || 0
+        });
+      }
+
+      const intervalData = intervals.get(intervalIdStr);
+      intervalData.dates.push(detail);
+      intervalData.count++;
+      if (!intervalData.discountAmount && discountMap.has(intervalIdStr)) {
+        intervalData.discountAmount = discountMap.get(intervalIdStr) || 0;
+      }
+      if (!intervalData.discountPercentage && discountPercentMap.has(intervalIdStr)) {
+        intervalData.discountPercentage = discountPercentMap.get(intervalIdStr) || 0;
+      }
+    });
+
+    return Array.from(intervals.values());
+  }
+
+  /**
+   * Check if cart item has interval metadata available
+   */
+  hasIntervalGroups(cartItem: any): boolean {
+    return this.getCartItemDatesByInterval(cartItem).length > 0;
+  }
+
+  /**
+   * Calculate interval discounts for a cart item
+   */
+  calculateCartItemDiscounts(cartItem: any): any {
+    if (!cartItem?.details || cartItem.details.length === 0) {
+      return { breakdown: [], totalDiscount: 0, originalPrice: 0, finalPrice: 0 };
+    }
+
+    const course = cartItem.details[0]?.course;
+    const datesCount = cartItem.details.length || 0;
+    const basePrice = Number(((parseFloat(course?.price || 0) || 0) * datesCount).toFixed(2));
+
+    if (!course?.is_flexible || !this.isCollectiveCourse(course)) {
+      return { breakdown: [], totalDiscount: 0, originalPrice: basePrice, finalPrice: basePrice };
+    }
+
+    // Prepare dates with course_interval_id for discount calculation
+    const datesWithIntervals = cartItem.details.map((detail: any) => ({
+      date: detail.date,
+      course_interval_id: this.resolveDetailIntervalId(detail, course)
+    }));
+
+    const settings = this.getCourseIntervalSettings(course);
+    const courseForDiscounts = {
+      ...course,
+      settings: settings || course.settings
+    };
+
+    const breakdown = this.bookingService.calculateDiscountBreakdown(courseForDiscounts, datesWithIntervals);
+    let totalDiscount = breakdown.reduce((sum: number, item: any) => sum + item.discountAmount, 0);
+
+    // Add interval names to breakdown
+    const enhancedBreakdown = breakdown.map((item: any) => {
+      const intervalConfig = settings?.intervals?.find((i: any) => String(i.id) === item.intervalId);
+      return {
+        ...item,
+        intervalName: intervalConfig?.name || 'Intervalo ' + item.intervalId
+      };
+    });
+
+    let finalPrice = Number(Math.max(basePrice - totalDiscount, 0).toFixed(2));
+
+    // Fallback: if stored cart price differs (e.g., legacy cart without settings), trust stored price
+    const storedPriceRaw = parseFloat(cartItem.details[0]?.price);
+    if (!isNaN(storedPriceRaw) && storedPriceRaw > 0) {
+      const storedPrice = Number(storedPriceRaw.toFixed(2));
+      const priceDelta = Number((basePrice - storedPrice).toFixed(2));
+
+      if (Math.abs(storedPrice - finalPrice) > 0.01 && priceDelta > 0) {
+        finalPrice = storedPrice;
+        totalDiscount = priceDelta;
+      }
+    }
+
+    return {
+      breakdown: enhancedBreakdown,
+      totalDiscount,
+      originalPrice: basePrice,
+      finalPrice
+    };
+  }
+
+  /**
+   * Get total discount amount for all cart items
+   */
+  getTotalCartDiscounts(): number {
+    let totalDiscount = 0;
+    this.cart?.forEach(cartItem => {
+      const cartKey = `${cartItem.courseId}-${cartItem.userId}`;
+      const discountInfo = this.intervalDiscounts.get(cartKey);
+      if (discountInfo) {
+        totalDiscount += discountInfo.totalDiscount;
+      }
+    });
+    return totalDiscount;
   }
 
   // ===== Discount Code Methods =====

@@ -100,6 +100,25 @@
                   {{ interval.bookingMode === 'package' ? ('booking_interval_package' | translate) : ('booking_interval_flexible' | translate) }}
                 </span>
                 </div>
+
+                <!-- Información de descuentos disponibles -->
+                <div class="interval-discounts-preview" *ngIf="getIntervalDiscounts(interval.id).length > 0" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                  <mat-icon style="color: #FF9800; font-size: 18px; width: 18px; height: 18px;">local_offer</mat-icon>
+                  <span style="color: #FF9800; font-size: 13px; font-weight: 500;">
+                    {{ 'discount_available' | translate }}:
+                  </span>
+                  <span *ngFor="let discount of getIntervalDiscounts(interval.id); let last = last" style="color: #FF9800; font-size: 13px;">
+                    {{discount.dates}} {{ 'dates' | translate }}:
+                    <ng-container *ngIf="discount.type === 'percentage'">
+                      -{{discount.value}}%
+                    </ng-container>
+                    <ng-container *ngIf="discount.type === 'fixed'">
+                      -{{discount.value}} {{course.currency}}
+                    </ng-container>
+                    <span *ngIf="!last"> • </span>
+                  </span>
+                </div>
+
                 <div class="interval-reservable-info" *ngIf="interval.reservableWindowKey">
                   {{ interval.reservableWindowKey | translate: interval.reservableWindowParams }}
                 </div>
@@ -123,7 +142,7 @@
                       <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
                     </div>
                     <div class="date-weekday">
-                      {{Week[Date(date.date).getDay()]}}
+                      {{getWeekdayNameFromDate(date.date)}}
                     </div>
                     <div class="date-time">
                       {{date.hour_start}}h - {{date.hour_end}}h
@@ -178,7 +197,7 @@
                       <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
                     </div>
                     <div class="date-weekday">
-                      {{Week[Date(date.date).getDay()]}}
+                      {{getWeekdayNameFromDate(date.date)}}
                     </div>
                     <div class="date-time">
                       {{date.hour_start}}h - {{date.hour_end}}h
@@ -204,7 +223,7 @@
                   <span class="month-year">{{date.date | date: 'MMM yyyy'}}</span>
                 </div>
                 <div class="date-weekday">
-                  {{Week[Date(date.date).getDay()]}}
+                  {{getWeekdayNameFromDate(date.date)}}
                 </div>
                 <div class="date-time">
                   {{date.hour_start}}h - {{date.hour_end}}h
@@ -599,12 +618,15 @@
                 <div class="interval-header"
                      [class.cursor-not-allowed]="!interval.isReservableNow"
                      [attr.title]="!interval.isReservableNow ? (interval.reservableStatusKey | translate:interval.reservableStatusParams) : null"
-                     (click)="interval.isReservableNow && selectInterval(interval.id)">
+                     (click)="interval.isReservableNow && toggleIntervalExpanded(interval.id)">
                   <div class="interval-title-section">
-                    <mat-icon *ngIf="isIntervalSelected(interval.id)">check_circle</mat-icon>
-                    <mat-icon *ngIf="!isIntervalSelected(interval.id) && interval.isReservableNow">radio_button_unchecked</mat-icon>
                     <mat-icon *ngIf="!interval.isReservableNow" class="disabled-icon">block</mat-icon>
                     <h5 class="interval-name">{{interval.name}}</h5>
+                  </div>
+
+                  <div class="interval-expand-icon">
+                    <mat-icon *ngIf="interval.isReservableNow && !isIntervalExpanded(interval.id)">expand_more</mat-icon>
+                    <mat-icon *ngIf="interval.isReservableNow && isIntervalExpanded(interval.id)">expand_less</mat-icon>
                   </div>
 
                   <div class="interval-summary">
@@ -617,6 +639,50 @@
                     <span class="interval-mode-badge" [class.package]="interval.bookingMode === 'package'">
                       {{ interval.bookingMode === 'package' ? ('booking_interval_package' | translate) : ('booking_interval_flexible' | translate) }}
                     </span>
+                  </div>
+
+                  <!-- Información de descuentos disponibles -->
+                  <div class="interval-discounts-info" *ngIf="getIntervalDiscounts(interval.id).length > 0">
+                    <!-- Descuento aplicado -->
+                    <div *ngIf="getAppliedIntervalDiscount(interval.id) as appliedDiscount" class="discount-applied">
+                      <mat-icon style="color: #4CAF50; font-size: 18px;">check_circle</mat-icon>
+                      <span style="color: #4CAF50; font-weight: 600;">
+                        {{ 'discount_applied' | translate }}:
+                        <ng-container *ngIf="appliedDiscount.type === 'percentage'">
+                          {{appliedDiscount.value}}%
+                        </ng-container>
+                        <ng-container *ngIf="appliedDiscount.type === 'fixed'">
+                          {{appliedDiscount.value}} {{course.currency}}
+                        </ng-container>
+                      </span>
+                    </div>
+
+                    <!-- Próximo descuento disponible -->
+                    <div *ngIf="getNextIntervalDiscount(interval.id) as nextDiscount" class="discount-available">
+                      <mat-icon style="color: #E91E63; font-size: 18px;">local_offer</mat-icon>
+                      <span style="color: #E91E63; font-weight: 500;">
+                        {{ 'booking.interval.discount_hint' | translate: {
+                          dates: nextDiscount.dates,
+                          discount: nextDiscount.type === 'percentage' ? (nextDiscount.value + '%') : (nextDiscount.value + ' ' + course.currency)
+                        } }}
+                      </span>
+                    </div>
+
+                    <!-- Mostrar todos los descuentos disponibles cuando no hay ninguno aplicado -->
+                    <div *ngIf="!getAppliedIntervalDiscount(interval.id)" class="discounts-list">
+                      <div *ngFor="let discount of getIntervalDiscounts(interval.id)" class="discount-item">
+                        <mat-icon style="color: #FF9800; font-size: 16px;">star</mat-icon>
+                        <span style="color: #FF9800; font-size: 13px;">
+                          {{discount.dates}} {{ 'dates' | translate }}:
+                          <ng-container *ngIf="discount.type === 'percentage'">
+                            -{{discount.value}}%
+                          </ng-container>
+                          <ng-container *ngIf="discount.type === 'fixed'">
+                            -{{discount.value}} {{course.currency}}
+                          </ng-container>
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="interval-additional-info" *ngIf="interval.reservableWindowKey || interval.reservableStatusKey">
@@ -632,7 +698,7 @@
                 </div>
 
                 <!-- Fechas del intervalo (visibles cuando estÃ¡ seleccionado) -->
-                <div class="interval-dates-container" *ngIf="isIntervalSelected(interval.id)">
+                <div class="interval-dates-container" *ngIf="isIntervalExpanded(interval.id)">
                   <div class="date-checkboxes">
                     <div *ngFor="let date of interval.dates; trackBy: trackByDate" class="date-checkbox-wrapper"
                          [class.date-disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package'"
@@ -727,7 +793,38 @@
               </div>
             </div>
 
-            <div class="selected-dates-grid">
+            <!-- Si hay múltiples intervalos, agrupar por intervalo -->
+            <div *ngIf="getSelectedDatesByInterval().length > 1" class="selected-dates-by-interval">
+              <div *ngFor="let interval of getSelectedDatesByInterval()" style="margin-bottom: 20px;">
+                <div style="font-weight: 700; font-size: 13px; color: #E91E63; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #E91E63; display: flex; align-items: center; gap: 6px;">
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px;">event</mat-icon>
+                  {{interval.name}}
+                  <span style="font-weight: 400; font-size: 12px; opacity: 0.8;">({{interval.dates.length}} {{ interval.dates.length === 1 ? ('date' | translate) : ('dates' | translate) }})</span>
+                </div>
+                <div class="selected-dates-grid">
+                  <div *ngFor="let date of interval.dates" class="selected-date-card">
+                    <div class="selected-date-content">
+                      <div class="selected-date-day">
+                        {{ date | date: 'dd' }}
+                      </div>
+                      <div class="selected-date-details">
+                        <div class="selected-date-month">{{ date | date: 'MMM yyyy' }}</div>
+                        <div class="selected-date-weekday">{{ getWeekday(date) }}</div>
+                      </div>
+                    </div>
+                    <button mat-icon-button
+                            class="selected-date-remove"
+                            (click)="selectDate(false, date, getIntervalForDate(date))"
+                            matTooltip="{{ 'remove_date' | translate }}">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Si hay un solo intervalo o no hay intervalos, mostrar sin agrupar -->
+            <div *ngIf="getSelectedDatesByInterval().length <= 1" class="selected-dates-grid">
               <div *ngFor="let date of selectedDates" class="selected-date-card">
                 <div class="selected-date-content">
                   <div class="selected-date-day">
@@ -758,6 +855,48 @@
               <div class="selected-total-info">
                 {{ 'total_selected' | translate }}:
                 <span class="total-count">{{ selectedDates.length }}</span>
+              </div>
+            </div>
+
+            <!-- Price breakdown with discounts -->
+            <div class="price-breakdown-summary" style="margin-top: 16px; padding: 16px; background: #F5F7FA; border-radius: 8px;">
+              <!-- Original price if discount applied -->
+              <div *ngIf="hasActiveDiscount" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #8B9099; font-size: 14px;">{{ 'original_price' | translate }}</span>
+                <span style="color: #8B9099; text-decoration: line-through; font-size: 14px;">
+                  {{originalPrice | number:'0.2-2'}} {{course.currency}}
+                </span>
+              </div>
+
+              <!-- Discount applied by interval -->
+              <div *ngIf="hasActiveDiscount && discountsByInterval.length > 0" style="margin-bottom: 8px;">
+                <div *ngFor="let intervalDiscount of discountsByInterval" style="display: flex; justify-content: space-between; margin-bottom: 6px; padding-left: 8px; border-left: 3px solid #4CAF50;">
+                  <span style="color: #4CAF50; font-size: 13px; font-weight: 500;">
+                    {{ intervalDiscount.intervalName }}
+                    <span *ngIf="intervalDiscount.discountPercentage > 0" style="font-size: 12px; opacity: 0.8;">
+                      (-{{intervalDiscount.discountPercentage}}%)
+                    </span>
+                  </span>
+                  <span style="color: #4CAF50; font-weight: 600; font-size: 13px;">
+                    -{{intervalDiscount.discountAmount | number:'0.2-2'}} {{course.currency}}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Total discount -->
+              <div *ngIf="hasActiveDiscount" style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid #DEE6EA;">
+                <span style="color: #4CAF50; font-size: 14px; font-weight: 600;">{{ 'discount_applied' | translate }}</span>
+                <span style="color: #4CAF50; font-weight: 700; font-size: 14px;">
+                  -{{appliedDiscountAmount | number:'0.2-2'}} {{course.currency}}
+                </span>
+              </div>
+
+              <!-- Final price -->
+              <div style="display: flex; justify-content: space-between; border-top: 2px solid #DEE6EA; padding-top: 12px; margin-top: 8px;">
+                <span style="font-weight: 700; font-size: 16px; color: #222222;">{{ 'text_price' | translate }}</span>
+                <span style="font-weight: 700; font-size: 18px; color: #E91E63;">
+                  {{collectivePrice | number:'0.2-2'}} {{course.currency}}
+                </span>
               </div>
             </div>
           </div>
@@ -845,10 +984,6 @@
           </ng-container>
         </div>
         <div [style.display]="courseFlux===3 ? 'block' : 'none'" class="extras-section">
-          <div class="extras-title">
-            <mat-icon>add_circle_outline</mat-icon>
-            {{"add_extras_or_notes" |translate}}
-          </div>
 
           <!-- Error message for date selection validation -->
           <div *ngIf="dateSelectionError" class="date-selection-error" style="margin-bottom: 20px;">
@@ -856,7 +991,14 @@
             <span>{{dateSelectionError}}</span>
           </div>
 
-          <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
+          <!-- Only show extras section if extras are available -->
+          <ng-container *ngIf="settingsExtras && settingsExtras.length > 0">
+            <div class="extras-title">
+              <mat-icon>add_circle_outline</mat-icon>
+              {{"add_extras_or_notes" |translate}}
+            </div>
+
+            <ng-container *ngIf="!(course?.course_type === 1 && course?.is_flexible === true)">
             <div *ngFor="let date of (course?.course_type === 1 ? (course?.is_flexible ? selectedDates : [course?.course_dates[0]]) : [selectedDateReservation?.date])"
                  class="extras-date-section">
               <div *ngIf="course.is_flexible" class="extras-date-header">
@@ -904,6 +1046,9 @@
               </div>
             </div>
           </ng-container>
+          </ng-container>
+          <!-- End of extras section -->
+
           <div style="margin-top: 20px;">
             <mat-form-field appearance="outline" class="flex-auto" style="width: 100%">
               <mat-label>
@@ -989,7 +1134,12 @@
                           [selectedForfait]="selectedForfait"
                           [selectedForfaits]="selectedForfaits"
                           [selectedDuration]="selectedDuration"
-                          [collectivePrice]="collectivePrice" (onClose)="confirmModal=false"
+                          [collectivePrice]="collectivePrice"
+                          [originalPrice]="originalPrice"
+                          [appliedDiscountAmount]="appliedDiscountAmount"
+                          [hasActiveDiscount]="hasActiveDiscount"
+                          [discountsByInterval]="discountsByInterval"
+                          (onClose)="confirmModal=false"
                           (next)="addBookingToCart()">
 </app-course-modal-confirm>
 

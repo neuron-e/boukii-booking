@@ -30,11 +30,11 @@
 						<span>
 							{{("00"+(i+1)).slice(-2)}}.
 						</span>
-            <img *ngIf="cartItem.details[0].course.course_type == 1"
+            <img *ngIf="cartItem.details[0].course.course_type == 1 && cartItem.details[0].course.sport"
                  [src]="cartItem.details[0].course.sport.icon_collective">
-            <img *ngIf="cartItem.details[0].course.course_type == 2"
+            <img *ngIf="cartItem.details[0].course.course_type == 2 && cartItem.details[0].course.sport"
                  [src]="cartItem.details[0].course.sport.icon_prive">
-            <img *ngIf="cartItem.details[0].course.course_type == 3"
+            <img *ngIf="cartItem.details[0].course.course_type == 3 && cartItem.details[0].course.sport"
                  [src]="cartItem.details[0].course.sport.icon_activity">
             <div class="course-box-title">
               <div style="font-weight: 600;">
@@ -92,16 +92,47 @@
 								{{"date_time"|translate|uppercase}}
 							</span>
             </div>
-            <div *ngFor="let date of getUniqueDates(cartItem.details)"
-                 style="display: flex;justify-content: space-between;width: 100%;gap: 20px;">
-							<span>
-								{{date.date | date: 'dd.MM.yyyy'}}
-							</span>
-              <span style="color: gray;">
-								{{date.hour_start.substring(0,5)
-                }}-{{date.hour_end.substring(0,5)}}
-							</span>
-            </div>
+
+            <!-- Si hay múltiples intervalos, agrupar por intervalo -->
+            <ng-container *ngIf="hasIntervalGroups(cartItem); else singleIntervalDates">
+              <div *ngFor="let interval of getCartItemDatesByInterval(cartItem)" style="width: 100%;">
+                <div class="cart-interval-header">
+                  <div class="cart-interval-title">
+                    <span>{{interval.name}}</span>
+                    <span class="cart-interval-count">({{interval.count}} {{'dates' | translate}})</span>
+                  </div>
+                  <div class="cart-interval-discount" *ngIf="interval.discountAmount > 0">
+                    -{{interval.discountAmount|number:'0.2-2'}}
+                    {{ cartItem.details[0].course.currency }}
+                    <span class="cart-interval-discount__percent" *ngIf="interval.discountPercentage > 0">
+                      (-{{interval.discountPercentage}}%)
+                    </span>
+                  </div>
+                </div>
+                <div *ngFor="let detail of interval.dates"
+                     style="display: flex;justify-content: space-between;width: 100%;gap: 20px;padding-left: 8px;">
+                  <span>
+                    {{detail.date | date: 'dd.MM.yyyy'}}
+                  </span>
+                  <span style="color: gray;">
+                    {{detail.hour_start.substring(0,5)}}-{{detail.hour_end.substring(0,5)}}
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Si hay un solo intervalo o ninguno, mostrar lista plana -->
+            <ng-template #singleIntervalDates>
+              <div *ngFor="let date of getUniqueDates(cartItem.details)"
+                   style="display: flex;justify-content: space-between;width: 100%;gap: 20px;">
+                <span>
+                  {{date.date | date: 'dd.MM.yyyy'}}
+                </span>
+                <span style="color: gray;">
+                  {{date.hour_start.substring(0,5)}}-{{date.hour_end.substring(0,5)}}
+                </span>
+              </div>
+            </ng-template>
             <div style="display: flex;align-items: center;gap: 8px;"
                  *ngIf="cartItem.details[0].extra.length>0">
 							<span style="
@@ -124,9 +155,37 @@
                 <span>
 									{{extra.price|number:'0.2-2'}}{{cartItem.details[0].course.currency}} /{{'date' |
                   translate}}
-								</span>
+                </span>
               </div>
             </div>
+            <ng-container *ngIf="cartItem.details[0].course.course_type == 1 && cartItem.details[0].course.is_flexible">
+              <ng-container *ngIf="getIntervalDiscountInfo(cartItem) as discountInfo">
+                <div *ngIf="discountInfo.breakdown?.length > 0 || discountInfo.totalDiscount > 0" class="cart-price-breakdown">
+                  <div class="cart-price-breakdown__row cart-price-breakdown__row--original"
+                       *ngIf="discountInfo.originalPrice > discountInfo.finalPrice">
+                    <span>{{'original_price' | translate }}</span>
+                    <span>{{discountInfo.originalPrice|number:'0.2-2'}} {{ cartItem.details[0].course.currency }}</span>
+                  </div>
+                  <div *ngFor="let discount of discountInfo.breakdown" class="cart-price-breakdown__row cart-price-breakdown__row--interval">
+                    <span>
+                      {{discount.intervalName}}
+                      <span *ngIf="discount.discountPercentage > 0">(-{{discount.discountPercentage}}%)</span>
+                    </span>
+                    <span>
+                      -{{discount.discountAmount|number:'0.2-2'}} {{ cartItem.details[0].course.currency }}
+                    </span>
+                  </div>
+                  <div class="cart-price-breakdown__row cart-price-breakdown__row--total" *ngIf="discountInfo.totalDiscount > 0">
+                    <span>{{'discount_applied' | translate }}</span>
+                    <span>-{{discountInfo.totalDiscount|number:'0.2-2'}} {{ cartItem.details[0].course.currency }}</span>
+                  </div>
+                  <div class="cart-price-breakdown__row cart-price-breakdown__row--final">
+                    <span>{{'text_price' | translate }}</span>
+                    <span>{{discountInfo.finalPrice|number:'0.2-2'}} {{ cartItem.details[0].course.currency }}</span>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
           </div>
         </div>
         <div class="course-box-dates" style="border-top: 1px solid #dee6ea;">
@@ -180,11 +239,11 @@
             cartItem.details[0].course.currency }}
 				</span>
         <span *ngIf="cartItem.details[0].course.course_type ==1" class="detailPrice">
-					{{(cartItem.details[0].course.is_flexible ?
-          cartItem.details.length * cartItem.details[0].course.price :
-          +cartItem.details[0].course.price)|number:'0.2-2'}}
+          {{(cartItem.details[0].course.is_flexible ?
+          cartItem.details[0].price :
+          cartItem.details.length * cartItem.details[0].course.price)|number:'0.2-2'}}
           {{ cartItem.details[0].course.currency }}
-				</span>
+        </span>
       </div>
 
       <div *ngIf="getExtrasPrice()>0" class="payment-price-flex mt-8">
@@ -209,6 +268,18 @@
         </div>
       </div>
 
+      <div *ngIf="totalIntervalDiscounts > 0" class="payment-price-flex mt-8 payment-original-row">
+        <div class="detail">
+          {{'original_price' | translate }}
+        </div>
+        <div class="text-color min-width-price">
+					<span class="detailPrice payment-original-line">
+						{{originalBasePrice|number:'0.2-2'}}
+            {{ cart[0].details[0].course.currency }}
+					</span>
+        </div>
+      </div>
+
       <div class="payment-price-flex"
            style="margin: 16px 0; padding: 16px 0;border-top: 1px solid #DEE6EA;border-bottom: 1px solid #DEE6EA;">
         <div class="bdetail">
@@ -216,9 +287,46 @@
         </div>
         <div class="text-color min-width-price">
 					<span class="detailPrice">
-						{{getBasePrice()|number:'0.2-2'}}
+						{{basePriceValue|number:'0.2-2'}}
             {{ cart[0].details[0].course.currency }}
 					</span>
+        </div>
+      </div>
+
+      <!-- Interval Discounts Breakdown -->
+      <div *ngIf="totalIntervalDiscounts > 0" class="payment-discount-detail">
+        <div *ngFor="let cartItem of cart; index as i" class="payment-discount-detail__course">
+          <div class="payment-discount-detail__course-name">
+            {{("00"+(i+1)).slice(-2)}}.&nbsp;{{cartItem.details[0].course.name}}
+          </div>
+          <ng-container *ngIf="getIntervalDiscountInfo(cartItem) as discountInfo">
+            <div *ngIf="discountInfo.breakdown && discountInfo.breakdown.length > 0">
+              <div *ngFor="let discount of discountInfo.breakdown" class="payment-discount-detail__row">
+                <div>
+                  {{discount.intervalName}}
+                  <span *ngIf="discount.discountPercentage > 0" class="payment-discount-detail__percent">
+                    ({{discount.discountPercentage}}%)
+                  </span>
+                </div>
+                <div class="payment-discount-detail__amount">
+                  -{{discount.discountAmount|number:'0.2-2'}}
+                  {{ cartItem.details[0].course.currency }}
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="totalIntervalDiscounts > 0" class="payment-price-flex payment-discount-row">
+        <div class="detail">
+          {{'discount_applied' | translate }}
+        </div>
+        <div class="text-color min-width-price">
+          <span class="text-color fw-bold payment-discount-amount">
+            -{{totalIntervalDiscounts|number:'0.2-2'}}
+          </span>
+          {{ cart[0].details[0].course.currency }}
         </div>
       </div>
 

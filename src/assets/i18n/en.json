@@ -888,5 +888,15 @@
   "discount_available": "Discounts available",
   "discount_add": "Add",
   "discount_more_days": "more days",
-  "discount_save_up_to": "Save up to"
+  "discount_save_up_to": "Save up to",
+  "discount_applied": "Discount applied",
+  "booking.interval.discount_hint": "Select {{dates}} dates to get {{discount}} discount",
+  "original_price": "Original price",
+  "day_sun": "SUN",
+  "day_mon": "MON",
+  "day_tue": "TUE",
+  "day_wed": "WED",
+  "day_thu": "THU",
+  "day_fri": "FRI",
+  "day_sat": "SAT"
 }

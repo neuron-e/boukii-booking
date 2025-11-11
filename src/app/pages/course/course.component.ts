@@ -77,10 +77,34 @@ export class CourseComponent implements OnInit {
   hasLevelsAvailable: boolean = true;
 
   monthNames: string[] = [];
-  weekdays: string[] = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   currentMonth: number;
   currentYear: number;
   days: any[] = [];
+
+  // Getter para días de la semana traducidos
+  get weekdays(): string[] {
+    return [
+      this.translateService.instant('day_mon'),
+      this.translateService.instant('day_tue'),
+      this.translateService.instant('day_wed'),
+      this.translateService.instant('day_thu'),
+      this.translateService.instant('day_fri'),
+      this.translateService.instant('day_sat'),
+      this.translateService.instant('day_sun')
+    ];
+  }
+
+  // Helper para obtener el nombre del día traducido por número (0=domingo, 1=lunes, etc.)
+  getWeekdayName(dayNumber: number): string {
+    const dayKeys = ['day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat'];
+    return this.translateService.instant(dayKeys[dayNumber]);
+  }
+
+  // Helper para obtener el nombre del día desde una fecha string
+  getWeekdayNameFromDate(dateString: string): string {
+    const dateObj = new Date(dateString);
+    return this.getWeekdayName(dateObj.getDay());
+  }
 
   activeDates: string[] = [];
   isModalAddUser: boolean = false;
@@ -101,10 +125,14 @@ export class CourseComponent implements OnInit {
   appliedDiscountAmount: number = 0;
   originalPrice: number = 0;
   hasActiveDiscount: boolean = false;
+  discountsByInterval: { intervalId: string; intervalName: string; discountAmount: number; discountPercentage: number }[] = [];
 
   // Control de la visualización de intervalos
   expandedIntervals: { [key: string]: boolean } = {};
   dateSelectionError: string = '';
+
+  // Mapa para rastrear qué intervalo fue seleccionado para cada fecha
+  private dateToIntervalMap: Map<string, string> = new Map();
 
   // Cache para evitar re-renderizado
   private cachedIntervalGroups: any[] | null = null;
@@ -259,6 +287,25 @@ export class CourseComponent implements OnInit {
     return this.expandedIntervals[key] === true;
   }
 
+  // Toggle para expandir/contraer un intervalo
+  toggleIntervalExpanded(intervalId: IntervalIdentifier): void {
+    const key = this.normalizeIntervalId(intervalId);
+    if (!key) {
+      return;
+    }
+
+    // Simplemente alternar el estado de expandido/colapsado
+    // NO limpiar las fechas seleccionadas cuando se colapsa
+    this.expandedIntervals[key] = !this.expandedIntervals[key];
+
+    // Si se está expandiendo, marcar como intervalo seleccionado activo
+    if (this.expandedIntervals[key]) {
+      this.selectedIntervalId = key;
+    }
+
+    this.dateSelectionError = '';
+  }
+
   // Método para obtener fechas agrupadas por intervalos
   getIntervalGroups(): any[] {
     // Usar cache para evitar re-renderizado
@@ -391,6 +438,55 @@ export class CourseComponent implements OnInit {
     return typeof this.course.settings === 'string'
       ? JSON.parse(this.course.settings)
       : this.course.settings;
+  }
+
+  private buildCartSettingsSnapshot(): any {
+    const settings = this.getCourseSettings();
+    let intervals = Array.isArray(settings?.intervals) ? settings.intervals : [];
+
+    if (!intervals.length) {
+      const fallbackIntervals = this.buildCartIntervalsSnapshot();
+      if (!fallbackIntervals) {
+        return null;
+      }
+      intervals = fallbackIntervals;
+    }
+
+    return {
+      intervals: intervals.map((interval: any) => ({
+        id: interval?.id,
+        name: interval?.name,
+        discounts: Array.isArray(interval?.discounts)
+          ? interval.discounts.map((discount: any) => ({
+              dates: discount?.dates ?? discount?.days ?? discount?.date ?? discount?.min_days ?? discount?.count ?? 0,
+              type: discount?.type ?? discount?.discount_type ?? 'percentage',
+              value: discount?.value ?? discount?.discount ?? discount?.discount_value ?? 0
+            }))
+          : []
+      }))
+    };
+  }
+
+  private buildCartIntervalsSnapshot(): any[] | null {
+    const sourceIntervals = Array.isArray(this.course?.course_intervals)
+      ? this.course.course_intervals
+      : (Array.isArray((this.course as any)?.courseIntervals) ? (this.course as any).courseIntervals : null);
+
+    if (!sourceIntervals || sourceIntervals.length === 0) {
+      return null;
+    }
+
+    return sourceIntervals.map((interval: any) => ({
+      id: interval?.id,
+      name: interval?.name,
+      discounts: Array.isArray(interval?.discounts)
+        ? interval.discounts.map((discount: any) => ({
+            dates: discount?.dates ?? discount?.days ?? discount?.date ?? discount?.min_days ?? discount?.count ?? 0,
+            type: discount?.type ?? discount?.discount_type ?? 'percentage',
+            value: discount?.value ?? discount?.discount ?? discount?.discount_value ?? 0
+          }))
+        : []
+    }));
   }
 
   private getGlobalReservableWindow(): IntervalReservableWindow {
@@ -879,8 +975,9 @@ export class CourseComponent implements OnInit {
       // Solo validar que sean consecutivas
     }
 
-    this.selectedDates = cleanedSelection;
-    this.syncExtrasWithSelectedDates();
+    // NO sobrescribir selectedDates - mantener fechas de todos los intervalos
+    // this.selectedDates = cleanedSelection;
+    // this.syncExtrasWithSelectedDates();
     this.dateSelectionError = '';
     return true;
   }
@@ -891,12 +988,28 @@ export class CourseComponent implements OnInit {
     }
 
     if (this.hasIntervals()) {
-      const activeIntervalId = this.normalizeIntervalId(this.selectedIntervalId);
-      if (!activeIntervalId) {
-        this.dateSelectionError = this.translateService.instant('booking_select_interval_first');
+      // Obtener todos los intervalos únicos de las fechas seleccionadas
+      const selectedIntervalIds = new Set<string>();
+      this.selectedDates.forEach((dateStr: string) => {
+        const intervalId = this.dateToIntervalMap.get(dateStr);
+        if (intervalId) {
+          selectedIntervalIds.add(intervalId);
+        }
+      });
+
+      if (selectedIntervalIds.size === 0) {
+        this.dateSelectionError = this.translateService.instant('no_dates_selected');
         return false;
       }
-      return this.validateIntervalSelection(activeIntervalId);
+
+      // Validar cada intervalo seleccionado
+      for (const intervalId of selectedIntervalIds) {
+        if (!this.validateIntervalSelection(intervalId)) {
+          return false;
+        }
+      }
+
+      return true;
     }
 
     if (!this.selectedDates || this.selectedDates.length === 0) {
@@ -1149,8 +1262,9 @@ export class CourseComponent implements OnInit {
       return this.translateService.instant('weekend');
     }
 
-    // Caso general: listar los días
-    const dayNames = days.map(day => this.Week[day]);
+    // Caso general: listar los días usando traducciones
+    const dayKeys = ['day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat'];
+    const dayNames = days.map(day => this.translateService.instant(dayKeys[day]));
 
     if (dayNames.length === 1) {
       return dayNames[0];
@@ -1268,12 +1382,9 @@ export class CourseComponent implements OnInit {
         this.course.course_dates.forEach((date: any) => {
           // Verifica si la fecha está en las fechas seleccionadas
           if (this.selectedDates.find((d: any) => moment(d).format('YYYY-MM-DD') === moment(date.date).format('YYYY-MM-DD'))) {
-            if (this.hasIntervals()) {
-              const activeIntervalId = this.normalizeIntervalId(this.selectedIntervalId);
-              if (activeIntervalId && !this.dateBelongsToInterval(date, activeIntervalId)) {
-                return;
-              }
-            }
+            // NO filtrar por intervalo activo - permitir fechas de todos los intervalos seleccionados
+            // La verificación de selectedDates ya garantiza que son fechas válidas
+
             // Encuentra el grupo correspondiente al nivel seleccionado
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
             let courseSubgroup = courseGroup.course_subgroups[0];
@@ -1282,12 +1393,47 @@ export class CourseComponent implements OnInit {
             const dateExtras = this.selectedForfaits[date.date] || [];  // Verifica si hay extras para esa fecha
 
             // Agrega los usuarios con los extras correspondientes
+            // OPTIMIZADO: Solo guardar IDs y datos necesarios, no objetos completos
+            const courseSnapshot: any = {
+              id: this.course.id,
+              name: this.course.name,
+              course_type: this.course.course_type,
+              is_flexible: this.course.is_flexible,
+              currency: this.course.currency,
+              price: this.course.price,
+              sport_id: this.course.sport_id,
+              sport: this.course.sport ? {
+                id: this.course.sport.id,
+                name: this.course.sport.name,
+                icon_collective: this.course.sport.icon_collective,
+                icon_prive: this.course.sport.icon_prive,
+                icon_activity: this.course.sport.icon_activity
+              } : null
+            };
+            const settingsSnapshot = this.buildCartSettingsSnapshot();
+            if (settingsSnapshot) {
+              courseSnapshot.settings = settingsSnapshot;
+            }
+            const intervalsSnapshot = this.buildCartIntervalsSnapshot();
+            if (intervalsSnapshot) {
+              courseSnapshot.course_intervals = intervalsSnapshot;
+            }
             bookingUsers.push({
-              'course': this.course,
-              'client': this.selectedUser,
-              'course_date': date,
-              'group': courseGroup,
-              'subGroup': courseSubgroup,
+              'course': courseSnapshot,
+              'client': {
+                id: this.selectedUser.id,
+                first_name: this.selectedUser.first_name,
+                last_name: this.selectedUser.last_name
+              },
+              'course_date': {
+                id: date.id,
+                date: date.date,
+                hour_start: date.hour_start,
+                hour_end: date.hour_end,
+                course_interval_id: this.getCartIntervalIdForDate(date)
+              },
+              'group': { id: courseGroup.id, name: courseGroup.name },
+              'subGroup': { id: courseSubgroup.id, name: courseSubgroup.name },
               'school_id': this.schoolData.id,
               'client_id': this.selectedUser.id,
               'price': this.collectivePrice,
@@ -1307,12 +1453,39 @@ export class CourseComponent implements OnInit {
         this.course.course_dates.forEach((date: any) => {
           let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
           let courseSubgroup = courseGroup.course_subgroups[0];
+          // OPTIMIZADO: Solo guardar IDs y datos necesarios
+          const courseSnapshot: any = {
+            id: this.course.id,
+            name: this.course.name,
+            course_type: this.course.course_type,
+            is_flexible: this.course.is_flexible,
+            currency: this.course.currency,
+            price: this.course.price
+          };
+          const settingsSnapshot = this.buildCartSettingsSnapshot();
+          if (settingsSnapshot) {
+            courseSnapshot.settings = settingsSnapshot;
+          }
+          const intervalsSnapshot = this.buildCartIntervalsSnapshot();
+          if (intervalsSnapshot) {
+            courseSnapshot.course_intervals = intervalsSnapshot;
+          }
           bookingUsers.push({
-            'course': this.course,
-            'client': this.selectedUser,
-            'course_date': date,
-            'group': courseGroup,
-            'subGroup': courseSubgroup,
+            'course': courseSnapshot,
+            'client': {
+              id: this.selectedUser.id,
+              first_name: this.selectedUser.first_name,
+              last_name: this.selectedUser.last_name
+            },
+              'course_date': {
+                id: date.id,
+                date: date.date,
+                hour_start: date.hour_start,
+                hour_end: date.hour_end,
+                course_interval_id: this.getCartIntervalIdForDate(date)
+              },
+            'group': { id: courseGroup.id, name: courseGroup.name },
+            'subGroup': { id: courseSubgroup.id, name: courseSubgroup.name },
             'school_id': this.schoolData.id,
             'client_id': this.selectedUser.id,
             'price': this.course.price,
@@ -1370,50 +1543,64 @@ export class CourseComponent implements OnInit {
         }
       },
       (error) => {
-        let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
-        let cart: any = {};
-        if (cartStorage) cart = JSON.parse(cartStorage);
-        if (!cart[this.course.id]) cart[this.course.id] = {};
-        if (this.course.course_type === 2) {
-          const selectedUserIds = this.selectedUserMultiple.map(user => user.id).join('-');
-          const isAnyUserReserved = selectedUserIds.split('-').some(id => {
-            const idArray = id.split('-');
-            return idArray.some(singleId => {
-              const keys = Object.keys(cart[this.course.id]);
-              return keys.some(key => {
-                const userCourseIds = key.split('-');
-                const hasUserOverlap = userCourseIds.includes(singleId);
-                if (hasUserOverlap) {
-                  let course_date = this.findMatchingCourseDate();
-                  const userBookings = cart[this.course.id][key];
-                  return userBookings.some((booking: any) => booking.course_date_id === course_date.id);
-                }
-                return false;
-              });
-            });
-          });
+        console.error('Overlap check error - Full object:', error);
+        console.log('Error.error:', error.error);
+        console.log('Error.errors:', error.errors);
+        console.log('Direct access:', error?.errors?.overlaps);
 
-          if (!isAnyUserReserved) {
-            if (!cart[this.course.id][selectedUserIds]) cart[this.course.id][selectedUserIds] = [];
-            cart[this.course.id][selectedUserIds].push(...bookingUsers);
-            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-            this.cartService.carData.next(cart);
-            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-          } else {
-            this.snackbar.open(this.translateService.instant(error.error.message), 'OK', { duration: 3000 });
-          }
-        } else {
-          if (!cart[this.course.id][this.selectedUser.id]) {
-            cart[this.course.id][this.selectedUser.id] = [];
-            cart[this.course.id][this.selectedUser.id].push(...bookingUsers);
-            localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cart));
-            this.cartService.carData.next(cart);
-            this.snackbar.open(this.translateService.instant('text_go_to_cart'), 'OK', { duration: 3000 });
-          } else {
-            this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
-          }
+        // Show detailed error message with overlap information if available
+        let errorMessage = 'snackbar.booking.overlap';
+
+        // Try different paths to access overlaps
+        let overlaps = null;
+
+        if (error?.errors?.overlaps && Array.isArray(error.errors.overlaps)) {
+          overlaps = error.errors.overlaps;
+          console.log('Found overlaps in error.errors.overlaps:', overlaps);
+        } else if (error?.error?.errors?.overlaps && Array.isArray(error.error.errors.overlaps)) {
+          overlaps = error.error.errors.overlaps;
+          console.log('Found overlaps in error.error.errors.overlaps:', overlaps);
         }
-        this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+
+        // If we found overlaps, format and display them
+        if (overlaps && overlaps.length > 0) {
+          const overlapDetails = overlaps.map((o: any) => {
+            const formattedDate = new Date(o.date).toLocaleDateString('fr-FR');
+
+            // Get translated course name
+            let courseName = o.course_name || 'N/A';
+            if (o.course_translations) {
+              const translations = typeof o.course_translations === 'string'
+                ? JSON.parse(o.course_translations)
+                : o.course_translations;
+
+              const currentLang = this.translateService.currentLang;
+              if (translations && translations[currentLang] && translations[currentLang].name) {
+                courseName = translations[currentLang].name;
+              }
+            }
+
+            return `\n• ${courseName}\n  ${formattedDate} ${o.hour_start}-${o.hour_end}`;
+          }).join('');
+
+          console.log('Formatted overlap details:', overlapDetails);
+
+          this.snackbar.open(
+            this.translateService.instant(errorMessage) + overlapDetails,
+            'OK',
+            { duration: 8000 }
+          );
+          return;
+        }
+
+        console.log('No overlaps found, showing generic message');
+
+        // Show generic overlap message
+        this.snackbar.open(
+          this.translateService.instant(errorMessage),
+          'OK',
+          { duration: 3000 }
+        );
       },
       () => {
         this.goTo('/' + this.schoolData.slug + '/cart/')
@@ -1805,16 +1992,6 @@ export class CourseComponent implements OnInit {
   selectDate(checked: boolean, date: any, intervalId?: IntervalIdentifier) {
     const normalizedIntervalId = intervalId !== undefined ? this.normalizeIntervalId(intervalId) : null;
 
-    console.log('DEBUG: selectDate', {
-      checked,
-      date,
-      intervalId: normalizedIntervalId,
-      hasIntervals: this.hasIntervals(),
-      selectedDates: this.selectedDates,
-      mustBeConsecutive: this.hasIntervals() ? this.mustBeConsecutive(normalizedIntervalId) : this.mustBeConsecutive(),
-      mustStartFromFirst: this.hasIntervals() ? this.mustStartFromFirst(normalizedIntervalId) : this.mustStartFromFirst()
-    });
-
     if (normalizedIntervalId && this.isPackageInterval(normalizedIntervalId)) {
       return;
     }
@@ -1824,17 +2001,21 @@ export class CourseComponent implements OnInit {
       if (this.hasIntervals() && normalizedIntervalId) {
         const valid = this.validateDateSelection(date, normalizedIntervalId);
         if (!valid) {
-          console.log('DEBUG: Date selection invalid', this.dateSelectionError);
           return;
         }
       } else if (!this.hasIntervals()) {
         const valid = this.validateDateSelectionNoInterval(date);
         if (!valid) {
-          console.log('DEBUG: Date selection invalid (no interval)', this.dateSelectionError);
           return;
         }
       }
       this.selectedDates.push(date);
+
+      // Guardar el intervalo asociado a esta fecha
+      if (normalizedIntervalId) {
+        const dateKey = date?.date ?? date;
+        this.dateToIntervalMap.set(dateKey, normalizedIntervalId);
+      }
     } else if (!checked) {
       if (this.hasIntervals() && normalizedIntervalId) {
         const valid = this.validateDateDeselection(date, normalizedIntervalId);
@@ -1849,6 +2030,9 @@ export class CourseComponent implements OnInit {
       }
       if (index >= 0) {
         this.selectedDates.splice(index, 1);
+        // Remover del mapa también
+        const dateKey = date?.date ?? date;
+        this.dateToIntervalMap.delete(dateKey);
       }
     }
 
@@ -1933,6 +2117,99 @@ export class CourseComponent implements OnInit {
     return this.getAvailableDiscounts().length > 0;
   }
 
+  // Obtener descuentos disponibles para un intervalo específico
+  getIntervalDiscounts(intervalId: string | null): any[] {
+    if (!intervalId) {
+      return [];
+    }
+
+    // Si usa descuentos globales, retornar esos
+    if (!this.course?.use_interval_discounts && this.course?.discounts) {
+      try {
+        const discountsStr = typeof this.course.discounts === 'string'
+          ? this.course.discounts
+          : JSON.stringify(this.course.discounts);
+        const discounts = JSON.parse(discountsStr);
+        if (Array.isArray(discounts)) {
+          return discounts.map(d => ({
+            dates: d.date || d.days || d.dates,
+            value: d.discount || d.value,
+            type: d.type === 2 || d.type === 'fixed' ? 'fixed' : 'percentage'
+          })).sort((a, b) => a.dates - b.dates);
+        }
+      } catch (error) {
+        console.error('Error parsing global discounts:', error);
+      }
+      return [];
+    }
+
+    // Si no usa descuentos por intervalo, buscar en settings
+    const settings = this.getCourseSettings();
+    if (settings?.intervals) {
+      const interval = settings.intervals.find((i: any) => String(i.id) === String(intervalId));
+      if (interval?.discounts && Array.isArray(interval.discounts)) {
+        return interval.discounts.map((d: any) => ({
+          dates: d.date || d.days || d.dates,
+          value: d.discount || d.value,
+          type: d.type === 2 || d.type === 'fixed' ? 'fixed' : 'percentage'
+        })).sort((a: any, b: any) => a.dates - b.dates);
+      }
+    }
+
+    return [];
+  }
+
+  // Obtener el descuento aplicado actualmente para un intervalo
+  getAppliedIntervalDiscount(intervalId: string | null): any | null {
+    if (!intervalId) {
+      return null;
+    }
+
+    const selectedDatesInInterval = this.selectedDates.filter(date =>
+      this.getIntervalForDate(date) === intervalId
+    );
+    const daysCount = selectedDatesInInterval.length;
+
+    if (daysCount === 0) {
+      return null;
+    }
+
+    const discounts = this.getIntervalDiscounts(intervalId);
+    if (discounts.length === 0) {
+      return null;
+    }
+
+    // Encontrar el descuento aplicable más alto
+    let appliedDiscount = null;
+    for (const discount of discounts) {
+      if (daysCount >= discount.dates) {
+        appliedDiscount = discount;
+      }
+    }
+
+    return appliedDiscount;
+  }
+
+  // Obtener el próximo descuento alcanzable para un intervalo
+  getNextIntervalDiscount(intervalId: string | null): any | null {
+    if (!intervalId) {
+      return null;
+    }
+
+    const selectedDatesInInterval = this.selectedDates.filter(date =>
+      this.getIntervalForDate(date) === intervalId
+    );
+    const daysCount = selectedDatesInInterval.length;
+
+    const discounts = this.getIntervalDiscounts(intervalId);
+    if (discounts.length === 0) {
+      return null;
+    }
+
+    // Encontrar el siguiente descuento no alcanzado
+    return discounts.find(d => d.dates > daysCount) || null;
+  }
+
   updateCollectivePrice() {
     const basePrice = parseFloat(this.course?.price || 0);
     const selectedCount = this.selectedDates?.length || 0;
@@ -1941,6 +2218,7 @@ export class CourseComponent implements OnInit {
     this.originalPrice = collectivePrice; // Guardar precio original
     this.appliedDiscountAmount = 0; // Reset
     this.hasActiveDiscount = false; // Reset
+    this.discountsByInterval = []; // Reset
 
     if (selectedCount > 0) {
       const dateEntries = this.selectedDates.map(dateStr => {
@@ -1951,12 +2229,37 @@ export class CourseComponent implements OnInit {
         };
       });
 
-      const discountAmount = this.bookingService.calculateMultiDateDiscount(this.course, dateEntries);
+      // Calcular descuentos por intervalo
+      const discountBreakdown = this.bookingService.calculateDiscountBreakdown(this.course, dateEntries);
 
-      if (discountAmount > 0) {
-        this.appliedDiscountAmount = discountAmount;
-        this.hasActiveDiscount = true;
-        collectivePrice -= discountAmount;
+      if (discountBreakdown && discountBreakdown.length > 0) {
+        const settings = this.getCourseSettings();
+
+        this.discountsByInterval = discountBreakdown.map(item => {
+          // Buscar nombre del intervalo
+          let intervalName = 'Intervalo ' + item.intervalId;
+          if (settings?.intervals) {
+            const interval = settings.intervals.find((i: any) => String(i.id) === String(item.intervalId));
+            if (interval && interval.name) {
+              intervalName = interval.name;
+            }
+          }
+
+          return {
+            intervalId: item.intervalId,
+            intervalName: intervalName,
+            discountAmount: item.discountAmount,
+            discountPercentage: item.discountPercentage || 0
+          };
+        });
+
+        const totalDiscount = discountBreakdown.reduce((sum, item) => sum + item.discountAmount, 0);
+
+        if (totalDiscount > 0) {
+          this.appliedDiscountAmount = totalDiscount;
+          this.hasActiveDiscount = true;
+          collectivePrice -= totalDiscount;
+        }
       }
     }
 
@@ -2193,11 +2496,12 @@ export class CourseComponent implements OnInit {
     }
 
     if (this.selectedIntervalId) {
-      this.clearDatesFromInterval(this.selectedIntervalId);
+      // No limpiar fechas del intervalo anterior - permitir selección múltiple
+      // this.clearDatesFromInterval(this.selectedIntervalId);
     }
 
     this.selectedIntervalId = normalizedId;
-    this.selectedDates = [];
+    // Eliminado: this.selectedDates = []; - Mantener fechas de otros intervalos
     this.dateSelectionError = '';
 
     if (this.isPackageInterval(normalizedId)) {
@@ -2208,14 +2512,20 @@ export class CourseComponent implements OnInit {
 
       if (packageDates.length === 0) {
         this.selectedDates = [];
+        this.dateToIntervalMap.clear();
         this.syncExtrasWithSelectedDates();
         this.dateSelectionError = this.translateService.instant('no_future_dates');
       } else if (packageDates.length !== availableFutureDates.length) {
         this.selectedDates = [];
+        this.dateToIntervalMap.clear();
         this.syncExtrasWithSelectedDates();
         this.dateSelectionError = this.translateService.instant('booking_package_requires_all_dates');
       } else {
         this.selectedDates = this.sortDateStrings(packageDates);
+        // Poblar el mapa con todas las fechas del paquete
+        packageDates.forEach(date => {
+          this.dateToIntervalMap.set(date, normalizedId);
+        });
         this.syncExtrasWithSelectedDates();
       }
     } else {
@@ -2493,13 +2803,13 @@ export class CourseComponent implements OnInit {
       const day = new Date(item.date).getDay();
       uniqueDays.add(day);
     });
-    const dayNames: string[] = Array.from(uniqueDays).map(day => this.Week[day]);
+    const dayKeys = ['day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat'];
+    const dayNames: string[] = Array.from(uniqueDays).map(day => this.translateService.instant(dayKeys[day]));
     if (dayNames.length === 0) return "";
     if (dayNames.length === 1) return dayNames[0];
     const lastDay = dayNames.pop();
-    return dayNames.join(", ") + " y " + lastDay;
+    return dayNames.join(", ") + " " + this.translateService.instant('and') + " " + lastDay;
   }
-  Week: string[] = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"]
 
   findMaxHourEnd(): string {
     const maxHourStart = Math.max(
@@ -2575,35 +2885,33 @@ export class CourseComponent implements OnInit {
 
   findMatchingCourseDates() {
 
-    const normalizedIntervalId = this.hasIntervals() ? this.normalizeIntervalId(this.selectedIntervalId) : null;
-
+    // NO filtrar por intervalo activo - queremos TODAS las fechas seleccionadas
+    // independientemente del intervalo al que pertenezcan
     const selectedSet = new Set(this.selectedDates);
-
-
 
     const matchingDates = this.course.course_dates
 
       .filter((courseDate: any) => {
 
-        if (!selectedSet.has(courseDate.date)) {
-
-          return false;
-
-        }
-
-        if (normalizedIntervalId) {
-
-          return this.dateBelongsToInterval(courseDate, normalizedIntervalId);
-
-        }
-
-        return true;
+        // Solo verificar si la fecha está en selectedDates
+        return selectedSet.has(courseDate.date);
 
       })
 
+      .map((courseDate: any) => {
+        // Crear una copia del objeto para no mutar el original
+        const dateCopy = { ...courseDate };
+
+        // Si tenemos el intervalo en el mapa, asignarlo
+        const intervalFromMap = this.dateToIntervalMap.get(courseDate.date);
+        if (intervalFromMap) {
+          dateCopy.course_interval_id = intervalFromMap;
+        }
+
+        return dateCopy;
+      })
+
       .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-
 
     return matchingDates;
 
@@ -2702,12 +3010,72 @@ export class CourseComponent implements OnInit {
   // Función para obtener el día de la semana de una fecha específica
   getWeekday(date: string): string {
     const dateObj = new Date(date);
-    return this.Week[dateObj.getDay()];
+    return this.getWeekdayName(dateObj.getDay());
+  }
+
+  // Agrupar fechas seleccionadas por intervalo para el resumen
+  getSelectedDatesByInterval(): any[] {
+    if (!this.course?.is_flexible || !this.hasIntervals() || this.selectedDates.length === 0) {
+      return [];
+    }
+
+    const intervals = new Map<string, any>();
+
+    this.selectedDates.forEach((dateStr: string) => {
+      const intervalId = this.dateToIntervalMap.get(dateStr);
+      if (!intervalId) return;
+
+      const intervalIdStr = String(intervalId);
+
+      if (!intervals.has(intervalIdStr)) {
+        // Buscar nombre del intervalo
+        const settings = this.getCourseSettings();
+        let intervalName = 'Intervalo ' + intervalIdStr;
+
+        if (settings?.intervals) {
+          const intervalConfig = settings.intervals.find((i: any) => String(i.id) === intervalIdStr);
+          if (intervalConfig && intervalConfig.name) {
+            intervalName = intervalConfig.name;
+          }
+        }
+
+        intervals.set(intervalIdStr, {
+          id: intervalIdStr,
+          name: intervalName,
+          dates: []
+        });
+      }
+
+      intervals.get(intervalIdStr).dates.push(dateStr);
+    });
+
+    return Array.from(intervals.values());
+  }
+
+  private getCartIntervalIdForDate(date: any): number | null {
+    if (!date) {
+      return null;
+    }
+
+    const dateKey = date?.date ?? date;
+    const mapped = this.dateToIntervalMap?.get(dateKey);
+    if (mapped !== undefined && mapped !== null) {
+      const numeric = Number(mapped);
+      return isNaN(numeric) ? null : numeric;
+    }
+
+    if (date?.course_interval_id !== undefined && date?.course_interval_id !== null) {
+      const numeric = Number(date.course_interval_id);
+      return isNaN(numeric) ? null : numeric;
+    }
+
+    return null;
   }
 
   // Función para limpiar todas las fechas seleccionadas
   clearAllDates(): void {
     this.selectedDates = [];
+    this.dateToIntervalMap.clear();
     this.updatePrice();
   }
 

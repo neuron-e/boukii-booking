@@ -111,6 +111,18 @@ export class BookingService extends ApiService {
       return 0;
     }
 
+    // Primero verificar si hay descuentos por intervalo en settings.intervals
+    const settings = typeof course.settings === 'string' ? JSON.parse(course.settings) : course.settings;
+    if (settings?.intervals && Array.isArray(settings.intervals)) {
+      const hasIntervalDiscounts = settings.intervals.some((interval: any) =>
+        interval.discounts && Array.isArray(interval.discounts) && interval.discounts.length > 0
+      );
+
+      if (hasIntervalDiscounts) {
+        return this.calculateDiscountFromSettings(course, selectedDates, basePrice, settings);
+      }
+    }
+
     // Usar nueva estructura si use_interval_discounts está activo
     if (course?.use_interval_discounts && course?.interval_discounts) {
       return this.calculateMultiDateDiscountNew(course, selectedDates, basePrice);
@@ -226,6 +238,103 @@ export class BookingService extends ApiService {
     }
 
     return Number(discountTotal.toFixed(2));
+  }
+
+  calculateDiscountBreakdown(course: any, selectedDates: any[]): any[] {
+    if (!course || !Array.isArray(selectedDates) || selectedDates.length === 0) {
+      return [];
+    }
+
+    const basePrice = parseFloat(course.price || 0);
+    if (!basePrice) {
+      return [];
+    }
+
+    const settings = typeof course.settings === 'string' ? JSON.parse(course.settings) : course.settings;
+    if (!settings?.intervals || !Array.isArray(settings.intervals)) {
+      return [];
+    }
+
+    // Preparar configuración de descuentos por intervalo
+    const intervalDiscountConfigs = new Map<string, any[]>();
+    settings.intervals.forEach((interval: any) => {
+      if (interval.discounts && Array.isArray(interval.discounts) && interval.discounts.length > 0) {
+        intervalDiscountConfigs.set(String(interval.id), interval.discounts);
+      }
+    });
+
+    if (intervalDiscountConfigs.size === 0) {
+      return [];
+    }
+
+    // Agrupar fechas por intervalo y contar
+    const intervalCounters = new Map<string, number>();
+    const intervalDiscounts = new Map<string, number>();
+    const intervalPercentages = new Map<string, number>();
+
+    const dateEntries = selectedDates
+      .map(date => {
+        const dateStr = typeof date === 'string' ? date : (date?.date ?? date);
+        const intervalId = date?.course_interval_id !== undefined && date?.course_interval_id !== null
+          ? String(date.course_interval_id)
+          : null;
+        return { date: dateStr, intervalId };
+      })
+      .filter(entry => !!entry.date && !!entry.intervalId)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Calcular descuento por cada fecha
+    for (const entry of dateEntries) {
+      if (!entry.intervalId) continue;
+
+      const intervalKey = entry.intervalId;
+      const currentCount = (intervalCounters.get(intervalKey) || 0) + 1;
+      intervalCounters.set(intervalKey, currentCount);
+
+      const discountRules = intervalDiscountConfigs.get(intervalKey);
+      if (!discountRules || discountRules.length === 0) {
+        continue;
+      }
+
+      const applicableDiscount = discountRules
+        .filter((d: any) => currentCount >= (d.dates || d.days || d.date || 0))
+        .sort((a: any, b: any) => (b.dates || b.days || b.date || 0) - (a.dates || a.days || a.date || 0))[0];
+
+      if (!applicableDiscount) {
+        continue;
+      }
+
+      const discountValue = applicableDiscount.value || applicableDiscount.discount || 0;
+      const discountType = applicableDiscount.type === 2 || applicableDiscount.type === 'fixed' ? 'fixed' : 'percentage';
+
+      let discountAmount = 0;
+      if (discountType === 'percentage') {
+        discountAmount = basePrice * (discountValue / 100);
+        intervalPercentages.set(intervalKey, discountValue);
+      } else {
+        discountAmount = discountValue;
+      }
+
+      const currentDiscount = intervalDiscounts.get(intervalKey) || 0;
+      intervalDiscounts.set(intervalKey, currentDiscount + discountAmount);
+    }
+
+    // Convertir a array de resultados
+    const breakdown: any[] = [];
+    intervalDiscounts.forEach((discountAmount, intervalId) => {
+      breakdown.push({
+        intervalId: intervalId,
+        discountAmount: Number(discountAmount.toFixed(2)),
+        discountPercentage: intervalPercentages.get(intervalId) || 0
+      });
+    });
+
+    return breakdown;
+  }
+
+  private calculateDiscountFromSettings(course: any, selectedDates: any[], basePrice: number, settings: any): number {
+    const breakdown = this.calculateDiscountBreakdown(course, selectedDates);
+    return breakdown.reduce((sum, item) => sum + item.discountAmount, 0);
   }
 
   private isDateInRange(date: string, startDate: string, endDate: string): boolean {
