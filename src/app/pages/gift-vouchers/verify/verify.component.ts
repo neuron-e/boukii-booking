@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { GiftVoucherService } from '../../../services/gift-voucher.service';
 import { GiftVoucherVerifyResponse } from '../../../interface/gift-voucher';
+import {
+  buildGiftVoucherLink,
+  extractGiftVoucherSlug
+} from '../gift-voucher-routing.utils';
 
 /**
  * Component: GiftVoucherVerifyComponent
@@ -17,13 +22,21 @@ import { GiftVoucherVerifyResponse } from '../../../interface/gift-voucher';
   templateUrl: './verify.component.html',
   styleUrls: ['./verify.component.scss']
 })
-export class GiftVoucherVerifyComponent {
+export class GiftVoucherVerifyComponent implements OnInit {
   code = '';
   result: GiftVoucherVerifyResponse | null = null;
   loading = false;
   error: string | null = null;
+  private giftVoucherSlug: string | null = null;
 
-  constructor(private giftVoucherService: GiftVoucherService) {}
+  constructor(
+    private giftVoucherService: GiftVoucherService,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.giftVoucherSlug = extractGiftVoucherSlug(this.route);
+  }
 
   /**
    * Verifica un código de gift voucher
@@ -38,7 +51,7 @@ export class GiftVoucherVerifyComponent {
     this.error = null;
     this.result = null;
 
-    this.giftVoucherService.verifyPublic(this.code.trim()).subscribe({
+    this.giftVoucherService.verifyPublic(this.code.trim(), this.giftVoucherSlug ?? undefined).subscribe({
       next: (response) => {
         this.result = response;
         this.loading = false;
@@ -73,4 +86,9 @@ export class GiftVoucherVerifyComponent {
       day: 'numeric'
     });
   }
+
+  getGiftVoucherLink(child: string): string {
+    return buildGiftVoucherLink(this.giftVoucherSlug, child);
+  }
+
 }

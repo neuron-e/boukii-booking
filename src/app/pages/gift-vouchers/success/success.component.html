@@ -9,6 +9,13 @@
         <h1 class="mb-3">{{ 'gift_vouchers.success_title' | translate }}</h1>
         <p class="lead text-muted mb-4">{{ 'gift_vouchers.success_subtitle' | translate }}</p>
 
+        <div *ngIf="loading" class="alert alert-info mb-4">
+          {{ 'gift_vouchers.summary_loading' | translate }}
+        </div>
+        <div *ngIf="errorKey" class="alert alert-warning mb-4">
+          {{ errorKey | translate }}
+        </div>
+
         <div class="card mb-4">
           <div class="card-body">
             <div class="voucher-details">
@@ -22,7 +29,30 @@
 
               <div class="info-box">
                 <i class="bi bi-envelope-check text-primary me-2"></i>
-                <span>{{ 'gift_vouchers.email_sent' | translate }}</span>
+                <span>
+                  {{
+                    'gift_vouchers.email_sent' | translate:{
+                      recipient: recipientName || ('gift_vouchers.recipient_default' | translate)
+                    }
+                  }}
+                </span>
+              </div>
+
+              <div class="info-box" *ngIf="senderName">
+                <i class="bi bi-person-heart text-primary me-2"></i>
+                <span>{{ 'gift_vouchers.sent_by' | translate:{ sender: senderName } }}</span>
+              </div>
+
+              <div class="info-box" *ngIf="voucherDetails">
+                <i class="bi bi-cash-stack text-primary me-2"></i>
+                <span>
+                  {{
+                    'gift_vouchers.amount_paid' | translate:{
+                      amount: ((voucherDetails?.amount ?? voucherDetails?.balance ?? 0) | number:'1.2-2'),
+                      currency: voucherDetails?.currency || 'CHF'
+                    }
+                  }}
+                </span>
               </div>
 
               <div class="info-box">
@@ -52,11 +82,11 @@
         </div>
 
         <div class="action-buttons">
-          <a [routerLink]="['/']" class="btn btn-primary btn-lg me-2">
+          <a [routerLink]="getSchoolHomeLink()" class="btn btn-primary btn-lg me-2">
             <i class="bi bi-house-door me-2"></i>
             {{ 'common.go_home' | translate }}
           </a>
-          <a [routerLink]="['/gift-vouchers/purchase']" class="btn btn-outline-primary btn-lg">
+          <a [routerLink]="getGiftVoucherLink('purchase')" class="btn btn-outline-primary btn-lg">
             <i class="bi bi-plus-circle me-2"></i>
             {{ 'gift_vouchers.buy_another' | translate }}
           </a>

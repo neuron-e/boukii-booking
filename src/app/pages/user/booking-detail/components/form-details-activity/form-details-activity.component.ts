@@ -1,7 +1,16 @@
+﻿import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import * as moment from 'moment';
 import {ApiCrudService} from '../../../../../services/crud.service';
@@ -11,7 +20,22 @@ import {UtilsService} from '../../../../../services/utils.service';
 @Component({
   selector: 'booking-form-details-activity',
   templateUrl: './form-details-activity.component.html',
-  styleUrls: ['./form-details-activity.component.scss']
+  styleUrls: ['./form-details-activity.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatIconModule,
+    MatButtonModule,
+    MatNativeDateModule,
+    TranslateModule
+  ]
 })
 export class FormDetailsActivityComponent implements OnInit {
   @Input() course: any;
@@ -53,8 +77,8 @@ export class FormDetailsActivityComponent implements OnInit {
   season: any = [];
   holidays: any = [];
   myHolidayDates = [];
-  currentGroups: any[] = []; // Para almacenar el grupo actual de cada índice
-  filteredExtras: any[][] = []; // Para almacenar extras filtrados por índice
+  currentGroups: any[] = []; // Para almacenar el grupo actual de cada ├¡ndice
+  filteredExtras: any[][] = []; // Para almacenar extras filtrados por ├¡ndice
 
 
   constructor(
@@ -70,7 +94,7 @@ export class FormDetailsActivityComponent implements OnInit {
   ngOnChanges() {
     // Reacciona cuando el Input cambia
     if (this.addParticipantEvent) {
-      // this.addCourseDate(); // Llamamos a la función para añadir la fecha
+      // this.addCourseDate(); // Llamamos a la funci├│n para a├▒adir la fecha
     }
   }
 
@@ -133,7 +157,7 @@ export class FormDetailsActivityComponent implements OnInit {
    // const selectedGroupName = this.formArray.at(index).get('groupName').value;
     /*const selectedGroup = this.course.settings.groups.find(group => group.groupName === selectedGroupName);
 
-    // Actualiza el grupo actual para ese índice
+    // Actualiza el grupo actual para ese ├¡ndice
     this.currentGroups[index] = selectedGroup;
 
     // Filtrar los extras para ese grupo
@@ -150,7 +174,7 @@ export class FormDetailsActivityComponent implements OnInit {
       groupName: [initialData ? initialData.groupName : '', Validators.required],
       paxes: [initialData ? initialData.paxes : 1, [Validators.required, Validators.min(1)]],
       pricePerPax: [initialData ? initialData.pricePerPax : 0, Validators.required],
-      price: [0], // Asegúrate de incluir este campo
+      price: [0], // Aseg├║rate de incluir este campo
       availableExtras: [[]],
       extras: [[]],
       totalExtraPrice: [0], // Campo para almacenar el precio total de extras
@@ -161,7 +185,7 @@ export class FormDetailsActivityComponent implements OnInit {
   removeGroup(courseIndex: number): void {
     const groupsArray = this.getGroupsArray(courseIndex);
     if (groupsArray.length > 1) {
-      groupsArray.removeAt(groupsArray.length - 1); // Elimina el último grupo, por ejemplo.
+      groupsArray.removeAt(groupsArray.length - 1); // Elimina el ├║ltimo grupo, por ejemplo.
     }
   }
 
@@ -200,12 +224,12 @@ export class FormDetailsActivityComponent implements OnInit {
   }
 
   updateGroupPrice(groupIndex: number): void {
-    const courseIndex = 0; // Asumiendo que estás trabajando con el primer curso (índice 0)
+    const courseIndex = 0; // Asumiendo que est├ís trabajando con el primer curso (├¡ndice 0)
     const group = this.getGroupsArray(courseIndex).at(groupIndex);
 
     // Obtener valores necesarios
     const paxes = group.get('paxes').value;
-    const pricePerPax = group.get('price').value; // Asegúrate de que este campo esté definido en tu FormGroup
+    const pricePerPax = group.get('price').value; // Aseg├║rate de que este campo est├® definido en tu FormGroup
     const extras = group.get('extras').value;
 
     // Calcular el precio total de los extras
@@ -216,7 +240,7 @@ export class FormDetailsActivityComponent implements OnInit {
 
     // Establecer valores en el FormGroup
     group.get('totalExtraPrice').setValue(totalExtraPrice);
-    group.get('totalPrice').setValue(totalPrice); // Asegúrate de que este campo esté definido en tu FormGroup
+    group.get('totalPrice').setValue(totalPrice); // Aseg├║rate de que este campo est├® definido en tu FormGroup
   }
 
 
@@ -277,3 +301,4 @@ export class FormDetailsActivityComponent implements OnInit {
     return this.stepForm.get('course_dates').get(courseIndex.toString()).get('groups') as FormArray;
   }
 }
+

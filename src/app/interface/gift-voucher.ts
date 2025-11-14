@@ -288,8 +288,10 @@ export interface GiftVoucherPurchaseRequest {
   recipient_email: string;
   recipient_phone?: string;
   recipient_locale?: string;
+  sender_name?: string;
   personal_message?: string;
   template?: string;
+  delivery_date?: string;
 }
 
 /**
@@ -310,7 +312,14 @@ export interface GiftVoucherPurchaseResponse {
  */
 export interface GiftVoucherVerifyResponse {
   valid: boolean;
+  id?: number;
+  code?: string;
+  amount?: number;
   balance?: number;
+  currency?: string;
   expires_at?: string;
   status?: string;
+  is_expired?: boolean;
+  recipient_name?: string;
+  sender_name?: string;
 }

@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { GiftVoucherService } from '../../../services/gift-voucher.service';
 import { SchoolService } from '../../../services/school.service';
 import {
-  CreateGiftVoucherRequest,
+  GiftVoucherPurchaseRequest,
   GIFT_VOUCHER_TEMPLATES,
   GiftVoucherTemplateInfo
 } from '../../../interface/gift-voucher';
@@ -95,6 +95,8 @@ export class GiftVoucherPurchaseComponent implements OnInit {
       amount: [50, [Validators.required, Validators.min(10), Validators.max(1000)]],
       currency: ['CHF', Validators.required],
       school_id: [null, Validators.required],
+      buyer_name: ['', [Validators.required, Validators.maxLength(255)]],
+      buyer_email: ['', [Validators.required, Validators.email]],
       recipient_name: ['', [Validators.required, Validators.maxLength(255)]],
       recipient_email: ['', [Validators.required, Validators.email]],
       sender_name: ['', [Validators.required, Validators.maxLength(255)]],
@@ -109,20 +111,19 @@ export class GiftVoucherPurchaseComponent implements OnInit {
   private loadSchools(): void {
     this.schoolsLoading.set(true);
     this.schoolService.getSchools().subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.schools.set(response.data);
+      next: (schools) => {
+        const payload = Array.isArray(schools) ? schools : [];
+        this.schools.set(payload);
 
-          // If there's only one school or slug matches, pre-select it
-          if (response.data.length === 1) {
-            this.purchaseForm.patchValue({ school_id: response.data[0].id });
-          } else if (this.slug) {
-            const school = response.data.find((s: any) => s.slug === this.slug);
-            if (school) {
-              this.purchaseForm.patchValue({ school_id: school.id });
-            }
+        if (payload.length === 1 && !this.purchaseForm.get('school_id')?.value) {
+          this.purchaseForm.patchValue({ school_id: payload[0].id });
+        } else if (this.slug) {
+          const school = payload.find((s: any) => s.slug === this.slug);
+          if (school) {
+            this.purchaseForm.patchValue({ school_id: school.id });
           }
         }
+
         this.schoolsLoading.set(false);
       },
       error: (err) => {
@@ -201,15 +202,18 @@ export class GiftVoucherPurchaseComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const formData: CreateGiftVoucherRequest = {
-      amount: this.purchaseForm.value.amount,
-      currency: this.purchaseForm.value.currency,
-      school_id: this.purchaseForm.value.school_id,
-      recipient_name: this.purchaseForm.value.recipient_name,
-      recipient_email: this.purchaseForm.value.recipient_email,
-      sender_name: this.purchaseForm.value.sender_name,
-      personal_message: this.purchaseForm.value.personal_message,
-      template: this.purchaseForm.value.template
+    const formValue = this.purchaseForm.value;
+    const formData: GiftVoucherPurchaseRequest = {
+      amount: formValue.amount,
+      currency: formValue.currency,
+      school_id: formValue.school_id,
+      buyer_name: formValue.buyer_name,
+      buyer_email: formValue.buyer_email,
+      recipient_name: formValue.recipient_name,
+      recipient_email: formValue.recipient_email,
+      sender_name: formValue.sender_name,
+      personal_message: formValue.personal_message || undefined,
+      template: formValue.template
     };
 
     // Call the public API endpoint to create purchase

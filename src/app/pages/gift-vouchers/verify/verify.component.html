@@ -90,7 +90,7 @@
 
       <!-- Link a compra -->
       <div class="mt-4 text-center">
-        <a [routerLink]="['/gift-vouchers/purchase']" class="btn btn-link">
+        <a [routerLink]="getGiftVoucherLink('purchase')" class="btn btn-link">
           <i class="bi bi-arrow-left me-2"></i>
           {{ 'gift_vouchers.purchase_link' | translate }}
         </a>

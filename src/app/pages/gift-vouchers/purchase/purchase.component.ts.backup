@@ -1,16 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { GiftVoucherService } from '../../../services/gift-voucher.service';
 import { SchoolService } from '../../../services/school.service';
 import { GiftVoucherPurchaseRequest, GiftVoucherPurchaseResponse } from '../../../interface/gift-voucher';
 import { Subscription } from 'rxjs';
-import {
-  buildGiftVoucherCommands,
-  buildGiftVoucherLink,
-  extractGiftVoucherSlug
-} from '../gift-voucher-routing.utils';
 
 /**
  * Component: GiftVoucherPurchaseComponent
@@ -32,15 +27,12 @@ export class GiftVoucherPurchaseComponent implements OnInit, OnDestroy {
   predefinedAmounts = [50, 100, 150, 200];
   selectedAmount: number | null = 50;
   private subscriptions = new Subscription();
-  private giftVoucherSlug: string | null = null;
-  giftVoucherBaseLink = '/gift-vouchers';
 
   constructor(
     private fb: UntypedFormBuilder,
     private giftVoucherService: GiftVoucherService,
     private schoolService: SchoolService,
     private router: Router,
-    private route: ActivatedRoute,
     private translate: TranslateService
   ) {
     this.purchaseForm = this.fb.group({
@@ -61,8 +53,6 @@ export class GiftVoucherPurchaseComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setupValueChangeSubscriptions();
     this.loadSchools();
-    this.giftVoucherSlug = extractGiftVoucherSlug(this.route);
-    this.giftVoucherBaseLink = buildGiftVoucherLink(this.giftVoucherSlug, '');
   }
 
   ngOnDestroy(): void {
@@ -144,27 +134,19 @@ export class GiftVoucherPurchaseComponent implements OnInit, OnDestroy {
     this.giftVoucherService.purchasePublic(purchaseData).subscribe({
       next: (response: GiftVoucherPurchaseResponse) => {
         if (response?.success) {
-          // Check if payment URL is provided (Payrexx integration)
-          if (response.data?.payment_url) {
-            // Redirect to Payrexx payment gateway
-            window.location.href = response.data.payment_url;
-          } else {
-            // Fallback: navigate to success page (for direct/test purchases)
-            const voucherId = response.data?.gift_voucher?.id;
-            const voucherCode = response.data?.voucher_code;
+          const voucherId = response.data?.gift_voucher?.id;
+          const voucherCode = response.data?.voucher_code;
 
-            this.router.navigate(this.getGiftVoucherCommands('success'), {
-              queryParams: {
-                voucher_id: voucherId,
-                code: voucherCode
-              }
-            });
-            this.loading = false;
-          }
+          this.router.navigate(['/gift-vouchers/success'], {
+            queryParams: {
+              voucher_id: voucherId,
+              code: voucherCode
+            }
+          });
         } else {
           this.error = response?.message || this.translate.instant('gift_vouchers.error_purchase');
-          this.loading = false;
         }
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error purchasing voucher:', err);
@@ -219,14 +201,6 @@ export class GiftVoucherPurchaseComponent implements OnInit, OnDestroy {
     }
 
     return this.translate.instant('gift_vouchers.error_invalid_field');
-  }
-
-  getGiftVoucherLink(child: string): string {
-    return buildGiftVoucherLink(this.giftVoucherSlug, child);
-  }
-
-  getGiftVoucherCommands(child: string): any[] {
-    return buildGiftVoucherCommands(this.giftVoucherSlug, child);
   }
 
   private setupValueChangeSubscriptions(): void {

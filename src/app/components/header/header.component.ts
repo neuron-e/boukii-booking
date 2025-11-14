@@ -135,4 +135,12 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/' + this.activatedRoute.snapshot.params['slug'] + url]);
   }
 
+  giftVoucherNavLink(): any[] {
+    const slug = this.schoolData?.data?.slug;
+    if (slug) {
+      return ['/', slug, 'gift-vouchers', 'purchase'];
+    }
+    return ['/gift-vouchers', 'purchase'];
+  }
+
 }

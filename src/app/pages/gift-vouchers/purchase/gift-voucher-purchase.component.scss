@@ -1,0 +1,270 @@
+:host {
+  display: block;
+}
+
+.gift-voucher-purchase-container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 2.5rem 1rem;
+  color: #0b0d17;
+}
+
+.purchase-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.purchase-header h1 {
+  font-size: 2.2rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.purchase-header .subtitle {
+  margin: 0.5rem auto 0;
+  color: #666b82;
+}
+
+.purchase-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.form-section,
+.preview-section {
+  background: #ffffff;
+  border: 1px solid #e3e8f5;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(11, 13, 23, 0.08);
+}
+
+.form-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #101426;
+}
+
+.form-control {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #c8cedd;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #0064f2;
+  box-shadow: 0 0 0 2px rgba(0, 100, 242, 0.15);
+}
+
+.amount-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.amount-button {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #c8cedd;
+  background: #eef2ff;
+  color: #0b0d17;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.amount-button.active {
+  background: #0064f2;
+  color: #ffffff;
+  border-color: #0050c2;
+}
+
+.amount-button:hover {
+  border-color: #0064f2;
+  transform: translateY(-1px);
+}
+
+.custom-amount-input input {
+  max-width: 180px;
+}
+
+.error-message {
+  color: #d03866;
+  font-size: 0.85rem;
+}
+
+.template-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.template-button {
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  background: #f2f4ff;
+  transition: transform 0.2s ease;
+}
+
+.template-button.active {
+  border: 1px solid #11142d;
+  transform: scale(1.03);
+}
+
+.template-button .material-icons {
+  font-size: 1.25rem;
+}
+
+.character-counter {
+  font-size: 0.8rem;
+  color: #8690a8;
+  text-align: right;
+}
+
+.alert-error {
+  background: #fff4f6;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #f7c0c8;
+  color: #a0193d;
+  font-weight: 600;
+}
+
+.btn {
+  font-weight: 700;
+  border-radius: 0.9rem;
+  padding: 0.95rem 1.25rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0064f2, #0050c2);
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.form-footer {
+  font-size: 0.85rem;
+  color: #8690a8;
+}
+
+.preview-section h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.voucher-preview-card {
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  background: #101426;
+  color: #fff;
+  min-height: 260px;
+  position: relative;
+  overflow: hidden;
+}
+
+.voucher-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voucher-icon {
+  font-size: 1.8rem;
+}
+
+.voucher-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.voucher-amount {
+  margin-top: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.voucher-amount .currency {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.voucher-amount .amount {
+  font-size: 2.3rem;
+  font-weight: 700;
+}
+
+.voucher-message {
+  margin: 1rem 0;
+}
+
+.voucher-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+.voucher-school {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.preview-info {
+  margin-top: 1.2rem;
+  font-size: 0.9rem;
+  color: #2c2c2c;
+}
+
+@media (max-width: 768px) {
+  .gift-voucher-purchase-container {
+    padding: 2rem 0.75rem;
+  }
+
+  .form-section,
+  .preview-section {
+    padding: 1.5rem;
+  }
+
+  .template-options {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+}

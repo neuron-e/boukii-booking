@@ -397,14 +397,38 @@ export class GiftVoucherService extends ApiService {
    * Compra pública de gift voucher (sin autenticación).
    */
   purchasePublic(data: GiftVoucherPurchaseRequest): Observable<GiftVoucherPurchaseResponse> {
-    const url = this.baseUrl + '/api/public/gift-vouchers/purchase';
+    const url = this.baseUrl + '/public/gift-vouchers/purchase';
     return this.http.post<GiftVoucherPurchaseResponse>(url, data);
   }
 
   /**
    */
-  verifyPublic(code: string): Observable<GiftVoucherVerifyResponse> {
-    const url = `${this.baseUrl}/api/public/gift-vouchers/verify/${code}`;
+  verifyPublic(code: string, schoolSlug?: string, voucherId?: number): Observable<GiftVoucherVerifyResponse> {
+    let url = `${this.baseUrl}/public/gift-vouchers/verify/${code}`;
+    const params = new URLSearchParams();
+
+    if (schoolSlug) {
+      params.append('school_slug', schoolSlug);
+    }
+
+    if (voucherId) {
+      params.append('voucher_id', String(voucherId));
+    }
+
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+
     return this.http.get<GiftVoucherVerifyResponse>(url);
+  }
+
+  cancelPublic(voucherId: number, code: string, schoolSlug?: string): Observable<ApiResponse> {
+    const url = `${this.baseUrl}/public/gift-vouchers/cancel`;
+    const body: any = { voucher_id: voucherId, code };
+    if (schoolSlug) {
+      body.school_slug = schoolSlug;
+    }
+    return this.http.post<ApiResponse>(url, body);
   }
 }

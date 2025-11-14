@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes, ExtraOptions } from '@angular/router';
+import { RouterModule, Routes, ExtraOptions, UrlMatchResult, UrlSegment } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { CourseComponent } from './pages/course/course.component';
 import { CartComponent } from './pages/cart/cart.component';
@@ -11,8 +11,24 @@ import {TermsComponent} from './pages/terms/terms.component';
 import {ContactComponent} from './pages/contact/contact.component';
 import {PrivacyComponent} from './pages/privacy/privacy.component';
 
+export function slugGiftVoucherMatcher(segments: UrlSegment[]): UrlMatchResult | null {
+  if (segments.length >= 2 && segments[1].path === 'gift-vouchers') {
+    return {
+      consumed: segments.slice(0, 2),
+      posParams: {
+        slug: segments[0]
+      }
+    };
+  }
+  return null;
+}
+
 const routes: Routes = [
   { path: '404', canActivate: [SlugGuard], component: PageNotFoundComponent },
+  {
+    matcher: slugGiftVoucherMatcher,
+    loadChildren: () => import('./pages/gift-vouchers/gift-vouchers.module').then(m => m.GiftVouchersModule)
+  },
   {
     path: 'gift-vouchers',
     loadChildren: () => import('./pages/gift-vouchers/gift-vouchers.module').then(m => m.GiftVouchersModule)

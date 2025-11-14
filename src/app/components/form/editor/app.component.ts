@@ -1,9 +1,21 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormGroup, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { AbstractControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AngularEditorModule } from '@kolkov/angular-editor';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-form-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AngularEditorModule,
+    MatFormFieldModule,
+    TranslateModule
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

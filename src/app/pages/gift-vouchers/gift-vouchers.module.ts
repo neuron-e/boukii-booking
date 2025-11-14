@@ -30,7 +30,7 @@ import { GiftVoucherCancelComponent } from './cancel/cancel.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule,
+    TranslateModule.forChild(),
     GiftVouchersRoutingModule
   ]
 })

@@ -63,6 +63,32 @@
           </div>
         </div>
 
+        <!-- Buyer Info -->
+        <div class="form-group">
+          <label class="form-label">{{ 'gift_vouchers.buyer_name' | translate }} *</label>
+          <input
+            type="text"
+            formControlName="buyer_name"
+            class="form-control"
+            [placeholder]="'gift_vouchers.buyer_name_placeholder' | translate"
+            maxlength="255">
+          <div *ngIf="isFieldInvalid('buyer_name')" class="error-message">
+            {{ getFieldError('buyer_name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'gift_vouchers.buyer_email' | translate }} *</label>
+          <input
+            type="email"
+            formControlName="buyer_email"
+            class="form-control"
+            [placeholder]="'gift_vouchers.buyer_email_placeholder' | translate">
+          <div *ngIf="isFieldInvalid('buyer_email')" class="error-message">
+            {{ getFieldError('buyer_email') }}
+          </div>
+        </div>
+
         <!-- Template Selection -->
         <div class="form-group">
           <label class="form-label">{{ 'gift_vouchers.select_template' | translate }}</label>

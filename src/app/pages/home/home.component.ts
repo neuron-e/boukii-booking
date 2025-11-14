@@ -223,21 +223,13 @@ export class HomeComponent implements OnInit {
   }
 
   handleGiftVoucherPurchase(event: any): void {
-    const giftVoucher = event.giftVoucher;
-    const amount = event.amount;
+    if (!event) {
+      return;
+    }
 
-    console.log('Gift Voucher creado:', giftVoucher);
-
-    // TODO: Integrar con Payrexx
-    // Redirigir a pasarela de pago con:
-    // - amount: giftVoucher.amount
-    // - reference_id: giftVoucher.id
-    // - purpose: `Gift Voucher ${giftVoucher.id}`
-
-    // Por ahora, mostrar confirmación
-    alert(`Bono regalo creado exitosamente!\nID: ${giftVoucher.id}\nMonto: CHF ${amount}`);
-
-    // Aquí deberías redirigir a Payrexx
-    // this.paymentService.createGateway(...).subscribe(...)
+    const paymentUrl = event.paymentUrl || event.payment_url || event.url;
+    if (paymentUrl) {
+      window.location.href = paymentUrl;
+    }
   }
 }

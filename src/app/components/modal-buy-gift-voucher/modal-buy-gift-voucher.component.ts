@@ -3,12 +3,14 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import { GiftVoucherService } from '../../services/gift-voucher.service';
 import { SchoolService } from '../../services/school.service';
+import { TranslateService } from '@ngx-translate/core';
 import {
   CreateGiftVoucherRequest,
   GiftVoucherTemplateInfo,
   GiftVoucherAmountOption,
   GIFT_VOUCHER_TEMPLATES,
-  GIFT_VOUCHER_AMOUNT_OPTIONS
+  GIFT_VOUCHER_AMOUNT_OPTIONS,
+  GiftVoucherPurchaseRequest
 } from '../../interface/gift-voucher';
 
 /**
@@ -94,6 +96,7 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
   isProcessing: boolean = false;
   errorMessage: string = '';
   schoolId: number;
+  schoolCurrency: string = 'CHF';
 
   // Fecha mínima para delivery_date (hoy)
   minDate: string;
@@ -101,7 +104,8 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
   constructor(
     public themeService: ThemeService,
     private giftVoucherService: GiftVoucherService,
-    private schoolService: SchoolService
+    private schoolService: SchoolService,
+    private translateService: TranslateService
   ) {
     // Establecer fecha mínima como hoy
     const today = new Date();
@@ -114,6 +118,7 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
       data => {
         if (data && data.data) {
           this.schoolId = data.data.id;
+          this.schoolCurrency = data.data?.currency || this.schoolCurrency;
           this.giftVoucher.school_id = this.schoolId;
         }
       }
@@ -286,53 +291,82 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
     this.isProcessing = true;
     this.errorMessage = '';
 
-    // Obtener user_id del localStorage si existe
     const storageSlug = localStorage.getItem(this.slug + '-boukiiUser');
-    let purchasedByClientId: number | undefined;
-    if (storageSlug) {
-      const userLogged = JSON.parse(storageSlug);
-      purchasedByClientId = userLogged.clients?.[0]?.id;
-    }
+    const loggedUser = storageSlug ? JSON.parse(storageSlug) : null;
 
-    // Preparar datos finales
-    const giftVoucherData: CreateGiftVoucherRequest = {
+    const buyerName = (loggedUser?.first_name || loggedUser?.last_name)
+      ? `${loggedUser?.first_name ?? ''} ${loggedUser?.last_name ?? ''}`.trim()
+      : (this.giftVoucher.sender_name || this.giftVoucher.recipient_name || 'Boukii Client');
+
+    const buyerEmail =
+      loggedUser?.email ||
+      loggedUser?.username ||
+      this.giftVoucher.recipient_email ||
+      'guest@example.com';
+
+    const purchasePayload: GiftVoucherPurchaseRequest = {
       amount: this.giftVoucher.amount!,
-      recipient_email: this.giftVoucher.recipient_email!,
+      currency: this.schoolCurrency || 'CHF',
       school_id: this.schoolId,
-      recipient_name: this.giftVoucher.recipient_name,
-      personal_message: this.giftVoucher.personal_message,
-      sender_name: this.giftVoucher.sender_name,
-      template: this.giftVoucher.template,
-      background_color: this.giftVoucher.background_color,
-      text_color: this.giftVoucher.text_color,
-      delivery_date: this.giftVoucher.delivery_date
+      buyer_name: buyerName,
+      buyer_email: buyerEmail,
+      buyer_phone: loggedUser?.phone || undefined,
+      buyer_locale: this.translateService.currentLang || 'en',
+      recipient_name: this.giftVoucher.recipient_name || this.giftVoucher.recipient_email!,
+      recipient_email: this.giftVoucher.recipient_email!,
+      recipient_phone: this.giftVoucher.recipient_phone || undefined,
+      recipient_locale: this.translateService.currentLang || undefined,
+      sender_name: this.giftVoucher.sender_name || buyerName,
+      personal_message: this.giftVoucher.personal_message || undefined,
+      template: this.giftVoucher.template || 'default',
+      delivery_date: this.giftVoucher.delivery_date || undefined
     };
 
-    // Crear gift voucher en backend
-    this.giftVoucherService.createGiftVoucher(giftVoucherData).subscribe(
-      response => {
+    this.giftVoucherService.purchasePublic(purchasePayload).subscribe({
+      next: response => {
         this.isProcessing = false;
 
-        if (response.success && response.data) {
-          // Emitir evento de compra exitosa con datos del gift voucher
+        if (response?.success) {
+          const payload: any = response?.data ?? {};
+          const emittedVoucher =
+            payload.gift_voucher ??
+            payload.giftVoucher ??
+            payload;
+          const paymentUrl: string | null =
+            payload.payment_url ??
+            payload.paymentUrl ??
+            payload.url ??
+            null;
+          const voucherCode =
+            payload.voucher_code ??
+            emittedVoucher?.code ??
+            null;
+
+          if (!paymentUrl) {
+            this.errorMessage = this.translateService.instant('gift_vouchers.error_payment_url');
+            return;
+          }
+
           this.onPurchase.emit({
-            giftVoucher: response.data,
-            amount: this.giftVoucher.amount
+            giftVoucher: emittedVoucher,
+            amount: this.giftVoucher.amount,
+            paymentUrl,
+            voucherCode
           });
 
           this.closeModal();
-
-          // NOTA: El componente padre debe manejar la redirección a la pasarela de pago
-          // usando el ID del gift voucher creado
         } else {
-          this.errorMessage = response.message || 'Error al crear el bono regalo';
+          this.errorMessage = response?.message || this.translateService.instant('gift_vouchers.error_purchase');
         }
       },
-      error => {
+      error: err => {
         this.isProcessing = false;
-        this.errorMessage = error.error?.message || 'Error al procesar la compra. Por favor intenta de nuevo.';
+        this.errorMessage =
+          err?.error?.message ||
+          err?.message ||
+          this.translateService.instant('gift_vouchers.error_purchase');
       }
-    );
+    });
   }
 
   // ===== NAVEGACIÓN ENTRE PASOS =====
