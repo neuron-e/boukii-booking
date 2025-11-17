@@ -962,4 +962,7 @@
   "gift_vouchers.cancel_help_title": "¿Necesitas ayuda?",
   "gift_vouchers.cancel_help_text": "Envíanos los datos del bono y te responderemos pronto.",
   "gift_vouchers.cancel_contact": "¿Necesitas asistencia? Escríbenos a"
+,
+  "no_sports_yet": "Todavía no hay deportes",
+  "add_sports_message": "Añade deportes en la pestaña \"Deportes\" para ver tu evolución"
 }

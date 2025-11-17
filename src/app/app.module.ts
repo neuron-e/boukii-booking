@@ -22,7 +22,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BookingDetailComponent } from './pages/user/booking-detail-old/booking-detail.component';
+
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
@@ -78,7 +79,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     CourseComponent,
     CartComponent,
     UserComponent,
-    BookingDetailComponent,
     UserDetailComponent, SportCardComponent,
     PageNotFoundComponent,
     HeaderComponent,

@@ -62,6 +62,9 @@ export class BookingDescriptionCard {
   uniqueMonitors: any[] = []; // Monitores únicos
   private _dates: any[] = [];
 
+  // Datos únicos extraídos (coherente con admin)
+  formattedMonitors: { unique: any[]; byDate: Map<string, any> } = { unique: [], byDate: new Map() };
+
   constructor(
     public translateService: TranslateService,
     public bookingService: BookingService,
@@ -77,14 +80,35 @@ export class BookingDescriptionCard {
   }
 
   private extractUniqueMonitors() {
+    const uniqueMap = new Map<number, any>();
+    const byDate = new Map<string, any>();
+
     if (this.dates.length) {
-      const allMonitors = this.dates.map((date) => date.monitor).filter((monitor) => !!monitor);
-      this.uniqueMonitors = allMonitors.filter(
-        (monitor, index, self) => self.findIndex((m) => m.id === monitor.id) === index
-      );
-    } else {
-      this.uniqueMonitors = [];
+      this.dates.forEach(date => {
+        if (date.monitor && date.monitor.id) {
+          // Añadir a únicos
+          if (!uniqueMap.has(date.monitor.id)) {
+            uniqueMap.set(date.monitor.id, {
+              id: date.monitor.id,
+              name: date.monitor.name || '',
+              ...date.monitor
+            });
+          }
+
+          // Mapear por fecha
+          byDate.set(date.date, date.monitor);
+        }
+      });
     }
+
+    // Mantener compatibilidad con propiedad legacy
+    this.uniqueMonitors = Array.from(uniqueMap.values());
+
+    // Formato consistente con admin
+    this.formattedMonitors = {
+      unique: this.uniqueMonitors,
+      byDate
+    };
   }
 
   hasExtrasForDate(date: any): boolean {

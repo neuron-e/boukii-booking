@@ -957,4 +957,7 @@
   "gift_vouchers.cancel_help_title": "Besoin d’aide ?",
   "gift_vouchers.cancel_help_text": "Envoyez-nous les détails du bon et nous vous répondrons rapidement.",
   "gift_vouchers.cancel_contact": "Besoin d’assistance ? Contactez-nous à"
+,
+  "no_sports_yet": "Aucun sport pour l'instant",
+  "add_sports_message": "Ajoutez des sports dans l'onglet \"Sports\" pour voir votre évolution"
 }

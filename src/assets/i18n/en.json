@@ -966,4 +966,7 @@
   "gift_vouchers.cancel_help_title": "Need help?",
   "gift_vouchers.cancel_help_text": "Send us a message with the voucher details and we’ll assist you shortly.",
   "gift_vouchers.cancel_contact": "Need assistance? Contact us at"
+,
+  "no_sports_yet": "No sports yet",
+  "add_sports_message": "Add sports in the \"Sports\" tab to see your evolution"
 }

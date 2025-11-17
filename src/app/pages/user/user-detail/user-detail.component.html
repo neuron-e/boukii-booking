@@ -498,11 +498,13 @@
 									<mat-label>
 										{{'level' | translate }}
 									</mat-label>
-									<input [formControl]="levelForm" [matAutocomplete]="autoLevel"
-										[(ngModel)]="element.level" type="text" placeholder="Pick one"
+									<input [matAutocomplete]="autoLevel" [value]="element?.level?.name"
+										[(ngModel)]="element.level" [ngModelOptions]="{standalone: true}"
+										type="text" placeholder="Pick one"
 										aria-label="Number" matInput>
 									<mat-autocomplete #autoLevel="matAutocomplete" [displayWith]="displayFnLevel">
-										<mat-option *ngFor="let level of element.degrees" [value]="level">
+										<mat-option *ngFor="let level of element.degrees" [value]="level"
+											(onSelectionChange)="assignLevelToNewSport(element, level)">
 											{{level.annotation}} - {{level.name}}
 										</mat-option>
 									</mat-autocomplete>
