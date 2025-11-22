@@ -2,9 +2,27 @@ import { Injectable } from '@angular/core';
 import {ApiService} from './api.service';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
-import {BehaviorSubject, delay, EMPTY, forkJoin, mergeMap, Observable} from 'rxjs';
+import {BehaviorSubject, catchError, delay, EMPTY, forkJoin, mergeMap, Observable, of} from 'rxjs';
 import {ApiCrudService} from './crud.service';
 import * as moment from 'moment';
+
+export interface IntervalDiscountSummary {
+  intervalId: number | string;
+  intervalName: string | null;
+  discountPercentage: number;
+  discountAmount: number;
+  days: number;
+}
+
+export interface MultiIntervalDiscountResult {
+  originalPrice: number;
+  totalDiscount: number;
+  finalPrice: number;
+  intervals: IntervalDiscountSummary[];
+  source: 'backend' | 'legacy' | 'error';
+}
+
+export interface DiscountState extends MultiIntervalDiscountResult {}
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +33,50 @@ export class BookingService extends ApiService {
 
   constructor(http: HttpClient, route: ActivatedRoute, private crudService: ApiCrudService) {
     super(http, route);
+  }
+
+  /**
+   * Try to resolve a backend-friendly interval id from various shapes (string from settings, numeric from DB).
+   * Returns null if resolution is not possible so callers can fallback gracefully.
+   */
+  private resolveBackendIntervalId(course: any, rawIntervalId: any): number | null {
+    if (rawIntervalId === null || rawIntervalId === undefined) {
+      return null;
+    }
+
+    // If it is already numeric or numeric string, return parsed value
+    const numeric = Number(rawIntervalId);
+    if (!isNaN(numeric) && isFinite(numeric)) {
+      return numeric;
+    }
+
+    // Try to map by settings interval -> course_intervals ordering or name
+    const settings = this.parseCourseSettings(course?.settings);
+    const courseIntervals = Array.isArray(course?.course_intervals) ? course.course_intervals : null;
+
+    if (settings?.intervals && Array.isArray(settings.intervals) && courseIntervals && courseIntervals.length > 0) {
+      const idx = settings.intervals.findIndex((i: any) => String(i?.id) === String(rawIntervalId));
+      if (idx >= 0 && courseIntervals[idx]?.id !== undefined) {
+        const candidate = Number(courseIntervals[idx].id);
+        if (!isNaN(candidate)) {
+          return candidate;
+        }
+      }
+
+      // Try matching by name
+      const settingsInterval = settings.intervals.find((i: any) => String(i?.id) === String(rawIntervalId));
+      if (settingsInterval?.name) {
+        const foundByName = courseIntervals.find((ci: any) => ci?.name === settingsInterval.name);
+        if (foundByName?.id !== undefined) {
+          const candidate = Number(foundByName.id);
+          if (!isNaN(candidate)) {
+            return candidate;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   checkOverlap(bookingUsers: any) {
@@ -166,6 +228,288 @@ export class BookingService extends ApiService {
     }
 
     return Number(discountTotal.toFixed(2));
+  }
+
+  /**
+   * WS1-F1: Delegates multi-interval discount calculation to backend API so admin/public stay aligned.
+   * See thoughts/shared/research/2025-11-21_WS1_courses-intervals-monitors.md.
+   */
+  calculateMultiIntervalDiscountViaApi(
+    course: any,
+    dateEntries: Array<{ date: string; course_interval_id: number | string | null }>,
+    basePrice: number,
+    participants: number = 1
+  ): Observable<MultiIntervalDiscountResult | null> {
+    if (!course?.id || !Array.isArray(dateEntries) || dateEntries.length === 0) {
+      console.warn('[booking-discount-api] No course/id or empty dateEntries, fallback to legacy');
+      return of(null);
+    }
+
+    // Build payload grouped by interval; try to resolve missing interval IDs from course_dates.
+    const intervalMap = new Map<number, { num_days: number }>();
+    for (const entry of dateEntries) {
+      let intervalIdRaw = entry?.course_interval_id ?? null;
+      // Try to resolve a real interval ID accepted by backend
+      let intervalId: number | null = this.resolveBackendIntervalId(course, intervalIdRaw);
+
+      if ((intervalId === null || intervalId === undefined) && Array.isArray(course?.course_dates)) {
+        const entryISO = moment(entry.date).format('YYYY-MM-DD');
+        const match = course.course_dates.find((d: any) => {
+          const dISO = moment(d?.date).format('YYYY-MM-DD');
+          return d?.date && dISO === entryISO;
+        });
+        intervalId = this.resolveBackendIntervalId(course, match?.course_interval_id ?? match?.interval_id ?? null);
+      }
+      if (intervalId === null || intervalId === undefined) {
+        console.warn('[booking-discount-api] Missing course_interval_id for date, skipping', entry);
+        continue;
+      }
+      const current = intervalMap.get(intervalId) || { num_days: 0 };
+      current.num_days += 1;
+      intervalMap.set(intervalId, current);
+    }
+
+    if (intervalMap.size === 0) {
+      console.warn('[booking-discount-api] No interval mapping available after resolving dates, falling back to legacy');
+      return of(null);
+    }
+
+    const intervals = Array.from(intervalMap.entries()).map(([intervalId, info]) => ({
+      course_id: course.id,
+      interval_id: intervalId,
+      num_days: info.num_days,
+      base_price: basePrice * info.num_days,
+      ...(participants && participants > 1 ? { num_participants: participants } : {})
+    }));
+
+    const url = `${this.baseUrl}/bookings/calculate-multi-interval-discount`;
+    return this.http.post(url, { intervals }, { headers: this.getHeaders() }).pipe(
+      mergeMap((response: any) => {
+        const data = response?.data || response;
+        if (!data || !Array.isArray(data.intervals)) {
+          console.warn('[booking-discount-api] Invalid response shape', response);
+          return of(null);
+        }
+
+        const intervalSummaries: IntervalDiscountSummary[] = data.intervals.map((item: any) => {
+          const intervalId = Number(item.interval_id);
+          const discountDetails = item?.discount_details || {};
+
+          // Resolve interval name from course settings if available
+          let intervalName: string | null = null;
+          try {
+            const settings = typeof course?.settings === 'string' ? JSON.parse(course.settings) : course?.settings;
+            if (settings?.intervals && Array.isArray(settings.intervals)) {
+              const found = settings.intervals.find((i: any) => String(i.id) === String(intervalId));
+              intervalName = found?.name ?? null;
+            }
+          } catch {}
+
+          return {
+            intervalId,
+            intervalName,
+            discountPercentage: discountDetails?.discount_type === 'percentage'
+              ? Number(discountDetails?.discount_value || 0)
+              : 0,
+            discountAmount: Number(item.discount_amount || 0),
+            days: Number(item.num_days || 0)
+          } as IntervalDiscountSummary;
+        });
+
+        const result: MultiIntervalDiscountResult = {
+          originalPrice: Number(data.total_base_price ?? 0),
+          totalDiscount: Number(data.total_discount_amount ?? 0),
+          finalPrice: Number(data.total_final_price ?? 0),
+          intervals: intervalSummaries,
+          source: 'backend'
+        };
+
+        if (isNaN(result.finalPrice) || isNaN(result.originalPrice)) {
+          return of(null);
+        }
+
+        return of(result);
+      }),
+      catchError(err => {
+        console.error('[booking-discount-api] CRITICAL: Multi-interval discount API call failed', {
+          endpoint: '/bookings/calculate-multi-interval-discount',
+          error: err?.message || err?.error?.message || 'Unknown error',
+          status: err?.status,
+          statusText: err?.statusText,
+          timestamp: new Date().toISOString(),
+          fallbackWillAttempt: 'local_canonical_or_error'
+        });
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Compute canonical discount state, preferring backend and falling back to legacy client calc.
+   */
+  computeDiscountState(
+    course: any,
+    selectedDates: string[],
+    basePrice: number,
+    participants: number = 1
+  ): Observable<DiscountState> {
+    const dateEntries = selectedDates.map(dateStr => ({
+      date: dateStr,
+      course_interval_id: this.resolveIntervalIdForDate(course, dateStr)
+    }));
+
+    return this.calculateMultiIntervalDiscountViaApi(course, dateEntries, basePrice, participants).pipe(
+      mergeMap(result => {
+        if (result) {
+          return of(result);
+        }
+
+        const fallback = this.computeLocalCanonicalDiscount(course, dateEntries, basePrice, participants);
+        if (fallback) {
+          console.warn('[booking-discount-api] Using local canonical fallback (interval-wide) because backend discount API was unavailable/invalid');
+          return of(fallback);
+        }
+
+        // Error: neither API nor local config available
+        // Return original price without discount to avoid incorrect calculation
+        console.error('[booking-discount-api] CRITICAL: Both backend API and local configuration unavailable. ' +
+          'Unable to calculate discounts reliably. Showing price without discounts.', {
+          course: course?.id,
+          dateCount: selectedDates.length,
+          timestamp: new Date().toISOString(),
+          fallbackAttempted: true
+        });
+
+        const originalPrice = basePrice * selectedDates.length * (participants || 1);
+
+        return of({
+          originalPrice,
+          totalDiscount: 0,
+          finalPrice: originalPrice,
+          intervals: [],
+          source: 'error' as const
+        } as DiscountState);
+      })
+    );
+  }
+
+  private computeLocalCanonicalDiscount(
+    course: any,
+    dateEntries: Array<{ date: string; course_interval_id: string | number | null }>,
+    basePrice: number,
+    participants: number = 1
+  ): DiscountState | null {
+    if (!course || !Array.isArray(dateEntries) || dateEntries.length === 0 || !basePrice) {
+      return null;
+    }
+
+    const settings = this.parseCourseSettings(course?.settings);
+    const intervalConfig = new Map<string, { name?: string | null; discounts: any[] }>();
+
+    if (course?.intervals_config_mode === 'independent' && Array.isArray(course?.course_intervals)) {
+      course.course_intervals.forEach((interval: any) => {
+        if (interval?.id !== undefined) {
+          intervalConfig.set(String(interval.id), {
+            name: interval?.name,
+            discounts: Array.isArray(interval?.discounts) ? interval.discounts : []
+          });
+        }
+      });
+    }
+
+    if (settings?.intervals && Array.isArray(settings.intervals)) {
+      settings.intervals.forEach((interval: any) => {
+        const key = String(interval?.id);
+        if (!intervalConfig.has(key)) {
+          intervalConfig.set(key, {
+            name: interval?.name,
+            discounts: Array.isArray(interval?.discounts) ? interval.discounts : []
+          });
+        }
+      });
+    }
+
+    if (intervalConfig.size === 0) {
+      return null;
+    }
+
+    const grouped = new Map<string, { days: number }>();
+    dateEntries.forEach(entry => {
+      const key = entry?.course_interval_id !== undefined && entry?.course_interval_id !== null
+        ? String(entry.course_interval_id)
+        : null;
+      if (!key || !intervalConfig.has(key)) {
+        return;
+      }
+      const current = grouped.get(key) || { days: 0 };
+      current.days += 1;
+      grouped.set(key, current);
+    });
+
+    if (grouped.size === 0) {
+      return null;
+    }
+
+    const intervals: IntervalDiscountSummary[] = [];
+    let totalDiscount = 0;
+    const totalDays = dateEntries.length;
+    const pax = participants && participants > 0 ? participants : 1;
+
+    grouped.forEach((info, key) => {
+      const config = intervalConfig.get(key);
+      if (!config) return;
+      const rules = (config.discounts || []).map((d: any) => ({
+        days: d.date || d.days || d.dates || d.min_days || d.count || 0,
+        type: (d.type === 2 || d.type === 'fixed' || d.discount_type === 'fixed_amount') ? 'fixed' : 'percentage',
+        value: d.discount || d.value || d.discount_value || 0
+      })).filter(r => r.days > 0);
+
+      if (!rules.length) return;
+
+      const matched = rules
+        .filter(r => info.days >= r.days)
+        .sort((a, b) => b.days - a.days)[0];
+
+      if (!matched) return;
+
+      const intervalBase = basePrice * info.days * pax;
+      let discountAmount = 0;
+      if (matched.type === 'percentage') {
+        discountAmount = intervalBase * (matched.value / 100);
+      } else {
+        discountAmount = matched.value * info.days * pax;
+      }
+
+      discountAmount = Number(discountAmount.toFixed(2));
+      totalDiscount += discountAmount;
+
+      const intervalIdNumber = Number(key);
+      const intervalIdValue: number | string = !isNaN(intervalIdNumber) ? intervalIdNumber : key;
+      intervals.push({
+        intervalId: intervalIdValue,
+        intervalName: config.name || null,
+        discountPercentage: matched.type === 'percentage' ? matched.value : 0,
+        discountAmount,
+        days: info.days
+      });
+    });
+
+    const originalPrice = basePrice * totalDays * pax;
+    return {
+      originalPrice: Number(originalPrice.toFixed(2)),
+      totalDiscount: Number(totalDiscount.toFixed(2)),
+      finalPrice: Number(Math.max(0, originalPrice - totalDiscount).toFixed(2)),
+      intervals,
+      source: 'legacy'
+    };
+  }
+
+  private resolveIntervalIdForDate(course: any, dateStr: string): string | number | null {
+    if (!course?.course_dates) return null;
+    const target = moment(dateStr).format('YYYY-MM-DD');
+    const match = course.course_dates.find((d: any) => moment(d?.date).format('YYYY-MM-DD') === target);
+    if (!match) return null;
+    return match.course_interval_id ?? match.interval_id ?? null;
   }
 
   private calculateMultiDateDiscountNew(course: any, selectedDates: any[], basePrice: number): number {
@@ -342,6 +686,15 @@ export class BookingService extends ApiService {
     const startMoment = moment(startDate);
     const endMoment = moment(endDate);
     return dateMoment.isSameOrAfter(startMoment) && dateMoment.isSameOrBefore(endMoment);
+  }
+
+  private parseCourseSettings(settings: any): any {
+    if (!settings) return {};
+    try {
+      return typeof settings === 'string' ? JSON.parse(settings) : settings;
+    } catch {
+      return {};
+    }
   }
 
   private getIntervalDiscountRules(course: any): {

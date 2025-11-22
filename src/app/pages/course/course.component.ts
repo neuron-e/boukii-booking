@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { BookingService } from '../../services/booking.service';
 import * as moment from 'moment';
+import { DiscountState } from '../../services/booking.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
@@ -126,6 +127,8 @@ export class CourseComponent implements OnInit {
   originalPrice: number = 0;
   hasActiveDiscount: boolean = false;
   discountsByInterval: { intervalId: string; intervalName: string; discountAmount: number; discountPercentage: number }[] = [];
+  discountSource: 'backend' | 'legacy' | 'error' = 'legacy';
+  canonicalDiscountState?: DiscountState;
 
   // Control de la visualización de intervalos
   expandedIntervals: { [key: string]: boolean } = {};
@@ -1329,7 +1332,17 @@ export class CourseComponent implements OnInit {
   }
 
   addBookingToCart() {
+    let canonicalPricing: any = null;
     if (this.course.course_type === 1 && this.course.is_flexible) {
+      canonicalPricing = this.canonicalDiscountState ? {
+        ...this.canonicalDiscountState
+      } : {
+        originalPrice: this.originalPrice,
+        totalDiscount: this.appliedDiscountAmount,
+        finalPrice: this.collectivePrice,
+        intervals: this.discountsByInterval,
+        source: this.discountSource || 'legacy'
+      };
       if (!this.validateFlexibleSelectionBeforeBooking()) {
         return;
       }
@@ -1420,6 +1433,7 @@ export class CourseComponent implements OnInit {
             }
             bookingUsers.push({
               'course': courseSnapshot,
+              'canonicalPricing': canonicalPricing,
               'client': {
                 id: this.selectedUser.id,
                 first_name: this.selectedUser.first_name,
@@ -1982,7 +1996,8 @@ export class CourseComponent implements OnInit {
   }
 
   getIntervalForDate(dateStr: string): string | null {
-    const date = this.course.course_dates.find(d => d.date === dateStr);
+    const target = moment(dateStr).format('YYYY-MM-DD');
+    const date = this.course.course_dates.find(d => moment(d.date).format('YYYY-MM-DD') === target);
     if (!date) {
       return null;
     }
@@ -2213,57 +2228,64 @@ export class CourseComponent implements OnInit {
   updateCollectivePrice() {
     const basePrice = parseFloat(this.course?.price || 0);
     const selectedCount = this.selectedDates?.length || 0;
+    const participantCount = this.selectedUserMultiple?.length || 1;
+    this.discountSource = 'legacy';
 
-    let collectivePrice = basePrice * selectedCount;
-    this.originalPrice = collectivePrice; // Guardar precio original
-    this.appliedDiscountAmount = 0; // Reset
-    this.hasActiveDiscount = false; // Reset
-    this.discountsByInterval = []; // Reset
+    if (selectedCount === 0 || basePrice <= 0) {
+      this.originalPrice = 0;
+      this.appliedDiscountAmount = 0;
+      this.collectivePrice = 0;
+      this.discountsByInterval = [];
+      this.hasActiveDiscount = false;
+      this.canonicalDiscountState = undefined;
+      return;
+    }
 
-    if (selectedCount > 0) {
-      const dateEntries = this.selectedDates.map(dateStr => {
-        const intervalId = this.getIntervalForDate(dateStr);
-        return {
-          date: dateStr,
-          course_interval_id: intervalId !== null && intervalId !== undefined ? Number(intervalId) : null
-        };
-      });
+    this.bookingService
+      .computeDiscountState(this.course, this.selectedDates, basePrice, participantCount)
+      .subscribe((state: DiscountState) => {
+        if (!state) {
+          console.warn('[booking-discount-api] No discount state available, keeping legacy zeros');
+          this.originalPrice = basePrice * selectedCount;
+          this.appliedDiscountAmount = 0;
+          this.collectivePrice = this.originalPrice;
+          this.discountsByInterval = [];
+          this.hasActiveDiscount = false;
+          this.canonicalDiscountState = undefined;
+          return;
+        }
 
-      // Calcular descuentos por intervalo
-      const discountBreakdown = this.bookingService.calculateDiscountBreakdown(this.course, dateEntries);
+        this.canonicalDiscountState = state;
+        this.discountSource = state.source || 'legacy';
+        this.originalPrice = Number(state.originalPrice || 0);
+        this.appliedDiscountAmount = Math.max(0, Number(state.totalDiscount || 0));
+        this.hasActiveDiscount = this.appliedDiscountAmount > 0;
+        this.collectivePrice = Math.max(0, Number(state.finalPrice || 0));
 
-      if (discountBreakdown && discountBreakdown.length > 0) {
         const settings = this.getCourseSettings();
-
-        this.discountsByInterval = discountBreakdown.map(item => {
-          // Buscar nombre del intervalo
-          let intervalName = 'Intervalo ' + item.intervalId;
-          if (settings?.intervals) {
+        this.discountsByInterval = (state.intervals || []).map((item: any) => {
+          let intervalName = item.intervalName || ('Intervalo ' + item.intervalId);
+          if (settings?.intervals && item.intervalId != null) {
             const interval = settings.intervals.find((i: any) => String(i.id) === String(item.intervalId));
-            if (interval && interval.name) {
-              intervalName = interval.name;
-            }
+            if (interval && interval.name) intervalName = interval.name;
           }
-
           return {
             intervalId: item.intervalId,
-            intervalName: intervalName,
-            discountAmount: item.discountAmount,
-            discountPercentage: item.discountPercentage || 0
+            intervalName,
+            discountAmount: Number(item.discountAmount || 0),
+            discountPercentage: Number(item.discountPercentage || 0)
           };
         });
 
-        const totalDiscount = discountBreakdown.reduce((sum, item) => sum + item.discountAmount, 0);
-
-        if (totalDiscount > 0) {
-          this.appliedDiscountAmount = totalDiscount;
-          this.hasActiveDiscount = true;
-          collectivePrice -= totalDiscount;
-        }
-      }
-    }
-
-    this.collectivePrice = Math.max(0, Number(collectivePrice.toFixed(2)));
+        // Debug trace once per recalculation for validation
+        console.info('[booking-discount-api] canonical state', {
+          source: this.discountSource,
+          originalPrice: this.originalPrice,
+          totalDiscount: this.appliedDiscountAmount,
+          finalPrice: this.collectivePrice,
+          intervals: this.discountsByInterval
+        });
+      });
   }
 
   generateNumberArray(max: number): number[] {

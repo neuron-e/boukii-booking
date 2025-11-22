@@ -858,6 +858,16 @@
               </div>
             </div>
 
+            <!-- Fallback warning when discount calculation is unreliable -->
+            <div *ngIf="discountSource === 'legacy' || discountSource === 'error'"
+                 style="background: #FFF3CD; border: 1px solid #FFC107; padding: 12px; border-radius: 4px; margin-bottom: 12px; display: flex; gap: 8px; align-items: flex-start;">
+              <span style="font-size: 18px; flex-shrink: 0;">⚠️</span>
+              <div style="font-size: 14px; color: #856404; line-height: 1.4;">
+                <strong *ngIf="discountSource === 'error'">{{ 'error_calculating_discount' | translate }}</strong>
+                <strong *ngIf="discountSource === 'legacy'">{{ 'discount_calculated_locally' | translate }}</strong>
+              </div>
+            </div>
+
             <!-- Price breakdown with discounts -->
             <div class="price-breakdown-summary" style="margin-top: 16px; padding: 16px; background: #F5F7FA; border-radius: 8px;">
               <!-- Original price if discount applied -->

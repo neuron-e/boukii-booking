@@ -1199,6 +1199,25 @@ export class CartComponent implements OnInit {
       return { breakdown: [], totalDiscount: 0, originalPrice: 0, finalPrice: 0 };
     }
 
+    // Prefer canonical pricing stored on cart item (set at add-to-cart time)
+    const canonical = cartItem.details[0]?.canonicalPricing;
+    if (canonical && typeof canonical.originalPrice === 'number' && typeof canonical.finalPrice === 'number') {
+      const intervals = Array.isArray(canonical.intervals) ? canonical.intervals : [];
+      const breakdown = intervals.map((i: any) => ({
+        intervalId: i.intervalId ?? i.interval_id ?? null,
+        intervalName: i.intervalName || i.interval_name || ('Intervalo ' + (i.intervalId ?? '')),
+        discountAmount: Number(i.discountAmount ?? i.discount_amount ?? 0),
+        discountPercentage: Number(i.discountPercentage ?? i.discount_percentage ?? 0)
+      }));
+
+      return {
+        breakdown,
+        totalDiscount: Number(canonical.totalDiscount ?? 0),
+        originalPrice: Number(canonical.originalPrice ?? 0),
+        finalPrice: Number(canonical.finalPrice ?? 0)
+      };
+    }
+
     const course = cartItem.details[0]?.course;
     const datesCount = cartItem.details.length || 0;
     const basePrice = Number(((parseFloat(course?.price || 0) || 0) * datesCount).toFixed(2));
