@@ -984,12 +984,12 @@
                             </mat-form-field>-->
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedHour" label="hour"
                                [table]="getAvailableHours()"
-                               (do)="selectedHour=$event.option.value;course.is_flexible ? updatePrice() : null"></app-form-select>
+                               (do)="onHourSelected($event.option.value)"></app-form-select>
 
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedDuration"
                                [table]="getAvailableDurations(selectedHour)" label="duration"
                                [readonly]="!course.is_flexible"
-                               (do)="selectedDuration=$event.option.value;updatePrice()"></app-form-select>
+                               (do)="onDurationSelected($event.option.value)"></app-form-select>
             </div>
           </ng-container>
         </div>

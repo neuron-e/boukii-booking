@@ -111,9 +111,10 @@ export class CourseComponent implements OnInit {
   isModalAddUser: boolean = false;
 
   selectedHour: string = '';
-  selectedDuration: any ;
-  availableDurations: number[] = [];
+  selectedDuration: any = null;
+  availableDurations: string[] = [];
   availableHours: any[] = [];
+  private readonly DEFAULT_PRIVATE_LEAD_MINUTES = 30;
 
   schoolData: any;
   settings: any;
@@ -190,6 +191,18 @@ export class CourseComponent implements OnInit {
     this.coursesService.getCourse(id).subscribe(res => {
       this.course = res.data;
       this.course.availableDegrees.sort((a, b) => a.degree_order - b.degree_order);
+      // Normalizar price_range para flex privados
+      if (this.course.course_type == 2 && this.course.is_flexible && typeof this.course.price_range === 'string') {
+        try {
+          this.course.price_range = JSON.parse(this.course.price_range);
+        } catch {
+          this.course.price_range = [];
+        }
+      }
+      // Asegurar price_range como array
+      if (this.course.course_type == 2 && this.course.is_flexible && !Array.isArray(this.course.price_range)) {
+        this.course.price_range = [];
+      }
       if (this.hasIntervals()) {
         // Inicializar intervalos cerrados por defecto
         // Los intervalos se abrirán al hacer click en ellos
@@ -205,15 +218,26 @@ export class CourseComponent implements OnInit {
       this.getDegrees()
       this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
-      if (this.course.course_type == 2) {
-        this.availableHours = this.getAvailableHours();
-        this.selectedHour = this.availableHours[0];
-        if (this.course.is_flexible) {
-          this.availableDurations = this.getAvailableDurations(this.selectedHour);
-          this.selectedDuration =  this.availableDurations[0];
-          this.updatePrice();
-        } else this.selectedDuration = this.course.duration;
-        this.initializeMonthNames();
+      // Normalizar price_range si viene como string en privados flex
+      if (this.course.course_type == 2 && this.course.is_flexible && typeof this.course.price_range === 'string') {
+        try {
+          this.course.price_range = JSON.parse(this.course.price_range);
+        } catch {
+          this.course.price_range = [];
+        }
+      }
+    if (this.course.course_type == 2) {
+      this.availableHours = this.getAvailableHours();
+      this.selectedHour = this.availableHours.length ? this.availableHours[0] : '';
+      if (this.course.is_flexible) {
+        this.availableDurations = this.getAvailableDurations(this.selectedHour);
+        this.selectedDuration = this.availableDurations.length ? this.availableDurations[0] : null;
+        this.selectedDuration = this.normalizeDurationValue(this.selectedDuration);
+        this.updatePrice();
+      } else {
+        this.selectedDuration = this.normalizeDurationValue(this.course.duration);
+      }
+      this.initializeMonthNames();
         if (this.course.date_start) {
           if (moment(this.course.date_start).isBefore(moment(), 'day')) {
             const storedMonthStr = localStorage.getItem(this.schoolData.slug + '-month');
@@ -1327,6 +1351,7 @@ export class CourseComponent implements OnInit {
       day.selected = true;
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
       this.getAvailableHours();
+      this.selectedHour = this.availableHours.length ? this.availableHours[0] : '';
       if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
     }
   }
@@ -1351,6 +1376,11 @@ export class CourseComponent implements OnInit {
     if (this.course.course_type == 2) {
       if (this.course.is_flexible) {
         let course_date = this.findMatchingCourseDate();
+        if (!course_date) {
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          return;
+        }
+        const bookingDate = this.normalizeDateForApi(course_date?.date);
         this.selectedUserMultiple.forEach((selectedUser, index) => {
           bookingUsers.push({
             'course': this.course,
@@ -1363,7 +1393,7 @@ export class CourseComponent implements OnInit {
             'course_date_id': course_date.id,
             'course_group_id': null,
             'course_subgroup_id': null,
-            'date': course_date.date,
+            'date': bookingDate,
             'hour_start': this.selectedHour,
             'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
             'extra': this.selectedForfait
@@ -1371,6 +1401,11 @@ export class CourseComponent implements OnInit {
         });
       } else {
         let course_date = this.findMatchingCourseDate();
+        if (!course_date) {
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          return;
+        }
+        const bookingDate = this.normalizeDateForApi(course_date?.date);
         this.selectedUserMultiple.forEach((selectedUser, index) => {
           bookingUsers.push({
             'course': this.course,
@@ -1383,7 +1418,7 @@ export class CourseComponent implements OnInit {
             'course_date_id': course_date.id,
             'course_group_id': null,
             'course_subgroup_id': null,
-            'date': course_date.date,
+            'date': bookingDate,
             'hour_start': this.selectedHour,
             'hour_end':  this.calculateEndTime(this.selectedHour, this.utilService.parseDurationToMinutes(this.selectedDuration)),
             'extra': this.selectedForfait
@@ -1516,6 +1551,13 @@ export class CourseComponent implements OnInit {
         })
       }
     }
+    // Validación local contra el carrito para evitar solapes antes de llamar a backend
+    const overlapMsg = this.getOverlapMessage(bookingUsers);
+    if (overlapMsg) {
+      this.snackbar.open(overlapMsg, 'OK', { duration: 3000 });
+      return;
+    }
+
     this.bookingService.checkOverlap(bookingUsers).subscribe(
       () => {
         let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
@@ -1658,7 +1700,7 @@ export class CourseComponent implements OnInit {
         courseDateObject.getDate() === selectedDate.getDate();
     });
 
-    return matchingDate;
+    return matchingDate ? { ...matchingDate } : null;
   }
 
   private lightenColor(hexColor: string, percent: number): string {
@@ -2293,17 +2335,25 @@ export class CourseComponent implements OnInit {
   }
 
   filteredPriceRange(formatted: boolean = false) {
-    const selectedPax = this.selectedUserMultiple.length; // Obtener el número de paxes seleccionados
+    const selectedPax = this.selectedUserMultiple.length || 1; // Obtener el número de paxes seleccionados (mínimo 1)
+    let priceRange = this.course.price_range;
+    if (typeof priceRange === 'string') {
+      try {
+        priceRange = JSON.parse(priceRange);
+      } catch {
+        priceRange = [];
+      }
+    }
 
-    return this.course.price_range
+    return priceRange
       .filter((range: any) => {
-        // Verificar si todos los valores son null excepto 'intervalo'
-        const keys = Object.keys(range).filter((key) => key !== 'intervalo');
-        return !keys.every((key) => range[key] === null);
+        const priceKeys = Object.keys(range).filter((key) => key !== 'intervalo');
+        const hasAnyPrice = priceKeys.some((k) => range[k] !== null && range[k] !== undefined);
+        return hasAnyPrice;
       })
       .map((range: any) => {
         // Convertir el intervalo en minutos
-        const parts = range.intervalo.split(' ');
+        const parts = (range.intervalo || '').split(' ');
         let minutes = 0;
         for (const part of parts) {
           if (part.endsWith('h')) {
@@ -2313,14 +2363,14 @@ export class CourseComponent implements OnInit {
           }
         }
 
-        // Aplicar el número de paxes al cálculo de la duración
-        // Si el número de paxes está disponible, ajustar el cálculo
-        if (selectedPax && range[selectedPax] !== undefined) {
-          minutes *= selectedPax; // Ajustamos el tiempo por el número de paxes
+        // Si no se pudo parsear, usar duración fija del curso
+        if (minutes <= 0 && this.course?.duration) {
+          minutes = this.utilService.parseDurationToMinutes(this.course.duration);
         }
 
         return minutes;
       })
+      .filter((minutes: number) => minutes > 0)
       .sort((a: number, b: number) => a - b)
       .map((minutes: number) => {
         if (!formatted) {
@@ -2356,11 +2406,9 @@ export class CourseComponent implements OnInit {
   }
 
   getAvailableDurations(selectedHour: string): any[] {
-    const endTime = parseInt(this.course.hour_max);
-    const startTime = parseInt(selectedHour.split(':')[0]);
-    let durations = this.filteredPriceRange(true);
-
-    return durations;
+    const durations = this.filteredPriceRange(false);
+    const unique = Array.from(new Set(durations));
+    return unique.map((minutes: number) => this.convertToDuration(minutes));
   }
 
   getFormattedDuration(duration: number): string {
@@ -2368,48 +2416,82 @@ export class CourseComponent implements OnInit {
   }
 
   getAvailableHours(): string[] {
-    let hours = [];
+    const hours: string[] = [];
     let course_date = this.course.course_dates[0];
-    if(this.selectedDateReservation){
-      course_date = this.findMatchingCourseDate();
-    }
 
-    const hourMin = parseInt(course_date.hour_start);
-    const hourMax = parseInt(course_date.hour_end);
-    const duration = parseInt(this.course.duration);
-    if (!this.course.is_flexible) {
-      for (let hour = hourMin; hour < hourMax; hour++) {
-        for (let minute = 0; minute <= 60 - duration; minute += 5) {
-          let formattedHour = hour < 10 ? '0' + hour : '' + hour;
-          let formattedMinute = minute < 10 ? '0' + minute : '' + minute;
-          let formattedTime = `${formattedHour}:${formattedMinute}`;
-          hours.push(formattedTime);
-        }
-      }
-      let formattedHourMax = hourMax - 1 < 10 ? '0' + (hourMax - 1) : '' + (hourMax - 1);
-      let formattedTimeMax = `${formattedHourMax}:00`;
-      hours.push(formattedTimeMax);
-    } else {
-      let timeIntervals = this.filteredPriceRange();
-      let minInterval = 30; // valor por defecto
-      if (timeIntervals.length > 1) {
-        let differences = timeIntervals.slice(1).map((value: number, index: number) => value - timeIntervals[index]);
-        minInterval = Math.min(...differences);
-      } else if (timeIntervals.length === 1) {
-        minInterval = timeIntervals[0]; // único valor como intervalo
-      }
-      //let minDuration = Math.min(...timeIntervals); // Duración mínima en minutos
-      for (let minute = hourMin * 60; minute <= (hourMax - 1) * 60; minute += minInterval) {
-        let hour = Math.floor(minute / 60);
-        let min = minute % 60;
-        let formattedHour = hour < 10 ? '0' + hour : hour;
-        let formattedMin = min < 10 ? '0' + min : min;
-        let formattedTime = `${formattedHour}:${formattedMin}`;
-        hours.push(formattedTime);
+    if (this.selectedDateReservation) {
+      const match = this.findMatchingCourseDate();
+      if (match) {
+        course_date = match;
       }
     }
 
+    if (!course_date) {
+      this.availableHours = [];
+      this.selectedHour = '';
+      return [];
+    }
+
+    const durations = this.getPrivateDurationsInMinutes();
+    const durationMinutes = this.getSelectedDurationMinutes(durations);
+
+    if (!durations.length || durationMinutes <= 0) {
+      this.availableHours = [];
+      this.selectedHour = '';
+      return [];
+    }
+
+    const maxDuration = Math.max(...durations);
+    const startSource = this.course.is_flexible ? (this.course?.hour_min || course_date.hour_start) : course_date.hour_start;
+    const endSource = this.course.is_flexible ? (this.course?.hour_max || course_date.hour_end) : course_date.hour_end;
+    const hourStartMinutes = this.parseTimeToMinutes(startSource || '00:00');
+    const hourEndMinutes = this.parseTimeToMinutes(endSource || '23:59');
+    if (hourEndMinutes <= hourStartMinutes || maxDuration <= 0) {
+      this.availableHours = [];
+      this.selectedHour = '';
+      return [];
+    }
+    const stepMinutes = this.getPrivateStepMinutes(durations);
+    const bufferMinutes = this.getPrivateLeadMinutes();
+    const today = new Date();
+    const courseDateObj = new Date(course_date.date);
+    const isToday = courseDateObj.toDateString() === today.toDateString();
+    const minStartDate = isToday ? new Date(today.getTime() + bufferMinutes * 60000) : null;
+
+    for (let minute = hourStartMinutes; minute <= hourEndMinutes - durationMinutes; minute += stepMinutes) {
+      const startDate = this.buildDateTime(course_date.date, minute);
+      if (isToday && minStartDate && startDate < minStartDate) {
+        continue;
+      }
+      if (startDate < today) {
+        continue;
+      }
+      hours.push(this.formatMinutesToTime(minute));
+    }
+
+    this.availableHours = hours;
+    if (this.availableHours.indexOf(this.selectedHour) === -1) {
+      this.selectedHour = hours.length === 1 ? hours[0] : '';
+    }
     return hours;
+  }
+
+  onHourSelected(value: string) {
+    this.selectedHour = value || '';
+    if (this.course.is_flexible) {
+      this.updateAvailableDurations(this.selectedHour);
+    }
+    this.updatePrice();
+    this.checkLocalOverlapSelection();
+  }
+
+  onDurationSelected(value: string) {
+    this.selectedDuration = this.normalizeDurationValue(value);
+    if (this.course.is_flexible) {
+      this.updateAvailableDurations(this.selectedHour);
+    }
+    this.updatePrice();
+    this.checkLocalOverlapSelection();
   }
 
   getStartDate(): string {
@@ -2429,27 +2511,262 @@ export class CourseComponent implements OnInit {
   }
 
   updateAvailableDurations(selectedHour: string): void {
-    const selectedHourInt = parseInt(selectedHour.split(':')[0]);
-    const selectedMinutesInt = parseInt(selectedHour.split(':')[1]);
-    const hourMax = parseInt(this.course.hour_max);
-    const selectedTimeInMinutes = selectedHourInt * 60 + selectedMinutesInt;
-    const maxTimeInMinutes = hourMax * 60;
-
-    // Filtrar las duraciones disponibles basadas en el tiempo máximo y el tiempo seleccionado
-    this.availableDurations = this.filteredPriceRange()
-      .filter((range: any) => selectedTimeInMinutes + range <= maxTimeInMinutes);
+    if (!selectedHour) {
+      this.availableDurations = this.getAvailableDurations(selectedHour);
+      this.selectedDuration = this.availableDurations.length ? this.availableDurations[0] : '';
+      this.selectedDuration = this.normalizeDurationValue(this.selectedDuration);
+      this.getAvailableHours();
+      return;
+    }
+    this.availableDurations = this.getAvailableDurations(selectedHour);
 
     // Verificar si la duración seleccionada está disponible en la lista filtrada
     const isSelectedDurationAvailable = this.availableDurations
-      .some((range: any) => range === this.convertToMinutes(this.selectedDuration)); // Convertimos selectedDuration a minutos para comparar
+      .some((range: any) => range === this.normalizeDurationValue(this.selectedDuration));
 
     if (!isSelectedDurationAvailable && this.availableDurations.length > 0) {
       // Si la duración seleccionada no está disponible, seleccionamos la primera opción
-      this.selectedDuration = this.convertToDuration(this.availableDurations[0]);
+      this.selectedDuration = this.normalizeDurationValue(this.availableDurations[0]);
     }
 
     // Actualizamos el precio basado en la duración seleccionada
     this.updatePrice();
+    // Recalcular horas disponibles según la nueva duración
+    this.getAvailableHours();
+  }
+
+  private getSelectedDurationMinutes(durations: number[] = []): number {
+    // Priorizar la duración seleccionada en pantalla
+    if (this.selectedDuration) {
+      const parsed = this.utilService.parseDurationToMinutes(this.selectedDuration.toString());
+      if (parsed > 0) {
+        return parsed;
+      }
+    }
+    // Fallback al mínimo disponible
+    if (durations && durations.length) {
+      return Math.min(...durations.filter((d) => d > 0));
+    }
+    return 0;
+  }
+
+  private normalizeDurationValue(value: any): string {
+    if (typeof value === 'string' && (value.includes('h') || value.includes('m'))) {
+      return value.trim();
+    }
+    const minutes = typeof value === 'number' ? value : this.utilService.parseDurationToMinutes(String(value || ''));
+    if (minutes > 0) {
+      return this.convertToDuration(minutes);
+    }
+    return '';
+  }
+
+  private normalizeDateForApi(date: any): string {
+    if (!date) return '';
+    // ISO / Date object
+    const asString = date.toString();
+
+    // Formato dd/MM/yyyy
+    const slashParts = asString.split('/');
+    if (slashParts.length === 3) {
+      const [dd, mm, yyyy] = slashParts;
+      if (dd && mm && yyyy) {
+        return `${yyyy.padStart(4, '0')}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+      }
+    }
+
+    // ISO-like
+    const parsed = new Date(asString);
+    if (!isNaN(parsed.getTime())) {
+      const yyyy = parsed.getFullYear();
+      const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+      const dd = String(parsed.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    try {
+      const parts = asString.split('T')[0];
+      return parts;
+    } catch {
+      return '';
+    }
+  }
+
+  private hasLocalOverlap(newBookingUsers: any[]): boolean {
+    return !!this.getOverlapMessage(newBookingUsers);
+  }
+
+  private getOverlapMessage(newBookingUsers: any[]): string | null {
+    try {
+      const cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
+      if (!cartStorage) return null;
+
+      const cart = JSON.parse(cartStorage);
+      const cartArray = this.transformCartToArray(cart);
+
+      for (const cartItem of cartArray) {
+        for (const detail of cartItem.details) {
+          for (const newBu of newBookingUsers) {
+            const sameClient = String(detail.client_id) === String(newBu.client_id);
+            // normalizar fechas para comparar
+            const existingDate = this.normalizeDateForApi(detail.date);
+            const incomingDate = this.normalizeDateForApi(newBu.date);
+            const sameDate = existingDate && incomingDate && existingDate === incomingDate;
+            if (!sameClient || !sameDate) continue;
+
+            const startA = this.parseTimeToMinutes(detail.hour_start);
+            const endA = this.parseTimeToMinutes(detail.hour_end);
+            const startB = this.parseTimeToMinutes(newBu.hour_start);
+            const endB = this.parseTimeToMinutes(newBu.hour_end);
+
+            if (startA < endB && startB < endA) {
+              const courseName = detail?.course?.name || detail?.course_name || this.translateService.instant('snackbar.booking.overlap');
+              const baseMsg = this.translateService.instant('snackbar.booking.overlap');
+              return `${baseMsg} ${courseName} (${existingDate} ${detail.hour_start}-${detail.hour_end})`;
+            }
+          }
+        }
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private checkLocalOverlapSelection(): void {
+    if (this.course.course_type !== 2) return;
+    if (!this.selectedDateReservation || !this.selectedHour || !this.selectedDuration) return;
+
+    const courseDate = this.findMatchingCourseDate();
+    if (!courseDate) return;
+
+    const normalizedDate = this.normalizeDateForApi(courseDate.date);
+    const durationMinutes = this.utilService.parseDurationToMinutes(this.selectedDuration);
+    if (durationMinutes <= 0) return;
+
+    const newBookingUsers = [];
+    const users = this.selectedUserMultiple?.length ? this.selectedUserMultiple : [this.selectedUser];
+
+    users.forEach((user: any, index: number) => {
+      if (!user) return;
+      newBookingUsers.push({
+        client_id: user.id,
+        date: normalizedDate,
+        hour_start: this.selectedHour,
+        hour_end: this.calculateEndTime(this.selectedHour, durationMinutes)
+      });
+    });
+
+    const overlapMsg = this.getOverlapMessage(newBookingUsers);
+    if (overlapMsg) {
+      this.snackbar.open(overlapMsg, 'OK', { duration: 3000 });
+      // reset selección para forzar nueva elección
+      this.selectedHour = '';
+      if (this.course.is_flexible) {
+        this.selectedDuration = '';
+      }
+      this.getAvailableHours();
+      if (this.course.is_flexible) {
+        this.updateAvailableDurations(this.selectedHour);
+      }
+      this.updatePrice();
+    }
+  }
+
+  private transformCartToArray(cart: any): any[] {
+    const cartArray = [];
+    if (!cart || typeof cart !== 'object') {
+      return cartArray;
+    }
+
+    for (const courseId of Object.keys(cart)) {
+      const courseEntry = cart[courseId];
+      if (!courseEntry || typeof courseEntry !== 'object') continue;
+
+      for (const userId of Object.keys(courseEntry)) {
+        if (!courseEntry.hasOwnProperty(userId)) continue;
+        cartArray.push({
+          userId,
+          courseId,
+          details: courseEntry[userId]
+        });
+      }
+    }
+    return cartArray;
+  }
+
+  private getPrivateLeadMinutes(): number {
+    const lead = this.settings?.booking?.private_min_lead_minutes;
+    const parsed = Number(lead);
+    if (!isNaN(parsed) && parsed >= 0) {
+      return parsed;
+    }
+    return this.DEFAULT_PRIVATE_LEAD_MINUTES;
+  }
+
+  private getPrivateDurationsInMinutes(): number[] {
+    if (!this.course) return [];
+
+    let priceRange = this.course.price_range;
+    if (typeof priceRange === 'string') {
+      try {
+        priceRange = JSON.parse(priceRange);
+      } catch {
+        priceRange = [];
+      }
+    }
+
+    if (this.course.is_flexible && Array.isArray(priceRange) && priceRange.length) {
+      // Tomar sólo intervalos con precio para el número de pax seleccionado (o cualquiera si no coincide)
+      return priceRange
+        .filter((range: any) => {
+          const keys = Object.keys(range).filter(k => k !== 'intervalo');
+          return keys.some(k => range[k] !== null && range[k] !== undefined);
+        })
+        .map((range: any) => this.utilService.parseDurationToMinutes(range.intervalo))
+        .filter((minutes: number) => minutes > 0);
+    }
+
+    const fixedMinutes = this.utilService.parseDurationToMinutes(this.course.duration);
+    return fixedMinutes > 0 ? [fixedMinutes] : [];
+  }
+
+  private parseTimeToMinutes(time: string): number {
+    if (!time) return 0;
+    const [h, m] = time.split(':').map(Number);
+    return (h || 0) * 60 + (m || 0);
+  }
+
+  private formatMinutesToTime(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const paddedHours = hours.toString().padStart(2, '0');
+    const paddedMins = mins.toString().padStart(2, '0');
+    return `${paddedHours}:${paddedMins}`;
+  }
+
+  private buildDateTime(date: string, minutes: number): Date {
+    const base = new Date(date);
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    base.setHours(hours, mins, 0, 0);
+    return base;
+  }
+
+  private getPrivateStepMinutes(durations: number[]): number {
+    if (!durations || durations.length === 0) return 5;
+    if (durations.length === 1) return 5;
+    const sorted = [...durations].sort((a, b) => a - b);
+    let minDiff = Number.MAX_SAFE_INTEGER;
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = sorted[i] - sorted[i - 1];
+      if (diff > 0 && diff < minDiff) {
+        minDiff = diff;
+      }
+    }
+    if (!isFinite(minDiff) || minDiff === Number.MAX_SAFE_INTEGER) return 5;
+    return Math.max(5, minDiff);
   }
 
   convertToDuration(minutes: number): string {
@@ -2884,14 +3201,20 @@ export class CourseComponent implements OnInit {
       } else if(this.course.course_type === 2) {
 
         let course_date = this.findMatchingCourseDate();
+        if (!course_date) {
+          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap'), 'OK', { duration: 3000 });
+          return;
+        }
 
-        course_date.hour_start = this.selectedHour
+        const duration = this.utilService.parseDurationToMinutes(this.selectedDuration);
+        const courseDatePayload = {
+          ...course_date,
+          hour_start: this.selectedHour,
+          hour_end: this.calculateEndTime(this.selectedHour, duration),
+          date: this.normalizeDateForApi(course_date.date)
+        };
 
-        let duration = this.utilService.parseDurationToMinutes(this.selectedDuration)
-
-        course_date.hour_end = this.calculateEndTime(this.selectedHour, duration);
-
-        this.selectedCourseDates = [course_date];
+        this.selectedCourseDates = [courseDatePayload];
 
       } else {
 
@@ -3102,8 +3425,6 @@ export class CourseComponent implements OnInit {
   }
 
 }
-
-
 
 
 

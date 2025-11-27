@@ -911,7 +911,11 @@ export class CartComponent implements OnInit {
   }
 
   getTotalBasePrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.course.price), 0) / details.length;
+    return details.reduce((total, detail) => {
+      const price = detail?.price ?? detail?.course?.price ?? 0;
+      const numericPrice = parseFloat(price) || 0;
+      return total + numericPrice;
+    }, 0);
   }
 
   getTotalItemPrice(details: any[]): number {
