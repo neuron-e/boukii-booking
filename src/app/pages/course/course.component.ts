@@ -114,6 +114,7 @@ export class CourseComponent implements OnInit {
   selectedDuration: any = null;
   availableDurations: string[] = [];
   availableHours: any[] = [];
+  selectedIntervalId: string | null = null;
   private readonly DEFAULT_PRIVATE_LEAD_MINUTES = 30;
 
   schoolData: any;
@@ -140,7 +141,6 @@ export class CourseComponent implements OnInit {
 
   // Cache para evitar re-renderizado
   private cachedIntervalGroups: any[] | null = null;
-  selectedIntervalId: string | null = null;
 
   defaultImage = '../../../assets/images/PAGINA-LOGIN-BOUKII-SCHOOLSMALL.jpg';
 
@@ -1700,6 +1700,24 @@ export class CourseComponent implements OnInit {
         courseDateObject.getDate() === selectedDate.getDate();
     });
 
+    if (matchingDate && matchingDate.course_interval_id) {
+      this.selectedIntervalId = String(matchingDate.course_interval_id);
+    }
+
+    // Si hay varios course_dates para la misma fecha y ya tenemos intervalo seleccionado, elegir el que coincide
+    if (this.selectedIntervalId) {
+      const withInterval = this.course.course_dates.find((courseDate: any) => {
+        const courseDateObject = new Date(courseDate.date);
+        return courseDateObject.getFullYear() === selectedDate.getFullYear() &&
+          courseDateObject.getMonth() === selectedDate.getMonth() &&
+          courseDateObject.getDate() === selectedDate.getDate() &&
+          String(courseDate.course_interval_id) === String(this.selectedIntervalId);
+      });
+      if (withInterval) {
+        return { ...withInterval };
+      }
+    }
+
     return matchingDate ? { ...matchingDate } : null;
   }
 
@@ -2442,8 +2460,9 @@ export class CourseComponent implements OnInit {
     }
 
     const maxDuration = Math.max(...durations);
-    const startSource = this.course.is_flexible ? (this.course?.hour_min || course_date.hour_start) : course_date.hour_start;
-    const endSource = this.course.is_flexible ? (this.course?.hour_max || course_date.hour_end) : course_date.hour_end;
+    const useIntervalHours = this.hasIntervals();
+    const startSource = useIntervalHours ? course_date.hour_start : (this.course.is_flexible ? (this.course?.hour_min || course_date.hour_start) : course_date.hour_start);
+    const endSource = useIntervalHours ? course_date.hour_end : (this.course.is_flexible ? (this.course?.hour_max || course_date.hour_end) : course_date.hour_end);
     const hourStartMinutes = this.parseTimeToMinutes(startSource || '00:00');
     const hourEndMinutes = this.parseTimeToMinutes(endSource || '23:59');
     if (hourEndMinutes <= hourStartMinutes || maxDuration <= 0) {
