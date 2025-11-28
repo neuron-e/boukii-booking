@@ -310,37 +310,30 @@ export class GiftVoucherService extends ApiService {
    * Valida un monto de bono regalo
    *
    * @param amount - Monto a validar
-   * @param minAmount - Monto mÃ­nimo (default: 10)
-   * @param maxAmount - Monto mÃ¡ximo (default: 1000)
-   * @returns Objeto con validaciÃ³n y mensaje
-   *
-   * @example
-   * ```typescript
-   * const validation = this.giftVoucherService.validateAmount(75);
-   * if (!validation.valid) {
-   *   console.error(validation.message);
-   * }
-   * ```
+   * @param minAmount - Monto m?nimo (default: 10)
+   * @param maxAmount - Monto m?ximo (default: 1000)
+   * @returns Objeto con validaci?n y mensaje
    */
-  validateAmount(amount: number, minAmount: number = 10, maxAmount: number = 1000): { valid: boolean; message: string } {
+  validateAmount(amount: number, minAmount: number = 10, maxAmount: number = 1000, currency: string = 'CHF'): { valid: boolean; message: string } {
+    const code = currency || 'CHF';
     if (amount < minAmount) {
       return {
         valid: false,
-        message: `El monto mÃ­nimo es CHF ${minAmount}`
+        message: `El monto m?nimo es ${code} ${minAmount}`
       };
     }
 
     if (amount > maxAmount) {
       return {
         valid: false,
-        message: `El monto mÃ¡ximo es CHF ${maxAmount}`
+        message: `El monto m?ximo es ${code} ${maxAmount}`
       };
     }
 
     if (amount % 1 !== 0 && (amount * 100) % 1 !== 0) {
       return {
         valid: false,
-        message: 'El monto debe tener mÃ¡ximo 2 decimales'
+        message: 'El monto debe tener m?ximo 2 decimales'
       };
     }
 
@@ -351,6 +344,7 @@ export class GiftVoucherService extends ApiService {
   }
 
   /**
+  /**  /**
    * Valida un email
    *
    * @param email - Email a validar
@@ -389,8 +383,9 @@ export class GiftVoucherService extends ApiService {
   /**
    * Formatea un monto para mostrar.
    */
-  formatAmount(amount: number): string {
-    return `CHF ${amount.toFixed(2)}`;
+  formatAmount(amount: number, currency: string = 'CHF'): string {
+    const code = currency || 'CHF';
+    return `${code} ${amount.toFixed(2)}`;
   }
 
   /**

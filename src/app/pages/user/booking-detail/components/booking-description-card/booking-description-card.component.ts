@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FormDetailsPrivateComponent } from '../form-details-private/form-details-private.component';
-import { FormDetailsColectiveFlexComponent } from '../form-details-colective-flex/form-details-colective-flex.component';
 import { FormDetailsColectiveFixComponent } from '../form-details-colective-fix/form-details-colective-fix.component';
 import { StepObservationsComponent } from '../step-observations/step-observations.component';
 import {TranslateService} from '@ngx-translate/core';
@@ -185,14 +184,10 @@ export class BookingDescriptionCard {
   }
 
   sendEditForm(dates: any, course: any, utilizers: any = []) {
-    if (course.course_type == 2) {
+    if (course.course_type == 2 || (course.course_type == 1 && course.is_flexible)) {
       this.openPrivateDatesForm(dates, course, utilizers);
     } else if (course.course_type == 1) {
-      if (course.is_flexible) {
-        this.openCollectiveFlexDatesForm(dates, course, utilizers)
-      } else {
-        this.openCollectiveFixDatesForm(dates, course, utilizers)
-      }
+      this.openCollectiveFixDatesForm(dates, course, utilizers);
     }
   }
 
@@ -213,45 +208,13 @@ export class BookingDescriptionCard {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Aquí manejas los datos actualizados que provienen del modal
         this.dates = result.course_dates;
-        this.total = this.dates[0].price
-        result.total = this.total;
+        const totalPrice = this.dates
+          .reduce((acc, date) => acc + (parseFloat(date.price || 0) || 0), 0)
+          .toFixed(2);
+        this.total = totalPrice;
+        result.total = totalPrice;
         this.editActivity.emit(result);
-        // Aquí puedes tomar los datos y hacer lo que necesites con ellos
-        // Por ejemplo, enviarlos al backend o actualizar la UI
-        //this.updateBooking(result);
-      } else {
-        this.editActivity.emit(result);
-      }
-    });
-  }
-
-  private openCollectiveFlexDatesForm(dates: any, course: any, utilizers: any = []) {
-    const dialogRef = this.dialog.open(FormDetailsColectiveFlexComponent, {
-      width: "800px",
-      height: "800px",
-      panelClass: "customBookingDialog",
-      data: {
-        utilizer: utilizers[0],
-        sport: course.sport,
-        sportLevel: this.sportLevel,
-        course: course,
-        groupedActivities: this.groupedActivities,
-        initialData: dates
-      },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Aquí manejas los datos actualizados que provienen del modal
-        this.dates = result.course_dates;
-        this.total = this.dates.reduce((acc, date) =>
-          acc + parseFloat(date.price), 0).toFixed(2);
-        result.total = this.total;
-        this.editActivity.emit(result);
-        // Aquí puedes tomar los datos y hacer lo que necesites con ellos
-        // Por ejemplo, enviarlos al backend o actualizar la UI
-        //this.updateBooking(result);
       } else {
         this.editActivity.emit(result);
       }

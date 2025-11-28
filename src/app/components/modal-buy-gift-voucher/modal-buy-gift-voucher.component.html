@@ -42,7 +42,7 @@
             <div class="popular-badge" *ngIf="option.popular">
               <span>{{'text_popular' | translate}}</span>
             </div>
-            <span class="amount-value">{{option.label}}</span>
+            <span class="amount-value">{{ schoolCurrency }} {{ option.value }}</span>
           </div>
 
           <!-- Monto Personalizado -->
@@ -66,7 +66,7 @@
                    max="1000"
                    step="10"
                    placeholder="100" />
-            <span matPrefix>CHF&nbsp;</span>
+            <span matPrefix>{{ schoolCurrency }}&nbsp;</span>
           </mat-form-field>
         </div>
 

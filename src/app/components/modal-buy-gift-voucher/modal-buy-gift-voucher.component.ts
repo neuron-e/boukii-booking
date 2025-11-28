@@ -80,7 +80,8 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
     amount: 0,
     template: 'default',
     background_color: '#FFFFFF',
-    text_color: '#333333'
+    text_color: '#333333',
+    school_id: 0
   };
 
   // Opciones disponibles
@@ -118,7 +119,7 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
       data => {
         if (data && data.data) {
           this.schoolId = data.data.id;
-          this.schoolCurrency = data.data?.currency || this.schoolCurrency;
+          this.schoolCurrency = data.data?.currency || data.data?.taxes?.currency || this.schoolCurrency;
           this.giftVoucher.school_id = this.schoolId;
         }
       }
@@ -195,7 +196,7 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
    */
   goToPersonalize(): void {
     // Validar monto
-    const validation = this.giftVoucherService.validateAmount(this.giftVoucher.amount);
+    const validation = this.giftVoucherService.validateAmount(this.giftVoucher.amount, 10, 1000, this.schoolCurrency);
     if (!validation.valid) {
       this.errorMessage = validation.message;
       return;
@@ -442,6 +443,6 @@ export class ModalBuyGiftVoucherComponent implements OnInit, OnChanges {
    * Formatea un monto para mostrar
    */
   formatAmount(amount: number): string {
-    return this.giftVoucherService.formatAmount(amount);
+    return this.giftVoucherService.formatAmount(amount, this.schoolCurrency);
   }
 }

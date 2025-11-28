@@ -575,37 +575,23 @@ export class FormDetailsPrivateComponent implements OnInit {
   submitForm() {
     if (this.stepForm.valid) {
 
-      // Recorrer las fechas y calcular el precio para cada una
-      // Usar getRawValue() para obtener todos los valores, incluso los deshabilitados
       const course_dates = this.stepForm.get('course_dates').getRawValue();
-
-      let totalPrice = 0;
+      const activeDates = course_dates.filter((date: any) => !date.disabled);
 
       // Calcular el precio para cada fecha y acumular el total
-      course_dates.forEach((date, index) => {
-        if(!date.selected) {
-          const datePrice = this.calculatePrice(date) +
-            date.utilizers.reduce((sum, utilizer) => sum + parseFloat(utilizer.totalExtraPrice), 0);
+      activeDates.forEach((date, index) => {
+        const datePrice = this.calculatePrice(date) +
+          date.utilizers.reduce((sum, utilizer) => sum + parseFloat(utilizer.totalExtraPrice), 0);
 
-          course_dates[index].price = datePrice; // Asignar el precio a la fecha actual
-          totalPrice += datePrice; // Acumular el precio total
-        }
+        activeDates[index].price = datePrice;
       });
 
-      // Asignar el precio total a todas las fechas
-      course_dates.forEach((date, index) => {
-        course_dates[index].price = totalPrice;
-        course_dates[index].course_date_id = this.course.course_dates.find(d =>
+      activeDates.forEach((date, index) => {
+        activeDates[index].course_date_id = this.course.course_dates.find(d =>
           moment(d.date).format('YYYY-MM-DD') == moment(date.date).format('YYYY-MM-DD')).id;
       });
 
-      // Actualizar el formulario con las fechas que ahora tienen los precios calculados
-      this.stepForm.patchValue({
-        course_dates: course_dates
-      });
-
-      // Cerrar el diálogo pasando los valores del formulario
-      this.dialogRef.close({course_dates: course_dates});
+      this.dialogRef.close({ course_dates: activeDates });
 
     } else {
       this.snackbar.open('Por favor completa todos los campos requeridos', 'OK', { duration: 3000 });

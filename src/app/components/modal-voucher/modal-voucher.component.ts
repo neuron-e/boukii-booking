@@ -35,6 +35,7 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
   code: string = '';
   bonus: any;
   loading = false;
+  currencyCode = 'CHF';
   private clientId: number | null = null;
   private schoolId: number | null = null;
 
@@ -58,6 +59,7 @@ export class ModalVoucherComponent implements OnInit, OnChanges  {
       }
 
       this.schoolId = data?.data?.id ?? data?.id ?? null;
+      this.currencyCode = data?.data?.currency || data?.data?.taxes?.currency || data?.currency || this.currencyCode;
 
       const storageKey = `${this.slug}-boukiiUser`;
       const storedUser = localStorage.getItem(storageKey);

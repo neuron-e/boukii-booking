@@ -265,12 +265,12 @@ export const GIFT_VOUCHER_TEMPLATES: GiftVoucherTemplateInfo[] = [
  * Montos predefinidos sugeridos
  */
 export const GIFT_VOUCHER_AMOUNT_OPTIONS: GiftVoucherAmountOption[] = [
-  { value: 50, label: 'CHF 50' },
-  { value: 100, label: 'CHF 100', popular: true },
-  { value: 150, label: 'CHF 150', popular: true },
-  { value: 200, label: 'CHF 200' },
-  { value: 250, label: 'CHF 250' },
-  { value: 500, label: 'CHF 500' }
+  { value: 50, label: '50' },
+  { value: 100, label: '100', popular: true },
+  { value: 150, label: '150', popular: true },
+  { value: 200, label: '200' },
+  { value: 250, label: '250' },
+  { value: 500, label: '500' }
 ];
 
 /**

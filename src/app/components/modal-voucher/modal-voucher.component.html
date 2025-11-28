@@ -25,12 +25,12 @@
                 </div>
                 <div class="voucher-meta">
                   <span>
-                    {{ 'text_voucher_amount' | translate }}:
-                    {{ b.quantity | number:'0.2-2' }} CHF
+                  {{ 'text_voucher_amount' | translate }}:
+                    {{ b.quantity | number:'0.2-2' }} {{ currencyCode }}
                   </span>
                   <span>
                     {{ 'remaining_balance' | translate }}:
-                    {{ b.remaining_balance | number:'0.2-2' }} CHF
+                    {{ b.remaining_balance | number:'0.2-2' }} {{ currencyCode }}
                   </span>
                 </div>
               </mat-radio-button>
