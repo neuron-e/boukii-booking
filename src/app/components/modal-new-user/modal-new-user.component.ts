@@ -151,11 +151,12 @@ export class ModalNewUserComponent implements OnInit {
   closeModal() {
     this.onClose.emit();
   }
-  displayFn(d: any): string {
-    if (d === null || d === undefined) {
+  displayLang = (d: any): string => {
+    if (d === null || d === undefined || !Array.isArray(this.langs)) {
       return '';
     }
-    const lang = this.langs.find((a: any) => a.id === d);
+    const langId = typeof d === 'object' && d !== null ? d.id : d;
+    const lang = this.langs.find((a: any) => a.id === langId);
     if (lang && lang.lang && this.translateService) {
       return this.translateService.instant(lang.lang);
     }

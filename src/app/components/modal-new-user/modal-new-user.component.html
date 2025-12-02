@@ -40,9 +40,9 @@
 
       <mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 1</mat-label>
-        <input type="text" matInput formControlName="language1_id" [matAutocomplete]="langAuto">
-        <mat-autocomplete #langAuto="matAutocomplete" [displayWith]="displayFn">
-          <mat-option *ngFor="let item of langs" [value]="item.id">
+        <input type="text" matInput formControlName="language1_id" [matAutocomplete]="langAuto1" autocomplete="off">
+        <mat-autocomplete #langAuto1="matAutocomplete" [displayWith]="displayLang">
+          <mat-option *ngFor="let item of langs" [value]="item">
             {{ item.lang | translate }}
           </mat-option>
         </mat-autocomplete>
@@ -50,7 +50,12 @@
 
       <mat-form-field appearance="outline" class="widthInput">
         <mat-label>{{'text_language' | translate}} 2</mat-label>
-        <input type="text" matInput formControlName="language2_id" [matAutocomplete]="langAuto">
+        <input type="text" matInput formControlName="language2_id" [matAutocomplete]="langAuto2" autocomplete="off">
+        <mat-autocomplete #langAuto2="matAutocomplete" [displayWith]="displayLang">
+          <mat-option *ngFor="let item of langs" [value]="item">
+            {{ item.lang | translate }}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
 
       <!--<mat-form-field appearance="outline" class="widthInput">

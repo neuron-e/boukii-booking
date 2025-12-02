@@ -382,7 +382,7 @@ export class CartComponent implements OnInit {
     const discountInfo = this.appliedDiscountCode?.discount_code || null;
     const discountAmount = this.discountCodeAmount || 0;
     const intervalDiscountAmount = this.totalIntervalDiscounts;
-    const grossPriceTotal = this.totalPrice + this.usedVoucherAmount + discountAmount + intervalDiscountAmount;
+    const grossPriceTotal = this.totalPrice; // final amount after discounts/vouchers/insurance/taxes
     const originalBasePrice = this.originalBasePrice || (basePrice + intervalDiscountAmount);
 
     // Prepare interval discounts for basket
@@ -1061,7 +1061,7 @@ export class CartComponent implements OnInit {
 
     const grossTotal = this.totalPrice + this.usedVoucherAmount + this.discountCodeAmount;
     this.bookingService.setBookingData({
-      price_total: grossTotal,
+      price_total: this.totalPrice,
       vouchers: this.vouchers,
       discount_code_amount: this.discountCodeAmount,
       discount_code_id: this.appliedDiscountCode?.discount_code?.id ?? null
@@ -1311,7 +1311,7 @@ export class CartComponent implements OnInit {
       this.discountCodeAmount = validationResult.discount_amount;
 
       this.bookingService.setBookingData({
-        price_total: this.totalPrice + this.usedVoucherAmount + validationResult.discount_amount,
+        price_total: this.totalPrice,
         vouchers: this.vouchers,
         discount_code_amount: validationResult.discount_amount,
         discount_code_id: validationResult.discount_code?.id ?? null,
