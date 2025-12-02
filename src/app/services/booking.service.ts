@@ -44,21 +44,40 @@ export class BookingService extends ApiService {
       return null;
     }
 
-    // If it is already numeric or numeric string, return parsed value
+    const courseIntervals = Array.isArray(course?.course_intervals) ? course.course_intervals : [];
+    const knownIntervalIds = courseIntervals
+      .map((ci: any) => Number(ci?.id))
+      .filter((id: number) => !isNaN(id) && isFinite(id));
+
+    const matchesCourseInterval = (candidate: number) => {
+      if (isNaN(candidate) || !isFinite(candidate)) {
+        return false;
+      }
+      if (knownIntervalIds.includes(candidate)) {
+        return true;
+      }
+      if (Array.isArray(course?.course_dates)) {
+        return course.course_dates.some((d: any) => Number(d?.course_interval_id) === candidate);
+      }
+      return false;
+    };
+
+    // If it is already numeric or numeric string, only accept it when it matches known course interval ids
     const numeric = Number(rawIntervalId);
     if (!isNaN(numeric) && isFinite(numeric)) {
-      return numeric;
+      if (matchesCourseInterval(numeric)) {
+        return numeric;
+      }
     }
 
     // Try to map by settings interval -> course_intervals ordering or name
     const settings = this.parseCourseSettings(course?.settings);
-    const courseIntervals = Array.isArray(course?.course_intervals) ? course.course_intervals : null;
 
     if (settings?.intervals && Array.isArray(settings.intervals) && courseIntervals && courseIntervals.length > 0) {
       const idx = settings.intervals.findIndex((i: any) => String(i?.id) === String(rawIntervalId));
       if (idx >= 0 && courseIntervals[idx]?.id !== undefined) {
         const candidate = Number(courseIntervals[idx].id);
-        if (!isNaN(candidate)) {
+        if (matchesCourseInterval(candidate)) {
           return candidate;
         }
       }
@@ -69,7 +88,7 @@ export class BookingService extends ApiService {
         const foundByName = courseIntervals.find((ci: any) => ci?.name === settingsInterval.name);
         if (foundByName?.id !== undefined) {
           const candidate = Number(foundByName.id);
-          if (!isNaN(candidate)) {
+          if (matchesCourseInterval(candidate) || (!isNaN(candidate) && isFinite(candidate))) {
             return candidate;
           }
         }
@@ -270,8 +289,29 @@ export class BookingService extends ApiService {
     }
 
     if (intervalMap.size === 0) {
-      console.warn('[booking-discount-api] No interval mapping available after resolving dates, falling back to legacy');
+      console.info('[booking-discount-api] No interval mapping available after resolving dates, falling back to legacy');
       return of(null);
+    }
+
+    const validBackendIntervals = new Set<number>();
+    if (Array.isArray(course?.course_intervals)) {
+      course.course_intervals.forEach((ci: any) => {
+        const parsed = Number(ci?.id);
+        if (!isNaN(parsed) && isFinite(parsed)) {
+          validBackendIntervals.add(parsed);
+        }
+      });
+    }
+
+    if (validBackendIntervals.size > 0) {
+      const hasInvalid = Array.from(intervalMap.keys()).some((id: number) => !validBackendIntervals.has(Number(id)));
+      if (hasInvalid) {
+        console.info('[booking-discount-api] Resolved interval ids are not present in course_intervals; using legacy calculation instead', {
+          resolved: Array.from(intervalMap.keys()),
+          available: Array.from(validBackendIntervals)
+        });
+        return of(null);
+      }
     }
 
     const intervals = Array.from(intervalMap.entries()).map(([intervalId, info]) => ({
@@ -366,9 +406,9 @@ export class BookingService extends ApiService {
 
         const fallback = this.computeLocalCanonicalDiscount(course, dateEntries, basePrice, participants);
         if (fallback) {
-          console.warn('[booking-discount-api] Using local canonical fallback (interval-wide) because backend discount API was unavailable/invalid');
-          return of(fallback);
-        }
+        console.info('[booking-discount-api] Using local canonical fallback (interval-wide) because backend discount API was unavailable/invalid');
+        return of(fallback);
+      }
 
         // Error: neither API nor local config available
         // Return original price without discount to avoid incorrect calculation
@@ -404,14 +444,40 @@ export class BookingService extends ApiService {
     }
 
     const settings = this.parseCourseSettings(course?.settings);
+    let courseIntervalsConfig: any[] = [];
+    if (Array.isArray(course?.intervals)) {
+      courseIntervalsConfig = course.intervals;
+    } else if (typeof course?.intervals === 'string') {
+      try {
+        const parsed = JSON.parse(course.intervals);
+        if (Array.isArray(parsed)) {
+          courseIntervalsConfig = parsed;
+        }
+      } catch {
+        // ignore parse errors and keep empty fallback
+      }
+    }
     const intervalConfig = new Map<string, { name?: string | null; discounts: any[] }>();
+    const parseDiscountArray = (raw: any): any[] => {
+      if (!raw) return [];
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string') {
+        try {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    };
 
     if (course?.intervals_config_mode === 'independent' && Array.isArray(course?.course_intervals)) {
       course.course_intervals.forEach((interval: any) => {
         if (interval?.id !== undefined) {
           intervalConfig.set(String(interval.id), {
             name: interval?.name,
-            discounts: Array.isArray(interval?.discounts) ? interval.discounts : []
+            discounts: parseDiscountArray(interval?.discounts)
           });
         }
       });
@@ -423,14 +489,64 @@ export class BookingService extends ApiService {
         if (!intervalConfig.has(key)) {
           intervalConfig.set(key, {
             name: interval?.name,
-            discounts: Array.isArray(interval?.discounts) ? interval.discounts : []
+            discounts: parseDiscountArray(interval?.discounts)
           });
         }
       });
     }
 
+    if (Array.isArray(courseIntervalsConfig)) {
+      courseIntervalsConfig.forEach((interval: any) => {
+        const key = String(interval?.id);
+        if (!key) return;
+        if (!intervalConfig.has(key)) {
+          intervalConfig.set(key, {
+            name: interval?.name,
+            discounts: parseDiscountArray(interval?.discounts)
+          });
+        }
+      });
+    }
+
+    // Merge interval definitions (id + start/end) for date-range mapping
+    const intervalDefinitions: Array<{ id: string; startDate?: string | null; endDate?: string | null }> = [];
+    if (Array.isArray(courseIntervalsConfig)) {
+      courseIntervalsConfig.forEach((interval: any) => {
+        const key = interval?.id !== undefined ? String(interval.id) : null;
+        if (key) {
+          intervalDefinitions.push({
+            id: key,
+            startDate: interval?.startDate || interval?.start_date || null,
+            endDate: interval?.endDate || interval?.end_date || null
+          });
+        }
+      });
+    }
+    if (settings?.intervals && Array.isArray(settings.intervals)) {
+      settings.intervals.forEach((interval: any) => {
+        const key = interval?.id !== undefined ? String(interval.id) : null;
+        if (key) {
+          intervalDefinitions.push({
+            id: key,
+            startDate: interval?.startDate || interval?.start_date || null,
+            endDate: interval?.endDate || interval?.end_date || null
+          });
+        }
+      });
+    }
+
+    const totalDaysOverall = dateEntries.length;
+    const pax = participants && participants > 0 ? participants : 1;
+
     if (intervalConfig.size === 0) {
-      return null;
+      const originalPrice = Number((basePrice * totalDaysOverall * pax).toFixed(2));
+      return {
+        originalPrice,
+        totalDiscount: 0,
+        finalPrice: originalPrice,
+        intervals: [],
+        source: 'legacy'
+      };
     }
 
     const grouped = new Map<string, { days: number }>();
@@ -446,22 +562,69 @@ export class BookingService extends ApiService {
       grouped.set(key, current);
     });
 
+    // Fallback: if no grouping was possible (e.g., interval ids not aligned), try mapping by interval date ranges
+    if (grouped.size === 0 && intervalDefinitions.length > 0) {
+      dateEntries.forEach(entry => {
+        const entryDate = entry?.date ? moment(entry.date).format('YYYY-MM-DD') : null;
+        if (!entryDate) return;
+        const match = intervalDefinitions.find((interval: any) => {
+          const start = interval?.startDate ? moment(interval.startDate).format('YYYY-MM-DD') : null;
+          const end = interval?.endDate ? moment(interval.endDate).format('YYYY-MM-DD') : null;
+          if (!start || !end) return false;
+          return moment(entryDate).isSameOrAfter(start) && moment(entryDate).isSameOrBefore(end);
+        });
+        const key = match?.id !== undefined ? String(match.id) : null;
+        if (!key || !intervalConfig.has(key)) {
+          return;
+        }
+        const current = grouped.get(key) || { days: 0 };
+        current.days += 1;
+        grouped.set(key, current);
+      });
+    }
+
+    // Last-resort fallback: if still no grouping but there is at least one interval config, attach all dates to the first interval
+    if (grouped.size === 0 && intervalConfig.size > 0) {
+      const firstKey = intervalConfig.keys().next().value;
+      if (firstKey) {
+        grouped.set(firstKey, { days: dateEntries.length });
+      }
+    }
+
     if (grouped.size === 0) {
-      return null;
+      const originalPrice = Number((basePrice * totalDaysOverall * pax).toFixed(2));
+      return {
+        originalPrice,
+        totalDiscount: 0,
+        finalPrice: originalPrice,
+        intervals: [],
+        source: 'legacy'
+      };
     }
 
     const intervals: IntervalDiscountSummary[] = [];
     let totalDiscount = 0;
-    const totalDays = dateEntries.length;
-    const pax = participants && participants > 0 ? participants : 1;
+
+    console.info('[booking-discount-local] grouping and rules', {
+      intervalKeys: Array.from(intervalConfig.keys()),
+      grouped: Array.from(grouped.entries()).map(([k, v]) => ({ interval: k, days: v.days })),
+      rulesPreview: Array.from(intervalConfig.entries()).map(([k, v]) => ({
+        id: k,
+        discounts: (v.discounts || []).map((d: any) => ({
+          days: Number(d.date || d.days || d.dates || d.min_days || d.count || 0),
+          type: (d.type === 2 || d.type === 'fixed' || d.discount_type === 'fixed_amount') ? 'fixed' : 'percentage',
+          value: Number(d.discount || d.value || d.discount_value || 0)
+        })).filter((d: any) => d.days > 0)
+      }))
+    });
 
     grouped.forEach((info, key) => {
       const config = intervalConfig.get(key);
       if (!config) return;
       const rules = (config.discounts || []).map((d: any) => ({
-        days: d.date || d.days || d.dates || d.min_days || d.count || 0,
+        days: Number(d.date || d.days || d.dates || d.min_days || d.count || 0),
         type: (d.type === 2 || d.type === 'fixed' || d.discount_type === 'fixed_amount') ? 'fixed' : 'percentage',
-        value: d.discount || d.value || d.discount_value || 0
+        value: Number(d.discount || d.value || d.discount_value || 0)
       })).filter(r => r.days > 0);
 
       if (!rules.length) return;
@@ -477,7 +640,9 @@ export class BookingService extends ApiService {
       if (matched.type === 'percentage') {
         discountAmount = intervalBase * (matched.value / 100);
       } else {
-        discountAmount = matched.value * info.days * pax;
+        // Fixed discounts apply once on the interval total; cap to base to avoid negatives
+        const fixedTotal = matched.value * (pax || 1);
+        discountAmount = Math.min(intervalBase, fixedTotal);
       }
 
       discountAmount = Number(discountAmount.toFixed(2));
@@ -494,7 +659,7 @@ export class BookingService extends ApiService {
       });
     });
 
-    const originalPrice = basePrice * totalDays * pax;
+    const originalPrice = basePrice * totalDaysOverall * pax;
     return {
       originalPrice: Number(originalPrice.toFixed(2)),
       totalDiscount: Number(totalDiscount.toFixed(2)),
@@ -1280,4 +1445,3 @@ export class BookingService extends ApiService {
   }
 
 }
-
