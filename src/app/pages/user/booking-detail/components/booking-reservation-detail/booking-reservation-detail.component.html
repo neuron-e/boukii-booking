@@ -232,16 +232,16 @@
     {{ "bookings_page.description.total" | translate }}
     <ng-container>
       <span class="totalPrice">
-        {{ bookingData.price_total  | number:'0.2-2'}}
+        {{ getDisplayPriceTotal()  | number:'0.2-2'}}
         {{ getCurrency() }}
       </span>
     </ng-container>
     <ng-container >
-      <span *ngIf="!bookingData.paid && bookingData.price_total - calculateTotalVoucherPrice() > 0">{{ "to_pay" | translate }}</span>
+      <span *ngIf="!bookingData.paid && getDisplayPriceTotal() - calculateTotalVoucherPrice() > 0">{{ "to_pay" | translate }}</span>
     </ng-container>
-    <ng-container *ngIf="!bookingData.paid && bookingData.price_total - calculateTotalVoucherPrice() > 0">
-      <span class="totalPrice" *ngIf="bookingData.price_total - calculateTotalVoucherPrice() != 0">
-        {{ bookingData.price_total - calculateTotalVoucherPrice()  | number:'0.2-2' }}
+    <ng-container *ngIf="!bookingData.paid && getDisplayPriceTotal() - calculateTotalVoucherPrice() > 0">
+      <span class="totalPrice" *ngIf="getDisplayPriceTotal() - calculateTotalVoucherPrice() != 0">
+        {{ getDisplayPriceTotal() - calculateTotalVoucherPrice()  | number:'0.2-2' }}
         {{ getCurrency() }}
       </span>
     </ng-container>
@@ -260,21 +260,21 @@
       <div class="dateRow" style="border-bottom: 1px solid #dee6ea; padding-bottom: 10px">
         <div>
           <span class="date" style="color:#2fca45"
-                *ngIf="bookingData.paid || bookingData.price_total
+                *ngIf="bookingData.paid || getDisplayPriceTotal()
                 - calculateTotalVoucherPrice() <= 0">{{ "ispaid" | translate }}</span>
           <span class="date" style="color:#FB9B1B"
-                *ngIf="!bookingData.paid && bookingData.price_total
+                *ngIf="!bookingData.paid && getDisplayPriceTotal()
                 - calculateTotalVoucherPrice() > 0">{{ "pending_payment" | translate | uppercase }}</span>
           <span class="price">
             <span class="discounted-price" style="color:#2fca45"
-                  *ngIf="bookingData.paid || bookingData.price_total - calculateTotalVoucherPrice() <= 0">
+                  *ngIf="bookingData.paid || getDisplayPriceTotal() - calculateTotalVoucherPrice() <= 0">
               {{ parseFloat(bookingData.paid_total) + Math.abs(calculateTotalVoucherPrice())  | number:'0.2-2' }}
               {{ getCurrency() }}
             </span>
 
             <span class="discounted-price" style="color:#FB9B1B"
-                  *ngIf="!bookingData.paid && bookingData.price_total - calculateTotalVoucherPrice() > 0">
-              {{ parseFloat( bookingData.price_total) - Math.abs(calculateTotalVoucherPrice())  | number:'0.2-2'}}
+                  *ngIf="!bookingData.paid && getDisplayPriceTotal() - calculateTotalVoucherPrice() > 0">
+              {{ getDisplayPriceTotal() - Math.abs(calculateTotalVoucherPrice())  | number:'0.2-2'}}
               {{ getCurrency() }}
             </span>
           </span>
@@ -283,7 +283,7 @@
 
       <div class="dateRow">
         <div>
-          <span class="hour" *ngIf="this.calculateTotalVoucherPrice() < bookingData.price_total && !bookingData.paid"
+          <span class="hour" *ngIf="this.calculateTotalVoucherPrice() < getDisplayPriceTotal() && !bookingData.paid"
                 style="
           color: #E91E63;
            font-size: 14px;

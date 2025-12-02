@@ -152,20 +152,13 @@ export class ModalNewUserComponent implements OnInit {
     this.onClose.emit();
   }
   displayFn(d: any): string {
-      const langs: any[] = [
-    { id: 1, lang: "english" },
-    { id: 2, lang: "france" },
-    { id: 3, lang: "german" },
-    { id: 4, lang: "italian" },
-    { id: 5, lang: "spanish" },
-  ]
-    if (d && typeof d == 'number') {
-      debugger;
-      const lang = langs.find((a: any) => a.id == d).lang;
-      if (lang && this.translateService) {
-        return this.translateService.instant(lang)
-      }
+    if (d === null || d === undefined) {
+      return '';
     }
-    return ''
+    const lang = this.langs.find((a: any) => a.id === d);
+    if (lang && lang.lang && this.translateService) {
+      return this.translateService.instant(lang.lang);
+    }
+    return '';
   }
 }

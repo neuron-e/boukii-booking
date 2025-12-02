@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 })
 export class CartService {
 
-  public carData = new BehaviorSubject<any>(null);
+  public carData = new BehaviorSubject<any>({});
 
   constructor() { }
 

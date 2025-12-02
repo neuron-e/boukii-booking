@@ -13,7 +13,7 @@ import {CartService} from '../../services/cart.service';
 })
 export class PageNotFoundComponent {
   userLogged: any;
-  cart: any;
+  cart: any = {};
   schoolData: any = null;
   isOpenDropdownLang = false;
   isOpenDropdownUser = false;
@@ -36,9 +36,9 @@ export class PageNotFoundComponent {
             const slug = localStorage.getItem(this.schoolData.data.slug+'-cart');
             this.userLogged = JSON.parse(storageSlug);
             const cart = localStorage.getItem(this.schoolData.data.slug+'-cart');
-            this.cart = cart || '';
+            this.cart = cart ? JSON.parse(cart) : {};
             if (slug!==null) {
-              this.cart = JSON.parse(slug !== null ? slug : '');
+              this.cart = JSON.parse(slug !== null ? slug : '{}');
             }
           } else {
             localStorage.clear();
@@ -57,15 +57,17 @@ export class PageNotFoundComponent {
 
     this.cartService.getCartData().subscribe(
       data => {
-        if (data) {
-          this.cart = data;
-        }
+        this.cart = data || {};
       }
     );
   }
 
   calculateCartLength() {
     let uniqueCourses = new Set();
+
+    if (!this.cart || typeof this.cart !== 'object') {
+      return 0;
+    }
 
     for (let courseId in this.cart) {
       if (this.cart.hasOwnProperty(courseId)) {

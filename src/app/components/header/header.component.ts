@@ -13,7 +13,7 @@ import { CartService } from '../../services/cart.service';
 })
 export class HeaderComponent implements OnInit {
   userLogged: any;
-  cart: any;
+  cart: any = {};
   schoolData: any = null;
   isOpenDropdownLang = false;
   isOpenDropdownUser = false;
@@ -38,11 +38,13 @@ export class HeaderComponent implements OnInit {
             const slug = localStorage.getItem(this.schoolData.data.slug + '-cart');
             this.userLogged = JSON.parse(storageSlug);
             const cart = localStorage.getItem(this.schoolData.data.slug + '-cart');
-            this.cart = cart || '';
+            this.cart = cart ? JSON.parse(cart) : {};
             this.selectedLang = localStorage.getItem(this.schoolData.data.slug + '-lang') || 'fr';
             this.translate.use(this.selectedLang);
             if (slug !== null) {
-              this.cart = JSON.parse(slug !== null ? slug : '');
+              this.cart = JSON.parse(slug !== null ? slug : '{}');
+            } else {
+              this.cart = {};
             }
           } else {
             localStorage.clear();
@@ -61,9 +63,7 @@ export class HeaderComponent implements OnInit {
 
     this.cartService.getCartData().subscribe(
       data => {
-        if (data) {
-          this.cart = data;
-        }
+        this.cart = data || {};
       }
     );
   }
@@ -71,6 +71,9 @@ export class HeaderComponent implements OnInit {
   calculateCartLength() {
     let uniqueCourses = new Set();
 
+    if (!this.cart || typeof this.cart !== 'object') {
+      return 0;
+    }
     for (let courseId in this.cart) {
       if (this.cart.hasOwnProperty(courseId)) {
         uniqueCourses.add(courseId);

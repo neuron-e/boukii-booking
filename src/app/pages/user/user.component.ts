@@ -183,7 +183,7 @@ export class UserComponent implements OnInit {
 
           });
 
-          this.cartService.carData.next(null);
+          this.cartService.carData.next({});
 
           if (this.schoolData && this.schoolData.slug) {
 

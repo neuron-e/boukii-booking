@@ -340,7 +340,7 @@ export class CartComponent implements OnInit {
               });
 
               // Limpiar el carrito
-              this.cartService.carData.next(null);
+              this.cartService.carData.next({});
               localStorage.removeItem(this.schoolData?.slug + '-cart'); // Limpiar el carrito del local storage
 
             } else if (status === 'cancel' || status === 'failed') {
@@ -1091,9 +1091,13 @@ export class CartComponent implements OnInit {
     if (indexToRemove !== -1) {
       this.cart.splice(indexToRemove, 1);
       let cartArray = this.transformArrayToCart(this.cart);
-      localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
-
-      this.cartService.carData.next(cartArray);
+      if (this.cart.length === 0) {
+        localStorage.removeItem(this.schoolData.slug + '-cart');
+        this.cartService.carData.next({});
+      } else {
+        localStorage.setItem(this.schoolData.slug + '-cart', JSON.stringify(cartArray));
+        this.cartService.carData.next(cartArray);
+      }
     }
     this.updateTotal();
   }

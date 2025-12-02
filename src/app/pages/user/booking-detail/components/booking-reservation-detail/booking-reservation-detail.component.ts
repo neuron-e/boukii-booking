@@ -176,7 +176,7 @@ export class BookingReservationDetailComponent implements OnInit {
   }
 
   recalculateBonusPrice() {
-    let remainingPrice = parseFloat(this.bookingData.price_total) - this.calculateTotalVoucherPrice();
+    let remainingPrice = this.getDisplayPriceTotal() - this.calculateTotalVoucherPrice();
     if (remainingPrice !== 0 && this.bookingData.vouchers && Array.isArray(this.bookingData.vouchers)) {
       this.bookingData.vouchers.forEach(voucher => {
         if (!voucher.bonus.is_old) {
@@ -206,6 +206,28 @@ export class BookingReservationDetailComponent implements OnInit {
     }
 
     this.updateBookingData();
+  }
+
+  private parseBasket(): any | null {
+    const basket = (this.bookingData as any)?.basket;
+    if (!basket) {
+      return null;
+    }
+    if (typeof basket === 'string') {
+      try {
+        return JSON.parse(basket);
+      } catch {
+        return null;
+      }
+    }
+    return basket;
+  }
+
+  getDisplayPriceTotal(): number {
+    const basket = this.parseBasket();
+    const raw = basket?.price_total ?? this.bookingData?.price_total ?? 0;
+    const num = Number(raw);
+    return isNaN(num) ? 0 : num;
   }
 
 
