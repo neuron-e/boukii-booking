@@ -1083,50 +1083,84 @@ export class CourseComponent implements OnInit {
 
   // Verificar si los días deben ser consecutivos
   mustBeConsecutive(intervalId?: string | null): boolean {
+    const settings = this.getCourseSettings();
+    const globalFlag = settings.mustBeConsecutive === true;
+    const courseConfigMode = this.course?.intervals_config_mode || settings?.intervals_config_mode || null;
+
     if (intervalId) {
       const interval = this.getIntervalEntity(intervalId);
+      const legacyInterval = this.getLegacyInterval(intervalId);
+      const intervalConfigMode = interval?.config_mode || courseConfigMode;
+      const usesCustomRules = intervalConfigMode === 'custom' || courseConfigMode === 'independent';
+      const intervalFlag = this.toBoolean((interval ?? legacyInterval)?.mustBeConsecutive);
+
       if (interval) {
         if (interval.booking_mode === 'package') {
           return true;
         }
 
-        if (interval.config_mode === 'custom') {
-          return interval.date_generation_method === 'consecutive';
+        if (usesCustomRules) {
+          if (interval.date_generation_method === 'consecutive') {
+            return true;
+          }
+          if (intervalFlag !== null) {
+            return intervalFlag === true;
+          }
+          return false;
         }
       }
 
-      const legacyInterval = this.getLegacyInterval(intervalId);
-      if (legacyInterval?.mustBeConsecutive !== undefined) {
-        return legacyInterval.mustBeConsecutive === true;
+      if (globalFlag) {
+        return true;
+      }
+
+      if (intervalFlag !== null) {
+        return intervalFlag === true;
       }
     }
 
-    const settings = this.getCourseSettings();
-    return settings.mustBeConsecutive === true;
+    return globalFlag;
   }
 
   // Verificar si debe comenzar desde el primer día
   mustStartFromFirst(intervalId?: string | null): boolean {
+    const settings = this.getCourseSettings();
+    const globalFlag = settings.mustStartFromFirst === true;
+    const courseConfigMode = this.course?.intervals_config_mode || settings?.intervals_config_mode || null;
+
     if (intervalId) {
       const interval = this.getIntervalEntity(intervalId);
+      const legacyInterval = this.getLegacyInterval(intervalId);
+      const intervalConfigMode = interval?.config_mode || courseConfigMode;
+      const usesCustomRules = intervalConfigMode === 'custom' || courseConfigMode === 'independent';
+      const intervalFlag = this.toBoolean((interval ?? legacyInterval)?.mustStartFromFirst);
+
       if (interval) {
         if (interval.booking_mode === 'package') {
           return true;
         }
 
-        if (interval.config_mode === 'custom') {
-          return interval.date_generation_method === 'first_day';
+        if (usesCustomRules) {
+          if (interval.date_generation_method === 'first_day') {
+            return true;
+          }
+          if (intervalFlag !== null) {
+            return intervalFlag === true;
+          }
+          return false;
         }
       }
 
-      const legacyInterval = this.getLegacyInterval(intervalId);
-      if (legacyInterval?.mustStartFromFirst !== undefined) {
-        return legacyInterval.mustStartFromFirst === true;
+      if (globalFlag) {
+        return true;
+      }
+
+      if (intervalFlag !== null) {
+        return intervalFlag === true;
       }
     }
 
-    const settings = this.getCourseSettings();
-    return settings.mustStartFromFirst === true;
+    return globalFlag;
   }
 
 
