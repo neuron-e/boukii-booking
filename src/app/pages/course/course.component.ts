@@ -2495,8 +2495,29 @@ export class CourseComponent implements OnInit {
 
     const maxDuration = Math.max(...durations);
     const useIntervalHours = this.hasIntervals();
-    const startSource = useIntervalHours ? course_date.hour_start : (this.course.is_flexible ? (this.course?.hour_min || course_date.hour_start) : course_date.hour_start);
-    const endSource = useIntervalHours ? course_date.hour_end : (this.course.is_flexible ? (this.course?.hour_max || course_date.hour_end) : course_date.hour_end);
+    const settings = this.getCourseSettings();
+
+    let flexibleStart = this.course?.hour_min;
+    let flexibleEnd = this.course?.hour_max;
+    if (this.course?.is_flexible && (!flexibleStart || !flexibleEnd) && settings?.periods && Array.isArray(settings.periods) && settings.periods.length) {
+      const startMinutesList = settings.periods
+        .map((p: any) => this.parseTimeToMinutes(p.hour_start || p.hour_min))
+        .filter((m: number) => m > 0);
+      const endMinutesList = settings.periods
+        .map((p: any) => this.parseTimeToMinutes(p.hour_end || p.hour_max))
+        .filter((m: number) => m > 0);
+      if (startMinutesList.length) {
+        const minStart = Math.min(...startMinutesList);
+        flexibleStart = flexibleStart || this.formatMinutesToTime(minStart);
+      }
+      if (endMinutesList.length) {
+        const maxEnd = Math.max(...endMinutesList);
+        flexibleEnd = flexibleEnd || this.formatMinutesToTime(maxEnd);
+      }
+    }
+
+    const startSource = useIntervalHours ? course_date.hour_start : (this.course.is_flexible ? (flexibleStart || course_date.hour_start) : course_date.hour_start);
+    const endSource = useIntervalHours ? course_date.hour_end : (this.course.is_flexible ? (flexibleEnd || course_date.hour_end) : course_date.hour_end);
     const hourStartMinutes = this.parseTimeToMinutes(startSource || '00:00');
     const hourEndMinutes = this.parseTimeToMinutes(endSource || '23:59');
     if (hourEndMinutes <= hourStartMinutes || maxDuration <= 0) {
