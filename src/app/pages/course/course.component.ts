@@ -2494,8 +2494,10 @@ export class CourseComponent implements OnInit {
     }
 
     const maxDuration = Math.max(...durations);
-    const useIntervalHours = this.hasIntervals();
-    const settings = this.getCourseSettings();
+    // Para cursos privados flexibles, ignoramos intervalos independientes y usamos el rango global
+    const useIntervalHours = this.course?.course_type === 1 && this.hasIntervals();
+    const rawSettings = this.getCourseSettings();
+    const settings = Array.isArray(rawSettings) ? {} : rawSettings;
 
     let flexibleStart = this.course?.hour_min;
     let flexibleEnd = this.course?.hour_max;
@@ -2516,8 +2518,16 @@ export class CourseComponent implements OnInit {
       }
     }
 
-    const startSource = useIntervalHours ? course_date.hour_start : (this.course.is_flexible ? (flexibleStart || course_date.hour_start) : course_date.hour_start);
-    const endSource = useIntervalHours ? course_date.hour_end : (this.course.is_flexible ? (flexibleEnd || course_date.hour_end) : course_date.hour_end);
+    const startSource = useIntervalHours
+      ? course_date.hour_start
+      : (this.course.is_flexible
+        ? (flexibleStart || this.course?.hour_min || course_date.hour_start)
+        : course_date.hour_start);
+    const endSource = useIntervalHours
+      ? course_date.hour_end
+      : (this.course.is_flexible
+        ? (flexibleEnd || this.course?.hour_max || course_date.hour_end)
+        : course_date.hour_end);
     const hourStartMinutes = this.parseTimeToMinutes(startSource || '00:00');
     const hourEndMinutes = this.parseTimeToMinutes(endSource || '23:59');
     if (hourEndMinutes <= hourStartMinutes || maxDuration <= 0) {
@@ -2525,7 +2535,7 @@ export class CourseComponent implements OnInit {
       this.selectedHour = '';
       return [];
     }
-    const stepMinutes = this.getPrivateStepMinutes(durations);
+    const stepMinutes = this.course?.is_flexible ? 5 : this.getPrivateStepMinutes(durations);
     const bufferMinutes = this.getPrivateLeadMinutes();
     const today = new Date();
     const courseDateObj = new Date(course_date.date);
