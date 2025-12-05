@@ -1593,7 +1593,12 @@ export class CourseComponent implements OnInit {
     }
 
     this.bookingService.checkOverlap(bookingUsers).subscribe(
-      () => {
+      (res: any) => {
+        if (res && res.success === false) {
+          const msg = this.resolveMonitorMessage(res.message);
+          this.snackbar.open(msg, 'OK', { duration: 3000 });
+          return;
+        }
         let cartStorage = localStorage.getItem(this.schoolData.slug + '-cart');
         let cart: any = {};
         if (cartStorage) cart = JSON.parse(cartStorage);
@@ -1637,6 +1642,14 @@ export class CourseComponent implements OnInit {
         console.log('Error.error:', error.error);
         console.log('Error.errors:', error.errors);
         console.log('Direct access:', error?.errors?.overlaps);
+
+        // Si el backend devuelve mensaje (ej. No monitor available) mostrarlo y salir
+        const backendMsg = error?.error?.message || error?.message;
+        if (backendMsg) {
+          const resolved = this.resolveMonitorMessage(backendMsg);
+          this.snackbar.open(resolved, 'OK', { duration: 3000 });
+          return;
+        }
 
         // Show detailed error message with overlap information if available
         let errorMessage = 'snackbar.booking.overlap';
@@ -1686,8 +1699,9 @@ export class CourseComponent implements OnInit {
         console.log('No overlaps found, showing generic message');
 
         // Show generic overlap message
+        const fallbackMsg = this.resolveMonitorMessage(error?.error?.message || errorMessage);
         this.snackbar.open(
-          this.translateService.instant(errorMessage),
+          fallbackMsg,
           'OK',
           { duration: 3000 }
         );
@@ -1696,6 +1710,23 @@ export class CourseComponent implements OnInit {
         this.goTo('/' + this.schoolData.slug + '/cart/')
       }
     )
+  }
+
+  private resolveMonitorMessage(msg: string | undefined | null): string {
+    if (!msg) {
+      return this.translateService.instant('snackbar.booking.overlap');
+    }
+    if (msg === 'No monitor available on that date' || msg.toLowerCase().includes('no monitor available')) {
+      return this.translateService.instant('error.monitor.unavailable');
+    }
+    const normalized = msg.toLowerCase();
+    if (normalized.includes('monitor') || normalized.includes('moniteur')) {
+      return this.translateService.instant('error.monitor.unavailable');
+    }
+    if (normalized.includes('overlap') || normalized.includes('chevauche')) {
+      return this.translateService.instant('snackbar.booking.overlap');
+    }
+    return msg;
   }
 
   calculateEndTime(startTime: string, durationMinutes: number): string {

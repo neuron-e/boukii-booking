@@ -97,4 +97,16 @@ export class HeaderComponent implements OnInit {
   goBack(url: string) {
     this.router.navigate(['/' + this.schoolData.data.slug + "/" + url]);
   }
+
+  get displayName(): string {
+    if (!this.userLogged) {
+      return '';
+    }
+    const client = Array.isArray(this.userLogged.clients) && this.userLogged.clients.length ? this.userLogged.clients[0] : null;
+    const first = this.userLogged.first_name || client?.first_name || '';
+    const last = this.userLogged.last_name || client?.last_name || '';
+    const email = this.userLogged.email || client?.email || this.userLogged.username || '';
+    const name = (first + ' ' + last).trim();
+    return (name || email || 'User').toUpperCase();
+  }
 }

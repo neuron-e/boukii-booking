@@ -23,7 +23,20 @@ export class AuthService extends ApiService {
   async login(data: any): Promise<any> {
     try {
       const response: any = await lastValueFrom(this.http.post(this.baseUrl + '/slug/login', data, { headers: this.getHeaders() }));
-      const user = response.data.user;
+      const user = response.data.user || {};
+      const client = Array.isArray(user.clients) && user.clients.length ? user.clients[0] : null;
+
+      // Rellenar nombres a partir del cliente si no existen en el usuario
+      if (!user.first_name && client?.first_name) {
+        user.first_name = client.first_name;
+      }
+      if (!user.last_name && client?.last_name) {
+        user.last_name = client.last_name;
+      }
+      if (!user.username && client?.email) {
+        user.username = client.email;
+      }
+
       localStorage.setItem(this.extractSlugFromRoute(this.route.snapshot) + '-boukiiUser', JSON.stringify(user));
       this.user.next(user);
       return user;

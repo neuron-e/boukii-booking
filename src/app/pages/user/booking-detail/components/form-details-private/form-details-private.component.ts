@@ -238,9 +238,18 @@ export class FormDetailsPrivateComponent implements OnInit {
       // Preparamos el objeto con los datos de la fecha seleccionada
       const bookingUsers = this.utilizers.map(utilizer => ({
         client_id: utilizer.id,
+        client: utilizer, // enviar datos completos del cliente para idiomas/edad
+        degree_id: this.sportLevel?.id || this.sportLevel?.degree_id || utilizer?.degree_id || null,
+        course: this.course, // se usa en backend para sport_id y course_type
+        course_id: this.course?.id,
+        course_date_id: courseDateGroup.get('originalData')?.value?.course_date_id ?? this.date?.id ?? null,
+        course_group_id: courseDateGroup.get('originalData')?.value?.course_group_id ?? null,
+        course_subgroup_id: courseDateGroup.get('originalData')?.value?.course_subgroup_id ?? null,
         hour_start: courseDateGroup.get('startHour').value, // Reemplaza ":00" si es necesario
         hour_end: courseDateGroup.get('endHour').value, // Reemplaza ":00" si es necesario
-        date: moment(courseDateGroup.get('date').value).format('YYYY-MM-DD') // Formateamos la fecha
+        date: moment(courseDateGroup.get('date').value).format('YYYY-MM-DD'), // Formateamos la fecha
+        school_id: this.course?.school_id,
+        monitor_id: courseDateGroup.get('monitor')?.value?.id || null,
       }));
 
       const hasLocalOverlap = this.checkLocalOverlap(bookingUsers, courseDateGroup);
@@ -261,17 +270,39 @@ export class FormDetailsPrivateComponent implements OnInit {
       // Llamamos al servicio para verificar la disponibilidad de la fecha
       this.crudService.post('/admin/bookings/checkbooking', checkAval)
         .subscribe((response: any) => {
-          // Supongamos que la API devuelve un campo 'available' que indica la disponibilidad
-          const isAvailable = response.success; // Ajusta según la respuesta real de tu API
-          resolve(isAvailable); // Resolvemos la promesa con el valor de disponibilidad
+          const isAvailable = !!response?.success;
+          if (!isAvailable) {
+            const resolved = this.resolveMonitorMessage(response?.message);
+            this.snackbar.open(resolved, 'OK', { duration: 3000 });
+          }
+          resolve(isAvailable);
         }, (error) => {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap') +
-            moment(error.error.data[0].date).format('YYYY-MM-DD') +
-            ' | ' + error.error.data[0].hour_start + ' - ' +
-            error.error.data[0].hour_end, 'OK', { duration: 3000 })
-          resolve(false); // En caso de error, rechazamos la promesa
+          const backendMsg = error?.error?.message;
+          const resolved = this.resolveMonitorMessage(backendMsg);
+          this.snackbar.open(resolved, 'OK', { duration: 3000 });
+          resolve(false);
         });
     });
+  }
+
+  private resolveMonitorMessage(msg: string | undefined | null): string {
+    if (!msg) {
+      return this.translateService.instant('snackbar.booking.overlap');
+    }
+    // Caso exacto que recibimos del backend
+    if (msg === 'No monitor available on that date') {
+      return this.translateService.instant('error.monitor.unavailable');
+    }
+
+    const normalized = msg.toLowerCase();
+    if (normalized.includes('monitor available') || normalized.includes('moniteur') || normalized.includes('monitor')) {
+      return this.translateService.instant('error.monitor.unavailable');
+    }
+    if (normalized.includes('overlap') || normalized.includes('chevauche')) {
+      return this.translateService.instant('snackbar.booking.overlap');
+    }
+    // fallback: use backend message directly if not a known key
+    return msg;
   }
 
   checkLocalOverlap(bookingUsers: any[], currentFormGroup: FormGroup = null): boolean {

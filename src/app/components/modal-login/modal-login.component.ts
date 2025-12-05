@@ -57,13 +57,14 @@ export class ModalLoginComponent implements OnInit, OnDestroy {
           if (res) {
             this.closeModal();
           } else {
-            let errorMessage = this.translateService.instant('error.client.register');
-            this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+            const errorMessage = this.translateService.instant('error.client.register');
+            this.snackbar.open(errorMessage, 'OK', { duration: 3000 });
           }
         })
         .catch(error => {
-          let errorMessage = this.translateService.instant(error.error?.message) || 'error.client.register';
-          this.snackbar.open(this.translateService.instant(errorMessage), 'OK', { duration: 3000 });
+          const rawKey = error?.error?.message || 'error.client.register';
+          const errorMessage = this.translateService.instant(rawKey || 'error.client.register');
+          this.snackbar.open(errorMessage, 'OK', { duration: 3000 });
         });
     }
   }
