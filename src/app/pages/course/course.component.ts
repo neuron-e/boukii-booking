@@ -1751,7 +1751,19 @@ export class CourseComponent implements OnInit {
   }
 
   findMatchingCourseDate(): any {
-    const [day, month, year] = this.selectedDateReservation.split('/').map(Number);
+    if (!this.selectedDateReservation || !this.course?.course_dates?.length) {
+      return null;
+    }
+
+    const parts = this.selectedDateReservation.split('/');
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const [day, month, year] = parts.map(Number);
+    if ([day, month, year].some(isNaN)) {
+      return null;
+    }
     const selectedDate = new Date(year, month - 1, day);
 
     // Buscar en courseDates una fecha que coincida
