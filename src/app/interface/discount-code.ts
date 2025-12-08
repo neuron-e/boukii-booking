@@ -53,8 +53,11 @@ export interface DiscountCodeValidationRequest {
   code: string;
   school_id: number;
   course_id?: number;
+  course_ids?: number[];
   sport_id?: number;
+  sport_ids?: number[];
   degree_id?: number;
+  degree_ids?: number[];
   amount: number;
   user_id?: number;
 }

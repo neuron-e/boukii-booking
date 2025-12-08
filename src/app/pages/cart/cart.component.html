@@ -498,6 +498,9 @@
   [isOpen]="isDiscountCodeModalOpen"
   [slug]="schoolData?.slug"
   [cartTotal]="totalPrice + discountCodeAmount"
+  [courseIds]="getCartCourseIds()"
+  [sportIds]="getCartSportIds()"
+  [degreeIds]="getCartDegreeIds()"
   (onClose)="closeDiscountModal()"
   (onApply)="applyDiscountCode($event)">
 </app-modal-discount-code>

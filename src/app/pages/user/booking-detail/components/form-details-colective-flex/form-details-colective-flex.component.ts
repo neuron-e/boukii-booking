@@ -120,15 +120,44 @@ export class FormDetailsColectiveFlexComponent implements OnInit {
       // Llamamos al servicio para verificar la disponibilidad de la fecha
       this.crudService.post('/admin/bookings/checkbooking', checkAval)
         .subscribe((response: any) => {
-          // Supongamos que la API devuelve un campo 'available' que indica la disponibilidad
-          const isAvailable = response.success; // Ajusta según la respuesta real de tu API
-          resolve(isAvailable); // Resolvemos la promesa con el valor de disponibilidad
+          // Verificar si hay overlapping bookings en la respuesta
+          if (response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+            // La API devuelve success:true PERO con datos de overlap
+            const overlap = response.data[0];
+            this.snackbar.open(
+              this.translateService.instant('snackbar.booking.overlap') +
+              moment(overlap.date).format('YYYY-MM-DD') +
+              ' | ' + overlap.hour_start + ' - ' + overlap.hour_end,
+              'OK',
+              { duration: 3000 }
+            );
+            resolve(false); // No permitir continuar
+          } else if (response.success) {
+            // No hay overlaps, está disponible
+            resolve(true);
+          } else {
+            // Error genérico
+            resolve(false);
+          }
         }, (error) => {
-          this.snackbar.open(this.translateService.instant('snackbar.booking.overlap') +
-            moment(error.error.data[0].date).format('YYYY-MM-DD') +
-            ' | ' + error.error.data[0].hour_start + ' - ' +
-            error.error.data[0].hour_end, 'OK', { duration: 3000 })
-          resolve(false); // En caso de error, rechazamos la promesa
+          // Manejar errores HTTP (409, 500, etc.)
+          const errorData = error.error?.data || error.data;
+          if (errorData && Array.isArray(errorData) && errorData.length > 0) {
+            this.snackbar.open(
+              this.translateService.instant('snackbar.booking.overlap') +
+              moment(errorData[0].date).format('YYYY-MM-DD') +
+              ' | ' + errorData[0].hour_start + ' - ' + errorData[0].hour_end,
+              'OK',
+              { duration: 3000 }
+            );
+          } else {
+            this.snackbar.open(
+              this.translateService.instant('snackbar.booking.error'),
+              'OK',
+              { duration: 3000 }
+            );
+          }
+          resolve(false); // En caso de error, no permitir continuar
         });
     });
   }

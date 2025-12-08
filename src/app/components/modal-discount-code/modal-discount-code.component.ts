@@ -4,6 +4,8 @@ import { ThemeService } from '../../services/theme.service';
 import { DiscountCodeService } from '../../services/discount-code.service';
 import { SchoolService } from '../../services/school.service';
 import { DiscountCodeValidationRequest, DiscountCodeValidationResponse } from '../../interface/discount-code';
+import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
  * Component: ModalDiscountCodeComponent
@@ -59,6 +61,9 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
   @Input() courseId?: number;
   @Input() sportId?: number;
   @Input() degreeId?: number;
+  @Input() courseIds: number[] = [];
+  @Input() sportIds: number[] = [];
+  @Input() degreeIds: number[] = [];
   @Output() onClose = new EventEmitter<any>();
   @Output() onApply = new EventEmitter<DiscountCodeValidationResponse>();
 
@@ -71,7 +76,9 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
   constructor(
     public themeService: ThemeService,
     private discountCodeService: DiscountCodeService,
-    private schoolService: SchoolService
+    private schoolService: SchoolService,
+    private translateService: TranslateService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -99,12 +106,12 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
    */
   validateCode(): void {
     if (!this.code || this.code.trim() === '') {
-      this.errorMessage = 'Por favor ingresa un código';
+      this.errorMessage = this.translateService.instant('text_discount_code') + ' ' + this.translateService.instant('required');
       return;
     }
 
     if (!this.schoolId) {
-      this.errorMessage = 'Error: No se pudo obtener información de la escuela';
+      this.errorMessage = this.translateService.instant('error') + ': ' + this.translateService.instant('school');
       return;
     }
 
@@ -132,11 +139,20 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
     if (this.courseId) {
       validationData.course_id = this.courseId;
     }
+    if (this.courseIds && this.courseIds.length) {
+      validationData.course_ids = this.courseIds;
+    }
     if (this.sportId) {
       validationData.sport_id = this.sportId;
     }
+    if (this.sportIds && this.sportIds.length) {
+      validationData.sport_ids = this.sportIds;
+    }
     if (this.degreeId) {
       validationData.degree_id = this.degreeId;
+    }
+    if (this.degreeIds && this.degreeIds.length) {
+      validationData.degree_ids = this.degreeIds;
     }
 
     // Llamar a la API
@@ -148,16 +164,17 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
           // Código válido
           this.validationResult = response.data;
           this.errorMessage = '';
+          this.snackBar.open(this.translateService.instant('text_code_valid'), undefined, { duration: 2000 });
         } else {
           // Código inválido
           this.validationResult = null;
-          this.errorMessage = response.data?.message || 'Código de descuento inválido';
+          this.errorMessage = response.data?.message || this.translateService.instant('invalid');
         }
       },
       error => {
         this.isValidating = false;
         this.validationResult = null;
-        this.errorMessage = error.error?.message || 'Error al validar el código. Por favor intenta de nuevo.';
+        this.errorMessage = error.error?.message || this.translateService.instant('error');
       }
     );
   }

@@ -919,7 +919,13 @@ export class CartComponent implements OnInit {
   }
 
   getTotalItemPrice(details: any[]): number {
-    return details.reduce((total, detail) => total + parseFloat(detail.price) + parseFloat(detail?.extra?.price) + (parseFloat(detail?.extra?.price) * (parseFloat(detail?.extra?.tva) / 100)), 0);
+    return details.reduce((total, detail) => {
+      const base = parseFloat(detail?.price ?? '0') || 0;
+      const extra = parseFloat(detail?.extra?.price ?? '0') || 0;
+      const extraTva = parseFloat(detail?.extra?.tva ?? '0') || 0;
+      const extraWithTva = extra + (extra * (extraTva / 100));
+      return total + base + extraWithTva;
+    }, 0);
   }
 
   getTotalItemExtraPrice(details: any[]): number {
@@ -1305,22 +1311,102 @@ export class CartComponent implements OnInit {
     this.isDiscountCodeModalOpen = false;
   }
 
+  getCartCourseIds(): number[] {
+    if (!Array.isArray(this.cart)) {
+      return [];
+    }
+    const ids = this.cart
+      .map((item: any) => item?.courseId ?? item?.course?.id ?? item?.details?.[0]?.course?.id)
+      .filter((id: any) => id !== null && id !== undefined);
+    return Array.from(new Set(ids.map((id: any) => Number(id))));
+  }
+
+  getCartSportIds(): number[] {
+    if (!Array.isArray(this.cart)) {
+      return [];
+    }
+    const ids = this.cart
+      .map((item: any) => item?.course?.sport?.id ?? item?.details?.[0]?.course?.sport?.id)
+      .filter((id: any) => id !== null && id !== undefined);
+    return Array.from(new Set(ids.map((id: any) => Number(id))));
+  }
+
+  getCartDegreeIds(): number[] {
+    if (!Array.isArray(this.cart)) {
+      return [];
+    }
+    const ids = this.cart
+      .map((item: any) => item?.course?.degree_id ?? item?.course?.degree?.id ?? item?.details?.[0]?.course?.degree_id)
+      .filter((id: any) => id !== null && id !== undefined);
+    return Array.from(new Set(ids.map((id: any) => Number(id))));
+  }
+
   applyDiscountCode(validationResult: DiscountCodeValidationResponse): void {
     if (validationResult && validationResult.valid) {
       this.appliedDiscountCode = validationResult;
-      this.discountCodeAmount = validationResult.discount_amount;
+
+      // Normalizar IDs permitidos a números
+      const allowedCourseIds = validationResult.discount_code?.course_ids
+        ? (validationResult.discount_code.course_ids as any[]).map((id: any) => Number(id)).filter((n: number) => !isNaN(n))
+        : null;
+
+      const eligibleSubtotal = this.cart?.reduce((sum: number, item: any) => {
+        const rawCourseId = item?.courseId ?? item?.course?.id ?? item?.details?.[0]?.course?.id;
+        const courseId = rawCourseId !== undefined && rawCourseId !== null ? Number(rawCourseId) : null;
+        const itemTotal = Number(this.getTotalItemPrice(item.details) || 0);
+        if (!allowedCourseIds || allowedCourseIds.length === 0 || (courseId !== null && allowedCourseIds.includes(courseId))) {
+          return sum + itemTotal;
+        }
+        return sum;
+      }, 0) || 0;
+
+      // Si no hay solape, no aplicar
+      if (allowedCourseIds && allowedCourseIds.length && eligibleSubtotal <= 0) {
+        this.snackBar.open(this.translateService.instant('invalid'), 'Close', { duration: 3000 });
+        return;
+      }
+
+      const code = validationResult.discount_code;
+      const backendAmountRaw: any = validationResult.discount_amount;
+      const backendAmount = typeof backendAmountRaw === 'number'
+        ? backendAmountRaw
+        : parseFloat(backendAmountRaw ?? '0');
+      let computedDiscount = !isNaN(backendAmount) && backendAmount > 0 ? backendAmount : 0;
+
+      // Si el backend no envió monto o es 0, recalcular de forma defensiva
+      if ((!computedDiscount || computedDiscount <= 0) && code) {
+        const type = code.discount_type || 'fixed_amount';
+        const value = Number(code.discount_value || 0);
+        if (type === 'percentage') {
+          computedDiscount = eligibleSubtotal * (value / 100);
+        } else {
+          computedDiscount = value;
+        }
+      }
+
+      // Respetar max_discount_amount si viene definido
+      if (code?.max_discount_amount !== null && code?.max_discount_amount !== undefined) {
+        computedDiscount = Math.min(computedDiscount, Number(code.max_discount_amount));
+      }
+
+      // No permitir que el descuento supere el subtotal elegible cuando hay restricción por curso
+      if (allowedCourseIds && allowedCourseIds.length) {
+        computedDiscount = Math.min(computedDiscount, eligibleSubtotal || computedDiscount);
+      }
+
+      this.discountCodeAmount = Number((computedDiscount || 0).toFixed(2));
 
       this.bookingService.setBookingData({
         price_total: this.totalPrice,
         vouchers: this.vouchers,
-        discount_code_amount: validationResult.discount_amount,
+        discount_code_amount: this.discountCodeAmount,
         discount_code_id: validationResult.discount_code?.id ?? null,
         });
 
       this.updateTotal();
 
       this.snackBar.open(
-        this.translateService.instant('text_code_valid') + ': -CHF ' + validationResult.discount_amount.toFixed(2),
+        this.translateService.instant('text_code_valid') + ': -CHF ' + this.discountCodeAmount.toFixed(2),
         'Close',
         { duration: 3000 }
       );

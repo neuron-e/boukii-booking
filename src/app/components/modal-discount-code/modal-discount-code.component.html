@@ -84,7 +84,7 @@
     <div class="modal-buttons">
       <button
         (click)="validateCode()"
-        class="modal-button"
+        class="modal-button ghost"
         [disabled]="isValidating || !code || code.trim() === ''">
         {{'text_validate_code' | translate}}
       </button>
