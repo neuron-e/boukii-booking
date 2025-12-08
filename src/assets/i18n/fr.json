@@ -85,6 +85,7 @@
   "booking_multi_interval_help": "Sélectionnez un intervalle à réserver. Chaque intervalle peut avoir ses propres règles et exigences de dates. Consultez ci-dessous les règles de l'intervalle sélectionné.",
   "booking_must_start_from_first_day": "Vous devez sélectionner la première date disponible du cours pour effectuer une réservation.",
   "booking_package_requires_all_dates": "Vous devez réserver toutes les dates de l'intervalle sélectionné.",
+  "error_age_restriction": "L’utilisateur ne respecte pas les exigences d’âge",
   "booking_requires_exact_days": "Vous devez sélectionner exactement {{count}} jours consécutifs.",
   "booking_rules_active": "Règles de réservation actives:",
   "booking_select_interval_first": "Vous devez sélectionner un intervalle avant de continuer.",

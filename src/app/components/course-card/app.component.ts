@@ -13,6 +13,7 @@ export class CourseCardComponent {
 
   constructor(public translateService: TranslateService) { }
 
+
   // Determina si debemos mostrar el curso por intervalos
   shouldDisplayByIntervals(): boolean {
     return this.hasIntervals() && this.data.course_type == 1;
@@ -274,34 +275,75 @@ export class CourseCardComponent {
     return `${minHourString.slice(0, 2)}:${minHourString.slice(2)}`;
   }
 
-  getShotrDescription() {
-    if (!this.data.translations || this.data.translations === null) {
-      return this.data.short_description;
-    } else {
-      const translations = typeof this.data.translations === 'string' ?
-        JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang].short_description || this.data.short_description;
+  private resolveTranslations(): any {
+    const raw =
+      this.data?.translations ??
+      this.data?.course_translations ??
+      this.data?.course?.translations ??
+      this.data?.course?.course_translations;
+
+    if (!raw) {
+      return null;
     }
+
+    if (typeof raw === 'string') {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+    return raw;
+  }
+
+  private resolveLangKey(translations: any): string {
+    const candidates: string[] = [];
+    const current = (this.translateService.currentLang || '').toLowerCase();
+    const currentBase = current.split('-')[0];
+    const fallback = (this.translateService.getDefaultLang() || 'en').toLowerCase();
+    const fallbackBase = fallback.split('-')[0];
+
+    if (current) candidates.push(current);
+    if (currentBase) candidates.push(currentBase);
+    if (fallback) candidates.push(fallback);
+    if (fallbackBase) candidates.push(fallbackBase);
+
+    const available = translations ? Object.keys(translations) : [];
+    const byLower = new Map<string, string>();
+    available.forEach(key => byLower.set(key.toLowerCase(), key));
+
+    const match = candidates.find(code => byLower.has(code));
+    if (match) {
+      return byLower.get(match) || match;
+    }
+    return available[0] || 'en';
+  }
+
+  getShortDescription() {
+    const translations = this.resolveTranslations();
+    if (translations) {
+      const langKey = this.resolveLangKey(translations);
+      return translations?.[langKey]?.short_description || this.data?.short_description || '';
+    }
+    return this.data?.short_description || '';
   }
 
   getDescription() {
-    if (!this.data.translations || this.data.translations === null) {
-      return this.data.description;
-    } else {
-      const translations = typeof this.data.translations === 'string' ?
-        JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang]?.description || this.data.description;
+    const translations = this.resolveTranslations();
+    if (translations) {
+      const langKey = this.resolveLangKey(translations);
+      return translations?.[langKey]?.description || this.data?.description || '';
     }
+    return this.data?.description || '';
   }
 
   getCourseName() {
-    if (!this.data.translations || this.data.translations === null) {
-      return this.data.name;
-    } else {
-      const translations = typeof this.data.translations === 'string' ?
-        JSON.parse(this.data.translations) : this.data.translations;
-      return translations[this.translateService.currentLang].name || this.data.name;
+    const translations = this.resolveTranslations();
+    if (translations) {
+      const langKey = this.resolveLangKey(translations);
+      return translations?.[langKey]?.name || this.data?.name || '';
     }
+    return this.data?.name || '';
   }
 
   getCoursePrice() {

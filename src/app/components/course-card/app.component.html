@@ -19,7 +19,7 @@
       {{ data.currency }} /
       {{ (data.course_type !== 1 && data.is_flexible ? ('mails.course' | translate: { duration: data.minDuration }) : ('mails.course' | translate)) }}
     </p>
-    <p [innerHTML]="getShotrDescription()" class="description"></p>
+    <p [innerHTML]="getShortDescription()" class="description"></p>
 
     <!-- Sección de fechas -->
     <div class="dates">

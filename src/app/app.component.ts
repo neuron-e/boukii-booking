@@ -17,10 +17,10 @@ import {ActivatedRouteSnapshot} from '@angular/router';
 export class AppComponent {
   locales: { locale: any, lan: string }[] =
     [
+      { locale: localeDe, lan: 'de' },
       { locale: localeEs, lan: 'es' },
       { locale: localeIt, lan: 'it-IT' },
       { locale: localeEnGb, lan: 'en-GB' },
-      { locale: localeDe, lan: 'de' },
       { locale: localeFr, lan: 'fr' },
     ]
 
@@ -35,8 +35,10 @@ export class AppComponent {
         this.translateService.currentLang = navigator.language.split('-')[0];
         sessionStorage.setItem('lang', navigator.language.split("-")[0]);
       } else {
-        this.translateService.setDefaultLang(this.locales[0].lan);
-        this.translateService.currentLang = this.locales[0].lan;
+        const fallback = 'de';
+        this.translateService.setDefaultLang(fallback);
+        this.translateService.currentLang = fallback;
+        sessionStorage.setItem('lang', fallback);
       }
     }
     setTimeout(() => {

@@ -1786,6 +1786,38 @@ export class CourseComponent implements OnInit {
     return matchingDate ? { ...matchingDate } : null;
   }
 
+  private findGroupForCurrentSelection(): any | null {
+    const matchingDate = this.findMatchingCourseDate();
+    if (!matchingDate) {
+      return null;
+    }
+    const levelId = this.selectedLevel?.id ?? this.selectedLevel?.degree_id;
+    if (!levelId) {
+      return null;
+    }
+    return (matchingDate.course_groups || []).find(
+      (g: any) => (g?.degree_id ?? g?.degreeId) === levelId
+    ) || null;
+  }
+
+  private findActiveSubgroupForSelection(): any | null {
+    const group = this.findGroupForCurrentSelection();
+    if (!group || !Array.isArray(group.course_subgroups)) {
+      return null;
+    }
+    // Si hubiera lógica de selección explícita de subgrupo, usarla; por ahora, el primero
+    return group.course_subgroups[0] || null;
+  }
+
+  private validateAgeAgainstSelection(user: any): boolean {
+    const userAge = this.transformAge(user.birth_date);
+    // Preferir límites del grupo de fecha/nivel si existen, si no, los del curso
+    const group = this.findGroupForCurrentSelection();
+    const min = group?.age_min ?? this.course.age_min ?? 0;
+    const max = group?.age_max ?? this.course.age_max ?? 99;
+    return this.isAgeAppropriate(userAge, min, max);
+  }
+
   private lightenColor(hexColor: string, percent: number): string {
     let r: any = parseInt(hexColor.substring(1, 3), 16);
     let g: any = parseInt(hexColor.substring(3, 5), 16);
@@ -1806,6 +1838,12 @@ export class CourseComponent implements OnInit {
 
   selectUser(user: any, course_type: any) {
     if (course_type == 2) {
+      // Edad: validar contra límites del curso (privados)
+      if (!this.validateAgeAgainstSelection(user)) {
+        this.snackbar.open(this.translateService.instant('error_age_restriction'), 'OK', { duration: 3000 });
+        return;
+      }
+
       const index = this.selectedUserMultiple.indexOf(user);
       if (index !== -1) {
         this.selectedUserMultiple.splice(index, 1);
@@ -1826,6 +1864,25 @@ export class CourseComponent implements OnInit {
       this.selectedLevel = null;
       this.showLevels = false;
       this.calculateAvailableLevels(user);
+
+      // Validar edad para colectivos: usar límites del grupo/curso en la fecha/nivel seleccionados
+      if (!this.validateAgeAgainstSelection(user)) {
+        this.snackbar.open(this.translateService.instant('error_age_restriction'), 'OK', { duration: 3000 });
+        this.selectedUser = null;
+        return;
+      }
+
+      // Si hay subgrupos/intervalos, respetar aforo del subgrupo seleccionado si ya hay bookings
+      if (this.course?.course_dates?.length) {
+        const targetSubgroup = this.findActiveSubgroupForSelection();
+        const current = (targetSubgroup?.booking_users || []).length;
+        const max = targetSubgroup?.max_participants ?? this.course.max_participants ?? 0;
+        if (max > 0 && current >= max) {
+          this.snackbar.open(this.translateService.instant('text_select_maximum_user') + max, 'OK', { duration: 3000 });
+          this.selectedUser = null;
+          return;
+        }
+      }
     }
   }
 

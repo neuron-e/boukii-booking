@@ -85,6 +85,7 @@
   "booking_multi_interval_help": "Choose an interval to book. Each interval may have its own booking rules and required dates. Review the rules shown below for the selected interval.",
   "booking_must_start_from_first_day": "You must select the first available date of the course to make a booking.",
   "booking_package_requires_all_dates": "You must book all dates in the selected interval.",
+  "error_age_restriction": "User does not meet the age requirements",
   "booking_requires_exact_days": "You must select exactly {{count}} consecutive days.",
   "booking_rules_active": "Booking rules active:",
   "booking_select_interval_first": "Select an interval before continuing.",
