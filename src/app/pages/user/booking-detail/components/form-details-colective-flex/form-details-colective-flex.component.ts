@@ -141,12 +141,21 @@ export class FormDetailsColectiveFlexComponent implements OnInit {
           }
         }, (error) => {
           // Manejar errores HTTP (409, 500, etc.)
-          const errorData = error.error?.data || error.data;
-          if (errorData && Array.isArray(errorData) && errorData.length > 0) {
+          let errorData: any = null;
+          if (error && typeof error === 'object') {
+            if (error.error && typeof error.error === 'object') {
+              errorData = (error.error as any).data ?? error.error;
+            } else {
+              errorData = (error as any).data ?? null;
+            }
+          }
+
+          if (Array.isArray(errorData) && errorData.length > 0) {
+            const overlap = errorData[0];
             this.snackbar.open(
               this.translateService.instant('snackbar.booking.overlap') +
-              moment(errorData[0].date).format('YYYY-MM-DD') +
-              ' | ' + errorData[0].hour_start + ' - ' + errorData[0].hour_end,
+              moment(overlap.date).format('YYYY-MM-DD') +
+              ' | ' + overlap.hour_start + ' - ' + overlap.hour_end,
               'OK',
               { duration: 3000 }
             );

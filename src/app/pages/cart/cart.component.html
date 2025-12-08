@@ -497,7 +497,7 @@
 <app-modal-discount-code
   [isOpen]="isDiscountCodeModalOpen"
   [slug]="schoolData?.slug"
-  [cartTotal]="totalPrice + discountCodeAmount"
+  [cartTotal]="getDiscountValidationAmount()"
   [courseIds]="getCartCourseIds()"
   [sportIds]="getCartSportIds()"
   [degreeIds]="getCartDegreeIds()"

@@ -32,6 +32,7 @@ export class CartComponent implements OnInit {
   totalNotaxes: number = 0;
   usedVoucherAmount: number = 0;
   discountCodeAmount: number = 0;
+  discountCodeCourseIds: number[] | null = null;
   intervalDiscounts: Map<string, any> = new Map(); // Store discount breakdown per cart item
   basePriceValue: number = 0;
   totalIntervalDiscounts: number = 0;
@@ -426,14 +427,26 @@ export class CartComponent implements OnInit {
     if (discountInfo) {
       basket.discount_code = {
         code: discountInfo.code,
-        amount: discountAmount
+        amount: discountAmount,
+        courses: this.discountCodeCourseIds || undefined
       };
     }
+
+    const grossBeforeCode = this.getDiscountValidationAmount();
+    const netAfterCode = this.totalPrice;
 
     const bookingData = {
       school_id: this.schoolData.id,
       client_main_id: this.user.clients[0].id,
-      price_total: grossPriceTotal,
+      // Enviar el total neto a cobrar; los campos *_amount se usan para validar mínimos y trazas
+      price_total: netAfterCode,
+      paid_total: netAfterCode, // si total es 0 o cubierto, marcar como pagado por defecto
+      payment_status: netAfterCode === 0 ? 'paid' : 'pending',
+      requested_amount: this.getDiscountValidationAmount(), // monto bruto para validación de mínimos
+      price_total_before_discount_code: this.getDiscountValidationAmount(), // neto antes de código
+      discount_validation_amount: this.getDiscountValidationAmount() - (this.totalIntervalDiscounts || 0), // subtotal tras intervalos
+      amount_for_discount_code: this.getDiscountValidationAmount(),
+      amount: this.getDiscountValidationAmount(), // compat: algunos backends esperan 'amount' para validar mínimos
       has_cancellation_insurance: this.hasInsurance,
       price_cancellation_insurance: this.hasInsurance ? this.getInsurancePrice() : 0,
       has_tva: this.hasTva,
@@ -441,12 +454,17 @@ export class CartComponent implements OnInit {
       cart: this.getCleanedCartDetails(),
       vouchers: this.vouchers,
       voucherAmount: this.usedVoucherAmount,
+      discount_code: discountInfo?.code ?? null,
       discount_code_id: discountInfo?.id ?? null,
+      discount_code_courses: this.discountCodeCourseIds,
       discount_code_amount: discountAmount,
       source: 'web',
       basket: JSON.stringify(basket),
       status: 3
     };
+
+    // Conservamos el neto calculado para uso local/post-procesos si se requiere
+    (bookingData as any).price_total_net = netAfterCode;
 
     this.bookingService.setBookingData(bookingData);
 
@@ -942,6 +960,19 @@ export class CartComponent implements OnInit {
     }, 0);
   }
 
+  /**
+   * Subtotal de un item del carrito (precio final del curso + extras),
+   * evitando duplicar el total cuando canonicalPricing ya trae finalPrice.
+   */
+  private getCartItemSubtotal(cartItem: any): number {
+    const canonical = cartItem?.details?.[0]?.canonicalPricing;
+    const extras = this.getTotalItemExtraPrice(cartItem?.details || []);
+    if (canonical && typeof canonical.finalPrice === 'number') {
+      return Number((canonical.finalPrice + extras).toFixed(2));
+    }
+    return Number((this.getTotalItemPrice(cartItem?.details || []) + extras).toFixed(2));
+  }
+
   removeVoucher(voucherToRemove: any) {
     this.vouchers = this.vouchers.filter(v => v.id !== voucherToRemove.id);
     this.updateTotal();
@@ -1083,6 +1114,23 @@ export class CartComponent implements OnInit {
     });
 
     return dates * paxes * this.boukiiCarePrice;
+  }
+
+  /**
+   * Total del carrito antes del código de descuento y sin vouchers (pero con descuentos de intervalo).
+   */
+  private getCartTotalBeforeDiscountCode(): number {
+    const basePrice = this.refreshBasePriceTotals(); // ya incluye descuentos de intervalo
+    const insurancePrice = this.hasInsurance ? this.getInsurancePrice() : 0;
+    const boukiiCarePrice = this.hasBoukiiCare ? this.getBoukiiCarePrice() : 0;
+    const extrasPrice = this.getExtrasPrice();
+    const totalPriceNoTaxes = basePrice + extrasPrice + insurancePrice + boukiiCarePrice;
+
+    const totalWithTva = this.tva && !isNaN(this.tva) && this.tva > 0
+      ? totalPriceNoTaxes * (1 + this.tva)
+      : totalPriceNoTaxes;
+
+    return Number((totalWithTva || 0).toFixed(2));
   }
 
   goBack(url: string) {
@@ -1307,6 +1355,37 @@ export class CartComponent implements OnInit {
     this.isDiscountCodeModalOpen = true;
   }
 
+  /**
+   * Amount used to validate discount codes (before applying current code).
+   * Prefer original price before interval discounts if available, otherwise fallback to current subtotal.
+   */
+  getDiscountValidationAmount(): number {
+    if (!Array.isArray(this.cart) || this.cart.length === 0) {
+      return 0;
+    }
+
+    const total = this.cart.reduce((sum: number, cartItem: any) => {
+      // Prefer canonical original price if available
+      const canonical = cartItem?.details?.[0]?.canonicalPricing;
+      if (canonical && typeof canonical.originalPrice === 'number') {
+        // Sumar extras también para validar contra mínimo de compra
+        const extras = this.getTotalItemExtraPrice(cartItem.details);
+        return sum + Number(canonical.originalPrice || 0) + extras;
+      }
+
+      // Fallback: precio base por fecha (antes de descuentos de intervalo)
+      const course = cartItem?.details?.[0]?.course;
+      const datesCount = cartItem?.details?.length || 0;
+      const basePrice = parseFloat(course?.price ?? '0') || 0;
+      const originalPrice = basePrice * datesCount;
+      const extras = this.getTotalItemExtraPrice(cartItem.details);
+
+      return sum + originalPrice + extras;
+    }, 0);
+
+    return Number((total || 0).toFixed(2));
+  }
+
   closeDiscountModal(): void {
     this.isDiscountCodeModalOpen = false;
   }
@@ -1345,20 +1424,26 @@ export class CartComponent implements OnInit {
     if (validationResult && validationResult.valid) {
       this.appliedDiscountCode = validationResult;
 
-      // Normalizar IDs permitidos a números
-      const allowedCourseIds = validationResult.discount_code?.course_ids
-        ? (validationResult.discount_code.course_ids as any[]).map((id: any) => Number(id)).filter((n: number) => !isNaN(n))
+      // Normalizar IDs permitidos a números (fallback a restricciones detalladas si existen)
+      const rawCourseIds =
+        (validationResult as any)?.discount_code?.course_ids ||
+        (validationResult as any)?.code_details?.restrictions?.course_ids ||
+        null;
+
+      const allowedCourseIds = rawCourseIds
+        ? (rawCourseIds as any[]).map((id: any) => Number(id)).filter((n: number) => !isNaN(n))
         : null;
+      this.discountCodeCourseIds = allowedCourseIds && allowedCourseIds.length ? allowedCourseIds : null;
 
       const eligibleSubtotal = this.cart?.reduce((sum: number, item: any) => {
-        const rawCourseId = item?.courseId ?? item?.course?.id ?? item?.details?.[0]?.course?.id;
-        const courseId = rawCourseId !== undefined && rawCourseId !== null ? Number(rawCourseId) : null;
-        const itemTotal = Number(this.getTotalItemPrice(item.details) || 0);
-        if (!allowedCourseIds || allowedCourseIds.length === 0 || (courseId !== null && allowedCourseIds.includes(courseId))) {
-          return sum + itemTotal;
-        }
-        return sum;
-      }, 0) || 0;
+      const rawCourseId = item?.courseId ?? item?.course?.id ?? item?.details?.[0]?.course?.id;
+      const courseId = rawCourseId !== undefined && rawCourseId !== null ? Number(rawCourseId) : null;
+      const itemTotal = this.getCartItemSubtotal(item);
+      if (!allowedCourseIds || allowedCourseIds.length === 0 || (courseId !== null && allowedCourseIds.includes(courseId))) {
+        return sum + itemTotal;
+      }
+      return sum;
+    }, 0) || 0;
 
       // Si no hay solape, no aplicar
       if (allowedCourseIds && allowedCourseIds.length && eligibleSubtotal <= 0) {
@@ -1394,6 +1479,11 @@ export class CartComponent implements OnInit {
         computedDiscount = Math.min(computedDiscount, eligibleSubtotal || computedDiscount);
       }
 
+      // Enviar pistas de uso para depurar (no altera monto)
+      const currentUses = validationResult?.discount_code?.remaining;
+      const maxUses = validationResult?.discount_code?.total;
+      const maxUsesPerUser = validationResult?.discount_code?.max_uses_per_user;
+
       this.discountCodeAmount = Number((computedDiscount || 0).toFixed(2));
 
       this.bookingService.setBookingData({
@@ -1401,6 +1491,10 @@ export class CartComponent implements OnInit {
         vouchers: this.vouchers,
         discount_code_amount: this.discountCodeAmount,
         discount_code_id: validationResult.discount_code?.id ?? null,
+        discount_code: validationResult.discount_code?.code ?? null,
+        discount_code_remaining: currentUses,
+        discount_code_total: maxUses,
+        discount_code_max_per_user: maxUsesPerUser,
         });
 
       this.updateTotal();
@@ -1416,6 +1510,7 @@ export class CartComponent implements OnInit {
   removeDiscountCode(): void {
     this.appliedDiscountCode = null;
     this.discountCodeAmount = 0;
+    this.discountCodeCourseIds = null;
 
     this.bookingService.setBookingData({
       price_total: this.totalPrice + this.usedVoucherAmount,
