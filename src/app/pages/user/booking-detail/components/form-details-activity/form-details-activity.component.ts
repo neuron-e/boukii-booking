@@ -100,7 +100,7 @@ export class FormDetailsActivityComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem("boukiiUser"));
-    this.possibleExtras = this.course.course_extras;
+    this.possibleExtras = this.filterEnabledCourseExtras();
     this.getSeason();
     this.initializeForm();
     this.possibleHours = this.utilService.generateCourseHours(
@@ -300,5 +300,72 @@ export class FormDetailsActivityComponent implements OnInit {
   getUtilizersArray(courseIndex: number): FormArray {
     return this.stepForm.get('course_dates').get(courseIndex.toString()).get('groups') as FormArray;
   }
-}
 
+  private filterEnabledCourseExtras(): any[] {
+    const courseExtras = Array.isArray(this.course?.course_extras) ? this.course.course_extras : [];
+    const allowedKeys = this.getEnabledExtrasKeySet();
+
+    if (!allowedKeys) {
+      return courseExtras.filter(extra => extra?.status !== false);
+    }
+
+    if (!allowedKeys.size) {
+      return courseExtras.filter(extra => extra?.status !== false);
+    }
+
+    return courseExtras.filter(extra => {
+      const key = this.normalizeExtraKey(extra);
+      if (!key) {
+        return extra?.status !== false;
+      }
+      return allowedKeys.has(key);
+    });
+  }
+
+  private getEnabledExtrasKeySet(): Set<string> | null {
+    const settings = this.getSchoolSettings();
+    const extras = settings?.extras;
+    if (!extras) {
+      return null;
+    }
+    const buckets = [extras.forfait, extras.food, extras.transport];
+    const enabledItems = buckets
+      .filter(bucket => Array.isArray(bucket))
+      .flatMap(bucket => bucket as any[])
+      .filter(item => item && item.status !== false);
+
+    if (!enabledItems.length) {
+      return new Set<string>();
+    }
+
+    return new Set(
+      enabledItems
+        .map(item => this.normalizeExtraKey(item))
+        .filter((key): key is string => !!key)
+    );
+  }
+
+  private getSchoolSettings(): any {
+    const school = this.user?.schools?.[0];
+    if (!school) {
+      return null;
+    }
+    return typeof school.settings === 'string' ? JSON.parse(school.settings) : school.settings;
+  }
+
+  private normalizeExtraKey(extra: any): string {
+    if (!extra) {
+      return '';
+    }
+    if (extra.id != null) {
+      return String(extra.id);
+    }
+    if (extra.product != null) {
+      return String(extra.product);
+    }
+    if (extra.name) {
+      return String(extra.name).toLowerCase();
+    }
+    return '';
+  }
+}

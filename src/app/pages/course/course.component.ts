@@ -119,10 +119,14 @@ export class CourseComponent implements OnInit {
 
   schoolData: any;
   settings: any;
-  settingsExtras: any
+  settingsExtras: any[] = [];
   selectedDates: any = [];
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
+
+  get activeSettingsExtras(): any[] {
+    return Array.isArray(this.settingsExtras) ? this.settingsExtras.filter(extra => extra?.status !== false) : [];
+  }
 
   // Variables para descuentos visuales
   appliedDiscountAmount: number = 0;
@@ -184,6 +188,7 @@ export class CourseComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
+          this.syncAvailableExtras();
         }
       }
     );
@@ -207,7 +212,7 @@ export class CourseComponent implements OnInit {
         // Inicializar intervalos cerrados por defecto
         // Los intervalos se abrirán al hacer click en ellos
       }
-      this.settingsExtras = this.course.course_extras;
+      this.syncAvailableExtras();
       if (this.course.discounts) {
         try {
           const discounts = JSON.parse(this.course.discounts);
@@ -465,6 +470,35 @@ export class CourseComponent implements OnInit {
     return typeof this.course.settings === 'string'
       ? JSON.parse(this.course.settings)
       : this.course.settings;
+  }
+
+  private syncAvailableExtras(): void {
+    this.settingsExtras = this.getExtrasFromSchoolSettings();
+  }
+
+  private getExtrasFromSchoolSettings(): any[] {
+    const rawSettings = this.settings;
+    if (!rawSettings) {
+      return [];
+    }
+    const extras = rawSettings.extras || {};
+    const buckets = [extras?.forfait, extras?.food, extras?.transport];
+
+    return buckets.reduce((acc: any[], bucket: any[]) => {
+      if (!Array.isArray(bucket)) {
+        return acc;
+      }
+      bucket.forEach(extra => {
+        if (!extra) {
+          return;
+        }
+        acc.push({
+          ...extra,
+          status: extra?.status ?? true
+        });
+      });
+      return acc;
+    }, []);
   }
 
   private buildCartSettingsSnapshot(): any {
@@ -3609,10 +3643,6 @@ export class CourseComponent implements OnInit {
   }
 
 }
-
-
-
-
 
 
 

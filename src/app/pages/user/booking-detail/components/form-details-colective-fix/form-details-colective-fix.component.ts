@@ -32,7 +32,7 @@ export class FormDetailsColectiveFixComponent implements OnInit {
   }
 
   initializeForm() {
-    this.possibleExtras = this.course.course_extras;
+    this.possibleExtras = this.filterEnabledCourseExtras();
     // Obtener el FormArray existente
     const existingCourseDatesArray = this.stepForm.get('course_dates') as FormArray;
     this.selectedExtras = this.initialData?.[0]?.extras || [];

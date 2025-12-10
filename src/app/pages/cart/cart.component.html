@@ -391,7 +391,7 @@
       </div>
 
       <!-- Discount Code Section -->
-      <div *ngIf="!appliedDiscountCode && calculateRemainingTotal() != 0" (click)="openDiscountModal()" style="display: flex;align-items: center;height: 40px;cursor: pointer;">
+      <div *ngIf="!appliedDiscountCode && calculateRemainingTotal() != 0" (click)="openDiscountModal(); $event.stopPropagation()" style="display: flex;align-items: center;height: 40px;cursor: pointer;">
         <img src="assets/icons/add_red.png" class="icon24" style="margin: 0 8px;">
         <span class="extra_add" style="margin-left: 4px;">
           {{'text_apply_discount_code' | translate }}
