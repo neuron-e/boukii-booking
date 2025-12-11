@@ -70,6 +70,8 @@ export class CourseComponent implements OnInit {
   selectedForfait: any[] = []
   tooltipVisible: boolean[] = []; // Ahora es un array en lugar de un objeto
   selectedForfaits: { [date: string]: any[] } = {};
+  selectedDates: any = [];
+  private capacityDebugFlag: boolean | null = null;
 
   tooltipsFilter: boolean[] = [];
   tooltipsLevel: boolean[] = [];
@@ -120,9 +122,9 @@ export class CourseComponent implements OnInit {
   schoolData: any;
   settings: any;
   settingsExtras: any[] = [];
-  selectedDates: any = [];
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
+  intervalCapacityWarnings: { [key: string]: boolean } = {};
 
   get activeSettingsExtras(): any[] {
     return Array.isArray(this.settingsExtras) ? this.settingsExtras.filter(extra => extra?.status !== false) : [];
@@ -264,6 +266,7 @@ export class CourseComponent implements OnInit {
         this.renderCalendar();
       }
       this.collectivePrice = this.course.price;
+      this.updateIntervalCapacityWarnings();
     });
 
   }
@@ -323,6 +326,11 @@ export class CourseComponent implements OnInit {
   toggleIntervalExpanded(intervalId: IntervalIdentifier): void {
     const key = this.normalizeIntervalId(intervalId);
     if (!key) {
+      return;
+    }
+
+    if (this.isIntervalFullyBooked(key)) {
+      this.dateSelectionError = this.translateService.instant('booking_interval_no_capacity');
       return;
     }
 
@@ -1441,6 +1449,22 @@ export class CourseComponent implements OnInit {
       }
     }
     let bookingUsers: any = [];
+
+    if (this.course.course_type === 1 && this.selectedLevel) {
+      const participants = this.getSelectedParticipantsCount();
+      const datesForValidation = this.getDatesForCapacityValidation();
+      const lackingDate = this.findDateWithoutCapacity(datesForValidation, participants);
+      if (lackingDate) {
+        const formatted = this.formatCapacityWarningDate(lackingDate);
+        const translated = this.translateService.instant('snackbar.booking.no_capacity', { date: formatted });
+        const message = translated !== 'snackbar.booking.no_capacity'
+          ? translated
+          : `Sin plazas disponibles para la fecha ${formatted}`;
+        this.snackbar.open(message, 'OK', { duration: 4000 });
+        return;
+      }
+    }
+
     if (this.course.course_type == 2) {
       if (this.course.is_flexible) {
         let course_date = this.findMatchingCourseDate();
@@ -1934,6 +1958,7 @@ export class CourseComponent implements OnInit {
 
   selectLevel(level: any) {
     this.selectedLevel = level;
+    this.updateIntervalCapacityWarnings();
   }
 
   showTooltipFilter(index: number) {
@@ -2234,6 +2259,11 @@ export class CourseComponent implements OnInit {
 
   selectDate(checked: boolean, date: any, intervalId?: IntervalIdentifier) {
     const normalizedIntervalId = intervalId !== undefined ? this.normalizeIntervalId(intervalId) : null;
+
+    if (normalizedIntervalId && this.isIntervalFullyBooked(normalizedIntervalId)) {
+      this.dateSelectionError = this.translateService.instant('booking_interval_no_capacity');
+      return;
+    }
 
     if (normalizedIntervalId && this.isPackageInterval(normalizedIntervalId)) {
       return;
@@ -3100,7 +3130,7 @@ export class CourseComponent implements OnInit {
       return false;
     }
 
-    const dateObj = this.course?.course_dates?.find((d: any) => d.date === dateStr);
+    const dateObj = this.findCourseDateByValue(dateStr);
     const isActive = dateObj ? (dateObj.active === undefined || dateObj.active === true || dateObj.active === 1) : false;
     if (!isActive) {
       return false;
@@ -3182,7 +3212,320 @@ export class CourseComponent implements OnInit {
       return candidateIndex === minIndex - 1 || candidateIndex === maxIndex + 1;
     }
 
+    if (this.course?.course_type === 1 && this.selectedLevel) {
+      const participants = this.getSelectedParticipantsCount();
+      if (!this.hasCapacityForDate(dateStr, participants)) {
+        return false;
+      }
+    }
+
     return true;
+  }
+
+  private findCourseDateByValue(rawDate: string): any | null {
+    if (!Array.isArray(this.course?.course_dates)) {
+      return null;
+    }
+
+    const normalizedTarget = this.normalizeDateValue(rawDate);
+    if (!normalizedTarget) {
+      return null;
+    }
+
+    return this.course.course_dates.find((dateItem: any) => {
+      const normalizedCandidate = this.normalizeDateValue(dateItem?.date);
+      return !!normalizedCandidate && normalizedCandidate === normalizedTarget;
+    }) || null;
+  }
+
+  private normalizeDateValue(value: any): string | null {
+    if (!value) {
+      return null;
+    }
+
+    const dateStr = typeof value === 'string' ? value : value?.date ?? null;
+    if (!dateStr) {
+      return null;
+    }
+
+    const momentObj = moment(dateStr);
+    if (!momentObj.isValid()) {
+      return dateStr;
+    }
+
+    return momentObj.format('YYYY-MM-DD');
+  }
+
+  private getDatesForCapacityValidation(): any[] {
+    if (this.course?.is_flexible) {
+      return Array.isArray(this.selectedDates) ? [...this.selectedDates] : [];
+    }
+
+    return Array.isArray(this.course?.course_dates)
+      ? this.course.course_dates.map((dateItem: any) => dateItem?.date)
+      : [];
+  }
+
+  private findDateWithoutCapacity(dateCandidates: any[], participants: number): string | null {
+    if (!Array.isArray(dateCandidates) || dateCandidates.length === 0) {
+      return null;
+    }
+
+    for (const candidate of dateCandidates) {
+      const normalized = this.normalizeDateValue(candidate);
+      if (!normalized) {
+        continue;
+      }
+      if (!this.hasCapacityForDate(normalized, participants)) {
+        return normalized;
+      }
+    }
+
+    return null;
+  }
+
+  private formatCapacityWarningDate(dateStr: string): string {
+    const normalized = this.normalizeDateValue(dateStr);
+    if (!normalized) {
+      return dateStr;
+    }
+
+    const formatted = moment(normalized);
+    return formatted.isValid() ? formatted.format('DD/MM/YYYY') : normalized;
+  }
+
+  private updateIntervalCapacityWarnings(): void {
+    if (!this.hasIntervals() || this.course?.course_type !== 1 || !this.selectedLevel) {
+      this.intervalCapacityWarnings = {};
+      this.logCapacityDebug('interval-check-skipped', {
+        hasIntervals: this.hasIntervals(),
+        courseType: this.course?.course_type,
+        hasSelectedLevel: !!this.selectedLevel
+      });
+      return;
+    }
+
+    const participants = this.getSelectedParticipantsCount();
+    const nextWarnings: { [key: string]: boolean } = {};
+    const intervalGroups = this.getIntervalGroups();
+    const previousSelection = this.selectedIntervalId || null;
+
+    intervalGroups.forEach(interval => {
+      const normalizedId = this.normalizeIntervalId(interval?.id);
+      if (!normalizedId) {
+        return;
+      }
+
+      const hasAvailability = Array.isArray(interval?.dates) && interval.dates.some((date: any) => {
+        const normalizedDate = this.normalizeDateValue(date?.date);
+        return !!normalizedDate && this.hasCapacityForDate(normalizedDate, participants);
+      });
+
+      nextWarnings[normalizedId] = !hasAvailability;
+      this.logCapacityDebug('interval-check', {
+        intervalId: normalizedId,
+        intervalName: interval?.name,
+        totalDates: Array.isArray(interval?.dates) ? interval.dates.length : 0,
+        hasAvailability,
+        participants
+      });
+    });
+
+    this.intervalCapacityWarnings = nextWarnings;
+
+    if (previousSelection && nextWarnings[previousSelection]) {
+      this.clearDatesFromInterval(previousSelection);
+      this.expandedIntervals[previousSelection] = false;
+      this.selectedIntervalId = null;
+      this.dateSelectionError = this.translateService.instant('booking_interval_no_capacity');
+      this.updateCollectivePrice();
+      this.logCapacityDebug('interval-cleared', {
+        intervalId: previousSelection,
+        reason: 'capacity_exhausted'
+      });
+    }
+  }
+
+  isIntervalFullyBooked(intervalId: IntervalIdentifier | null | undefined): boolean {
+    const normalized = this.normalizeIntervalId(intervalId);
+    if (!normalized) {
+      return false;
+    }
+
+    return !!this.intervalCapacityWarnings[normalized];
+  }
+
+  private getSelectedParticipantsCount(): number {
+    const multiCount = Array.isArray(this.selectedUserMultiple) ? this.selectedUserMultiple.length : 0;
+    if (multiCount > 0) {
+      return multiCount;
+    }
+    return 1;
+  }
+
+  private hasCapacityForDate(dateStr: string, participants: number): boolean {
+    if (!this.course || !this.selectedLevel) {
+      this.logCapacityDebug('date-check-skipped', {
+        dateStr,
+        reason: 'missing-course-or-level'
+      });
+      return true;
+    }
+
+    const courseDate = this.findCourseDateByValue(dateStr);
+    if (!courseDate) {
+      this.logCapacityDebug('date-check-miss', { dateStr, reason: 'date-not-found' });
+      return false;
+    }
+
+    const courseGroups = Array.isArray(courseDate.course_groups) ? courseDate.course_groups : [];
+    const selectedLevelId = this.parseNumericValue(this.selectedLevel.id) ?? this.selectedLevel.id;
+    const levelGroup = courseGroups.find((group: any) => {
+      const groupDegreeId = this.parseNumericValue(group?.degree_id) ?? group?.degree_id;
+      return groupDegreeId === selectedLevelId;
+    });
+    if (!levelGroup) {
+      this.logCapacityDebug('date-check-miss', { dateStr, reason: 'level-group-not-found', selectedLevelId });
+      return false;
+    }
+
+    const subgroups = Array.isArray(levelGroup.course_subgroups) ? levelGroup.course_subgroups : [];
+    if (subgroups.length === 0) {
+      const courseMax = typeof this.course.max_participants === 'number' ? this.course.max_participants : 0;
+      this.logCapacityDebug('date-check-course-level', {
+        dateStr,
+        courseMax,
+        participants
+      });
+      return courseMax <= 0 || courseMax >= participants;
+    }
+
+    const hasCapacity = subgroups.some(subgroup => this.hasCapacityInSubgroup(subgroup, participants));
+    this.logCapacityDebug('date-check-subgroups', {
+      dateStr,
+      participants,
+      subgroupsChecked: subgroups.length,
+      hasCapacity
+    });
+    return hasCapacity;
+  }
+
+  private hasCapacityInSubgroup(subgroup: any, participants: number): boolean {
+    const max = this.extractMaxParticipants(subgroup);
+    if (!max || max <= 0) {
+      return true;
+    }
+    const current = this.extractCurrentParticipants(subgroup);
+    const available = (max - current) >= participants;
+    this.logCapacityDebug('subgroup-capacity', {
+      subgroupId: subgroup?.id,
+      max,
+      current,
+      requested: participants,
+      available
+    });
+    return available;
+  }
+
+  private extractMaxParticipants(subgroup: any): number {
+    if (!subgroup) {
+      return 0;
+    }
+    const values = [
+      subgroup.max_participants,
+      subgroup.maxParticipants,
+      subgroup?.capacity_info?.max_participants,
+      this.course?.max_participants
+    ];
+    for (const value of values) {
+      const parsed = this.parseNumericValue(value);
+      if (typeof parsed === 'number' && parsed > 0) {
+        return parsed;
+      }
+    }
+    return 0;
+  }
+
+  private extractCurrentParticipants(subgroup: any): number {
+    const values = [
+      subgroup?.capacity_info?.current_bookings,
+      subgroup?.booking_users_count,
+      Array.isArray(subgroup?.booking_users)
+        ? subgroup.booking_users.filter((bookingUser: any) => this.isActiveBookingUser(bookingUser)).length
+        : null
+    ];
+
+    for (const value of values) {
+      const parsed = this.parseNumericValue(value);
+      if (typeof parsed === 'number') {
+        return parsed;
+      }
+    }
+    return 0;
+  }
+
+  private isActiveBookingUser(bookingUser: any): boolean {
+    if (!bookingUser || bookingUser.deleted_at) {
+      return false;
+    }
+    const status = bookingUser.status;
+    const isActiveStatus = status === undefined || status === null || Number(status) === 1;
+    if (!isActiveStatus) {
+      return false;
+    }
+    const bookingStatus = bookingUser?.booking?.status;
+    if (bookingStatus !== undefined && bookingStatus !== null && Number(bookingStatus) === 2) {
+      return false;
+    }
+    return true;
+  }
+
+  private parseNumericValue(value: any): number | null {
+    if (value === undefined || value === null) {
+      return null;
+    }
+    if (typeof value === 'number') {
+      return isNaN(value) ? null : value;
+    }
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      return isNaN(parsed) ? null : parsed;
+    }
+    return null;
+  }
+
+  private shouldLogCapacityDebug(): boolean {
+    if (this.capacityDebugFlag !== null) {
+      return this.capacityDebugFlag;
+    }
+
+    let enabled = false;
+    try {
+      const globalFlag = (window as any)?.BOUKII_DEBUG_CAPACITY;
+      if (globalFlag === true) {
+        enabled = true;
+      } else {
+        const storedFlag = localStorage.getItem('booking-capacity-debug');
+        enabled = storedFlag === '1' || storedFlag === 'true';
+      }
+    } catch {
+      enabled = false;
+    }
+
+    this.capacityDebugFlag = enabled;
+    return enabled;
+  }
+
+  private logCapacityDebug(context: string, payload: any): void {
+    if (!this.shouldLogCapacityDebug()) {
+      return;
+    }
+    try {
+      // eslint-disable-next-line no-console
+      console.debug('[booking-capacity]', context, payload);
+    } catch {
+      // ignore log errors
+    }
   }
 
   // Limpiar fechas de un intervalo específico
@@ -3643,14 +3986,3 @@ export class CourseComponent implements OnInit {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-

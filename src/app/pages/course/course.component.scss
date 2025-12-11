@@ -975,6 +975,15 @@ ul {
   background-color: white;
 }
 
+.interval-card.interval-full {
+  border-color: #f8b4b4;
+  background-color: #fffaf8;
+}
+
+.interval-card.interval-full .interval-header {
+  background-color: #fdecea;
+}
+
 .interval-card:hover:not(.interval-disabled) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border-color: #bbdefb;
@@ -1065,6 +1074,22 @@ ul {
 .interval-mode-badge.package {
   background-color: #fdecea;
   color: #d93025;
+}
+
+.interval-capacity-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: #d93025;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.interval-capacity-warning mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .interval-overview {

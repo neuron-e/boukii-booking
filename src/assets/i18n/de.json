@@ -72,6 +72,7 @@
   "booking_interval_flexible": "Flexible Auswahl",
   "booking_interval_max_dates_error": "In diesem Intervall können höchstens {{count}} Termine gebucht werden.",
   "booking_interval_not_available": "Für dieses Intervall sind aktuell keine Buchungen möglich.",
+  "booking_interval_no_capacity": "Für dieses Intervall gibt es keine freien Plätze.",
   "booking_interval_not_open_yet": "Buchungen sind ab dem {{startDate}} möglich.",
   "booking_interval_package": "Gesamtes Intervall",
   "booking_interval_rule_exact_consecutive": "Du musst genau {{count}} aufeinanderfolgende Termine auswählen.",

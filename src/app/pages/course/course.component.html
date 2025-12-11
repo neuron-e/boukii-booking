@@ -78,7 +78,9 @@
               {{ 'no_future_dates' | translate }}
             </div>
 
-            <div *ngFor="let interval of getIntervalGroups()" class="interval-card">
+            <div *ngFor="let interval of getIntervalGroups()"
+                 class="interval-card"
+                 [class.interval-full]="isIntervalFullyBooked(interval.id)">
               <!-- Encabezado del intervalo -->
               <div class="interval-header" (click)="toggleInterval(interval.id)">
                 <div class="interval-title-section">
@@ -124,6 +126,10 @@
                 </div>
                 <div class="interval-reservable-warning" *ngIf="interval.reservableStatusKey">
                   {{ interval.reservableStatusKey | translate: interval.reservableStatusParams }}
+                </div>
+                <div class="interval-capacity-warning" *ngIf="isIntervalFullyBooked(interval.id)">
+                  <mat-icon>warning</mat-icon>
+                  <span>{{ 'booking_interval_no_capacity' | translate }}</span>
                 </div>
 
                 <div class="toggle-icon">
@@ -613,20 +619,23 @@
               <div *ngFor="let interval of getIntervalGroups(); trackBy: trackByIntervalId"
                    [class.interval-card]="true"
                    [class.interval-selected]="isIntervalSelected(interval.id)"
-                   [class.interval-disabled]="!interval.isReservableNow">
+                   [class.interval-full]="isIntervalFullyBooked(interval.id)"
+                   [class.interval-disabled]="!interval.isReservableNow || isIntervalFullyBooked(interval.id)">
                 <!-- Encabezado del intervalo -->
                 <div class="interval-header"
-                     [class.cursor-not-allowed]="!interval.isReservableNow"
-                     [attr.title]="!interval.isReservableNow ? (interval.reservableStatusKey | translate:interval.reservableStatusParams) : null"
-                     (click)="interval.isReservableNow && toggleIntervalExpanded(interval.id)">
+                     [class.cursor-not-allowed]="!interval.isReservableNow || isIntervalFullyBooked(interval.id)"
+                     [attr.title]="!interval.isReservableNow
+                        ? (interval.reservableStatusKey | translate:interval.reservableStatusParams)
+                        : (isIntervalFullyBooked(interval.id) ? ('booking_interval_no_capacity' | translate) : null)"
+                     (click)="interval.isReservableNow && !isIntervalFullyBooked(interval.id) && toggleIntervalExpanded(interval.id)">
                   <div class="interval-title-section">
-                    <mat-icon *ngIf="!interval.isReservableNow" class="disabled-icon">block</mat-icon>
+                    <mat-icon *ngIf="!interval.isReservableNow || isIntervalFullyBooked(interval.id)" class="disabled-icon">block</mat-icon>
                     <h5 class="interval-name">{{interval.name}}</h5>
                   </div>
 
                   <div class="interval-expand-icon">
-                    <mat-icon *ngIf="interval.isReservableNow && !isIntervalExpanded(interval.id)">expand_more</mat-icon>
-                    <mat-icon *ngIf="interval.isReservableNow && isIntervalExpanded(interval.id)">expand_less</mat-icon>
+                    <mat-icon *ngIf="interval.isReservableNow && !isIntervalFullyBooked(interval.id) && !isIntervalExpanded(interval.id)">expand_more</mat-icon>
+                    <mat-icon *ngIf="interval.isReservableNow && !isIntervalFullyBooked(interval.id) && isIntervalExpanded(interval.id)">expand_less</mat-icon>
                   </div>
 
                   <div class="interval-summary">
@@ -695,18 +704,22 @@
                       <span>{{ interval.reservableStatusKey | translate: interval.reservableStatusParams }}</span>
                     </div>
                   </div>
+                  <div class="interval-capacity-warning" *ngIf="isIntervalFullyBooked(interval.id)">
+                    <mat-icon>warning</mat-icon>
+                    <span>{{ 'booking_interval_no_capacity' | translate }}</span>
+                  </div>
                 </div>
 
                 <!-- Fechas del intervalo (visibles cuando estÃ¡ seleccionado) -->
-                <div class="interval-dates-container" *ngIf="isIntervalExpanded(interval.id)">
+                <div class="interval-dates-container" *ngIf="isIntervalExpanded(interval.id) && !isIntervalFullyBooked(interval.id)">
                   <div class="date-checkboxes">
                     <div *ngFor="let date of interval.dates; trackBy: trackByDate" class="date-checkbox-wrapper"
-                         [class.date-disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package'"
+                         [class.date-disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package' || isIntervalFullyBooked(interval.id)"
                          [class.date-selected]="isDateSelected(date.date)">
                       <mat-checkbox
                         (change)="selectDate($event.checked, date.date, interval.id)"
                         [checked]="isDateSelected(date.date)"
-                        [disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package'">
+                        [disabled]="!isDateAvailable(date.date, interval.id) || interval.bookingMode === 'package' || isIntervalFullyBooked(interval.id)">
                         <div class="date-checkbox-content">
                           <span class="date-day">{{date.date | date: 'dd'}}</span>
                           <span class="date-month-year">{{date.date | date: 'MMM yyyy'}}</span>
