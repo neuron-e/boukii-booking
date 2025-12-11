@@ -464,6 +464,15 @@ html {
   font-family: "DM Sans";
 }
 
+/* Prevent page scrolling when booking modal is active */
+body.booking-modal-open,
+html.booking-modal-open {
+  overflow: hidden;
+  height: 100%;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
 @media (max-width: 600px) {
   .text-small {
     font-size: 10px;

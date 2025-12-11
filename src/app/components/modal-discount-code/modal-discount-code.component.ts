@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges, OnChanges, OnDestroy, Renderer2, Inject } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ThemeService } from '../../services/theme.service';
 import { DiscountCodeService } from '../../services/discount-code.service';
@@ -6,6 +6,7 @@ import { SchoolService } from '../../services/school.service';
 import { DiscountCodeValidationRequest, DiscountCodeValidationResponse } from '../../interface/discount-code';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DOCUMENT } from '@angular/common';
 
 /**
  * Component: ModalDiscountCodeComponent
@@ -53,7 +54,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     ]),
   ]
 })
-export class ModalDiscountCodeComponent implements OnInit, OnChanges {
+export class ModalDiscountCodeComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() isOpen: boolean = false;
   @Input() slug: string;
@@ -73,12 +74,16 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
   errorMessage: string = '';
   schoolId: number;
 
+  private bodyScrollLocked = false;
+
   constructor(
     public themeService: ThemeService,
     private discountCodeService: DiscountCodeService,
     private schoolService: SchoolService,
     private translateService: TranslateService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit(): void {
@@ -95,10 +100,16 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     // Limpiar estado al abrir/cerrar modal
     if (changes['isOpen']) {
-      if (changes['isOpen'].currentValue) {
+      const isOpening = !!changes['isOpen'].currentValue;
+      this.toggleBodyScrollLock(isOpening);
+      if (isOpening) {
         this.resetModal();
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.toggleBodyScrollLock(false);
   }
 
   /**
@@ -193,6 +204,7 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
    * Cierra el modal
    */
   closeModal(): void {
+    this.toggleBodyScrollLock(false);
     this.onClose.emit();
   }
 
@@ -219,6 +231,22 @@ export class ModalDiscountCodeComponent implements OnInit, OnChanges {
       return `${discountCode.discount_value}%`;
     } else {
       return `CHF ${discountCode.discount_value}`;
+    }
+  }
+
+  private toggleBodyScrollLock(shouldLock: boolean): void {
+    if (!this.document) {
+      return;
+    }
+
+    if (shouldLock && !this.bodyScrollLocked) {
+      this.renderer.addClass(this.document.body, 'booking-modal-open');
+      this.renderer.addClass(this.document.documentElement, 'booking-modal-open');
+      this.bodyScrollLocked = true;
+    } else if (!shouldLock && this.bodyScrollLocked) {
+      this.renderer.removeClass(this.document.body, 'booking-modal-open');
+      this.renderer.removeClass(this.document.documentElement, 'booking-modal-open');
+      this.bodyScrollLocked = false;
     }
   }
 }

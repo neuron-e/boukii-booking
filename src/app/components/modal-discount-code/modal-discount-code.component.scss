@@ -14,7 +14,7 @@
   width: 100%;
   min-height: 100vh;
   max-height: 100vh;
-  z-index: 99999;
+  z-index: 1000000000; // must sit above mobile payment drawer (z-index: 999999999)
   background: rgba(0,0,0,0.7);
   position: fixed;
   top: 0;
@@ -29,7 +29,7 @@
   max-width: 550px;
   width: 90%;
   position: relative;
-  z-index: 100000;
+  z-index: 1000000001;
   margin: auto;
   padding: 24px 24px 16px;
   box-sizing: border-box;
