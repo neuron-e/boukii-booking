@@ -121,14 +121,10 @@ export class CourseComponent implements OnInit {
 
   schoolData: any;
   settings: any;
-  settingsExtras: any[] = [];
+  courseExtras: any[] = [];
   selectedCourseDates: any = [];
   collectivePrice: any = 0;
   intervalCapacityWarnings: { [key: string]: boolean } = {};
-
-  get activeSettingsExtras(): any[] {
-    return Array.isArray(this.settingsExtras) ? this.settingsExtras.filter(extra => extra?.status !== false) : [];
-  }
 
   // Variables para descuentos visuales
   appliedDiscountAmount: number = 0;
@@ -190,7 +186,6 @@ export class CourseComponent implements OnInit {
         if (data) {
           this.schoolData = data.data;
           this.settings = typeof data.data.settings === 'string' ? JSON.parse(data.data.settings) : data.data.settings;
-          this.syncAvailableExtras();
         }
       }
     );
@@ -214,7 +209,7 @@ export class CourseComponent implements OnInit {
         // Inicializar intervalos cerrados por defecto
         // Los intervalos se abrirán al hacer click en ellos
       }
-      this.syncAvailableExtras();
+      this.loadCourseExtras();
       if (this.course.discounts) {
         try {
           const discounts = JSON.parse(this.course.discounts);
@@ -480,33 +475,19 @@ export class CourseComponent implements OnInit {
       : this.course.settings;
   }
 
-  private syncAvailableExtras(): void {
-    this.settingsExtras = this.getExtrasFromSchoolSettings();
+  private loadCourseExtras(): void {
+    this.courseExtras = this.filterCourseExtras(this.course?.course_extras);
   }
 
-  private getExtrasFromSchoolSettings(): any[] {
-    const rawSettings = this.settings;
-    if (!rawSettings) {
+  private filterCourseExtras(extras: any[] | null | undefined): any[] {
+    if (!Array.isArray(extras)) {
       return [];
     }
-    const extras = rawSettings.extras || {};
-    const buckets = [extras?.forfait, extras?.food, extras?.transport];
-
-    return buckets.reduce((acc: any[], bucket: any[]) => {
-      if (!Array.isArray(bucket)) {
-        return acc;
-      }
-      bucket.forEach(extra => {
-        if (!extra) {
-          return;
-        }
-        acc.push({
-          ...extra,
-          status: extra?.status ?? true
-        });
-      });
-      return acc;
-    }, []);
+    return extras.filter(extra => {
+      const isActive = extra?.status !== false;
+      const isNotDeleted = extra?.deleted_at === null || extra?.deleted_at === undefined;
+      return isActive && isNotDeleted;
+    });
   }
 
   private buildCartSettingsSnapshot(): any {

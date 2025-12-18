@@ -1005,7 +1005,7 @@
           </div>
 
           <!-- Only show extras section if extras are available -->
-          <ng-container *ngIf="activeSettingsExtras.length > 0">
+          <ng-container *ngIf="courseExtras.length > 0">
             <div class="extras-title">
               <mat-icon>add_circle_outline</mat-icon>
               {{"add_extras_or_notes" |translate}}
@@ -1018,7 +1018,7 @@
                 {{date|date:'dd.MM.yyyy'}}
               </div>
               <div class="extras-grid">
-                <mat-checkbox *ngFor="let extra of activeSettingsExtras"
+                <mat-checkbox *ngFor="let extra of courseExtras"
                               class="extra-checkbox"
                               (click)="toggleForfaitSelection(extra)">
                   <div class="extra-content">
@@ -1042,7 +1042,7 @@
               </div>
 
               <div class="extras-grid">
-                <mat-checkbox *ngFor="let extra of activeSettingsExtras"
+                <mat-checkbox *ngFor="let extra of courseExtras"
                               [checked]="isExtraSelected(extra, date)"
                               class="extra-checkbox"
                               (change)="toggleForfaitSelectionCollective(extra, date)">
