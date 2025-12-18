@@ -483,11 +483,35 @@ export class CourseComponent implements OnInit {
     if (!Array.isArray(extras)) {
       return [];
     }
+
+    const currentCourseId = this.getCurrentCourseId();
+
     return extras.filter(extra => {
-      const isActive = extra?.status !== false;
+      if (!extra) {
+        return false;
+      }
+
+      const extraCourseId = this.getCourseIdFromExtra(extra);
+      if (currentCourseId !== null && extraCourseId !== null && extraCourseId !== currentCourseId) {
+        return false;
+      }
+
+      const isActive = extra?.status !== false && extra?.status !== 0 && extra?.active !== false && extra?.active !== 0;
       const isNotDeleted = extra?.deleted_at === null || extra?.deleted_at === undefined;
       return isActive && isNotDeleted;
     });
+  }
+
+  private getCurrentCourseId(): number | null {
+    const rawId = this.course?.id ?? this.course?.course_id;
+    const numeric = Number(rawId);
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  private getCourseIdFromExtra(extra: any): number | null {
+    const rawId = extra?.course_id ?? extra?.courseId ?? null;
+    const numeric = Number(rawId);
+    return Number.isFinite(numeric) ? numeric : null;
   }
 
   private buildCartSettingsSnapshot(): any {
