@@ -280,7 +280,7 @@
   "error": "Error",
   "error.client.register": "Ha ocurrido un error al iniciar sesión, inténtelo de nuevo más tarde.",
   "error.monitor.unavailable": "No hay monitores disponibles en esa fecha.",
-  "snackbar.booking.overlap": "Hay un solapamiento para el cliente en esta reserva:",
+  "snackbar.booking.overlap": "Existe un solapamiento para el cliente en esta reserva: ",
   "error.send_mail": "Ha ocurrido un error desconocido al intentar recuperar la contraseña, inténtelo de nuevo más tarde.",
   "event_created": "Evento creado",
   "event_deleted": "Evento eliminado",
@@ -629,7 +629,6 @@
   "snackbar.booking.no_sport_1": "Este usuario no tiene el deporte ",
   "snackbar.booking.no_sport_2": " asociado. ¿Quieres añadirlo?",
   "snackbar.booking.no_sport_3": "Este usuario no tiene ningún deporte asociado. ¿Quieres añadirlo?",
-  "snackbar.booking.overlap": "Existe un solapamiento para el cliente en esta reserva: ",
   "snackbar.booking.select_dates": "Selecciona alguna de las fechas del curso flexible seleccionado",
   "snackbar.booking.user_monitor": "Complete los campos de fecha y hora de la reserva del curso",
   "snackbar.booking.user_no_monitor": "Complete los campos de monitor, fecha y hora de la reserva del curso",
@@ -980,5 +979,7 @@
   "work_id": "Permiso de trabajo",
   "years": "Años",
   "yes": "Sí",
-  "your_reservation": "Tu reserva"
+  "your_reservation": "Tu reserva",
+  "mail_booking_create_sent": "Correo de confirmaci�n de reserva enviado",
+  "interval_date_range": "Rango de Fechas del Intervalo"
 }

@@ -973,5 +973,7 @@
   "work_id": "Work permit",
   "years": "Years",
   "yes": "Yeah",
-  "your_reservation": "Your reservation"
+  "your_reservation": "Your reservation",
+  "mail_booking_create_sent": "Booking confirmation email sent",
+  "interval_date_range": "Interval Date Range"
 }

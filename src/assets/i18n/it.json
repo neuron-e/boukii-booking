@@ -276,7 +276,7 @@
   "error": "Errore",
   "error.client.register": "Si è verificato un errore durante l'accesso, riprova più tardi.",
   "error.monitor.unavailable": "Nessun maestro disponibile in quella data.",
-  "snackbar.booking.overlap": "C'è una sovrapposizione per il cliente in questa prenotazione:",
+  "snackbar.booking.overlap": "C'è una sovrapposizione per il cliente in questa prenotazione: ",
   "error.send_mail": "Si è verificato un errore sconosciuto durante il tentativo di recuperare la password, riprova più tardi.",
   "event_created": "Evento creato",
   "event_deleted": "Evento eliminato",
@@ -625,7 +625,6 @@
   "snackbar.booking.no_sport_1": "Questo utente non ha lo sport ",
   "snackbar.booking.no_sport_2": " associato. ",
   "snackbar.booking.no_sport_3": "Questo utente non ha sport associati. ",
-  "snackbar.booking.overlap": "C'è una sovrapposizione per il cliente in questa prenotazione: ",
   "snackbar.booking.select_dates": "Seleziona una delle date del corso flessibile selezionato",
   "snackbar.booking.user_monitor": "Compila i campi data e ora della prenotazione del corso",
   "snackbar.booking.user_no_monitor": "Compila i campi istruttore, data e ora della prenotazione del corso",
@@ -976,5 +975,7 @@
   "work_id": "Permesso di lavoro",
   "years": "Anni",
   "yes": "Sì",
-  "your_reservation": "La tua prenotazione"
+  "your_reservation": "La tua prenotazione",
+  "mail_booking_create_sent": "Email di conferma prenotazione inviata",
+  "interval_date_range": "Intervallo di Date dell'Intervallo"
 }

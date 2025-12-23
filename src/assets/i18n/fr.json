@@ -280,7 +280,7 @@
   "error": "Erreur",
   "error.client.register": "Une erreur est survenue lors de la connexion, veuillez réessayer plus tard",
   "error.monitor.unavailable": "Aucun moniteur disponible à cette date.",
-  "snackbar.booking.overlap": "Il y a un chevauchement pour le client dans cette réservation :",
+  "snackbar.booking.overlap": "Il y a un chevauchement pour le client dans cette réservation : ",
   "error.send_mail": "Une erreur inconnue s'est produite lors de la tentative de récupération du mot de passe, veuillez réessayer plus tard.",
   "event_created": "Événement créé",
   "event_deleted": "Événement supprimé",
@@ -629,7 +629,6 @@
   "snackbar.booking.no_sport_1": "Cet utilisateur n'a pas le sport ",
   "snackbar.booking.no_sport_2": " associé. ",
   "snackbar.booking.no_sport_3": "Cet utilisateur n'a aucun sport associé. ",
-  "snackbar.booking.overlap": "Il y a un chevauchement pour le client dans cette réservation : ",
   "snackbar.booking.select_dates": "Sélectionnez l'une des dates du cours flexible sélectionné",
   "snackbar.booking.user_monitor": "Remplissez les champs date et heure de la réservation du cours",
   "snackbar.booking.user_no_monitor": "Remplissez les champs instructeur, date et heure de la réservation du cours",
@@ -980,5 +979,7 @@
   "work_id": "Permis de travail",
   "years": "Années",
   "yes": "Ouais",
-  "your_reservation": "Votre réservation"
+  "your_reservation": "Votre réservation",
+  "mail_booking_create_sent": "Email de confirmation de r�servation envoy�",
+  "interval_date_range": "Plage de Dates de l'Intervalle"
 }
