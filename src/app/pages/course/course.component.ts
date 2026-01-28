@@ -1407,6 +1407,16 @@ export class CourseComponent implements OnInit {
   }
 
   renderCalendar() {
+    const courseDateByString = new Map<string, any>();
+    if (this.course?.course_dates && Array.isArray(this.course.course_dates)) {
+      this.course.course_dates.forEach((courseDate: any) => {
+        const dateKey = this.datePipe.transform(courseDate.date, 'yyyy-MM-dd') || courseDate.date;
+        if (dateKey) {
+          courseDateByString.set(dateKey, courseDate);
+        }
+      });
+    }
+
     const startDay = new Date(this.currentYear, this.currentMonth, 1).getDay();
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     this.days = [];
@@ -1419,7 +1429,11 @@ export class CourseComponent implements OnInit {
       const formattedMonth = (this.currentMonth + 1).toString().padStart(2, '0');
       const formattedDay = i.toString().padStart(2, '0');
       const dateStr = `${this.currentYear}-${formattedMonth}-${formattedDay}`;
-      const isActive = !isPast && this.activeDates.includes(dateStr);
+      let isActive = !isPast && this.activeDates.includes(dateStr);
+      if (isActive && this.course?.course_type === 2) {
+        const courseDate = courseDateByString.get(dateStr);
+        isActive = !!courseDate && this.hasPrivateAvailabilityForDate(courseDate);
+      }
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
     let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
@@ -2726,6 +2740,73 @@ export class CourseComponent implements OnInit {
       this.selectedHour = hours.length === 1 ? hours[0] : '';
     }
     return hours;
+  }
+
+  private hasPrivateAvailabilityForDate(courseDate: any): boolean {
+    if (!courseDate) {
+      return false;
+    }
+
+    const durations = this.getPrivateDurationsInMinutes();
+    const durationMinutes = this.getSelectedDurationMinutes(durations);
+
+    if (!durations.length || durationMinutes <= 0) {
+      return false;
+    }
+
+    const maxDuration = Math.max(...durations);
+    const rawSettings = this.getCourseSettings();
+    const settings = Array.isArray(rawSettings) ? {} : rawSettings;
+
+    let flexibleStart = this.course?.hour_min;
+    let flexibleEnd = this.course?.hour_max;
+    if (this.course?.is_flexible && (!flexibleStart || !flexibleEnd) && settings?.periods && Array.isArray(settings.periods) && settings.periods.length) {
+      const startMinutesList = settings.periods
+        .map((p: any) => this.parseTimeToMinutes(p.hour_start || p.hour_min))
+        .filter((m: number) => m > 0);
+      const endMinutesList = settings.periods
+        .map((p: any) => this.parseTimeToMinutes(p.hour_end || p.hour_max))
+        .filter((m: number) => m > 0);
+      if (startMinutesList.length) {
+        const minStart = Math.min(...startMinutesList);
+        flexibleStart = flexibleStart || this.formatMinutesToTime(minStart);
+      }
+      if (endMinutesList.length) {
+        const maxEnd = Math.max(...endMinutesList);
+        flexibleEnd = flexibleEnd || this.formatMinutesToTime(maxEnd);
+      }
+    }
+
+    const startSource = this.course.is_flexible
+      ? (flexibleStart || this.course?.hour_min || courseDate.hour_start)
+      : courseDate.hour_start;
+    const endSource = this.course.is_flexible
+      ? (flexibleEnd || this.course?.hour_max || courseDate.hour_end)
+      : courseDate.hour_end;
+
+    const hourStartMinutes = this.parseTimeToMinutes(startSource || '00:00');
+    const hourEndMinutes = this.parseTimeToMinutes(endSource || '23:59');
+    if (hourEndMinutes <= hourStartMinutes || maxDuration <= 0) {
+      return false;
+    }
+
+    const stepMinutes = this.course?.is_flexible ? 5 : this.getPrivateStepMinutes(durations);
+    const bufferMinutes = this.getPrivateLeadMinutes();
+    const today = new Date();
+    const minStartDate = bufferMinutes > 0 ? new Date(today.getTime() + bufferMinutes * 60000) : null;
+
+    for (let minute = hourStartMinutes; minute <= hourEndMinutes - durationMinutes; minute += stepMinutes) {
+      const startDate = this.buildDateTime(courseDate.date, minute);
+      if (minStartDate && startDate < minStartDate) {
+        continue;
+      }
+      if (startDate < today) {
+        continue;
+      }
+      return true;
+    }
+
+    return false;
   }
 
   onHourSelected(value: string) {
