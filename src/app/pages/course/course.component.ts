@@ -2705,20 +2705,19 @@ export class CourseComponent implements OnInit {
       return [];
     }
     const stepMinutes = this.course?.is_flexible ? 5 : this.getPrivateStepMinutes(durations);
-    const bufferMinutes = this.getPrivateLeadMinutes();
-    const today = new Date();
-    const courseDateObj = new Date(course_date.date);
-    const isToday = courseDateObj.toDateString() === today.toDateString();
-    const minStartDate = isToday ? new Date(today.getTime() + bufferMinutes * 60000) : null;
+      const bufferMinutes = this.course?.course_type === 2 ? this.getPrivateLeadMinutes() : 0;
+      const today = new Date();
+      const courseDateObj = new Date(course_date.date);
+      const minStartDate = bufferMinutes > 0 ? new Date(today.getTime() + bufferMinutes * 60000) : null;
 
-    for (let minute = hourStartMinutes; minute <= hourEndMinutes - durationMinutes; minute += stepMinutes) {
-      const startDate = this.buildDateTime(course_date.date, minute);
-      if (isToday && minStartDate && startDate < minStartDate) {
-        continue;
-      }
-      if (startDate < today) {
-        continue;
-      }
+      for (let minute = hourStartMinutes; minute <= hourEndMinutes - durationMinutes; minute += stepMinutes) {
+        const startDate = this.buildDateTime(course_date.date, minute);
+        if (minStartDate && startDate < minStartDate) {
+          continue;
+        }
+        if (startDate < today) {
+          continue;
+        }
       hours.push(this.formatMinutesToTime(minute));
     }
 
