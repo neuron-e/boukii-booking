@@ -319,16 +319,11 @@
       <div class="sectionTitle">
         {{ "observation_client" | translate }}
         <img *ngIf="!summaryMode && isDetail && status != 2 && canEditBooking"
-             (click)="openObservationsForm(clientObs, schoolObs)" src="assets/img/icons/edit-grey.svg"
+             (click)="openObservationsForm(clientObs)" src="assets/img/icons/edit-grey.svg"
              class="icon24" style="float: right;">
-        <mat-icon color="warn" class="warning-icon" *ngIf="clientObs || schoolObs">warning</mat-icon>
+        <mat-icon color="warn" class="warning-icon" *ngIf="clientObs">warning</mat-icon>
       </div>
       <p>{{ clientObs }}</p>
-      <div class="sectionTitle mt-5">
-        {{ "observation_school" | translate
-        }}
-      </div>
-      <p>{{ schoolObs }}</p>
     </div>
   </div>
 

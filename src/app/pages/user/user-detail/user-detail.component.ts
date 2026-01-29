@@ -227,11 +227,7 @@ export class UserDetailComponent {
         sportName: [''],
       });
 
-      this.formOtherInfo = this.fb.group({
-        summary: [''],
-        notes: [''],
-        hitorical: ['']
-      });
+      this.formOtherInfo = this.fb.group({});
 
     }));
 
@@ -307,18 +303,6 @@ export class UserDetailComponent {
   }
 
   private processUserData(onChangeUser: boolean) {
-    if (this.defaults.observations.length > 0) this.defaultsObservations = this.defaults.observations[0];
-    else {
-      this.defaultsObservations = {
-        id: null,
-        general: '',
-        notes: '',
-        historical: '',
-        client_id: null,
-        school_id: null
-      };
-    }
-
     // Load newsletter subscription for current school
     if (this.clientSchool && this.schoolData) {
       const currentSchoolRelation = this.clientSchool.find(relation => relation.school_id === this.schoolData.id);
@@ -356,13 +340,6 @@ export class UserDetailComponent {
     // ✅ Rellenar el formulario de información deportiva
     this.formSportInfo.patchValue({
       sportName: this.selectedSport?.sport_name ?? ''
-    });
-
-    // ✅ Rellenar el formulario de otra información
-    this.formOtherInfo.patchValue({
-      summary: this.defaults?.observations[0]?.general ?? '',
-      notes: this.defaults?.observations[0]?.notes ?? '',
-      hitorical: this.defaults?.observations[0]?.historical ?? ''
     });
 
     if (!onChangeUser) {
@@ -870,15 +847,7 @@ export class UserDetailComponent {
         takeUntil(this.destroy$),
         tap(client => {
           this.snackbar.open(this.translateService.instant('snackbar.client.update'), 'OK', { duration: 3000 });
-
-          this.defaultsObservations.client_id = client.data.id;
-          this.defaultsObservations.school_id = this.schoolData.id;
         }),
-        switchMap(client =>
-          this.defaultsObservations.id
-            ? this.crudService.update('/client-observations', this.defaultsObservations, this.defaultsObservations.id)
-            : of(null)
-        ),
         switchMap(() => {
           const createSports$ = this.sportsData.data.map(element =>
             this.crudService.create('/client-sports', {

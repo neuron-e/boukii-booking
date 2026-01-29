@@ -20,8 +20,7 @@ export class StepObservationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.stepForm = this.fb.group({
-      clientObs: [this.initialData ? this.initialData.clientObs : ''],
-      schoolObs: [this.initialData ? this.initialData.schoolObs : ''],
+      clientObs: [this.initialData ? this.initialData.clientObs : '']
     });
   }
 

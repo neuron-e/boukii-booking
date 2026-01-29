@@ -121,24 +121,6 @@
 				</p>
 				<p>************</p>
 			</div>
-			<div>
-				<p>
-					{{'observation_school' | translate }}
-				</p>
-				<p>
-					{{defaultsObservations?.notes || ('not_assigned' | translate)}}
-				</p>
-			</div>
-			<div>
-				<p>
-					{{'observation_general' | translate }}
-				</p>
-				<p>
-					{{defaultsObservations?.general ||
-					('not_assigned' | translate)}}
-				</p>
-			</div>
-
 			<img (click)="showPersonalInfoEditEvent(true)" src="assets/icons/edit.png" class="icon24">
 		</div>
 
@@ -527,25 +509,6 @@
 			</form>
 			<form [formGroup]="formOtherInfo" style="margin-top: 20px;">
 				<div class="modalInputD">
-					<mat-form-field style="width: 100%;" appearance="outline">
-						<mat-label>
-							{{'general' |translate}}
-						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.general" formControlName="summary" matInput></textarea>
-					</mat-form-field>
-					<mat-form-field style="width: 100%;" appearance="outline">
-						<mat-label>
-							{{'observation_school' |translate}}
-						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.notes" formControlName="notes" matInput></textarea>
-					</mat-form-field>
-					<mat-form-field style="width: 100%;" appearance="outline">
-						<mat-label>
-							{{'historical' | translate }}
-						</mat-label>
-						<textarea [(ngModel)]="defaultsObservations.historical" formControlName="hitorical" matInput></textarea>
-					</mat-form-field>
-					
 					<!-- Newsletter Checkbox -->
 					<div style="margin: 16px 0; width: 100%;">
 						<mat-checkbox

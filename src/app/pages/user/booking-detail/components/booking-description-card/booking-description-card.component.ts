@@ -49,7 +49,6 @@ export class BookingDescriptionCard {
   }
   @Input() monitors: any;
   @Input() clientObs: any;
-  @Input() schoolObs: any;
   @Input() groupedActivities: any;
   @Input() total: any;
   @Input() summaryMode = false;
@@ -251,21 +250,19 @@ export class BookingDescriptionCard {
     });
   }
 
-  openObservationsForm(clientObs: any, schoolObs: any) {
+  openObservationsForm(clientObs: any) {
     const dialogRef = this.dialog.open(StepObservationsComponent, {
       width: "800px",
       panelClass: "customBookingDialog",
       data: {
         initialData: {
-          clientObs: clientObs,
-          schoolObs: schoolObs
+          clientObs: clientObs
         }
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Aquí manejas los datos actualizados que provienen del modal
-        this.schoolObs = result.schoolObs;
+        // Aqu?? manejas los datos actualizados que provienen del modal
         this.clientObs = result.clientObs;
         this.editActivity.emit(result);
         //this.updateBooking(result);

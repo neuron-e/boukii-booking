@@ -604,7 +604,6 @@ export class BookingDetailV2Component implements OnInit, OnChanges {
           monitors: [],
           utilizers: [],
           clientObs: user.notes,
-          schoolObs: user.notes_school,
           total: user.price,
           status: user.status,
           statusList: [] // Nuevo array para almacenar los status de los usuarios
@@ -734,8 +733,7 @@ export class BookingDetailV2Component implements OnInit, OnChanges {
       return;
     }
 
-    if (data && (data.schoolObs || data.clientObs)) {
-      this.groupedActivities[index].schoolObs = data.schoolObs;
+    if (data && data.clientObs !== undefined) {
       this.groupedActivities[index].clientObs = data.clientObs;
       this.editObservations(this.groupedActivities[index].dates[0].booking_users[0].id, data);
       return;
@@ -746,7 +744,7 @@ export class BookingDetailV2Component implements OnInit, OnChanges {
 
   editObservations(bookingUserId:number, data:any) {
     this.crudService
-      .update("/booking-users", { notes: data.clientObs, notes_school: data.schoolObs }, bookingUserId)
+      .update("/booking-users", { notes: data.clientObs }, bookingUserId)
       .subscribe(() => {
         this.snackBar.open(
           this.translateService.instant("snackbar.booking_detail.notes_client"),
