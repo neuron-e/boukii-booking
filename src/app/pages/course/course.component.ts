@@ -218,7 +218,9 @@ export class CourseComponent implements OnInit {
       } else {
       }
       this.getDegrees()
-      this.activeDates = this.course.course_dates.map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
+      this.activeDates = this.course.course_dates
+        .filter((dateObj: any) => dateObj?.active !== 0)
+        .map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       // Normalizar price_range si viene como string en privados flex
       if (this.course.course_type == 2 && this.course.is_flexible && typeof this.course.price_range === 'string') {
@@ -1432,7 +1434,15 @@ export class CourseComponent implements OnInit {
       let isActive = !isPast && this.activeDates.includes(dateStr);
       if (isActive && this.course?.course_type === 2) {
         const courseDate = courseDateByString.get(dateStr);
-        isActive = !!courseDate && this.hasPrivateAvailabilityForDate(courseDate);
+        if (!courseDate) {
+          isActive = false;
+        } else if (courseDate.active === 0) {
+          isActive = false;
+        } else if (courseDate.active === 1) {
+          isActive = true;
+        } else {
+          isActive = this.hasPrivateAvailabilityForDate(courseDate);
+        }
       }
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
