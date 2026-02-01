@@ -220,6 +220,24 @@
   margin: 0 auto;
 }
 
+.payment-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(244, 67, 54, 0.08);
+  color: #b71c1c;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.payment-error__icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
 .cardcabecera {
   background-color: #2f3844;
   height: 60px;

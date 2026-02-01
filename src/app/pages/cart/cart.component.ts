@@ -45,6 +45,7 @@ export class CartComponent implements OnInit {
   boukiiCarePrice: any;
   tva: any;
   loading = true;
+  bookingErrorMessage = '';
   conditionsAccepted = false;
   dataLevels = [
     {
@@ -368,6 +369,7 @@ export class CartComponent implements OnInit {
 
   sendBooking() {
     this.loading = true;
+    this.bookingErrorMessage = '';
 
     const extras: any[] = [];
 
@@ -468,22 +470,89 @@ export class CartComponent implements OnInit {
 
     this.bookingService.setBookingData(bookingData);
 
-    this.bookingService.createBooking(bookingData).subscribe(
-      (response: any) => {
+    this.bookingService.createBooking(bookingData).subscribe({
+      next: (response: any) => {
         if (this.totalPrice > 0) {
-          this.crudService.post('/slug/bookings/payments/' + response.booking_id, basket)
-            .subscribe((result: any) => {
-              window.open(result.data, '_self');
+          const bookingId = response?.booking_id ?? response?.data?.booking_id;
+          if (!bookingId) {
+            this.handleBookingError({ message: 'error' }, 'error', 'booking_id_missing');
+            return;
+          }
+          this.crudService.post('/slug/bookings/payments/' + bookingId, basket)
+            .subscribe({
+              next: (result: any) => {
+                const paymentUrl = result?.data;
+                if (paymentUrl) {
+                  window.open(paymentUrl, '_self');
+                  return;
+                }
+                this.handleBookingError({ message: 'error' }, 'error', 'payment_url_missing');
+              },
+              error: (error) => {
+                this.handleBookingError(error, 'error', 'payment_request_failed');
+              }
             });
         } else {
           window.location.href = window.location.origin + window.location.pathname + '?status=success';
         }
       },
-      error => {
-        console.error('Error al crear la reserva', error);
-        this.loading = false;
+      error: (error) => {
+        this.handleBookingError(error, 'error', 'booking_create_failed');
       }
-    );
+    });
+  }
+
+  private handleBookingError(error: any, fallbackKey: string, context: string) {
+    const message = this.resolveBookingErrorMessage(error, fallbackKey);
+    this.bookingErrorMessage = message;
+    this.snackBar.open(message, 'OK', { duration: 8000 });
+    console.error(`Booking error (${context})`, error);
+    this.loading = false;
+  }
+
+  private resolveBookingErrorMessage(error: any, fallbackKey: string): string {
+    const fallback = this.translateService.instant(fallbackKey);
+    if (!error) {
+      return fallback;
+    }
+
+    let rawMessage: any = null;
+
+    if (typeof error === 'string') {
+      rawMessage = error;
+    } else {
+      rawMessage =
+        error?.message ||
+        error?.error?.message ||
+        error?.error?.error ||
+        error?.error?.data?.message ||
+        error?.error?.data?.error ||
+        null;
+    }
+
+    if (!rawMessage) {
+      const errors =
+        error?.errors ||
+        error?.error?.errors ||
+        error?.error?.data?.errors ||
+        null;
+
+      if (errors && typeof errors === 'object') {
+        const firstValue = Object.values(errors).find((value: any) => value);
+        if (Array.isArray(firstValue) && firstValue.length > 0) {
+          rawMessage = firstValue[0];
+        } else if (typeof firstValue === 'string') {
+          rawMessage = firstValue;
+        }
+      }
+    }
+
+    if (!rawMessage) {
+      return fallback;
+    }
+
+    const translated = this.translateService.instant(rawMessage);
+    return translated || fallback;
   }
 
   getCleanedCartDetails() {

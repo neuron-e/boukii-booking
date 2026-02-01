@@ -464,6 +464,10 @@
 				">
           {{'text_payment2' | translate }}
         </div>
+        <div *ngIf="bookingErrorMessage" class="payment-error mt-12">
+          <mat-icon class="payment-error__icon">error</mat-icon>
+          <span>{{ bookingErrorMessage }}</span>
+        </div>
         <button [disabled]="!conditionsAccepted" (click)="sendBooking()"
                 class="rounded-8 button-style cursor-pointer width-100" type="button" style="margin-top: 10px;height: 48px;color: white;
            font-size: 16px;
