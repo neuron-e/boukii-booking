@@ -341,26 +341,28 @@ ul {
 }
 .weekdays,
 .days {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
 }
 .weekdays span {
-  flex: 1 0 calc(14.28% - 6px);
   height: 32px;
   line-height: 32px;
   text-align: center;
-  margin: 3px;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .days .day-span-a {
-  flex: 1 0 calc(14.28% - 6px);
   height: 32px;
   line-height: 32px;
   text-align: center;
-  margin: 3px;
   font-weight: 500;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .days .day-span-b {
   display: flex;
@@ -421,6 +423,13 @@ ul {
   display: flex;
   width: 150px;
   display: flex;
+}
+
+.availability-loading {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .opacity-full {

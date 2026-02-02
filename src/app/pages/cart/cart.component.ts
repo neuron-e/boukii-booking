@@ -337,7 +337,7 @@ export class CartComponent implements OnInit {
 
             if (status === 'success') {
               // Mostrar snackbar de éxito
-              this.snackBar.open(this.translateService.instant('Booking completed successfully!'), 'Close', {
+              this.snackBar.open(this.translateService.instant('booking.success.created'), 'Close', {
                 duration: 3000, // Duración del snackbar en milisegundos
               });
 
@@ -347,7 +347,7 @@ export class CartComponent implements OnInit {
 
             } else if (status === 'cancel' || status === 'failed') {
               // Mostrar snackbar de error
-              this.snackBar.open(this.translateService.instant('Payment error: Booking could not be completed'), 'Close', {
+              this.snackBar.open(this.translateService.instant('booking.errors.payment_failed'), 'Close', {
                 duration: 3000,
               });
             }

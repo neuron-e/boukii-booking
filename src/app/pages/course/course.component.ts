@@ -15,6 +15,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MOCK_COUNTRIES } from 'src/app/services/countries-data';
 import { ApiCrudService } from 'src/app/services/crud.service';
 import {UtilsService} from '../../services/utils.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 type IntervalIdentifier = string | number;
 
@@ -118,6 +120,9 @@ export class CourseComponent implements OnInit {
   availableHours: any[] = [];
   selectedIntervalId: string | null = null;
   private readonly DEFAULT_PRIVATE_LEAD_MINUTES = 30;
+  private privateAvailabilityByHour: { [hour: string]: string[] } = {};
+  private privateAvailabilityDateKey: string | null = null;
+  privateAvailabilityLoading = false;
 
   schoolData: any;
   settings: any;
@@ -1455,9 +1460,16 @@ export class CourseComponent implements OnInit {
       this.days.forEach(d => d.selected = false);
       day.selected = true;
       this.selectedDateReservation = `${day.number}`.padStart(2, '0') + '/' + `${this.currentMonth + 1}`.padStart(2, '0') + '/' + this.currentYear;
-      this.getAvailableHours();
-      this.selectedHour = this.availableHours.length ? this.availableHours[0] : '';
-      if (this.course.is_flexible) this.updateAvailableDurations(this.selectedHour);
+      const baseHours = this.getAvailableHours();
+      if (this.course?.course_type === 2) {
+        this.resetPrivateAvailabilityCache(this.normalizeDateForApi(this.selectedDateReservation));
+        this.prefetchPrivateAvailabilityForHours(baseHours);
+      } else {
+        this.selectedHour = this.availableHours.length ? this.availableHours[0] : '';
+        if (this.course.is_flexible) {
+          this.updateAvailableDurations(this.selectedHour);
+        }
+      }
     }
   }
 
@@ -2826,6 +2838,9 @@ export class CourseComponent implements OnInit {
     }
     this.updatePrice();
     this.checkLocalOverlapSelection();
+    if (this.course?.course_type === 2) {
+      this.fetchPrivateAvailabilityForHour(this.selectedHour);
+    }
   }
 
   onDurationSelected(value: string) {
@@ -2876,6 +2891,10 @@ export class CourseComponent implements OnInit {
     this.updatePrice();
     // Recalcular horas disponibles según la nueva duración
     this.getAvailableHours();
+
+    if (this.course?.course_type === 2 && this.privateAvailabilityByHour[selectedHour]) {
+      this.applyAvailabilityDurations(selectedHour, this.privateAvailabilityByHour[selectedHour]);
+    }
   }
 
   private getSelectedDurationMinutes(durations: number[] = []): number {
@@ -2902,6 +2921,190 @@ export class CourseComponent implements OnInit {
       return this.convertToDuration(minutes);
     }
     return '';
+  }
+
+  private resetPrivateAvailabilityCache(dateKey?: string): void {
+    this.privateAvailabilityByHour = {};
+    this.privateAvailabilityDateKey = dateKey || null;
+  }
+
+  private buildAvailabilityBookingUsers(): any[] {
+    const users = Array.isArray(this.selectedUserMultiple) && this.selectedUserMultiple.length
+      ? this.selectedUserMultiple
+      : (this.selectedUser ? [this.selectedUser] : []);
+
+    return users.map((user: any) => ({
+      course: {
+        id: this.course?.id,
+        course_type: this.course?.course_type,
+        sport_id: this.course?.sport_id
+      },
+      client: { id: user?.id },
+      minimumDegreeId: null
+    }));
+  }
+
+  private applyAvailabilityDurations(selectedHour: string, apiDurations: string[]): void {
+    if (!selectedHour || selectedHour !== this.selectedHour) {
+      return;
+    }
+
+    const baseDurations = this.getAvailableDurations(selectedHour).map((d: any) => this.normalizeDurationValue(d));
+    const normalizedApi = apiDurations.map(d => this.normalizeDurationValue(d)).filter(Boolean);
+    const nextDurations = baseDurations.filter(d => normalizedApi.includes(d));
+
+    this.availableDurations = nextDurations;
+
+    if (nextDurations.length === 0) {
+      this.selectedDuration = '';
+      if (this.selectedHour) {
+        this.availableHours = this.availableHours.filter((h) => h !== this.selectedHour);
+        this.selectedHour = '';
+      }
+      this.snackbar.open(this.translateService.instant('error.monitor.unavailable'), 'OK', { duration: 3000 });
+      if (this.availableHours.length > 0) {
+        this.selectedHour = this.availableHours[0];
+        if (this.course?.is_flexible) {
+          this.updateAvailableDurations(this.selectedHour);
+        }
+        this.fetchPrivateAvailabilityForHour(this.selectedHour);
+      }
+      return;
+    }
+
+    const normalizedSelected = this.normalizeDurationValue(this.selectedDuration);
+    if (!normalizedSelected || !nextDurations.includes(normalizedSelected)) {
+      this.selectedDuration = nextDurations[0];
+    } else {
+      this.selectedDuration = normalizedSelected;
+    }
+
+    this.updatePrice();
+  }
+
+  private applyPrivateAvailableHours(baseHours: string[]): void {
+    if (!Array.isArray(baseHours)) {
+      return;
+    }
+
+    const filtered = baseHours.filter((hour) => {
+      const durations = this.privateAvailabilityByHour[hour];
+      return Array.isArray(durations) && durations.length > 0;
+    });
+
+    this.availableHours = filtered;
+
+    if (filtered.length === 0) {
+      this.selectedHour = '';
+      this.availableDurations = [];
+      this.selectedDuration = '';
+      return;
+    }
+
+    if (!this.selectedHour || !filtered.includes(this.selectedHour)) {
+      this.selectedHour = filtered[0];
+    }
+
+    if (this.course?.is_flexible) {
+      this.updateAvailableDurations(this.selectedHour);
+    }
+    this.fetchPrivateAvailabilityForHour(this.selectedHour);
+  }
+
+  private prefetchPrivateAvailabilityForHours(baseHours: string[]): void {
+    if (!Array.isArray(baseHours) || baseHours.length === 0 || !this.course || this.course.course_type !== 2) {
+      return;
+    }
+
+    const courseDate = this.findMatchingCourseDate();
+    if (!courseDate) {
+      return;
+    }
+
+    const dateKey = this.normalizeDateForApi(courseDate?.date);
+    if (this.privateAvailabilityDateKey !== dateKey) {
+      this.resetPrivateAvailabilityCache(dateKey);
+    }
+
+    const pending: Record<string, any> = {};
+    baseHours.forEach((hour) => {
+      if (this.privateAvailabilityByHour[hour]) {
+        return;
+      }
+      const payload = {
+        hour_start: hour,
+        bookingUsers: this.buildAvailabilityBookingUsers()
+      };
+      pending[hour] = this.crudService
+        .post('/slug/courses/availability/' + courseDate.id, payload)
+        .pipe(
+          map((res: any) => {
+            const raw = res?.data || res || [];
+            return Array.isArray(raw)
+              ? raw.map((item: any) => this.normalizeDurationValue(item?.duration ?? item)).filter(Boolean)
+              : [];
+          }),
+          catchError(() => of([]))
+        );
+    });
+
+    const pendingKeys = Object.keys(pending);
+    if (pendingKeys.length === 0) {
+      this.applyPrivateAvailableHours(baseHours);
+      return;
+    }
+
+    this.privateAvailabilityLoading = true;
+    forkJoin(pending).subscribe((results: any) => {
+      pendingKeys.forEach((key) => {
+        this.privateAvailabilityByHour[key] = results[key] || [];
+      });
+      this.privateAvailabilityLoading = false;
+      this.applyPrivateAvailableHours(baseHours);
+    });
+  }
+
+  private fetchPrivateAvailabilityForHour(selectedHour: string): void {
+    if (!selectedHour || !this.course || this.course.course_type !== 2) {
+      return;
+    }
+
+    const courseDate = this.findMatchingCourseDate();
+    if (!courseDate) {
+      return;
+    }
+
+    const dateKey = this.normalizeDateForApi(courseDate?.date);
+    if (this.privateAvailabilityDateKey !== dateKey) {
+      this.resetPrivateAvailabilityCache(dateKey);
+    }
+
+    if (this.privateAvailabilityByHour[selectedHour]) {
+      this.applyAvailabilityDurations(selectedHour, this.privateAvailabilityByHour[selectedHour]);
+      return;
+    }
+
+    const payload = {
+      hour_start: selectedHour,
+      bookingUsers: this.buildAvailabilityBookingUsers()
+    };
+
+    this.privateAvailabilityLoading = true;
+    this.crudService.post('/slug/courses/availability/' + courseDate.id, payload).subscribe(
+      (res: any) => {
+        this.privateAvailabilityLoading = false;
+        const raw = res?.data || res || [];
+        const durations = Array.isArray(raw)
+          ? raw.map((item: any) => this.normalizeDurationValue(item?.duration ?? item)).filter(Boolean)
+          : [];
+        this.privateAvailabilityByHour[selectedHour] = durations;
+        this.applyAvailabilityDurations(selectedHour, durations);
+      },
+      (error) => {
+        this.privateAvailabilityLoading = false;
+        console.error('[booking-availability] failed to load durations', error);
+      }
+    );
   }
 
   private normalizeDateForApi(date: any): string {

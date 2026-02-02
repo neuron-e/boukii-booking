@@ -358,7 +358,7 @@
             </span>
           </div>
         </div>
-        <button (click)="SmallScreenModal=true" style="
+        <button (click)="SmallScreenModal=true" [disabled]="privateAvailabilityLoading" style="
             background-color: rgba(233, 30, 99, 1);
             width: 100%;border-radius: 3px;
             height: 38px;padding: 10px 12px;
@@ -986,13 +986,17 @@
                               </mat-select>
                             </mat-form-field>-->
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedHour" label="hour"
-                               [table]="getAvailableHours()"
+                               [table]="getAvailableHours()" [readonly]="privateAvailabilityLoading"
                                (do)="onHourSelected($event.option.value)"></app-form-select>
 
               <app-form-select style="width: calc(50% - 8px);" [value]="selectedDuration"
                                [table]="getAvailableDurations(selectedHour)" label="duration"
-                               [readonly]="!course.is_flexible"
+                               [readonly]="privateAvailabilityLoading || !course.is_flexible"
                                (do)="onDurationSelected($event.option.value)"></app-form-select>
+            </div>
+            <div *ngIf="privateAvailabilityLoading" class="availability-loading">
+              <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+              <span class="text-color text-small">{{ 'checking_availability' | translate }}</span>
             </div>
           </ng-container>
         </div>
@@ -1121,6 +1125,7 @@
               || (!selectedLevel && courseFlux===1)
               || (course.course_type===2 && courseFlux===2 && !selectedDateReservation)
               || (course.course_type===1 && course.is_flexible && courseFlux===2 && selectedDates.length===0)
+              || privateAvailabilityLoading
             "
             (click)="next()" style="background-color: rgba(233, 30, 99, 1);width: 100%;border-radius: 3px;
               height: 50px;padding: 10px 12px;
