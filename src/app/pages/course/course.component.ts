@@ -122,7 +122,7 @@ export class CourseComponent implements OnInit {
   private readonly DEFAULT_PRIVATE_LEAD_MINUTES = 30;
   private privateAvailabilityByHour: { [hour: string]: string[] } = {};
   private privateAvailabilityDateKey: string | null = null;
-  privateAvailabilityLoading = false;
+  public privateAvailabilityLoading = false;
 
   schoolData: any;
   settings: any;
@@ -223,9 +223,10 @@ export class CourseComponent implements OnInit {
       } else {
       }
       this.getDegrees()
-      this.activeDates = this.course.course_dates
-        .filter((dateObj: any) => dateObj?.active !== 0)
-        .map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
+        const isPrivateCourse = this.course?.course_type === 2;
+        this.activeDates = this.course.course_dates
+          .filter((dateObj: any) => isPrivateCourse ? dateObj?.active === 1 : dateObj?.active !== 0)
+          .map((dateObj: any) => this.datePipe.transform(dateObj.date, 'yyyy-MM-dd'));
       this.course.availableDegrees = Object.values(this.course.availableDegrees);
       // Normalizar price_range si viene como string en privados flex
       if (this.course.course_type == 2 && this.course.is_flexible && typeof this.course.price_range === 'string') {
@@ -386,9 +387,9 @@ export class CourseComponent implements OnInit {
           const commonTime = this.getCommonTime(intervalDatesAll);
           const bookingMode = interval.booking_mode === 'package' || this.isPackageInterval(intervalId) ? 'package' : 'flexible';
 
-          result.push({
-            id: intervalId,
-            name: interval.name || 'Intervalo',
+            result.push({
+              id: intervalId,
+              name: interval.name || this.translateService.instant('calendar_week'),
             startDate: firstDate,
             endDate: lastDate,
             weekdays,
@@ -432,9 +433,9 @@ export class CourseComponent implements OnInit {
           const commonTime = this.getCommonTime(intervalDatesAll);
           const bookingMode = this.isPackageInterval(intervalId) ? 'package' : 'flexible';
 
-          result.push({
-            id: intervalId,
-            name: interval.name || 'Intervalo',
+            result.push({
+              id: intervalId,
+              name: interval.name || this.translateService.instant('calendar_week'),
             startDate: firstDate,
             endDate: lastDate,
             weekdays,
@@ -1451,9 +1452,14 @@ export class CourseComponent implements OnInit {
       }
       this.days.push({ number: i, active: isActive, selected: false, past: isPast });
     }
-    let lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
-    for (let k = lastDayOfWeek; k <= 6 && lastDayOfWeek !== 6; k++)       this.days.push({ number: '', active: false });
-  }
+      const lastDayOfWeek = new Date(this.currentYear, this.currentMonth, daysInMonth).getDay();
+      let adjustedEndDay = lastDayOfWeek - 1;
+      if (adjustedEndDay < 0) adjustedEndDay = 6;
+      const trailingBlanks = 6 - adjustedEndDay;
+      for (let k = 0; k < trailingBlanks; k++) {
+        this.days.push({ number: '', active: false });
+      }
+    }
 
   selectDay(day: any) {
     if (day.active) {
