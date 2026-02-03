@@ -2671,7 +2671,12 @@ export class CourseComponent implements OnInit {
   getAvailableDurations(selectedHour: string): any[] {
     const durations = this.filteredPriceRange(false);
     const unique = Array.from(new Set(durations));
-    return unique.map((minutes: number) => this.convertToDuration(minutes));
+    const base = unique.map((minutes: number) => this.convertToDuration(minutes));
+    if (base.length === 0 && this.course?.course_type === 2 && selectedHour) {
+      const apiDurations = this.privateAvailabilityByHour?.[selectedHour] || [];
+      return apiDurations.map((d: any) => this.normalizeDurationValue(d)).filter(Boolean);
+    }
+    return base;
   }
 
   getFormattedDuration(duration: number): string {
@@ -2957,7 +2962,9 @@ export class CourseComponent implements OnInit {
 
     const baseDurations = this.getAvailableDurations(selectedHour).map((d: any) => this.normalizeDurationValue(d));
     const normalizedApi = apiDurations.map(d => this.normalizeDurationValue(d)).filter(Boolean);
-    const nextDurations = baseDurations.filter(d => normalizedApi.includes(d));
+    const nextDurations = baseDurations.length > 0
+      ? baseDurations.filter(d => normalizedApi.includes(d))
+      : normalizedApi;
 
     this.availableDurations = nextDurations;
 
