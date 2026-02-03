@@ -282,8 +282,17 @@ export class UtilsService {
 
 // Método auxiliar para convertir duración en minutos
   parseDurationToMinutes(duration: string): number {
+    const trimmed = (duration || '').toString().trim();
+    if (!trimmed) return 0;
+    const colonMatch = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+    if (colonMatch) {
+      const hours = parseInt(colonMatch[1], 10) || 0;
+      const minutes = parseInt(colonMatch[2], 10) || 0;
+      return (hours * 60) + minutes;
+    }
+
     const regex = /(\d+)h(?:\s*(\d+)m)?|(\d+)m/; // Captura '1h', '1h 30m', '2h', '30m', etc.
-    const matches = duration.match(regex);
+    const matches = trimmed.match(regex);
 
     if (!matches) return 0;
 

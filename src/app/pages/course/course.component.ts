@@ -2962,9 +2962,12 @@ export class CourseComponent implements OnInit {
 
     const baseDurations = this.getAvailableDurations(selectedHour).map((d: any) => this.normalizeDurationValue(d));
     const normalizedApi = apiDurations.map(d => this.normalizeDurationValue(d)).filter(Boolean);
-    const nextDurations = baseDurations.length > 0
+    let nextDurations = baseDurations.length > 0
       ? baseDurations.filter(d => normalizedApi.includes(d))
       : normalizedApi;
+    if (nextDurations.length === 0 && normalizedApi.length > 0) {
+      nextDurations = normalizedApi;
+    }
 
     this.availableDurations = nextDurations;
 
