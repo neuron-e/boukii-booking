@@ -1574,7 +1574,10 @@ export class CourseComponent implements OnInit {
 
             // Encuentra el grupo correspondiente al nivel seleccionado
             let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
-            let courseSubgroup = courseGroup.course_subgroups[0];
+            let courseSubgroup = this.selectSubgroupForGroup(courseGroup, 1);
+            if (!courseGroup || !courseSubgroup) {
+              return;
+            }
 
             // Encuentra los extras de la fecha
             const dateExtras = this.selectedForfaits[date.date] || [];  // Verifica si hay extras para esa fecha
@@ -1640,7 +1643,10 @@ export class CourseComponent implements OnInit {
       } else {
         this.course.course_dates.forEach((date: any) => {
           let courseGroup = date.course_groups.find((i: any) => i.degree_id == this.selectedLevel.id);
-          let courseSubgroup = courseGroup.course_subgroups[0];
+          let courseSubgroup = this.selectSubgroupForGroup(courseGroup, 1);
+          if (!courseGroup || !courseSubgroup) {
+            return;
+          }
           // OPTIMIZADO: Solo guardar IDs y datos necesarios
           const courseSnapshot: any = {
             id: this.course.id,
@@ -1919,9 +1925,23 @@ export class CourseComponent implements OnInit {
 
   private findActiveSubgroupForSelection(): any | null {
     const group = this.findGroupForCurrentSelection();
-    if (!group || !Array.isArray(group.course_subgroups)) {
+    return this.selectSubgroupForGroup(group, 1);
+  }
+
+  private selectSubgroupForGroup(group: any, participants: number): any | null {
+    if (!group || !Array.isArray(group.course_subgroups) || group.course_subgroups.length === 0) {
       return null;
     }
+    const eligible = group.course_subgroups.filter((subgroup: any) =>
+      this.hasCapacityInSubgroup(subgroup, participants)
+    );
+    if (eligible.length > 0) {
+      return eligible.sort((a: any, b: any) =>
+        this.extractCurrentParticipants(a) - this.extractCurrentParticipants(b)
+      )[0];
+    }
+    return group.course_subgroups[0] || null;
+  }
     // Si hubiera lógica de selección explícita de subgrupo, usarla; por ahora, el primero
     return group.course_subgroups[0] || null;
   }
